@@ -1,8 +1,8 @@
 version: '3'
 services:
-  test-node:
+  sesame-orchestrator:
     build: . 
-    container_name: testsync
+    container_name: sesame-orchestrator
     environment: 
       - NODE_ENV=development
       - NODE_TLS_REJECT_UNAUTHORIZED=0

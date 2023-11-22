@@ -1,10 +1,13 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {Injectable, Logger, UnauthorizedException} from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import Strategy from 'passport-headerapikey';
 
+
+
 @Injectable()
 export class HeaderApiKeyStrategy extends PassportStrategy(Strategy, 'api-key') {
+    private readonly logger = new Logger(HeaderApiKeyStrategy.name);
     constructor(
         private readonly configService: ConfigService
     ) {
@@ -12,15 +15,15 @@ export class HeaderApiKeyStrategy extends PassportStrategy(Strategy, 'api-key') 
             false
             );
     }
-    public validate = (apiKey: string, done: (error: Error, data) => {}) => {
-        console.log('apiKey -' + apiKey + '-')
-        console.log('API_KEY : ' + process.env.API_KEY)
+    public validate = ( apiKey: string, done: (error: Error, data) => {}) => {
+
+
         if (process.env.API_KEY === apiKey) {
-            console.log('t es ok!')
+            this.logger.log('Auth OK')
             done(null, true);
             return
         }
-        console.log('Unauthorized');
+        this.logger.warn('Auth FAILED' )
         done(new UnauthorizedException(), null);
     }
 }

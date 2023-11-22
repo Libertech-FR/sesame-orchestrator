@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, UseGuards} from '@nestjs/common';
+import {Controller, Post, Body, Res, UseGuards, Logger} from '@nestjs/common';
 import { PasswdService } from './passwd.service';
 import {
     ApiTags,
@@ -13,6 +13,7 @@ import { AuthGuard } from '@nestjs/passport';
 @Controller('passwd')
 @ApiTags('passwd')
 export class PasswdController {
+    private readonly logger = new Logger(PasswdController.name);
   constructor(private passwdService: PasswdService) {
   }
   @Post()

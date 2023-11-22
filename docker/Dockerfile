@@ -2,7 +2,7 @@ FROM node:18-bookworm-slim
 LABEL description="Libertech Dev" \
       maintainer="Libertech <aide@libertech.fr>" \
       vendor=Libertech \
-      name="donejsdev"
+      name="sesame-orchestrator"
 
 ENV TIMEZONE=Europe/Paris \
     LANGUAGE=fr_FR.UTF-8 \

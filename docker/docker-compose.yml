@@ -1,11 +1,12 @@
 version: '3'
 services:
-  test-node:
+  so:
     build: . 
-    container_name: testsync
+    container_name: so
     environment: 
       - NODE_ENV=development
       - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - API_KEY=abcdef
     volumes:
       - "..:/data"
     ports: 

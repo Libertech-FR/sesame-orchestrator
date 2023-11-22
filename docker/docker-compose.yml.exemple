@@ -1,0 +1,26 @@
+version: '3'
+services:
+  test-node:
+    build: . 
+    container_name: testsync
+    environment: 
+      - NODE_ENV=development
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+    volumes:
+      - "..:/data"
+    ports: 
+      - "3001:3000"
+      - "9229:9229"
+    networks:
+      - dev
+  redis:
+    image: redis
+    restart: always
+    networks:
+      - dev
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+networks:
+  dev: 
+    external: true      

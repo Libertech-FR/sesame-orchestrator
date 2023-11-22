@@ -1,0 +1,1 @@
+# Communication avec sesame-daemon

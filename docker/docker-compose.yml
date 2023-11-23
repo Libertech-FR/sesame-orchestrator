@@ -14,13 +14,14 @@ services:
       - "9229:9229"
     networks:
       - dev
-  redis:
+  sesame-redis:
     image: redis
+    container_name: sesame-redis
     restart: always
     networks:
       - dev
     ports:
-      - "6380:6379"
+      - "6379:6379"
     command: redis-server --appendonly yes
 networks:
   dev: 

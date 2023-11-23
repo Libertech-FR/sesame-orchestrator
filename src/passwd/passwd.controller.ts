@@ -24,6 +24,7 @@ export class PasswdController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard("api-key"))
   async change(@Body() cpwd: ChangePasswordDto,@Res() res: Response): Promise<Response>{
+       this.logger.log('call passwd')
        const data= await this.passwdService.change(cpwd)
        console.log(data)
        data.data.uid=cpwd.uid

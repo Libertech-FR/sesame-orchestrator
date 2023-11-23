@@ -4,10 +4,16 @@ import { AppService } from './app.service';
 import { PasswdModule } from './passwd/passwd.module';
 import { BullModule } from '@nestjs/bullmq';
 import { AuthModule } from './auth/auth.module';
+import {ConfigModule, ConfigService} from '@nestjs/config';
+
+import config from './config'
 
 @Module({
-  imports: [PasswdModule,
-    BullModule.forRoot({connection: {host:'redis',port:6379}}),
+  imports: [
+    ConfigModule.forRoot({
+      load: [config]
+    }),
+    PasswdModule,
     AuthModule]
 })
 export class AppModule {}

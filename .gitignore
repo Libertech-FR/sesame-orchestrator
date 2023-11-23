@@ -2,7 +2,7 @@
 /dist
 /node_modules
 .env
-docker-compose.ym
+docker-compose.yml
 # Logs
 logs
 *.log
@@ -34,3 +34,5 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+docker/docker-compose.yml
+docker/docker-compose.yml

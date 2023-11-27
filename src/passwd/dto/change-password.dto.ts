@@ -6,7 +6,7 @@ export class ChangePasswordDto {
     uid: string;
     @ApiProperty({ example: 'MyOldPassword',description: 'Old Password' })
     @IsString()
-    oldPassword: number;
+    oldPassword:string;
     @ApiProperty({ example: 'MyNewPassword',description: 'New Password' })
     @IsString()
     newPassword: string;

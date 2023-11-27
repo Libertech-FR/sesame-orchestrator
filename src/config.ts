@@ -6,6 +6,7 @@ export default () => ({
         password: process.env.REDIS_PASSWORD ||''
     },
     logLevel: process.env.LOG_LEVEL || 'info',
-    nameQueue: process.env.NAME_QUEUE || 'backend',
+    nameQueue:  process.env.NAME_QUEUE || 'backend',
+    secret: process.env.SECRET || 'mySecret',
 });
 

@@ -5,6 +5,7 @@ import { PasswdModule } from './passwd/passwd.module';
 import { BullModule } from '@nestjs/bullmq';
 import { AuthModule } from './auth/auth.module';
 import {ConfigModule, ConfigService} from '@nestjs/config';
+import { BackendsModule } from './backends/backends.module';
 
 import config from './config'
 
@@ -14,6 +15,7 @@ import config from './config'
       load: [config]
     }),
     PasswdModule,
-    AuthModule]
+    AuthModule,
+    BackendsModule]
 })
 export class AppModule {}

@@ -3,14 +3,18 @@ import { AppModule } from './app.module';
 import ConfigInstance from './config'
 import { LogLevel } from '@nestjs/common'
 
-async function bootstrap() {
+declare const module: any
+;(async (): Promise<void> => {
   const app = await NestFactory.create(AppModule,{logger: setLogLevel() as LogLevel[]});
   if ( process.env.production != "production"){
     require("./swagger").default(app)
   }
   await app.listen(3000);
-}
-bootstrap();
+  if (module.hot) {
+    module.hot.accept()
+    module.hot.dispose((): Promise<void> => app.close())
+  }
+})()
 
 
 function setLogLevel():Array<string>{

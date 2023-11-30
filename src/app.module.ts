@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { PasswdModule } from './passwd/passwd.module';
 import { BullModule } from '@nestjs/bullmq';
-import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CoreModule } from './core/core.module';
+import { ManagementModule } from './management/management.module';
 
 @Module({
   imports: [
@@ -10,7 +10,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       isGlobal: true,
       load: [],
     }),
-    PasswdModule,
     BullModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -20,7 +19,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         },
       }),
     }),
-    AuthModule,
+    CoreModule.register(),
+    ManagementModule.register(),
   ],
 })
 export class AppModule {}

@@ -37,10 +37,13 @@ export class PasswdService {
   }
   async verifyToken(token){
       const data=await this.decryptToken(token)
-      console.log('r :  '+JSON.stringify(data))
+      console.log('r (verifyToken service) :  ')
+      console.log(data)
+      console.log('longueur' + Object.keys(data).length)
       if (Object.keys(data).length === 0){
           return false
       }else{
+          console.log('return true')
           return true
       }
 
@@ -61,6 +64,8 @@ export class PasswdService {
           decipher.setAuthTag(Buffer.from(cypherData.tag, 'base64'));
           let plaintext = decipher.update(token, 'base64', 'ascii');
           console.log('texte : ' + plaintext)
+          //delete key
+          //redis.del([token])
           return JSON.parse(plaintext)
       }else{
           return {}
@@ -68,14 +73,17 @@ export class PasswdService {
   }
   async reset(data:ResetPasswordDto){
       const tokenData=await this.decryptToken(data.token)
+      console.log(tokenData)
       if (Object.keys(tokenData).length === 0){
-          return false
+          return {'status':1,'error':'invalid token'}
       }
       const redisConfig={host:this.configService.get('redis.host'),port:this.configService.get('redis.port')}
       const queue=new Queue(this.configService.get('nameQueue'),{connection:redisConfig})
       const queueEvents = new QueueEvents(this.configService.get('nameQueue'),{connection: redisConfig})
-      const job=await queue.add('RESETPWD',tokenData)
+      const backendData={'uid':tokenData.uid,'newPassword':data.newPassword}
+      const job=await queue.add('RESETPWD',backendData)
       queueEvents.on('failed',(errors)=>{
+          console.log('Erreur queue')
           console.log(errors)
       })
       return await job.waitUntilFinished(queueEvents,30000)

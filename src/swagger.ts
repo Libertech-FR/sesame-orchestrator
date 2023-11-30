@@ -1,10 +1,10 @@
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 export default function swagger(app){
     const config = new DocumentBuilder()
-        .setTitle('Password manager')
-        .setDescription('Change reset password')
-        .setVersion('1.0')
-        .addTag('passwd')
+        .setTitle('Sesame Orchestrator API')
+        .setDescription('Sesame')
+        .setVersion('0.1')
+        .addTag('sesame-orchestrator')
         .addBearerAuth({type: 'http',scheme : 'bearer'})
         .build();
     const document = SwaggerModule.createDocument(app, config);

@@ -8,6 +8,6 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [PassportModule, ConfigModule],
   controllers: [AuthController],
-  providers: [AuthService,HeaderApiKeyStrategy]
+  providers: [AuthService, HeaderApiKeyStrategy],
 })
 export class AuthModule {}

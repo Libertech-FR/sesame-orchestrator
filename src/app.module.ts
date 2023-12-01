@@ -3,12 +3,13 @@ import { BullModule } from '@nestjs/bullmq';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CoreModule } from './core/core.module';
 import { ManagementModule } from './management/management.module';
+import config from './config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [],
+      load: [config],
     }),
     BullModule.forRootAsync({
       imports: [ConfigModule],

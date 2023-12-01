@@ -61,7 +61,7 @@ export default (): ConfigInstance => ({
   secret: process.env.SECRET || 'mySecret',
   swagger: {
     path: process.env.SWAGGER_PATH || '/swagger',
-    api: process.env.SWAGGER_API || '/swagger.json',
+    api: process.env.SWAGGER_API || '/swagger/json',
     options: {
       swaggerOptions: {
         persistAuthorization: true,

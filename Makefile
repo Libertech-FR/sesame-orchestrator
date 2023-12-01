@@ -14,6 +14,7 @@ dev: ## Run development server
 		--use-aliases \
 		--name $(DEV_CONTAINER_NAME) \
 		$(DEV_CONTAINER_NAME) yarn start:dev
+	@docker logs -f $(DEV_CONTAINER_NAME)
 
 exec: ## Execute a command in the development container
 	@docker compose run -it --rm $(DEV_CONTAINER_NAME) bash
@@ -28,3 +29,11 @@ dbs: ## Run dependencies for development
 stop: ## Stop all containers
 	@docker compose down --remove-orphans
 	@docker compose rm -f
+
+stop-dev: ## Stop development container
+	@docker compose down $(DEV_CONTAINER_NAME) --remove-orphans
+	@docker compose rm -f $(DEV_CONTAINER_NAME)
+
+stop-dbs: ## Stop dependencies for development
+	@docker compose down $(APPNAME)-redis $(APPNAME)-mongo --remove-orphans
+	@docker compose rm -f $(APPNAME)-redis $(APPNAME)-mongo

@@ -6,9 +6,9 @@ import { AskTokenDto } from './dto/ask-token.dto';
 import Redis from 'ioredis';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { InjectRedis } from '@nestjs-modules/ioredis';
-import { QueueProcessorService } from '~/core/queue/queue.processor.service';
+import { AbstractQueueProcessor } from '~/_common/abstracts/abstract.queue.processor';
 @Injectable()
-export class PasswdService extends QueueProcessorService {
+export class PasswdService extends AbstractQueueProcessor {
   constructor(
     protected readonly configService: ConfigService,
     @InjectRedis() protected readonly redis: Redis,

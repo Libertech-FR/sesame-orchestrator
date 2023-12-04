@@ -2,7 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { Queue, QueueEvents } from 'bullmq';
 import Redis from 'ioredis';
 
-export abstract class QueueProcessorService {
+export abstract class AbstractQueueProcessor {
   protected readonly queue: Queue;
   protected readonly queueEvents: QueueEvents;
   public constructor(

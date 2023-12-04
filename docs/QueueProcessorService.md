@@ -44,10 +44,10 @@ import Redis from 'ioredis';
 import { InjectRedis } from 'nestjs-ioredis';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
-import { QueueProcessorService } from './queue-processor.service';
+import { AbstractQueueProcessor } from '~/_common/abstracts/abstract.queue.processor';
 
 @Injectable()
-export class ExampleQueueService extends QueueProcessorService {
+export class ExampleQueueService extends AbstractQueueProcessor {
 constructor(
     protected readonly configService: ConfigService,
     @InjectRedis() protected readonly redis: Redis,

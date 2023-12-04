@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { QueueProcessorService } from '../queue/queue.processor.service';
+import { AbstractQueueProcessor } from '~/_common/abstracts/abstract.queue.processor';
 import { Redis } from 'ioredis';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 
 @Injectable()
-export class BackendsService extends QueueProcessorService {
+export class BackendsService extends AbstractQueueProcessor {
   constructor(
     protected readonly configService: ConfigService,
     @InjectRedis() protected readonly redis: Redis,

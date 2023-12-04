@@ -1,42 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Queue, QueueEvents } from 'bullmq';
+import { QueueProcessorService } from '../queue/queue.processor.service';
+import { Redis } from 'ioredis';
+import { InjectRedis } from '@nestjs-modules/ioredis';
 
 @Injectable()
-export class BackendsService {
-  constructor(private readonly configService: ConfigService) {}
+export class BackendsService extends QueueProcessorService {
+  constructor(
+    protected readonly configService: ConfigService,
+    @InjectRedis() protected readonly redis: Redis,
+  ) {
+    super(configService, redis);
+  }
   async list() {
-    const redisConfig = {
-      host: this.configService.get('redis.host'),
-      port: this.configService.get('redis.port'),
-    };
-    const queue = new Queue(this.configService.get('nameQueue'), {
-      connection: redisConfig,
-    });
-    const queueEvents = new QueueEvents(this.configService.get('nameQueue'), {
-      connection: redisConfig,
-    });
-    const job = await queue.add('LISTBACKEND', 'x');
-    queueEvents.on('failed', (errors) => {
+    const job = await this.queue.add('LISTBACKEND', 'x');
+    this.queueEvents.on('failed', (errors) => {
       console.log(errors);
     });
-    return await job.waitUntilFinished(queueEvents, 30000);
+    return await job.waitUntilFinished(this.queueEvents, 30000);
   }
   async alive() {
-    const redisConfig = {
-      host: this.configService.get('redis.host'),
-      port: this.configService.get('redis.port'),
-    };
-    const queue = new Queue(this.configService.get('nameQueue'), {
-      connection: redisConfig,
-    });
-    const queueEvents = new QueueEvents(this.configService.get('nameQueue'), {
-      connection: redisConfig,
-    });
-    const job = await queue.add('PING', 'x');
-    queueEvents.on('failed', (errors) => {
+    const job = await this.queue.add('PING', 'x');
+    this.queueEvents.on('failed', (errors) => {
       console.log(errors);
     });
-    return await job.waitUntilFinished(queueEvents, 30000);
+    return await job.waitUntilFinished(this.queueEvents, 30000);
   }
 }

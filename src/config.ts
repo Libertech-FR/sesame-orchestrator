@@ -35,7 +35,7 @@ export default (): ConfigInstance => ({
   //   password: process.env.REDIS_PASSWORD || '',
   // },
   ioredis: {
-    uri: process.env.REDIS_URI || 'redis://localhost:6379',
+    uri: process.env.REDIS_URI || 'redis://localhost:6379/0',
     options: {
       showFriendlyErrorStack: true,
     },
@@ -46,14 +46,14 @@ export default (): ConfigInstance => ({
       directConnection: true,
     },
     plugins: [
-      {
-        package: 'mongoose-delete',
-        enabled: true,
-        options: {
-          overrideMethods: true,
-          deletedAt: true,
-        },
-      },
+      // {
+      //   package: 'mongoose-delete',
+      //   enabled: true,
+      //   options: {
+      //     overrideMethods: true,
+      //     deletedAt: true,
+      //   },
+      // },
     ],
   },
   logLevel: process.env.LOG_LEVEL || 'info',

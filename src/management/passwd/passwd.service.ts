@@ -1,38 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { Queue, QueueEvents } from 'bullmq';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import { AskTokenDto } from './dto/ask-token.dto';
 import Redis from 'ioredis';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import { QueueProcessorService } from '~/core/queue/queue.processor.service';
 @Injectable()
-export class PasswdService {
-  constructor(private readonly configService: ConfigService) {}
+export class PasswdService extends QueueProcessorService {
+  constructor(
+    protected readonly configService: ConfigService,
+    @InjectRedis() protected readonly redis: Redis,
+  ) {
+    super(configService, redis);
+  }
   async change(passwd: ChangePasswordDto) {
-    const redisConfig = {
-      host: this.configService.get('redis.host'),
-      port: this.configService.get('redis.port'),
-    };
-    const queue = new Queue(this.configService.get('nameQueue'), {
-      connection: redisConfig,
-    });
-    const queueEvents = new QueueEvents(this.configService.get('nameQueue'), {
-      connection: redisConfig,
-    });
-    const job = await queue.add('CHANGEPWD', passwd);
-    queueEvents.on('failed', (errors) => {
+    const job = await this.queue.add('CHANGEPWD', passwd);
+    this.queueEvents.on('failed', (errors) => {
       console.log(errors);
     });
-    return await job.waitUntilFinished(queueEvents, 30000);
+    return await job.waitUntilFinished(this.queueEvents, 30000);
   }
   async askToken(askToken: AskTokenDto) {
-    const redisConfig = {
-      host: this.configService.get('redis.host'),
-      port: this.configService.get('redis.port'),
-      db: 1,
-    };
-    const redis = new Redis(redisConfig);
     const iv = crypto.randomBytes(12).toString('base64');
     const key = crypto.randomBytes(16).toString('hex');
     const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
@@ -45,8 +35,8 @@ export class PasswdService {
     ciphertext += cipher.final('base64');
     const tag = cipher.getAuthTag();
     const tokenStruct = JSON.stringify({ k: key, iv: iv, tag: tag });
-    await redis.set(ciphertext, tokenStruct);
-    await redis.expire(ciphertext, 3600);
+    await this.redis.set(ciphertext, tokenStruct);
+    await this.redis.expire(ciphertext, 3600);
     return ciphertext;
   }
   async verifyToken(token) {
@@ -62,15 +52,9 @@ export class PasswdService {
     }
   }
   async decryptToken(token: string) {
-    const redisConfig = {
-      host: this.configService.get('redis.host'),
-      port: this.configService.get('redis.port'),
-      db: 1,
-    };
-    const redis = new Redis(redisConfig);
-    const ok = await redis.exists(token);
+    const ok = await this.redis.exists(token);
     if (ok === 1) {
-      const result = await redis.get(token);
+      const result = await this.redis.get(token);
       const cypherData = JSON.parse(result);
       console.log(cypherData);
       const decipher = crypto.createDecipheriv(
@@ -82,7 +66,7 @@ export class PasswdService {
       const plaintext = decipher.update(token, 'base64', 'ascii');
       console.log('texte : ' + plaintext);
       //delete key
-      //redis.del([token])
+      //this.redis.del([token])
       return JSON.parse(plaintext);
     } else {
       return {};
@@ -94,22 +78,12 @@ export class PasswdService {
     if (Object.keys(tokenData).length === 0) {
       return { status: 1, error: 'invalid token' };
     }
-    const redisConfig = {
-      host: this.configService.get('redis.host'),
-      port: this.configService.get('redis.port'),
-    };
-    const queue = new Queue(this.configService.get('nameQueue'), {
-      connection: redisConfig,
-    });
-    const queueEvents = new QueueEvents(this.configService.get('nameQueue'), {
-      connection: redisConfig,
-    });
     const backendData = { uid: tokenData.uid, newPassword: data.newPassword };
-    const job = await queue.add('RESETPWD', backendData);
-    queueEvents.on('failed', (errors) => {
+    const job = await this.queue.add('RESETPWD', backendData);
+    this.queueEvents.on('failed', (errors) => {
       console.log('Erreur queue');
       console.log(errors);
     });
-    return await job.waitUntilFinished(queueEvents, 30000);
+    return await job.waitUntilFinished(this.queueEvents, 30000);
   }
 }

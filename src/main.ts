@@ -10,7 +10,7 @@ declare const module: any;
   });
   if (process.env.production != 'production') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require('./swagger').default(app);
+    (await import('./swagger')).default(app);
   }
   await app.listen(3000);
   if (module.hot) {

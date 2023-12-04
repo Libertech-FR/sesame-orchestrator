@@ -15,6 +15,20 @@ dev: ## Run development server
 		--name $(DEV_CONTAINER_NAME) \
 		$(DEV_CONTAINER_NAME) yarn start:dev
 
+dbs: ## Run dependencies for development
+	@docker volume create $(APPNAME)-redis
+	@docker run -d --rm \
+		--name $(APPNAME)-redis \
+		-v $(APPNAME)-redis:/data \
+		--network dev \
+		-p 6379:6379 \
+		--health-interval=5s \
+		--health-timeout=3s \
+		--health-start-period=5s \
+		--health-retries=3 \
+		--health-cmd="redis-cli ping || exit 1" \
+		redis || true
+
 exec: ## Execute a command in the development container
 	@docker compose run -it --rm $(DEV_CONTAINER_NAME) bash
 

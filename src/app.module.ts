@@ -30,10 +30,7 @@ import { RedisOptions } from 'ioredis';
       useFactory: async (config: ConfigService) => {
         for (const plugin of config.get<MongoosePlugin[]>('mongoose.plugins')) {
           import(plugin.package).then((plugin) => {
-            mongoose.plugin(
-              plugin.default ? plugin.default : plugin,
-              plugin.options,
-            );
+            mongoose.plugin(plugin.default ? plugin.default : plugin, plugin.options);
           });
         }
         return {

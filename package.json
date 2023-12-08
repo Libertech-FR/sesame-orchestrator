@@ -18,9 +18,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "schematics:inherit": "nest generate -c @kradihsoy/lt-schematics inherit"
   },
   "dependencies": {
+    "@kradihsoy/lt-schematics": "^1.0.13",
     "@nestjs-modules/ioredis": "^1.0.1",
     "@nestjs/bullmq": "^10.0.1",
     "@nestjs/common": "^10.1.3",
@@ -30,6 +32,7 @@
     "@nestjs/mongoose": "^10.0.2",
     "@nestjs/passport": "^10.0.2",
     "@nestjs/platform-express": "^10.0.0",
+    "@streamkits/nestjs_module_scrud": "^0.0.16",
     "bullmq": "^4.14.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
@@ -42,7 +45,9 @@
     "radash": "^11.0.0",
     "reflect-metadata": "^0.1.13",
     "request-ip": "^3.3.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "yaml": "^2.3.4",
+    "yup": "^1.3.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.2.1",

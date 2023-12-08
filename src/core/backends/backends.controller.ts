@@ -10,7 +10,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 
 @Controller('backends')
-@ApiTags('backends')
+@ApiTags('core')
 export class BackendsController {
   private readonly logger = new Logger(BackendsController.name);
 
@@ -19,8 +19,8 @@ export class BackendsController {
   @Get('list')
   @ApiOperation({ summary: 'List backends from daemon' })
   @ApiResponse({ status: 200, description: 'List ok ' })
-  // @ApiBearerAuth()
-  // @UseGuards(AuthGuard('api-key'))
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('api-key'))
   async list(@Res() res: Response): Promise<Response> {
     const backend = await this.backendsService.list();
     return res.status(200).json(backend);
@@ -28,8 +28,8 @@ export class BackendsController {
   @Get('alive')
   @ApiOperation({ summary: 'test backends ' })
   @ApiResponse({ status: 200, description: 'command executed ' })
-  // @ApiBearerAuth()
-  // @UseGuards(AuthGuard('api-key'))
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('api-key'))
   async alive(@Res() res: Response): Promise<Response> {
     const backend = await this.backendsService.alive();
     return res.status(200).json(backend);

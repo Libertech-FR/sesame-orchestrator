@@ -38,7 +38,7 @@ export class inetOrgPerson {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   uid: string;
 
   @Prop({ required: true })

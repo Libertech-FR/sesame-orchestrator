@@ -10,7 +10,7 @@ import { AdditionalFieldsPart } from '../_schemas/_parts/additionalFields.part.s
 export class IdentitiesValidationService {
   constructor() {}
 
-  async validate(data: AdditionalFieldsPart): Promise<any> {
+  async validate(data: AdditionalFieldsPart): Promise<object> {
     const objectClasses = data.objectClasses;
     const attributes = data.attributes;
     const attributesKeys = Object.keys(attributes);
@@ -62,23 +62,30 @@ export class IdentitiesValidationService {
     return Promise.resolve(construct(validations));
   }
 
-  private getValidator(type, required = false) {
-    let validator = null;
+  private getValidator(type, required = false): yup.AnyObject {
+    let validator: yup.AnyObject;
     switch (type) {
       case 'string':
         validator = yup.string();
+        break;
       case 'number':
         validator = yup.number();
+        break;
       case 'boolean':
         validator = yup.boolean();
+        break;
       case 'date':
         validator = yup.date();
+        break;
       case 'array':
         validator = yup.array();
+        break;
       case 'object':
         validator = yup.object();
+        break;
       default:
         validator = yup.string();
+        break;
     }
 
     if (required) {
@@ -88,8 +95,8 @@ export class IdentitiesValidationService {
     return validator;
   }
 
-  async createSchema(attributes: ConfigObjectAttributeDTO[]) {
-    const schema = attributes.reduce((acc, attribute) => {
+  async createSchema(attributes: ConfigObjectAttributeDTO[]): Promise<yup.ObjectSchema<any>> {
+    const schema: { [key: string]: yup.AnySchema } = attributes.reduce((acc, attribute) => {
       acc[attribute.name] = this.getValidator(attribute.type, attribute.required);
       return acc;
     }, {});

@@ -20,8 +20,8 @@ describe('IdentitiesController', () => {
     metadata: {
       createdAt: date,
       createdBy: 'console',
-      lastUpdateAt: date,
-      lastUpdateBy: 'console',
+      lastUpdatedAt: date,
+      lastUpdatedBy: 'console',
     },
     info: [],
   };

@@ -27,11 +27,8 @@ export class PasswdService extends AbstractQueueProcessor {
     const key = crypto.randomBytes(16).toString('hex');
     const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
     const dataStruct = { uid: askToken.uid, mail: askToken.mail };
-    let ciphertext = cipher.update(
-      JSON.stringify(dataStruct),
-      'utf8',
-      'base64',
-    );
+    let ciphertext = cipher.update(JSON.stringify(dataStruct), 'utf8', 'base64');
+
     ciphertext += cipher.final('base64');
     const tag = cipher.getAuthTag();
     const tokenStruct = JSON.stringify({ k: key, iv: iv, tag: tag });
@@ -57,11 +54,7 @@ export class PasswdService extends AbstractQueueProcessor {
       const result = await this.redis.get(token);
       const cypherData = JSON.parse(result);
       console.log(cypherData);
-      const decipher = crypto.createDecipheriv(
-        'aes-256-gcm',
-        cypherData.k,
-        cypherData.iv,
-      );
+      const decipher = crypto.createDecipheriv('aes-256-gcm', cypherData.k, cypherData.iv);
       decipher.setAuthTag(Buffer.from(cypherData.tag, 'base64'));
       const plaintext = decipher.update(token, 'base64', 'ascii');
       console.log('texte : ' + plaintext);

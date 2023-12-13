@@ -16,7 +16,7 @@ declare const module: any;
     (await import('./swagger')).default(app);
   }
   await app.listen(3000, async (): Promise<void> => {
-    Logger.log(`Application is running on: ${await app.getUrl()}`);
+    Logger.log(`Application is running on port: ${process.env.PORT || 3000}`);
   });
   if (module.hot) {
     module.hot.accept();

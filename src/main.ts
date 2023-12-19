@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import ConfigInstance from './config';
+import configInstance from './config';
 import { LogLevel, Logger } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
@@ -11,7 +11,7 @@ declare const module: any;
     cors: true,
   });
   // app.use(rawBodyBuffer(cfg?.application?.bodyParser));
-  if (process.env.production != 'production') {
+  if (process.env.production !== 'production') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     (await import('./swagger')).default(app);
   }
@@ -24,25 +24,15 @@ declare const module: any;
   }
 })();
 
-function setLogLevel(): Array<string> {
-  let loggerOptions = ['error', 'warn', 'fatal'];
-  const configInstance = ConfigInstance();
-  switch (configInstance['logLevel']) {
-    case 'fatal':
-      loggerOptions = ['fatal'];
-      break;
-    case 'error':
-      loggerOptions = ['error', 'fatal'];
-      break;
-    case 'warn':
-      loggerOptions = ['error', 'warn', 'fatal'];
-      break;
-    case 'info':
-      loggerOptions = ['error', 'warn', 'fatal', 'log', 'verbose'];
-      break;
-    case 'debug':
-      loggerOptions = ['error', 'warn', 'fatal', 'log', 'verbose', 'debug'];
-      break;
-  }
-  return loggerOptions;
+function setLogLevel(): LogLevel[] {
+  const config = configInstance();
+  const logLevelMap: Record<LogLevel | string, LogLevel[]> = {
+    fatal: ['fatal'],
+    error: ['error', 'fatal'],
+    warn: ['error', 'fatal', 'warn'],
+    info: ['error', 'fatal', 'warn', 'log'],
+    debug: ['error', 'fatal', 'warn', 'log', 'debug'],
+    verbose: ['error', 'fatal', 'warn', 'log', 'debug', 'verbose'],
+  };
+  return logLevelMap[config.logLevel] || logLevelMap['warn'];
 }

@@ -17,10 +17,7 @@ import { ServiceSchemaInterface } from './interfaces/service.schema.interface';
 import { EventEmitterSeparator } from '~/_common/constants/event-emitter.constant';
 
 @Injectable()
-export abstract class AbstractServiceSchema
-  extends AbstractService
-  implements ServiceSchemaInterface
-{
+export abstract class AbstractServiceSchema extends AbstractService implements ServiceSchemaInterface {
   protected abstract _model: Model<AbstractSchema | Document>;
 
   protected constructor(context?: AbstractServiceContext) {

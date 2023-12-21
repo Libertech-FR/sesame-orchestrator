@@ -15,6 +15,7 @@ import { PartialProjectionType } from '~/_common/types/partial-projection.type';
 import { Response } from 'express';
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
+import { MixedValue } from '~/_common/types/mixed-value.type';
 
 @ApiTags('management')
 @Controller('identities')
@@ -33,7 +34,17 @@ export class IdentitiesController extends AbstractController {
 
   @Post()
   @ApiCreateDecorator(IdentitiesCreateDto, IdentitiesDto)
-  public async create(@Res() res: Response, @Body() body: IdentitiesCreateDto): Promise<Response> {
+  public async create<T>(
+    @Res() res: Response,
+    @Body() body: IdentitiesCreateDto,
+  ): Promise<
+    Response<{
+      statusCode: number;
+      data?: T;
+      message?: string;
+      validations?: { [key: string]: MixedValue };
+    }>
+  > {
     try {
       const data = await this._service.create(body);
       return res.status(HttpStatus.CREATED).json({
@@ -56,16 +67,24 @@ export class IdentitiesController extends AbstractController {
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
   ): Promise<Response> {
-    const [data, total] = await this._service.findAndCount(
-      searchFilterSchema,
-      IdentitiesController.projection,
-      searchFilterOptions,
-    );
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      total,
-      data,
-    });
+    try {
+      const [data, total] = await this._service.findAndCount(
+        searchFilterSchema,
+        IdentitiesController.projection,
+        searchFilterOptions,
+      );
+      return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        total,
+        data,
+      });
+    } catch (error) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: error.message,
+        validations: error.validations,
+      });
+    }
   }
 
   @Get(':_id([0-9a-fA-F]{24})')
@@ -75,11 +94,19 @@ export class IdentitiesController extends AbstractController {
     @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
     @Res() res: Response,
   ): Promise<Response> {
-    const data = await this._service.findById(_id);
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data,
-    });
+    try {
+      const data = await this._service.findById(_id);
+      return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        data,
+      });
+    } catch (error) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: error.message,
+        validations: error.validations,
+      });
+    }
   }
 
   @Patch(':_id([0-9a-fA-F]{24})')
@@ -90,11 +117,19 @@ export class IdentitiesController extends AbstractController {
     @Body() body: IdentitiesUpdateDto,
     @Res() res: Response,
   ): Promise<Response> {
-    const data = await this._service.update(_id, body);
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data,
-    });
+    try {
+      const data = await this._service.update(_id, body);
+      return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        data,
+      });
+    } catch (error) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: error.message,
+        validations: error.validations,
+      });
+    }
   }
 
   @Delete(':_id([0-9a-fA-F]{24})')
@@ -104,10 +139,18 @@ export class IdentitiesController extends AbstractController {
     @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
     @Res() res: Response,
   ): Promise<Response> {
-    const data = await this._service.delete(_id);
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data,
-    });
+    try {
+      const data = await this._service.delete(_id);
+      return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        data,
+      });
+    } catch (error) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: error.message,
+        validations: error.validations,
+      });
+    }
   }
 }

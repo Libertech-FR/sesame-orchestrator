@@ -39,3 +39,6 @@ stop-dev: ## Stop development container
 stop-dbs: ## Stop dependencies for development
 	@docker compose --project-directory docker down $(APPNAME)-redis $(APPNAME)-mongo --remove-orphans
 	@docker compose --project-directory docker rm -f $(APPNAME)-redis $(APPNAME)-mongo
+
+run-test: ## Run tests
+	act --container-architecture="linux/arm64"

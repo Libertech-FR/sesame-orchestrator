@@ -8,6 +8,8 @@ import { Response } from 'express';
 import { getModelToken } from '@nestjs/mongoose';
 import { IdentitiesDtoStub } from './_stubs/identities.dto.stub';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { IdentitiesValidationService } from './validations/identities.validation.service';
+import { IdentitiesValidationModule } from './validations/identities.validation.module';
 
 describe('IdentitiesController', () => {
   let controller: IdentitiesController;
@@ -27,7 +29,12 @@ describe('IdentitiesController', () => {
     identitiesModel = mongoConnection.model<Identities>(Identities.name, IdentitiesSchema);
     const module: TestingModule = await Test.createTestingModule({
       controllers: [IdentitiesController],
-      providers: [IdentitiesService, { provide: getModelToken(Identities.name), useValue: identitiesModel }],
+      providers: [
+        IdentitiesService,
+        { provide: getModelToken(Identities.name), useValue: identitiesModel },
+        IdentitiesValidationService,
+      ],
+      imports: [IdentitiesValidationModule],
     }).compile();
 
     controller = module.get<IdentitiesController>(IdentitiesController);

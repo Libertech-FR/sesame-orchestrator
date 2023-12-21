@@ -103,7 +103,6 @@
   },
   "config": {
     "mongodbMemoryServer": {
-      "debug": true,
       "downloadUrl": "https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-debian10-5.0.22.tgz"
     }
   }

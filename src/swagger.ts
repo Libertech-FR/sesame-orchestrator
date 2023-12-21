@@ -1,8 +1,4 @@
-import {
-  DocumentBuilder,
-  SwaggerCustomOptions,
-  SwaggerModule,
-} from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerCustomOptions, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
@@ -23,9 +19,7 @@ export default function swagger(app: NestExpressApplication) {
     swaggerOptions: {},
   });
 
-  app
-    .getHttpAdapter()
-    .get(config.get<string>('swagger.api'), (req: Request, res: Response) => {
-      res.json(document);
-    });
+  app.getHttpAdapter().get(config.get<string>('swagger.api'), (req: Request, res: Response) => {
+    res.json(document);
+  });
 }

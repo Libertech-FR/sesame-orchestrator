@@ -42,3 +42,6 @@ stop-dbs: ## Stop dependencies for development
 
 run-test: ## Run tests
 	act --container-architecture="linux/arm64"
+
+gen-doc:
+	npx @compodoc/compodoc -p tsconfig.json -s

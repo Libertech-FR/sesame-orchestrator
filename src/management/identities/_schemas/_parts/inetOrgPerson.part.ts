@@ -5,47 +5,47 @@ export class inetOrgPerson {
   @Prop({ required: true })
   cn: string;
 
-  @Prop({ required: true })
-  displayName: string;
-
-  @Prop({ required: true })
-  facsimileTelephoneNumber: string;
-
-  @Prop({ required: true })
-  givenName: string;
-
-  @Prop({ required: true })
-  labeledURI: string;
-
-  @Prop({ required: true })
-  mail: string;
+  @Prop()
+  displayName?: string;
 
   @Prop()
-  mobile: string;
+  facsimileTelephoneNumber?: string;
 
-  @Prop({ required: true })
-  postalAddress: string;
+  @Prop()
+  givenName?: string;
 
-  @Prop({ required: true })
-  preferredLanguage: string;
+  @Prop()
+  labeledURI?: string;
+
+  @Prop()
+  mail?: string;
+
+  @Prop()
+  mobile?: string;
+
+  @Prop()
+  postalAddress?: string;
+
+  @Prop()
+  preferredLanguage?: string;
 
   @Prop({ required: true })
   sn: string;
 
-  @Prop({ required: true })
-  telephoneNumber: string;
+  @Prop()
+  telephoneNumber?: string;
 
-  @Prop({ required: true })
-  title: string;
+  @Prop()
+  title?: string;
 
   @Prop({ required: true, unique: true })
   uid: string;
 
-  @Prop({ required: true })
-  userCertificate: string;
+  @Prop()
+  userCertificate?: string;
 
-  @Prop({ required: true })
-  userPassword: string;
+  @Prop()
+  userPassword?: string;
 }
 
 export const inetOrgPersonSchema = SchemaFactory.createForClass(inetOrgPerson);

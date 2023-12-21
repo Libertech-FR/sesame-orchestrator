@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content class">
+               <div class="content additional-page">
                    <div class="content-data">
 
 
@@ -100,192 +100,73 @@
 
 
 
-<ol class="breadcrumb">
-  <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >additionalFieldsPartDto</li>
-</ol>
 
-<ul class="nav nav-tabs" role="tablist">
-        <li class="nav-item">
-            <a href="#info" 
-                class="nav-link"
-                class="nav-link active"
-                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
-        </li>
-        <li class="nav-item">
-            <a href="#source" 
-                class="nav-link"
-                
-                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
-        </li>
+
+
+
+
+
+
+
+
+<h1>QueueProcessorService</h1>
+<h2>Vue d&#39;ensemble</h2>
+<p><code>QueueProcessorService</code> est une classe abstraite conçue pour fournir une configuration de base pour les services de traitement de files d&#39;attente dans une application NestJS. Elle intègre des fonctionnalités de gestion de file d&#39;attente en utilisant <code>bullmq</code> et Redis.</p>
+<h2>Dépendances</h2>
+<ul>
+<li><strong>ConfigService</strong> : Service de <code>@nestjs/config</code> pour accéder aux variables de configuration.</li>
+<li><strong>Redis</strong> : Client Redis pour interagir avec un serveur Redis.</li>
 </ul>
+<h2>Propriétés</h2>
+<ul>
+<li><code>queue</code> (<code>Queue</code>) : Instance de <code>Queue</code> de <code>bullmq</code>, représentant la file d&#39;attente à traiter.</li>
+<li><code>queueEvents</code> (<code>QueueEvents</code>) : Instance de <code>QueueEvents</code> de <code>bullmq</code>, utilisée pour gérer les événements liés à la file d&#39;attente.</li>
+</ul>
+<h2>Constructeur</h2>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">public constructor(
+  protected readonly config: ConfigService,
+  protected readonly redis: Redis,
+) {
+  this.queue = new Queue(this.config.get(&#39;nameQueue&#39;), {
+    connection: this.redis,
+  });
+  this.queueEvents = new QueueEvents(this.config.get(&#39;nameQueue&#39;), {
+    connection: this.redis,
+  });
+}</code></pre></div><h2>Paramètres</h2>
+<ul>
+<li><code>config (ConfigService)</code>:  Service de configuration pour accéder aux variables de configuration de l&#39;application.</li>
+<li><code>redis (Redis)</code>: Instance du client Redis pour se connecter au serveur Redis.</li>
+</ul>
+<h2>Description</h2>
+<p>Initialise les propriétés <code>queue</code> et <code>queueEvents</code> en créant de nouvelles instances de <code>Queue</code> et <code>QueueEvents</code>, en utilisant la configuration <code>nameQueue</code> pour le nom de la file d&#39;attente et l&#39;instance Redis pour la connexion.</p>
+<h2>Méthodes</h2>
+<p>Ceci est une classe abstraite et n&#39;implémente pas de méthodes. Les classes dérivées doivent implémenter une logique spécifique de traitement de file d&#39;attente.</p>
+<h2>Utilisation</h2>
+<p>Étendez cette classe dans les services qui nécessitent des capacités de traitement de file d&#39;attente. Implémentez la logique de traitement des éléments dans la file d&#39;attente dans le service étendu.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">import Redis from &#39;ioredis&#39;;
+import { InjectRedis } from &#39;nestjs-ioredis&#39;;
+import { ConfigService } from &#39;&#64;nestjs/config&#39;;
+import { Injectable } from &#39;&#64;nestjs/common&#39;;
+import { AbstractQueueProcessor } from &#39;~/_common/abstracts/abstract.queue.processor&#39;;
 
-<div class="tab-content">
-    <div class="tab-pane fade active in" id="info">
-        <p class="comment">
-            <h3>File</h3>
-        </p>
-        <p class="comment">
-            <code>src/management/identities/_dto/_parts/additionalFields.dto.ts</code>
-        </p>
+&#64;Injectable()
+export class ExampleQueueService extends AbstractQueueProcessor {
+constructor(
+    protected readonly configService: ConfigService,
+    &#64;InjectRedis() protected readonly redis: Redis,
+)  {
+        super(configService, redis);
+   }
 
-
-
-
-
-
-            <section data-compodoc="block-index">
-    <h3 id="index">Index</h3>
-    <table class="table table-sm table-bordered index-table">
-        <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                    <span class="modifier"></span>
-                                <a href="#attributes" >attributes</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                <a href="#objectClasses" >objectClasses</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
-
-
-
-
-
-
-        </tbody>
-    </table>
-</section>
-
-
-            <section data-compodoc="block-properties">
-    
-    <h3 id="inputs">
-        Properties
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="attributes"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>attributes</b></span>
-                        <a href="#attributes"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>literal type</code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({type: &#x27;object&#x27;, name: &#x27;attributes&#x27;})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/management/identities/_dto/_parts/additionalFields.dto.ts:16</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="objectClasses"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>objectClasses</b></span>
-                        <a href="#objectClasses"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>string[]</code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({type: &#x27;array&#x27;, items: undefined})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/management/identities/_dto/_parts/additionalFields.dto.ts:10</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-</section>
-
-
-
-
-
-
-
-    </div>
-
-
-    <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-
-export class additionalFieldsPartDto {
-  @ApiProperty({
-    type: &#x27;array&#x27;,
-    items: {
-      type: &#x27;string&#x27;,
-    },
-  })
-  objectClasses: string[];
-
-  @ApiProperty({
-    type: &#x27;object&#x27;,
-    name: &#x27;attributes&#x27;,
-  })
-  attributes: { [key: string]: any };
-}
-</code></pre>
-    </div>
-</div>
-
-
-
-
-
-
-
-
-
+    async example(params: any) {
+        const job = await this.queue.add(&#39;EXEMPLE&#39;, params);
+        this.queueEvents.on(&#39;failed&#39;, (errors) =&gt; {
+            console.log(errors);
+        });
+        return await job.waitUntilFinished(this.queueEvents, 30000);
+    }
+}</code></pre></div>
                    </div><div class="search-results">
     <div class="has-results">
         <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
@@ -311,8 +192,8 @@ export class additionalFieldsPartDto {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'additionalFieldsPartDto.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'additional-page';
+            var COMPODOC_CURRENT_PAGE_URL = 'queue-processor-service.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

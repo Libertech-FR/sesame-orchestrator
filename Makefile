@@ -44,4 +44,4 @@ run-test: ## Run tests
 	act --container-architecture="linux/arm64"
 
 gen-doc:
-	npx @compodoc/compodoc -p tsconfig.json -s -d docs
+	npx @compodoc/compodoc -p tsconfig.json -s -d docs --includes ./markdowns -n "Sesame Orchestrator"

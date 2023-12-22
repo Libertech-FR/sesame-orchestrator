@@ -1,0 +1,20 @@
+name: Lint
+
+on:
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  lint-app:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install app dependencies
+        run: yarn install
+
+      - name: Lint /app
+        run: yarn lint

@@ -1,16 +1,9 @@
 import { applyDecorators, HttpStatus, Type } from '@nestjs/common';
-import {
-  ApiBadRequestResponse,
-  ApiCreatedResponse,
-  ApiExtraModels,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiCreatedResponse, ApiExtraModels, getSchemaPath } from '@nestjs/swagger';
 import { ApiResponseOptions } from '@nestjs/swagger/dist/decorators/api-response.decorator';
 import { ErrorSchemaDto } from '~/_common/dto/error-schema.dto';
 
-export const ApiCreatedResponseDecorator = <
-  TModel extends Type<NonNullable<unknown>>,
->(
+export const ApiCreatedResponseDecorator = <TModel extends Type<NonNullable<unknown>>>(
   model: TModel,
   options?: ApiResponseOptions | null | undefined,
 ) => {

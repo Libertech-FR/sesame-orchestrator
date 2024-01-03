@@ -4,12 +4,13 @@ import { IdentitiesService } from './identities.service';
 import { Identities, IdentitiesSchema } from './_schemas/identities.schema';
 import { HttpStatus } from '@nestjs/common';
 import { Connection, Model, connect } from 'mongoose';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { getModelToken } from '@nestjs/mongoose';
 import { IdentitiesDtoStub } from './_stubs/identities.dto.stub';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { IdentitiesValidationModule } from './validations/identities.validation.module';
+import { MockRequest, MockResponse, createResponse } from 'node-mocks-http';
 
 describe('IdentitiesController', () => {
   let controller: IdentitiesController;
@@ -17,6 +18,8 @@ describe('IdentitiesController', () => {
   let mongod: MongoMemoryServer;
   let mongoConnection: Connection;
   let identitiesModel: Model<Identities>;
+  //let request: MockRequest<Request>;
+  let response: MockResponse<Response>;
 
   beforeAll(async () => {
     mongod = await MongoMemoryServer.create({
@@ -41,6 +44,10 @@ describe('IdentitiesController', () => {
     service = module.get<IdentitiesService>(IdentitiesService);
   }, 1200000);
 
+  beforeEach(() => {
+    response = createResponse();
+  });
+
   afterAll(async () => {
     await mongoConnection.dropDatabase();
     await mongoConnection.close();
@@ -56,23 +63,18 @@ describe('IdentitiesController', () => {
 
   describe('create', () => {
     it('should create an identity', async () => {
-      let res: Response<{
-        statusCode: number;
-        data: Identities;
-      }>;
-      const createIdentity = await controller.create<Identities>(res, IdentitiesDtoStub());
+      const createIdentity = await controller.create(response, IdentitiesDtoStub());
       expect(createIdentity.statusCode).toBe(HttpStatus.CREATED);
-      expect(createIdentity.locals.data.inetOrgPerson).toBe(IdentitiesDtoStub().inetOrgPerson);
-      expect(createIdentity.locals.data.additionalFields).toBe(IdentitiesDtoStub().additionalFields);
+      expect(createIdentity).toHaveProperty('id');
     });
 
     it('should throw an error when creating an identity', async () => {
-      let res: Response;
       jest.spyOn(service, 'create').mockImplementationOnce(() => {
         throw new Error('Error');
       });
-      const createIdentity = await controller.create(res, IdentitiesDtoStub());
+      const createIdentity = await controller.create(response, IdentitiesDtoStub());
       expect(createIdentity.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      expect(createIdentity).toBe('Error');
     });
   });
 });

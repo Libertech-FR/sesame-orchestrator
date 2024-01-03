@@ -16,6 +16,8 @@ import { Response } from 'express';
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { MixedValue } from '~/_common/types/mixed-value.type';
+import { Identities } from './_schemas/identities.schema';
+import { Document } from 'mongoose';
 
 @ApiTags('management')
 @Controller('identities')
@@ -34,19 +36,23 @@ export class IdentitiesController extends AbstractController {
 
   @Post()
   @ApiCreateDecorator(IdentitiesCreateDto, IdentitiesDto)
-  public async create<T>(
-    @Res() res: Response,
+  public async create(
+    @Res()
+    res: Response,
     @Body() body: IdentitiesCreateDto,
   ): Promise<
-    Response<{
-      statusCode: number;
-      data?: T;
-      message?: string;
-      validations?: { [key: string]: MixedValue };
-    }>
+    Response<
+      {
+        statusCode: number;
+        data?: Document<Identities, any, Identities>;
+        message?: string;
+        validations?: MixedValue;
+      },
+      any
+    >
   > {
     try {
-      const data = await this._service.create(body);
+      const data = await this._service.create<Identities>(body);
       return res.status(HttpStatus.CREATED).json({
         statusCode: HttpStatus.CREATED,
         data,

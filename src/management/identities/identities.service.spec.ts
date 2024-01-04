@@ -46,7 +46,6 @@ describe('Identities Service', () => {
       imports: [IdentitiesValidationModule],
     }).compile();
 
-    controller = module.get<IdentitiesController>(IdentitiesController);
     service = module.get<IdentitiesService>(IdentitiesService);
     _id = new Types.ObjectId();
   }, 1200000);

@@ -4,7 +4,7 @@ import { PasswdController } from './passwd.controller';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [PasswdModule, ConfigModule],
+  imports: [ConfigModule],
   controllers: [PasswdController],
   providers: [PasswdService],
 })

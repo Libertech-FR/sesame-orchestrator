@@ -4,6 +4,7 @@ import { BackendsService } from './backends.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisOptions } from 'ioredis';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { BullModule } from '@nestjs/bullmq';
 
 describe('BackendsController', () => {
   let controller: BackendsController;
@@ -21,6 +22,16 @@ describe('BackendsController', () => {
             config: {
               ...config.get<RedisOptions>('ioredis.options'),
               url: config.get<string>('ioredis.uri'),
+            },
+          }),
+        }),
+        BullModule.forRootAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: async (configService: ConfigService) => ({
+            connection: {
+              host: configService.get('ioredis.host'),
+              port: configService.get('ioredis.port'),
             },
           }),
         }),

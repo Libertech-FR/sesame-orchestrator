@@ -4,6 +4,7 @@ import { PasswdService } from './passwd.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { RedisOptions } from 'ioredis';
+import { BullModule } from '@nestjs/bullmq';
 
 describe('PasswdController', () => {
   let controller: PasswdController;
@@ -21,6 +22,16 @@ describe('PasswdController', () => {
             config: {
               ...config.get<RedisOptions>('ioredis.options'),
               url: config.get<string>('ioredis.uri'),
+            },
+          }),
+        }),
+        BullModule.forRootAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: async (configService: ConfigService) => ({
+            connection: {
+              host: configService.get('ioredis.host'),
+              port: configService.get('ioredis.port'),
             },
           }),
         }),

@@ -7,9 +7,10 @@ import { IdentitiesValidationModule } from './validations/identities.validation.
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { FilterOptions } from '@streamkits/nestjs_module_scrud';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Connection, Model, Types, connect } from 'mongoose';
+import { Connection, Model, Types, connect, Schema } from 'mongoose';
 import { MockResponse, createResponse } from 'node-mocks-http';
 import { Response } from 'express';
+import { IdentitiesDtoStub } from './_stubs/identities.dto.stub';
 
 describe('Identities Service', () => {
   let service: IdentitiesService;
@@ -69,5 +70,23 @@ describe('Identities Service', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('create', () => {
+    it('should create a identity', async () => {
+      const stub = { ...IdentitiesDtoStub(), _id: _id.toHexString() };
+      let identity = new Identities();
+      identity = { ...stub } as Identities;
+      jest.spyOn(service, 'create').mockResolvedValueOnce(identity);
+      const result = await service.create(stub);
+      expect(result).toEqual(stub);
+    });
+
+    it('should throw an error when creating a identity', async () => {
+      jest.spyOn(service, 'create').mockImplementationOnce(() => {
+        throw new Error('Error');
+      });
+      await expect(service.create(IdentitiesDtoStub())).rejects.toThrow();
+    });
   });
 });

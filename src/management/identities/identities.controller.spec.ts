@@ -4,7 +4,7 @@ import { IdentitiesController } from './identities.controller';
 import { IdentitiesService } from './identities.service';
 import { Identities, IdentitiesSchema } from './_schemas/identities.schema';
 import { HttpStatus } from '@nestjs/common';
-import { Connection, Model, ObjectId, Types, connect } from 'mongoose';
+import { Connection, Model, Types, connect } from 'mongoose';
 import { Response } from 'express';
 import { getModelToken } from '@nestjs/mongoose';
 import { IdentitiesDtoStub } from './_stubs/identities.dto.stub';

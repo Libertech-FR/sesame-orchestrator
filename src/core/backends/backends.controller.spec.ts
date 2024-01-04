@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BackendsController } from './backends.controller';
 import { BackendsService } from './backends.service';
+import { ConfigModule } from '@nestjs/config';
 
 describe('BackendsController', () => {
   let controller: BackendsController;
@@ -9,6 +10,7 @@ describe('BackendsController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BackendsController],
       providers: [BackendsService],
+      imports: [ConfigModule],
     }).compile();
 
     controller = module.get<BackendsController>(BackendsController);

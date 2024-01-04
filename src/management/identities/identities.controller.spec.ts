@@ -1,17 +1,17 @@
-import { FilterOptions, SearchFilterOptions } from '@streamkits/nestjs_module_scrud';
+import { FilterOptions } from '@streamkits/nestjs_module_scrud';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdentitiesController } from './identities.controller';
 import { IdentitiesService } from './identities.service';
 import { Identities, IdentitiesSchema } from './_schemas/identities.schema';
 import { HttpStatus } from '@nestjs/common';
-import { Connection, Model, Types, connect } from 'mongoose';
-import { Response, Request } from 'express';
+import { Connection, Model, ObjectId, Types, connect } from 'mongoose';
+import { Response } from 'express';
 import { getModelToken } from '@nestjs/mongoose';
 import { IdentitiesDtoStub } from './_stubs/identities.dto.stub';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { IdentitiesValidationModule } from './validations/identities.validation.module';
-import { MockRequest, MockResponse, createResponse } from 'node-mocks-http';
+import { MockResponse, createResponse } from 'node-mocks-http';
 
 describe('IdentitiesController', () => {
   let controller: IdentitiesController;
@@ -28,7 +28,7 @@ describe('IdentitiesController', () => {
       'metadata.createdAt': 'asc',
     },
   } as FilterOptions;
-  const _id = new Types.ObjectId();
+  let _id: Types.ObjectId;
 
   beforeAll(async () => {
     mongod = await MongoMemoryServer.create({
@@ -51,6 +51,7 @@ describe('IdentitiesController', () => {
 
     controller = module.get<IdentitiesController>(IdentitiesController);
     service = module.get<IdentitiesService>(IdentitiesService);
+    _id = new Types.ObjectId();
   }, 1200000);
 
   beforeEach(() => {
@@ -102,6 +103,8 @@ describe('IdentitiesController', () => {
 
   describe('read', () => {
     it('should find an identity', async () => {
+      const newIdentity = await service.create<Identities>(IdentitiesDtoStub());
+      const _id = newIdentity.id;
       const findIdentity = await controller.read(_id, response);
       expect(findIdentity.statusCode).toBe(HttpStatus.OK);
     });
@@ -117,6 +120,8 @@ describe('IdentitiesController', () => {
 
   describe('update', () => {
     it('should update an identity', async () => {
+      const newIdentity = await service.create<Identities>(IdentitiesDtoStub());
+      const _id = newIdentity.id;
       const updateIdentity = await controller.update(_id, IdentitiesDtoStub(), response);
       expect(updateIdentity.statusCode).toBe(HttpStatus.OK);
     });
@@ -132,6 +137,8 @@ describe('IdentitiesController', () => {
 
   describe('delete', () => {
     it('should delete an identity', async () => {
+      const newIdentity = await service.create<Identities>(IdentitiesDtoStub());
+      const _id = newIdentity.id;
       const deleteIdentity = await controller.remove(_id, response);
       expect(deleteIdentity.statusCode).toBe(HttpStatus.OK);
     });

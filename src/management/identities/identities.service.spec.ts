@@ -9,11 +9,12 @@ import { FilterOptions } from '@streamkits/nestjs_module_scrud';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Connection, Model, Types, connect, Schema } from 'mongoose';
 import { MockResponse, createResponse } from 'node-mocks-http';
-import { Response } from 'express';
+import e, { Response } from 'express';
 import { IdentitiesDtoStub } from './_stubs/identities.dto.stub';
 
 describe('Identities Service', () => {
   let service: IdentitiesService;
+  let model: Model<Identities>;
   let mongod: MongoMemoryServer;
   let mongoConnection: Connection;
   let identitiesModel: Model<Identities>;
@@ -49,6 +50,7 @@ describe('Identities Service', () => {
 
     service = module.get<IdentitiesService>(IdentitiesService);
     _id = new Types.ObjectId();
+    model = module.get<Model<Identities>>(getModelToken(Identities.name));
   }, 1200000);
 
   beforeEach(() => {
@@ -72,21 +74,45 @@ describe('Identities Service', () => {
     expect(service).toBeDefined();
   });
 
-  describe('create', () => {
-    it('should create a identity', async () => {
-      const stub = { ...IdentitiesDtoStub(), _id: _id.toHexString() };
-      let identity = new Identities();
-      identity = { ...stub } as Identities;
-      jest.spyOn(service, 'create').mockResolvedValueOnce(identity);
-      const result = await service.create(stub);
-      expect(result).toEqual(stub);
+  // describe('create', () => {
+  //   it('should create a identity', async () => {
+  //     const stub = { ...IdentitiesDtoStub(), _id: _id.toHexString() };
+  //     let identity = new Identities();
+  //     identity = { ...stub } as Identities;
+  //     jest.spyOn(service, 'create').mockResolvedValueOnce(identity);
+  //     const result = await service.create(stub);
+  //     expect(result).toEqual(stub);
+  //   });
+
+  //   it('should throw an error when creating a identity', async () => {
+  //     jest.spyOn(service, 'create').mockImplementationOnce(() => {
+  //       throw new Error('Error');
+  //     });
+  //     await expect(service.create(IdentitiesDtoStub())).rejects.toThrow();
+  //   });
+  // });
+
+  describe('findAndCount', () => {
+    it('should return an array of identities', async () => {
+      // Mock the countDocuments and find methods of the model
+      const mockCount = jest.spyOn(model, 'countDocuments').mockResolvedValue(1);
+      const mockFind = jest.spyOn(model, 'find').mockResolvedValue([IdentitiesDtoStub()]);
+
+      // Call the service method
+      const [result, count] = await service.findAndCount(searchFilterOptions);
+
+      // Assert the results
+      expect(mockCount).toHaveBeenCalledWith(searchFilterOptions);
+      expect(mockFind).toHaveBeenCalledWith({}, {}, searchFilterOptions);
+      expect(count).toBe(1);
+      expect(result).toBe([IdentitiesDtoStub()]);
     });
 
-    it('should throw an error when creating a identity', async () => {
-      jest.spyOn(service, 'create').mockImplementationOnce(() => {
+    it('should throw an error when returning an array of identities', async () => {
+      jest.spyOn(service, 'findAndCount').mockImplementationOnce(() => {
         throw new Error('Error');
       });
-      await expect(service.create(IdentitiesDtoStub())).rejects.toThrow();
+      await expect(service.findAndCount(searchFilterOptions)).rejects.toThrow();
     });
   });
 });

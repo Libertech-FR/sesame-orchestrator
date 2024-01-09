@@ -109,8 +109,8 @@ describe('Identities Service', () => {
   describe('findAndCount', () => {
     it('should return an array of identities', async () => {
       // Mock the countDocuments and find methods of the model
-      const mockCount = jest.spyOn(identitiesModel, 'countDocuments').mockResolvedValue(1);
-      const mockFind = jest.spyOn(identitiesModel, 'find').mockResolvedValue([IdentitiesDtoStub()]);
+      const mockCount = identitiesModel.countDocuments().exec as jest.Mock;
+      const mockFind = identitiesModel.find().exec as jest.Mock;
 
       // Call the service method
       const [result, count] = await service.findAndCount(searchFilterOptions);

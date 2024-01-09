@@ -379,6 +379,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/MetadataPartDto.html" data-type="entity-link" >MetadataPartDto</a>
                             </li>
                             <li class="link">
+                                <a href="classes/MongoDbTestInstance.html" data-type="entity-link" >MongoDbTestInstance</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/MongooseValidationFilter.html" data-type="entity-link" >MongooseValidationFilter</a>
                             </li>
                             <li class="link">

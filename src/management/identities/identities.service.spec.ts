@@ -122,7 +122,7 @@ describe('Identities Service', () => {
 
       // Assert the results
       expect(identitiesModel.countDocuments).toHaveBeenCalledWith(searchFilterOptions);
-      expect(identitiesModel.find).toHaveBeenCalledWith(searchFilterOptions, {}, {});
+      expect(identitiesModel.find).toHaveBeenCalledWith(searchFilterOptions);
       expect(count).toBe(1);
       expect(result).toBe([IdentitiesDtoStub()]);
     });

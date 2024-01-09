@@ -11,6 +11,7 @@ import { Connection, Model, Types, connect } from 'mongoose';
 import { MockResponse, createResponse } from 'node-mocks-http';
 import { Response } from 'express';
 import { IdentitiesDtoStub } from './_stubs/identities.dto.stub';
+import { exec } from 'child_process';
 
 describe('Identities Service', () => {
   let service: IdentitiesService;
@@ -39,13 +40,23 @@ describe('Identities Service', () => {
     const uri = await mongod.getUri();
     mongoConnection = (await connect(uri)).connection;
     identitiesModel = mongoConnection.model<Identities>(Identities.name, IdentitiesSchema);
+  }, 1200000);
+
+  beforeEach(async () => {
+    identitiesModel.countDocuments = jest.fn().mockResolvedValue(1);
+    identitiesModel.find = jest.fn().mockResolvedValue([IdentitiesDtoStub()]);
+    identitiesModel.create = jest.fn().mockResolvedValue(IdentitiesDtoStub());
+    identitiesModel.findOne = jest.fn().mockResolvedValue(IdentitiesDtoStub());
 
     // Mock the module
     const module: TestingModule = await Test.createTestingModule({
       controllers: [IdentitiesController],
       providers: [
         IdentitiesService,
-        { provide: getModelToken(Identities.name), useValue: identitiesModel },
+        {
+          provide: getModelToken(Identities.name),
+          useValue: identitiesModel,
+        },
         IdentitiesValidationService,
       ],
       imports: [IdentitiesValidationModule],
@@ -55,9 +66,6 @@ describe('Identities Service', () => {
     service = module.get<IdentitiesService>(IdentitiesService);
     _id = new Types.ObjectId();
     // model = module.get<Model<Identities>>(getModelToken(Identities.name));
-  }, 1200000);
-
-  beforeEach(() => {
     response = createResponse();
   });
 

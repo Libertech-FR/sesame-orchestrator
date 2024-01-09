@@ -7,14 +7,14 @@ import { IdentitiesValidationModule } from './validations/identities.validation.
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { FilterOptions } from '@streamkits/nestjs_module_scrud';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Connection, Model, Types, connect, Schema } from 'mongoose';
+import { Connection, Model, Types, connect } from 'mongoose';
 import { MockResponse, createResponse } from 'node-mocks-http';
-import e, { Response } from 'express';
+import { Response } from 'express';
 import { IdentitiesDtoStub } from './_stubs/identities.dto.stub';
 
 describe('Identities Service', () => {
   let service: IdentitiesService;
-  let model: Model<Identities>;
+  // let model: Model<Identities>;
   let mongod: MongoMemoryServer;
   let mongoConnection: Connection;
   let identitiesModel: Model<Identities>;
@@ -30,6 +30,7 @@ describe('Identities Service', () => {
   let _id: Types.ObjectId;
 
   beforeAll(async () => {
+    // Create a MongoDB instance
     mongod = await MongoMemoryServer.create({
       binary: {
         version: '5.0.22',
@@ -38,6 +39,8 @@ describe('Identities Service', () => {
     const uri = await mongod.getUri();
     mongoConnection = (await connect(uri)).connection;
     identitiesModel = mongoConnection.model<Identities>(Identities.name, IdentitiesSchema);
+
+    // Mock the module
     const module: TestingModule = await Test.createTestingModule({
       controllers: [IdentitiesController],
       providers: [
@@ -48,9 +51,10 @@ describe('Identities Service', () => {
       imports: [IdentitiesValidationModule],
     }).compile();
 
+    // Get the service
     service = module.get<IdentitiesService>(IdentitiesService);
     _id = new Types.ObjectId();
-    model = module.get<Model<Identities>>(getModelToken(Identities.name));
+    // model = module.get<Model<Identities>>(getModelToken(Identities.name));
   }, 1200000);
 
   beforeEach(() => {
@@ -68,6 +72,7 @@ describe('Identities Service', () => {
     Object.keys(collections).forEach(async (key) => {
       await collections[key].deleteMany({});
     });
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -95,8 +100,8 @@ describe('Identities Service', () => {
   describe('findAndCount', () => {
     it('should return an array of identities', async () => {
       // Mock the countDocuments and find methods of the model
-      const mockCount = jest.spyOn(model, 'countDocuments').mockResolvedValue(1);
-      const mockFind = jest.spyOn(model, 'find').mockResolvedValue([IdentitiesDtoStub()]);
+      const mockCount = jest.spyOn(identitiesModel, 'countDocuments').mockResolvedValue(1);
+      const mockFind = jest.spyOn(identitiesModel, 'find').mockResolvedValue([IdentitiesDtoStub()]);
 
       // Call the service method
       const [result, count] = await service.findAndCount(searchFilterOptions);

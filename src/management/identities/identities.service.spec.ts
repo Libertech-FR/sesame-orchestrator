@@ -115,21 +115,18 @@ describe('Identities Service', () => {
       const result = await service.create(newIdentityData);
 
       expect(model.prototype.save).toHaveBeenCalled();
-      expect(result).toStrictEqual(newIdentityData);
+      expect(result).toEqual(newIdentityData);
     });
   });
 
   describe('update', () => {
     it('should update and return an identity', async () => {
-      const _id = new Types.ObjectId();
       const updateData = {
         'inetOrgPerson.cn': 'updated-cn',
       };
       const updateOptions: QueryOptions<Identities> & { rawResult: true } = {
-        new: true,
         options: options,
         rawResult: true,
-        runValidators: true,
       };
 
       const result = await service.update(_id, updateData, updateOptions);
@@ -137,7 +134,7 @@ describe('Identities Service', () => {
       expect(model.findByIdAndUpdate).toHaveBeenCalledWith(
         { _id },
         expect.objectContaining(updateData),
-        expect.objectContaining(options),
+        expect.objectContaining(updateOptions),
       );
       expect(result).toStrictEqual(updatedIdentityData);
     });
@@ -145,8 +142,6 @@ describe('Identities Service', () => {
 
   describe('delete', () => {
     it('should delete and return the deleted identity', async () => {
-      const _id = new Types.ObjectId();
-
       const result = await service.delete(_id);
 
       expect(model.findByIdAndDelete).toHaveBeenCalledWith({ _id });

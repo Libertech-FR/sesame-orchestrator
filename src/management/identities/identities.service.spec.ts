@@ -117,16 +117,12 @@ describe('Identities Service', () => {
 
   describe('findAndCount', () => {
     it('should return an array of identities', async () => {
-      // Mock the countDocuments and find methods of the model
-      const mockCount = identitiesModel.countDocuments;
-      const mockFind = identitiesModel.find;
-
       // Call the service method
       const [result, count] = await service.findAndCount(searchFilterOptions);
 
       // Assert the results
-      expect(mockCount).toHaveBeenCalledWith(searchFilterOptions);
-      expect(mockFind).toHaveBeenCalledWith({}, {}, searchFilterOptions);
+      expect(identitiesModel.countDocuments).toHaveBeenCalledWith(searchFilterOptions);
+      expect(identitiesModel.find).toHaveBeenCalledWith(searchFilterOptions, {}, {});
       expect(count).toBe(1);
       expect(result).toBe([IdentitiesDtoStub()]);
     });

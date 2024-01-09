@@ -144,7 +144,7 @@ describe('Identities Service', () => {
     it('should delete and return the deleted identity', async () => {
       const result = await service.delete(_id);
 
-      expect(model.findByIdAndDelete).toHaveBeenCalledWith({ _id });
+      expect(model.findByIdAndDelete).toHaveBeenCalledWith({ _id }, expect.anything());
       expect(result).toStrictEqual(newIdentityData);
     });
   });

@@ -130,7 +130,7 @@ describe('Identities Service', () => {
       expect(identitiesModel.countDocuments).toHaveBeenCalledWith(filter);
       expect(identitiesModel.find).toHaveBeenCalledWith(filter, projection, options);
       expect(count).toBe(1);
-      expect(result).toBe([IdentitiesDtoStub()]);
+      expect(result).toStrictEqual([IdentitiesDtoStub()]);
     });
 
     // it('should throw an error when returning an array of identities', async () => {

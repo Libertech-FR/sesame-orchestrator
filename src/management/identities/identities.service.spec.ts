@@ -122,7 +122,13 @@ describe('Identities Service', () => {
   describe('update', () => {
     it('should update and return an identity', async () => {
       const _id = new Types.ObjectId();
-      const updateData = { 'inetOrgPerson.cn': 'updated-cn' };
+      const updateData = {
+        'inetOrgPerson.cn': 'updated-cn',
+        $set: {
+          'metadata.lastUpdatedBy': 'anonymous',
+          'metadata.lastUpdatedAt': new Date(),
+        },
+      };
       const updateOptions: QueryOptions<Identities> & { rawResult: true } = { options, rawResult: true };
 
       const result = await service.update(_id, updateData, updateOptions);

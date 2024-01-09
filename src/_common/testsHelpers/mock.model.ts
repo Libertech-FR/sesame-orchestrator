@@ -9,6 +9,10 @@ export function createMockModel<T>(model: Model<T>, stub, updatedStub?): Model<T
     exec: jest.fn().mockResolvedValueOnce([stub]),
   }));
 
+  model.findOne = jest.fn().mockImplementationOnce(() => ({
+    exec: jest.fn().mockResolvedValueOnce(stub),
+  }));
+
   model.findById = jest.fn().mockImplementationOnce(() => ({
     exec: jest.fn().mockResolvedValueOnce(stub),
   }));

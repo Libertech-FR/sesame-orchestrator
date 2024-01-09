@@ -1,4 +1,3 @@
-import { exec } from 'child_process';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdentitiesService } from './identities.service';
 import { getModelToken } from '@nestjs/mongoose';
@@ -43,11 +42,21 @@ describe('Identities Service', () => {
   }, 1200000);
 
   beforeEach(async () => {
-    identitiesModel.countDocuments().exec = jest.fn().mockResolvedValue(1);
-    identitiesModel.find().exec = jest.fn().mockResolvedValue([IdentitiesDtoStub()]);
-    identitiesModel.findById(_id).exec = jest.fn().mockResolvedValue(IdentitiesDtoStub());
-    identitiesModel.findByIdAndUpdate(_id, IdentitiesDtoStub()).exec = jest.fn().mockResolvedValue(IdentitiesDtoStub());
-    identitiesModel.findByIdAndDelete(_id).exec = jest.fn().mockResolvedValue(IdentitiesDtoStub());
+    identitiesModel.countDocuments = jest.fn().mockImplementationOnce(() => ({
+      exec: jest.fn().mockResolvedValueOnce(1),
+    }));
+    identitiesModel.find = jest.fn().mockImplementationOnce(() => ({
+      exec: jest.fn().mockResolvedValueOnce([IdentitiesDtoStub()]),
+    }));
+    identitiesModel.findById = jest.fn().mockImplementationOnce(() => ({
+      exec: jest.fn().mockResolvedValueOnce(IdentitiesDtoStub()),
+    }));
+    identitiesModel.findByIdAndUpdate = jest.fn().mockImplementationOnce(() => ({
+      exec: jest.fn().mockResolvedValueOnce(IdentitiesDtoStub()),
+    }));
+    identitiesModel.findByIdAndDelete = jest.fn().mockImplementationOnce(() => ({
+      exec: jest.fn().mockResolvedValueOnce(IdentitiesDtoStub()),
+    }));
 
     // Mock the module
     const module: TestingModule = await Test.createTestingModule({
@@ -109,8 +118,8 @@ describe('Identities Service', () => {
   describe('findAndCount', () => {
     it('should return an array of identities', async () => {
       // Mock the countDocuments and find methods of the model
-      const mockCount = identitiesModel.countDocuments().exec as jest.Mock;
-      const mockFind = identitiesModel.find().exec as jest.Mock;
+      const mockCount = identitiesModel.countDocuments;
+      const mockFind = identitiesModel.find;
 
       // Call the service method
       const [result, count] = await service.findAndCount(searchFilterOptions);

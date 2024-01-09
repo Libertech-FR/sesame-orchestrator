@@ -1,3 +1,4 @@
+import { IdentitiesUpdateDto } from './../_dto/identities.dto';
 import { IdentitiesDto } from '~/management/identities/_dto/identities.dto';
 import { IdentityLifecycle } from '~/management/identities/_enums/lifecycle.enum';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
@@ -9,6 +10,17 @@ export const IdentitiesDtoStub = (): IdentitiesDto => {
     state: IdentityState.TO_CREATE,
     lifecycle: IdentityLifecycle.INACTIVE,
     inetOrgPerson: inetOrgPersonDtoStub(),
+    additionalFields: additionalFieldsPartDtoStub(),
+  };
+};
+
+export const IdentitiesUpdateDtoStub = (): IdentitiesUpdateDto => {
+  const inetOrgPerson = inetOrgPersonDtoStub();
+  inetOrgPerson.cn = 'updated-cn';
+  return {
+    state: IdentityState.TO_CREATE,
+    lifecycle: IdentityLifecycle.INACTIVE,
+    inetOrgPerson,
     additionalFields: additionalFieldsPartDtoStub(),
   };
 };

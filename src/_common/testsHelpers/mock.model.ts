@@ -1,6 +1,6 @@
 import { Model } from 'mongoose';
 
-export function createMockModel<T>(model: Model<T>, stub): Model<T> {
+export function createMockModel<T>(model: Model<T>, stub, updatedStub?): Model<T> {
   model.countDocuments = jest.fn().mockImplementationOnce(() => ({
     exec: jest.fn().mockResolvedValueOnce(1),
   }));
@@ -14,7 +14,7 @@ export function createMockModel<T>(model: Model<T>, stub): Model<T> {
   }));
 
   model.findByIdAndUpdate = jest.fn().mockImplementationOnce(() => ({
-    exec: jest.fn().mockResolvedValueOnce(stub()),
+    exec: jest.fn().mockResolvedValueOnce(updatedStub()),
   }));
 
   model.findByIdAndDelete = jest.fn().mockImplementationOnce(() => ({

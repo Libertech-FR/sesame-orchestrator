@@ -1,4 +1,3 @@
-// test-mongo.ts
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { connect, Connection } from 'mongoose';
 

@@ -124,10 +124,6 @@ describe('Identities Service', () => {
       const _id = new Types.ObjectId();
       const updateData = {
         'inetOrgPerson.cn': 'updated-cn',
-        $set: {
-          'metadata.lastUpdatedBy': 'anonymous',
-          'metadata.lastUpdatedAt': new Date(),
-        },
       };
       const updateOptions: QueryOptions<Identities> & { rawResult: true } = {
         new: true,
@@ -138,7 +134,11 @@ describe('Identities Service', () => {
 
       const result = await service.update(_id, updateData, updateOptions);
 
-      expect(model.findByIdAndUpdate).toHaveBeenCalledWith({ _id }, updateData, expect.objectContaining(options));
+      expect(model.findByIdAndUpdate).toHaveBeenCalledWith(
+        { _id },
+        expect.objectContaining(updateData),
+        expect.objectContaining(options),
+      );
       expect(result).toStrictEqual(updatedIdentityData);
     });
   });

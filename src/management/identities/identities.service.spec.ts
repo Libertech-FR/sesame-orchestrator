@@ -31,6 +31,7 @@ describe('Identities Service', () => {
 
   beforeAll(async () => {
     // Create a MongoDB instance
+    mongoDbTestInstance = new MongoDbTestInstance();
     await mongoDbTestInstance.start();
     identitiesModel = await mongoDbTestInstance.getModel<Identities>(Identities.name, IdentitiesSchema);
   }, 1200000);

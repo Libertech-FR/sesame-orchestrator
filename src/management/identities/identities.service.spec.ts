@@ -1,3 +1,4 @@
+import { exec } from 'child_process';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdentitiesService } from './identities.service';
 import { getModelToken } from '@nestjs/mongoose';
@@ -11,7 +12,6 @@ import { Connection, Model, Types, connect } from 'mongoose';
 import { MockResponse, createResponse } from 'node-mocks-http';
 import { Response } from 'express';
 import { IdentitiesDtoStub } from './_stubs/identities.dto.stub';
-import { exec } from 'child_process';
 
 describe('Identities Service', () => {
   let service: IdentitiesService;
@@ -43,10 +43,11 @@ describe('Identities Service', () => {
   }, 1200000);
 
   beforeEach(async () => {
-    identitiesModel.countDocuments = jest.fn().mockResolvedValue(1);
-    identitiesModel.find = jest.fn().mockResolvedValue([IdentitiesDtoStub()]);
-    identitiesModel.create = jest.fn().mockResolvedValue(IdentitiesDtoStub());
-    identitiesModel.findOne = jest.fn().mockResolvedValue(IdentitiesDtoStub());
+    identitiesModel.countDocuments().exec = jest.fn().mockResolvedValue(1);
+    identitiesModel.find().exec = jest.fn().mockResolvedValue([IdentitiesDtoStub()]);
+    identitiesModel.findById(_id).exec = jest.fn().mockResolvedValue(IdentitiesDtoStub());
+    identitiesModel.findByIdAndUpdate(_id, IdentitiesDtoStub()).exec = jest.fn().mockResolvedValue(IdentitiesDtoStub());
+    identitiesModel.findByIdAndDelete(_id).exec = jest.fn().mockResolvedValue(IdentitiesDtoStub());
 
     // Mock the module
     const module: TestingModule = await Test.createTestingModule({
@@ -108,7 +109,9 @@ describe('Identities Service', () => {
   describe('findAndCount', () => {
     it('should return an array of identities', async () => {
       // Mock the countDocuments and find methods of the model
-      const mockCount = jest.spyOn(identitiesModel, 'countDocuments').mockResolvedValue(1);
+      const mockCount = jest.spyOn(identitiesModel, 'countDocuments').mockReturnValue({
+        exec: jest.fn().mockResolvedValue(1),
+      });
       const mockFind = jest.spyOn(identitiesModel, 'find').mockResolvedValue([IdentitiesDtoStub()]);
 
       // Call the service method

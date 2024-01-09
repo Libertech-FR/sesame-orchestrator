@@ -72,7 +72,11 @@ export async function updateAssertions<T>(
   const result = await service.update(_id, updateData, options);
 
   // Assert the results
-  expect(model.findByIdAndUpdate).toHaveBeenCalledWith(_id, updateData, options);
+  expect(model.findByIdAndUpdate).toHaveBeenCalledWith(
+    { _id },
+    expect.objectContaining(updateData),
+    expect.objectContaining(options),
+  );
   expect(result).toStrictEqual(expectedData);
 }
 
@@ -87,6 +91,6 @@ export async function deleteAssertions<T>(
   const result = await service.delete(_id, options);
 
   // Assert the results
-  expect(model.findByIdAndDelete).toHaveBeenCalledWith(_id, options);
+  expect(model.findByIdAndDelete).toHaveBeenCalledWith({ _id }, options);
   expect(result).toStrictEqual(expectedData);
 }

@@ -7,8 +7,16 @@ import { IdentitiesValidationModule } from './validations/identities.validation.
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { FilterQuery, Model, ProjectionType, QueryOptions, Types } from 'mongoose';
 import { IdentitiesDtoStub, IdentitiesUpdateDtoStub } from './_stubs/identities.dto.stub';
-import { createMockModel } from '~/_common/testsHelpers/mock.model';
-import { MongoDbTestInstance } from '~/_common/testsHelpers/mongodb.test.instance';
+import { createMockModel } from '~/_common/tests/mock.model';
+import { MongoDbTestInstance } from '~/_common/tests/mongodb.test.instance';
+import {
+  createAssertions,
+  deleteAssertions,
+  findAndCountAssertions,
+  findByIdAssertions,
+  findOneAssertions,
+  updateAssertions,
+} from '~/_common/tests/service.assertions.utils';
 
 describe('Identities Service', () => {
   let mongoDbTestInstance: MongoDbTestInstance;
@@ -44,7 +52,7 @@ describe('Identities Service', () => {
     mongoDbTestInstance = new MongoDbTestInstance();
     await mongoDbTestInstance.start();
     identitiesModel = await mongoDbTestInstance.getModel<Identities>(Identities.name, IdentitiesSchema);
-  }, 1200000);
+  }, 120000);
 
   beforeEach(async () => {
     model = createMockModel(identitiesModel, newIdentityData, updatedIdentityData);
@@ -82,40 +90,25 @@ describe('Identities Service', () => {
 
   describe('findAndCount', () => {
     it('should return an array of identities', async () => {
-      // Call the service method
-      const [result, count] = await service.findAndCount(filter, projection, options);
-
-      // Assert the results
-      expect(model.countDocuments).toHaveBeenCalledWith(filter);
-      expect(model.find).toHaveBeenCalledWith(filter, projection, options);
-      expect(count).toBe(1);
-      expect(result).toStrictEqual([newIdentityData]);
+      findAndCountAssertions<Identities>(service, model, filter, projection, options, newIdentityData);
     });
   });
 
   describe('findById', () => {
     it('should return a single identity by id', async () => {
-      const result = await service.findById(_id, projection, options);
-      expect(model.findById).toHaveBeenCalledWith(_id, projection, options);
-      expect(result).toStrictEqual(newIdentityData);
+      findByIdAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
     });
   });
 
   describe('findOne', () => {
     it('should return a single identity matching the filter', async () => {
-      const result = await service.findOne(filter, projection, options);
-
-      expect(model.findOne).toHaveBeenCalledWith(filter, projection, options);
-      expect(result).toStrictEqual(newIdentityData);
+      findOneAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
     });
   });
 
   describe('create', () => {
     it('should create and return a new identity', async () => {
-      const result = await service.create(newIdentityData);
-
-      expect(model.prototype.save).toHaveBeenCalled();
-      expect(result).toEqual(newIdentityData);
+      createAssertions<Identities>(service, model, newIdentityData, newIdentityData);
     });
   });
 
@@ -129,23 +122,13 @@ describe('Identities Service', () => {
         rawResult: true,
       };
 
-      const result = await service.update(_id, updateData, updateOptions);
-
-      expect(model.findByIdAndUpdate).toHaveBeenCalledWith(
-        { _id },
-        expect.objectContaining(updateData),
-        expect.objectContaining(updateOptions),
-      );
-      expect(result).toStrictEqual(updatedIdentityData);
+      updateAssertions(service, model, _id, updateData, updateOptions, updatedIdentityData);
     });
   });
 
   describe('delete', () => {
     it('should delete and return the deleted identity', async () => {
-      const result = await service.delete(_id, options);
-
-      expect(model.findByIdAndDelete).toHaveBeenCalledWith({ _id }, options);
-      expect(result).toStrictEqual(newIdentityData);
+      deleteAssertions<Identities>(service, model, _id, options, newIdentityData);
     });
   });
 });

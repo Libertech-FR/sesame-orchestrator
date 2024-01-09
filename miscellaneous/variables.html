@@ -167,6 +167,9 @@
                             <a href="#IdentitiesSchema" title="src/management/identities/_schemas/identities.schema.ts" ><b>IdentitiesSchema</b>&nbsp;&nbsp;&nbsp;(src/.../identities.schema.ts)</a>
                         </li>
                         <li>
+                            <a href="#IdentitiesUpdateDtoStub" title="src/management/identities/_stubs/identities.dto.stub.ts" ><b>IdentitiesUpdateDtoStub</b>&nbsp;&nbsp;&nbsp;(src/.../identities.dto.stub.ts)</a>
+                        </li>
+                        <li>
                             <a href="#IDSchema" title="src/_common/plugins/mongoose/auto-increment.plugin.ts" ><b>IDSchema</b>&nbsp;&nbsp;&nbsp;(src/.../auto-increment.plugin.ts)</a>
                         </li>
                         <li>
@@ -800,6 +803,35 @@
     state: IdentityState.TO_CREATE,
     lifecycle: IdentityLifecycle.INACTIVE,
     inetOrgPerson: inetOrgPersonDtoStub(),
+    additionalFields: additionalFieldsPartDtoStub(),
+  };
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IdentitiesUpdateDtoStub"></a>
+                    <span class="name">
+                        <span ><b>IdentitiesUpdateDtoStub</b></span>
+                        <a href="#IdentitiesUpdateDtoStub"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(): IdentitiesUpdateDto &#x3D;&gt; {
+  const inetOrgPerson &#x3D; inetOrgPersonDtoStub();
+  inetOrgPerson.cn &#x3D; &#x27;updated-cn&#x27;;
+  return {
+    state: IdentityState.TO_CREATE,
+    lifecycle: IdentityLifecycle.INACTIVE,
+    inetOrgPerson,
     additionalFields: additionalFieldsPartDtoStub(),
   };
 }</code>

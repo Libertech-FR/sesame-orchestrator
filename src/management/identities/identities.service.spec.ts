@@ -88,7 +88,7 @@ describe('Identities Service', () => {
   afterAll(async () => {
     await mongoConnection.dropDatabase();
     await mongoConnection.close();
-    await mongod.stop();
+    if (mongod) await mongod.stop();
   });
 
   afterEach(() => {

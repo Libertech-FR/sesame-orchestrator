@@ -129,7 +129,12 @@ describe('Identities Service', () => {
           'metadata.lastUpdatedAt': new Date(),
         },
       };
-      const updateOptions: QueryOptions<Identities> & { rawResult: true } = { options, rawResult: true };
+      const updateOptions: QueryOptions<Identities> & { rawResult: true } = {
+        new: true,
+        options: options,
+        rawResult: true,
+        runValidators: true,
+      };
 
       const result = await service.update(_id, updateData, updateOptions);
 

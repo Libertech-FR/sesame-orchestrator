@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdentitiesService } from './identities.service';
-import { getModelToken, raw } from '@nestjs/mongoose';
+import { getModelToken } from '@nestjs/mongoose';
 import { Identities, IdentitiesSchema } from './_schemas/identities.schema';
 import { IdentitiesController } from './identities.controller';
 import { IdentitiesValidationModule } from './validations/identities.validation.module';
@@ -9,8 +9,6 @@ import { FilterQuery, Model, ProjectionType, QueryOptions, Types } from 'mongoos
 import { IdentitiesDtoStub, IdentitiesUpdateDtoStub } from './_stubs/identities.dto.stub';
 import { createMockModel } from '~/_common/testsHelpers/mock.model';
 import { MongoDbTestInstance } from '~/_common/testsHelpers/mongodb.test.instance';
-import { Options } from '@nestjs/common';
-import { inetOrgPerson } from './_schemas/_parts/inetOrgPerson.part';
 
 describe('Identities Service', () => {
   let mongoDbTestInstance: MongoDbTestInstance;
@@ -114,12 +112,10 @@ describe('Identities Service', () => {
 
   describe('create', () => {
     it('should create and return a new identity', async () => {
-      const newIdentityData = IdentitiesDtoStub();
-
       const result = await service.create(newIdentityData);
 
       expect(model.prototype.save).toHaveBeenCalled();
-      expect(result).toStrictEqual(IdentitiesDtoStub());
+      expect(result).toStrictEqual(newIdentityData);
     });
   });
 
@@ -143,7 +139,7 @@ describe('Identities Service', () => {
       const result = await service.delete(_id);
 
       expect(model.findByIdAndDelete).toHaveBeenCalledWith({ _id });
-      expect(result).toStrictEqual(IdentitiesDtoStub());
+      expect(result).toStrictEqual(newIdentityData);
     });
   });
 });

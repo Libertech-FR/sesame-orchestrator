@@ -17,7 +17,7 @@ export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldTh
     !shouldThrowError
       ? jest.fn().mockImplementationOnce(() => ({ exec: jest.fn().mockResolvedValueOnce(returnValue) }))
       : jest.fn().mockImplementationOnce(() => {
-          throw new NotFoundException();
+          new NotFoundException();
         });
 
   model.find = throwOrResolve([stub]);

@@ -13,48 +13,21 @@ export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldTh
     exec: shouldThrowError ? jest.fn().mockResolvedValueOnce(1) : jest.fn().mockResolvedValueOnce(0),
   }));
 
-  model.find = shouldThrowError
-    ? jest.fn().mockImplementationOnce(() => {
-        throw new NotFoundException();
-      })
-    : jest.fn().mockImplementationOnce(() => ({
-        exec: jest.fn().mockResolvedValueOnce([stub]),
-      }));
+  const throwOrResolve = (returnValue) =>
+    shouldThrowError
+      ? jest.fn().mockImplementationOnce(() => {
+          throw new NotFoundException();
+        })
+      : jest.fn().mockImplementationOnce(() => ({ exec: jest.fn().mockResolvedValueOnce(returnValue) }));
 
-  model.findOne = shouldThrowError
-    ? jest.fn().mockImplementationOnce(() => {
-        throw new NotFoundException();
-      })
-    : jest.fn().mockImplementationOnce(() => ({
-        exec: jest.fn().mockResolvedValueOnce(stub),
-      }));
-
-  model.findById = shouldThrowError
-    ? jest.fn().mockImplementationOnce(() => {
-        throw new NotFoundException();
-      })
-    : jest.fn().mockImplementationOnce(() => ({
-        exec: jest.fn().mockResolvedValueOnce(stub),
-      }));
-
-  model.findByIdAndUpdate = shouldThrowError
-    ? jest.fn().mockImplementationOnce(() => {
-        throw new NotFoundException();
-      })
-    : jest.fn().mockImplementationOnce(() => ({
-        exec: jest.fn().mockResolvedValueOnce(updatedStub ? updatedStub : stub),
-      }));
-
-  model.findByIdAndDelete = shouldThrowError
-    ? jest.fn().mockImplementationOnce(() => {
-        throw new NotFoundException();
-      })
-    : jest.fn().mockImplementationOnce(() => ({
-        exec: jest.fn().mockResolvedValueOnce(stub),
-      }));
+  model.find = throwOrResolve([stub]);
+  model.findOne = throwOrResolve(stub);
+  model.findById = throwOrResolve(stub);
+  model.findByIdAndUpdate = throwOrResolve(updatedStub ? updatedStub : stub);
+  model.findByIdAndDelete = throwOrResolve(stub);
 
   if (!model.prototype.save) {
-    model.prototype.save = shouldThrowError ? jest.fn() : jest.fn(() => Promise.reject(new Error('Error')));
+    model.prototype.save = jest.fn();
   }
 
   jest

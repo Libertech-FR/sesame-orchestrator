@@ -33,7 +33,7 @@ export async function findAndCountErrorAssertions<T>(
   } catch (error) {
     expect(errorModel.countDocuments).toHaveBeenCalledWith(filter);
     expect(errorModel.find).toHaveBeenCalledWith(filter, projection, options);
-    expect(error).toBeInstanceOf(NotFoundException);
+    expect(error).toThrow(NotFoundException);
   }
 }
 
@@ -65,7 +65,7 @@ export async function findByIdErrorAssertions<T>(
     fail('Expected an error to be thrown');
   } catch (error) {
     expect(errorModel.findById).toHaveBeenCalledWith(_id, projection, options);
-    expect(error).toBeInstanceOf(NotFoundException);
+    expect(error).toThrow(NotFoundException);
   }
 }
 
@@ -97,7 +97,7 @@ export async function findOneErrorAssertions<T>(
     fail('Expected an error to be thrown');
   } catch (error) {
     expect(errorModel.findOne).toHaveBeenCalledWith(filter, projection, options);
-    expect(error).toBeInstanceOf(NotFoundException);
+    expect(error).toThrow(NotFoundException);
   }
 }
 
@@ -116,7 +116,7 @@ export async function createErrorAssertions<T>(service: AbstractServiceSchema, e
     fail('Expected an error to be thrown');
   } catch (error) {
     expect(errorModel.prototype.save).toHaveBeenCalled();
-    expect(error).toBeInstanceOf(Error);
+    expect(error).toThrow(Error);
     expect(error.message).toBe('Error');
   }
 }
@@ -157,7 +157,7 @@ export async function updateErrorAssertions<T>(
       expect.objectContaining(updateData),
       expect.objectContaining(options),
     );
-    expect(error).toBeInstanceOf(NotFoundException);
+    expect(error).toThrow(NotFoundException);
   }
 }
 
@@ -187,6 +187,6 @@ export async function deleteErrorAssertions<T>(
     fail('Expected an error to be thrown');
   } catch (error) {
     expect(errorModel.findByIdAndDelete).toHaveBeenCalledWith({ _id }, options);
-    expect(error).toBeInstanceOf(NotFoundException);
+    expect(error).toThrow(NotFoundException);
   }
 }

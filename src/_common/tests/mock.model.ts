@@ -14,11 +14,11 @@ export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldTh
   }));
 
   const throwOrResolve = (returnValue) =>
-    shouldThrowError
-      ? jest.fn().mockImplementationOnce(() => {
+    !shouldThrowError
+      ? jest.fn().mockImplementationOnce(() => ({ exec: jest.fn().mockResolvedValueOnce(returnValue) }))
+      : jest.fn().mockImplementationOnce(() => {
           throw new NotFoundException();
-        })
-      : jest.fn().mockImplementationOnce(() => ({ exec: jest.fn().mockResolvedValueOnce(returnValue) }));
+        });
 
   model.find = throwOrResolve([stub]);
   model.findOne = throwOrResolve(stub);

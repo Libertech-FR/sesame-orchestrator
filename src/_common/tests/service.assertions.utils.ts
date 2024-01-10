@@ -60,9 +60,8 @@ export async function findByIdErrorAssertions<T>(
   options: QueryOptions<T>,
 ) {
   const fakeId = new Types.ObjectId();
-  const result = await service.findById(fakeId, projection, options);
+  await expect(service.findById(fakeId, projection, options)).rejects.toThrow(NotFoundException);
   expect(errorModel.findById).toHaveBeenCalledWith(fakeId, projection, options);
-  expect(result).toThrow(NotFoundException);
 }
 
 export async function findOneAssertions<T>(
@@ -89,9 +88,9 @@ export async function findOneErrorAssertions<T>(
   options: QueryOptions<T>,
 ) {
   filter = { ...filter, _id: new Types.ObjectId() };
-  const result = await service.findOne(filter, projection, options);
+
+  expect(await service.findOne(filter, projection, options)).rejects.toThrow(NotFoundException);
   expect(errorModel.findOne).toHaveBeenCalledWith(filter, projection, options);
-  expect(result).toThrow(NotFoundException);
 }
 
 export async function createAssertions<T>(service: AbstractServiceSchema, model: Model<T>, newData, expectedData) {

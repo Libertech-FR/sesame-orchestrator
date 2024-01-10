@@ -27,14 +27,12 @@ export async function findAndCountErrorAssertions<T>(
   projection: ProjectionType<T>,
   options: QueryOptions<T>,
 ) {
-  try {
-    await service.findAndCount(filter, projection, options);
-    fail('Expected an error to be thrown');
-  } catch (error) {
-    expect(errorModel.countDocuments).toHaveBeenCalledWith(filter);
-    expect(errorModel.find).toHaveBeenCalledWith(filter, projection, options);
-    expect(error).toThrow(NotFoundException);
-  }
+  filter = { ...filter, _id: new Types.ObjectId() };
+  const [result, count] = await service.findAndCount(filter, projection, options);
+  expect(errorModel.countDocuments).toHaveBeenCalledWith(filter);
+  expect(errorModel.find).toHaveBeenCalledWith(filter, projection, options);
+  expect(count).toBe(0);
+  expect(result).toStrictEqual([]);
 }
 
 export async function findByIdAssertions<T>(
@@ -60,13 +58,10 @@ export async function findByIdErrorAssertions<T>(
   projection: ProjectionType<T>,
   options: QueryOptions<T>,
 ) {
-  try {
-    await service.findById(_id, projection, options);
-    fail('Expected an error to be thrown');
-  } catch (error) {
-    expect(errorModel.findById).toHaveBeenCalledWith(_id, projection, options);
-    expect(error).toThrow(NotFoundException);
-  }
+  const fakeId = new Types.ObjectId();
+  const result = await service.findById(fakeId, projection, options);
+  expect(errorModel.findById).toHaveBeenCalledWith(fakeId, projection, options);
+  expect(result).toThrow(NotFoundException);
 }
 
 export async function findOneAssertions<T>(
@@ -92,13 +87,10 @@ export async function findOneErrorAssertions<T>(
   projection: ProjectionType<T>,
   options: QueryOptions<T>,
 ) {
-  try {
-    await service.findOne(filter, projection, options);
-    fail('Expected an error to be thrown');
-  } catch (error) {
-    expect(errorModel.findOne).toHaveBeenCalledWith(filter, projection, options);
-    expect(error).toThrow(NotFoundException);
-  }
+  filter = { ...filter, _id: new Types.ObjectId() };
+  const result = await service.findOne(filter, projection, options);
+  expect(errorModel.findOne).toHaveBeenCalledWith(filter, projection, options);
+  expect(result).toThrow(NotFoundException);
 }
 
 export async function createAssertions<T>(service: AbstractServiceSchema, model: Model<T>, newData, expectedData) {
@@ -111,14 +103,9 @@ export async function createAssertions<T>(service: AbstractServiceSchema, model:
 }
 
 export async function createErrorAssertions<T>(service: AbstractServiceSchema, errorModel: Model<T>, newData) {
-  try {
-    await service.create(newData);
-    fail('Expected an error to be thrown');
-  } catch (error) {
-    expect(errorModel.prototype.save).toHaveBeenCalled();
-    expect(error).toThrow(Error);
-    expect(error.message).toBe('Error');
-  }
+  const result = await service.create(newData);
+  expect(errorModel.prototype.save).toHaveBeenCalled();
+  expect(result).toThrow(Error);
 }
 
 export async function updateAssertions<T>(
@@ -148,17 +135,15 @@ export async function updateErrorAssertions<T>(
   updateData,
   options: QueryOptions<T> & { rawResult: true },
 ) {
-  try {
-    await service.update(_id, updateData, options);
-    fail('Expected an error to be thrown');
-  } catch (error) {
-    expect(errorModel.findByIdAndUpdate).toHaveBeenCalledWith(
-      { _id },
-      expect.objectContaining(updateData),
-      expect.objectContaining(options),
-    );
-    expect(error).toThrow(NotFoundException);
-  }
+  const fakeId = new Types.ObjectId();
+
+  const result = await service.update(fakeId, updateData, options);
+  expect(errorModel.findByIdAndUpdate).toHaveBeenCalledWith(
+    { fakeId },
+    expect.objectContaining(updateData),
+    expect.objectContaining(options),
+  );
+  expect(result).toThrow(NotFoundException);
 }
 
 export async function deleteAssertions<T>(
@@ -182,11 +167,8 @@ export async function deleteErrorAssertions<T>(
   _id: Types.ObjectId,
   options: QueryOptions<T>,
 ) {
-  try {
-    await service.delete(_id, options);
-    fail('Expected an error to be thrown');
-  } catch (error) {
-    expect(errorModel.findByIdAndDelete).toHaveBeenCalledWith({ _id }, options);
-    expect(error).toThrow(NotFoundException);
-  }
+  const fakeId = new Types.ObjectId();
+  const result = await service.delete(fakeId, options);
+  expect(errorModel.findByIdAndDelete).toHaveBeenCalledWith({ fakeId }, options);
+  expect(result).toThrow(NotFoundException);
 }

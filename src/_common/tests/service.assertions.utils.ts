@@ -10,6 +10,7 @@ export async function findAndCountAssertions<T>(
   options: QueryOptions<T>,
   expectedData,
 ) {
+  filter = { ...filter, _id: new Types.ObjectId() };
   // Call the service method
   const [result, count] = await service.findAndCount(filter, projection, options);
 
@@ -139,7 +140,7 @@ export async function updateErrorAssertions<T>(
 
   const result = await service.update(fakeId, updateData, options);
   expect(errorModel.findByIdAndUpdate).toHaveBeenCalledWith(
-    { fakeId },
+    { _id: fakeId },
     expect.objectContaining(updateData),
     expect.objectContaining(options),
   );
@@ -169,6 +170,6 @@ export async function deleteErrorAssertions<T>(
 ) {
   const fakeId = new Types.ObjectId();
   const result = await service.delete(fakeId, options);
-  expect(errorModel.findByIdAndDelete).toHaveBeenCalledWith({ fakeId }, options);
+  expect(errorModel.findByIdAndDelete).toHaveBeenCalledWith({ _id: fakeId }, options);
   expect(result).toThrow(NotFoundException);
 }

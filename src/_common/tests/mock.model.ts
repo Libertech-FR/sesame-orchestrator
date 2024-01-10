@@ -32,7 +32,7 @@ export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldTh
 
   jest
     .spyOn(model.prototype, 'save')
-    .mockImplementationOnce(() => (shouldThrowError ? Promise.resolve(stub) : Promise.reject(new Error('Error'))));
+    .mockImplementationOnce(() => (shouldThrowError ? Promise.reject(new Error('Error')) : Promise.resolve(stub)));
 
   return model;
 }

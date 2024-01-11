@@ -100,7 +100,7 @@ describe('Identities Service', () => {
       findAndCountAssertions<Identities>(service, model, filter, projection, options, newIdentityData);
     });
     it('should throw a Notfound error', async () => {
-      findAndCountErrorAssertions<Identities>(service, _id, projection, options);
+      findAndCountErrorAssertions<Identities>(service, filter, projection, options);
     });
   });
 

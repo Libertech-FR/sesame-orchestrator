@@ -26,16 +26,21 @@ export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldTh
       }));
 
   model.find = throwOrResolve([stub], []);
-  model.findOne = throwOrResolve(stub, NotFoundException);
-  model.findById = throwOrResolve(stub, NotFoundException);
-  model.findByIdAndUpdate = throwOrResolve(updatedStub ? updatedStub : stub, NotFoundException);
-  model.findByIdAndDelete = throwOrResolve(stub, NotFoundException);
+  model.findOne = throwOrResolve(stub, new NotFoundException());
+  model.findById = throwOrResolve(stub, new NotFoundException());
+  model.findByIdAndUpdate = throwOrResolve(updatedStub ? updatedStub : stub, new NotFoundException());
+  model.findByIdAndDelete = throwOrResolve(stub, new NotFoundException());
 
   // Mock the model methods
   // First call resolves, second call resolves
-  model.countDocuments = jest.fn().mockImplementationOnce(() => ({
-    exec: jest.fn().mockResolvedValueOnce(1).mockResolvedValueOnce(0),
-  }));
+  model.countDocuments = jest
+    .fn()
+    .mockImplementationOnce(() => ({
+      exec: jest.fn().mockResolvedValueOnce(1),
+    }))
+    .mockImplementationOnce(() => ({
+      exec: jest.fn().mockResolvedValueOnce(0),
+    }));
 
   if (!model.prototype.save) {
     model.prototype.save = jest.fn();

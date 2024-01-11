@@ -94,9 +94,8 @@ export async function createAssertions<T>(service: AbstractServiceSchema, model:
 }
 
 export async function createErrorAssertions<T>(service: AbstractServiceSchema, errorModel: Model<T>, newData) {
-  const result = await service.create(newData);
+  expect(await service.create(newData)).toThrow(Error);
   expect(errorModel.prototype.save).toHaveBeenCalled();
-  expect(result).toThrow(Error);
 }
 
 export async function updateAssertions<T>(
@@ -126,8 +125,7 @@ export async function updateErrorAssertions<T>(
   updateData,
   options: QueryOptions<T> & { rawResult: true },
 ) {
-  const result = await service.update(_id, updateData, options);
-  expect(result).toThrow(NotFoundException);
+  expect(await service.update(_id, updateData, options)).toThrow(NotFoundException);
 }
 
 export async function deleteAssertions<T>(
@@ -151,6 +149,5 @@ export async function deleteErrorAssertions<T>(
   _id: Types.ObjectId,
   options: QueryOptions<T>,
 ) {
-  const result = await service.delete(_id, options);
-  expect(result).toThrow(NotFoundException);
+  expect(await service.delete(_id, options)).toThrow(NotFoundException);
 }

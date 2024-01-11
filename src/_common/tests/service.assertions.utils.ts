@@ -22,7 +22,6 @@ export async function findAndCountAssertions<T>(
 
 export async function findAndCountErrorAssertions<T>(
   service: AbstractServiceSchema,
-  errorModel: Model<T>,
   filter: FilterQuery<T>,
   projection: ProjectionType<T>,
   options: QueryOptions<T>,
@@ -50,7 +49,6 @@ export async function findByIdAssertions<T>(
 
 export async function findByIdErrorAssertions<T>(
   service: AbstractServiceSchema,
-  errorModel: Model<T>,
   _id: Types.ObjectId,
   projection: ProjectionType<T>,
   options: QueryOptions<T>,
@@ -80,7 +78,6 @@ export async function findOneAssertions<T>(
 
 export async function findOneErrorAssertions<T>(
   service: AbstractServiceSchema,
-  errorModel: Model<T>,
   filter: FilterQuery<T>,
   projection: ProjectionType<T>,
   options: QueryOptions<T>,
@@ -101,7 +98,7 @@ export async function createAssertions<T>(service: AbstractServiceSchema, model:
   expect(result).toEqual(expectedData);
 }
 
-export async function createErrorAssertions<T>(service: AbstractServiceSchema, errorModel: Model<T>, newData) {
+export async function createErrorAssertions<T>(service: AbstractServiceSchema, newData) {
   try {
     await service.create(newData);
   } catch (error) {
@@ -131,7 +128,6 @@ export async function updateAssertions<T>(
 
 export async function updateErrorAssertions<T>(
   service: AbstractServiceSchema,
-  errorModel: Model<T>,
   _id: Types.ObjectId,
   updateData,
   options: QueryOptions<T> & { rawResult: true },
@@ -160,7 +156,6 @@ export async function deleteAssertions<T>(
 
 export async function deleteErrorAssertions<T>(
   service: AbstractServiceSchema,
-  errorModel: Model<T>,
   _id: Types.ObjectId,
   options: QueryOptions<T>,
 ) {

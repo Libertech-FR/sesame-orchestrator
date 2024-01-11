@@ -98,28 +98,28 @@ describe('Identities Service', () => {
   describe('findAndCount', () => {
     it('should return an array of identities or throw an error', async () => {
       findAndCountAssertions<Identities>(service, model, filter, projection, options, newIdentityData);
-      findAndCountErrorAssertions<Identities>(service, model, _id, projection, options);
+      findAndCountErrorAssertions<Identities>(service, _id, projection, options);
     });
   });
 
   describe('findById', () => {
     it('should return a single identity by id or throw an error', async () => {
       findByIdAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
-      findByIdErrorAssertions<Identities>(service, model, _id, projection, options);
+      findByIdErrorAssertions<Identities>(service, _id, projection, options);
     });
   });
 
   describe('findOne', () => {
     it('should return a single identity matching the filter or throw an error', async () => {
       findOneAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
-      findOneErrorAssertions<Identities>(service, model, _id, projection, options);
+      findOneErrorAssertions<Identities>(service, _id, projection, options);
     });
   });
 
   describe('create', () => {
     it('should create and return a new identity or throw an error', async () => {
       createAssertions<Identities>(service, model, newIdentityData, newIdentityData);
-      createErrorAssertions<Identities>(service, model, newIdentityData);
+      createErrorAssertions<Identities>(service, newIdentityData);
     });
   });
 
@@ -134,14 +134,14 @@ describe('Identities Service', () => {
       };
 
       updateAssertions(service, model, _id, updateData, updateOptions, updatedIdentityData);
-      updateErrorAssertions(service, model, _id, updateData, updateOptions);
+      updateErrorAssertions(service, _id, updateData, updateOptions);
     });
   });
 
   describe('delete', () => {
     it('should delete and return the deleted identity or throw an error', async () => {
       deleteAssertions<Identities>(service, model, _id, options, newIdentityData);
-      deleteErrorAssertions<Identities>(service, model, _id, options);
+      deleteErrorAssertions<Identities>(service, _id, options);
     });
   });
 });

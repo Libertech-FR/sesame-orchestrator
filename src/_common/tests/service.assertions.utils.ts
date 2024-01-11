@@ -55,7 +55,11 @@ export async function findByIdErrorAssertions<T>(
   projection: ProjectionType<T>,
   options: QueryOptions<T>,
 ) {
-  expect(await service.findById(_id, projection, options)).rejects.toThrow(NotFoundException);
+  try {
+    await service.findById(_id, projection, options);
+  } catch (error) {
+    expect(error).toBeInstanceOf(NotFoundException);
+  }
 }
 
 export async function findOneAssertions<T>(

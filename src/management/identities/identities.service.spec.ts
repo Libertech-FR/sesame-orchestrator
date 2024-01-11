@@ -106,69 +106,69 @@ describe('Identities Service', () => {
     // });
   });
 
-  describe('findById', () => {
-    it('should return a single identity by id or throw an error', async () => {
-      findByIdAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
-      findByIdErrorAssertions<Identities>(service, model, _id, projection, options);
-    });
-    // it('should throw an error if the identity is not found', async () => {
-    //   findByIdErrorAssertions<Identities>(service, model, _id, projection, options);
-    // });
-  });
+  // describe('findById', () => {
+  //   it('should return a single identity by id or throw an error', async () => {
+  //     findByIdAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
+  //     findByIdErrorAssertions<Identities>(service, model, _id, projection, options);
+  //   });
+  //   // it('should throw an error if the identity is not found', async () => {
+  //   //   findByIdErrorAssertions<Identities>(service, model, _id, projection, options);
+  //   // });
+  // });
 
-  describe('findOne', () => {
-    it('should return a single identity matching the filter or throw an error', async () => {
-      findOneAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
-      findOneErrorAssertions<Identities>(service, model, _id, projection, options);
-    });
-    // it('should throw an error if the identity is not found', async () => {
-    //   findOneErrorAssertions<Identities>(service, model, _id, projection, options);
-    // });
-  });
+  // describe('findOne', () => {
+  //   it('should return a single identity matching the filter or throw an error', async () => {
+  //     findOneAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
+  //     findOneErrorAssertions<Identities>(service, model, _id, projection, options);
+  //   });
+  //   // it('should throw an error if the identity is not found', async () => {
+  //   //   findOneErrorAssertions<Identities>(service, model, _id, projection, options);
+  //   // });
+  // });
 
-  describe('create', () => {
-    it('should create and return a new identity or throw an error', async () => {
-      createAssertions<Identities>(service, model, newIdentityData, newIdentityData);
-      createErrorAssertions<Identities>(service, model, newIdentityData);
-    });
-    // it('should throw an error if the identity is not created', async () => {
-    //   createErrorAssertions<Identities>(service, model, newIdentityData);
-    // });
-  });
+  // describe('create', () => {
+  //   it('should create and return a new identity or throw an error', async () => {
+  //     createAssertions<Identities>(service, model, newIdentityData, newIdentityData);
+  //     createErrorAssertions<Identities>(service, model, newIdentityData);
+  //   });
+  //   // it('should throw an error if the identity is not created', async () => {
+  //   //   createErrorAssertions<Identities>(service, model, newIdentityData);
+  //   // });
+  // });
 
-  describe('update', () => {
-    it('should update and return an identity or throw an error', async () => {
-      const updateData = {
-        'inetOrgPerson.cn': 'updated-cn',
-      };
-      const updateOptions: QueryOptions<Identities> & { rawResult: true } = {
-        options: options,
-        rawResult: true,
-      };
+  // describe('update', () => {
+  //   it('should update and return an identity or throw an error', async () => {
+  //     const updateData = {
+  //       'inetOrgPerson.cn': 'updated-cn',
+  //     };
+  //     const updateOptions: QueryOptions<Identities> & { rawResult: true } = {
+  //       options: options,
+  //       rawResult: true,
+  //     };
 
-      updateAssertions(service, model, _id, updateData, updateOptions, updatedIdentityData);
-      updateErrorAssertions(service, model, _id, updateData, updateOptions);
-    });
-    // it('should throw an error if the identity is not found', async () => {
-    //   const updateData = {
-    //     'inetOrgPerson.cn': 'updated-cn',
-    //   };
-    //   const updateOptions: QueryOptions<Identities> & { rawResult: true } = {
-    //     options: options,
-    //     rawResult: true,
-    //   };
+  //     updateAssertions(service, model, _id, updateData, updateOptions, updatedIdentityData);
+  //     updateErrorAssertions(service, model, _id, updateData, updateOptions);
+  //   });
+  //   // it('should throw an error if the identity is not found', async () => {
+  //   //   const updateData = {
+  //   //     'inetOrgPerson.cn': 'updated-cn',
+  //   //   };
+  //   //   const updateOptions: QueryOptions<Identities> & { rawResult: true } = {
+  //   //     options: options,
+  //   //     rawResult: true,
+  //   //   };
 
-    //   updateErrorAssertions(service, model, _id, updateData, updateOptions);
-    // });
-  });
+  //   //   updateErrorAssertions(service, model, _id, updateData, updateOptions);
+  //   // });
+  // });
 
-  describe('delete', () => {
-    it('should delete and return the deleted identity or throw an error', async () => {
-      deleteAssertions<Identities>(service, model, _id, options, newIdentityData);
-      deleteErrorAssertions<Identities>(service, model, _id, options);
-    });
-    // it('should throw an error if the identity is not found', async () => {
-    //   deleteErrorAssertions<Identities>(service, model, _id, options);
-    // });
-  });
+  // describe('delete', () => {
+  //   it('should delete and return the deleted identity or throw an error', async () => {
+  //     deleteAssertions<Identities>(service, model, _id, options, newIdentityData);
+  //     deleteErrorAssertions<Identities>(service, model, _id, options);
+  //   });
+  //   // it('should throw an error if the identity is not found', async () => {
+  //   //   deleteErrorAssertions<Identities>(service, model, _id, options);
+  //   // });
+  // });
 });

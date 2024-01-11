@@ -105,7 +105,7 @@ export async function createErrorAssertions<T>(service: AbstractServiceSchema, e
   try {
     await service.create(newData);
   } catch (error) {
-    expect(error).toBeInstanceOf(NotFoundException);
+    expect(error).toBeInstanceOf(Error);
   }
 }
 

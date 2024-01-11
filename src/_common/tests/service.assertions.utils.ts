@@ -28,9 +28,7 @@ export async function findAndCountErrorAssertions<T>(
   projection: ProjectionType<T>,
   options: QueryOptions<T>,
 ) {
-  jest.spyOn(service, 'findAndCount').mockImplementationOnce(() => {
-    return Promise.resolve([[], 0]);
-  });
+  jest.spyOn(service, 'findAndCount').mockResolvedValueOnce([[], 0]);
   const [result, count] = await service.findAndCount(filter, projection, options);
   expect(errorModel.countDocuments).toHaveBeenCalledWith(filter);
   expect(errorModel.find).toHaveBeenCalledWith(filter, projection, options);
@@ -61,9 +59,7 @@ export async function findByIdErrorAssertions<T>(
   projection: ProjectionType<T>,
   options: QueryOptions<T>,
 ) {
-  jest.spyOn(service, 'findById').mockImplementationOnce(() => {
-    throw new NotFoundException();
-  });
+  jest.spyOn(service, 'findById').mockRejectedValueOnce(new NotFoundException());
   await expect(service.findById(_id, projection, options)).rejects.toThrow(NotFoundException);
   expect(errorModel.findById).toHaveBeenCalledWith(_id, projection, options);
 }
@@ -91,9 +87,7 @@ export async function findOneErrorAssertions<T>(
   projection: ProjectionType<T>,
   options: QueryOptions<T>,
 ) {
-  jest.spyOn(service, 'findOne').mockImplementationOnce(() => {
-    throw new NotFoundException();
-  });
+  jest.spyOn(service, 'findOne').mockRejectedValueOnce(new NotFoundException());
   expect(await service.findOne(filter, projection, options)).rejects.toThrow(NotFoundException);
   expect(errorModel.findOne).toHaveBeenCalledWith(filter, projection, options);
 }
@@ -108,9 +102,7 @@ export async function createAssertions<T>(service: AbstractServiceSchema, model:
 }
 
 export async function createErrorAssertions<T>(service: AbstractServiceSchema, errorModel: Model<T>, newData) {
-  jest.spyOn(service, 'create').mockImplementationOnce(() => {
-    throw new Error();
-  });
+  jest.spyOn(service, 'create').mockRejectedValueOnce(new Error());
   const result = await service.create(newData);
   expect(errorModel.prototype.save).toHaveBeenCalled();
   expect(result).toThrow(Error);
@@ -143,9 +135,7 @@ export async function updateErrorAssertions<T>(
   updateData,
   options: QueryOptions<T> & { rawResult: true },
 ) {
-  jest.spyOn(service, 'update').mockImplementationOnce(() => {
-    throw new NotFoundException();
-  });
+  jest.spyOn(service, 'update').mockRejectedValueOnce(new NotFoundException());
   const result = await service.update(_id, updateData, options);
   expect(errorModel.findByIdAndUpdate).toHaveBeenCalledWith(
     { _id },
@@ -176,9 +166,7 @@ export async function deleteErrorAssertions<T>(
   _id: Types.ObjectId,
   options: QueryOptions<T>,
 ) {
-  jest.spyOn(service, 'delete').mockImplementationOnce(() => {
-    throw new NotFoundException();
-  });
+  jest.spyOn(service, 'delete').mockRejectedValueOnce(new NotFoundException());
   const result = await service.delete(_id, options);
   expect(errorModel.findByIdAndDelete).toHaveBeenCalledWith(_id, options);
   expect(result).toThrow(NotFoundException);

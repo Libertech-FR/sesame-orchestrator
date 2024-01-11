@@ -98,10 +98,9 @@ describe('Identities Service', () => {
   describe('findAndCount', () => {
     it('should return an array of identities or throw an error', async () => {
       findAndCountAssertions<Identities>(service, model, filter, projection, options, newIdentityData);
-    });
-    it('should throw a Notfound error', async () => {
       findAndCountErrorAssertions<Identities>(service, filter, projection, options);
     });
+    //it('should throw a Notfound error', async () => {});
   });
 
   describe('findById', () => {

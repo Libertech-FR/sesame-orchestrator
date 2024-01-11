@@ -13,18 +13,24 @@ export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldTh
     exec: shouldThrowError ? jest.fn().mockResolvedValueOnce(1) : jest.fn().mockResolvedValueOnce(0),
   }));
 
-  const throwOrResolve = (returnValue) =>
+  // Mock the model methods
+  // First call resolves, second call rejects
+  const throwOrResolve = (resolvedValue, rejectedValue) =>
     jest.fn().mockImplementationOnce(() => ({
-      exec: shouldThrowError
-        ? jest.fn().mockResolvedValueOnce(returnValue)
-        : jest.fn().mockRejectedValueOnce(new NotFoundException()),
+      exec: jest.fn().mockResolvedValueOnce(resolvedValue).mockRejectedValueOnce(rejectedValue),
     }));
 
-  model.find = throwOrResolve([stub]);
-  model.findOne = throwOrResolve(stub);
-  model.findById = throwOrResolve(stub);
-  model.findByIdAndUpdate = throwOrResolve(updatedStub ? updatedStub : stub);
-  model.findByIdAndDelete = throwOrResolve(stub);
+  model.find = throwOrResolve([stub], []);
+  model.findOne = throwOrResolve(stub, new NotFoundException());
+  model.findById = throwOrResolve(stub, new NotFoundException());
+  model.findByIdAndUpdate = throwOrResolve(updatedStub ? updatedStub : stub, new NotFoundException());
+  model.findByIdAndDelete = throwOrResolve(stub, new NotFoundException());
+
+  // Mock the model methods
+  // First call resolves, second call resolves
+  model.countDocuments = jest.fn().mockImplementationOnce(() => ({
+    exec: jest.fn().mockResolvedValueOnce(1).mockResolvedValueOnce(0),
+  }));
 
   if (!model.prototype.save) {
     model.prototype.save = jest.fn();
@@ -32,7 +38,8 @@ export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldTh
 
   jest
     .spyOn(model.prototype, 'save')
-    .mockImplementationOnce(() => (shouldThrowError ? Promise.reject(new Error('Error')) : Promise.resolve(stub)));
+    .mockImplementationOnce(() => Promise.resolve(stub))
+    .mockImplementationOnce(() => Promise.reject(new Error('Error')));
 
   return model;
 }

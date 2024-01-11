@@ -28,7 +28,7 @@ describe('Identities Service', () => {
   let mongoDbTestInstance: MongoDbTestInstance;
   let service: IdentitiesService;
   let model: Model<Identities>;
-  let errorModel: Model<Identities>;
+  //let errorModel: Model<Identities>;
   let identitiesModel: Model<Identities>;
   const _id = new Types.ObjectId();
   const newIdentityData = {
@@ -63,7 +63,7 @@ describe('Identities Service', () => {
 
   beforeEach(async () => {
     model = createMockModel(identitiesModel, newIdentityData, updatedIdentityData);
-    errorModel = createMockModel(identitiesModel, newIdentityData, updatedIdentityData, true);
+    //errorModel = createMockModel(identitiesModel, newIdentityData, updatedIdentityData, true);
 
     // Mock the module
     const module: TestingModule = await Test.createTestingModule({
@@ -101,7 +101,7 @@ describe('Identities Service', () => {
       findAndCountAssertions<Identities>(service, model, filter, projection, options, newIdentityData);
     });
     it('should throw an error if the identity is not found', async () => {
-      findAndCountErrorAssertions<Identities>(service, errorModel, _id, projection, options);
+      findAndCountErrorAssertions<Identities>(service, model, _id, projection, options);
     });
   });
 
@@ -110,7 +110,7 @@ describe('Identities Service', () => {
       findByIdAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
     });
     it('should throw an error if the identity is not found', async () => {
-      findByIdErrorAssertions<Identities>(service, errorModel, _id, projection, options);
+      findByIdErrorAssertions<Identities>(service, model, _id, projection, options);
     });
   });
 
@@ -119,7 +119,7 @@ describe('Identities Service', () => {
       findOneAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
     });
     it('should throw an error if the identity is not found', async () => {
-      findOneErrorAssertions<Identities>(service, errorModel, _id, projection, options);
+      findOneErrorAssertions<Identities>(service, model, _id, projection, options);
     });
   });
 
@@ -128,7 +128,7 @@ describe('Identities Service', () => {
       createAssertions<Identities>(service, model, newIdentityData, newIdentityData);
     });
     it('should throw an error if the identity is not created', async () => {
-      createErrorAssertions<Identities>(service, errorModel, newIdentityData);
+      createErrorAssertions<Identities>(service, model, newIdentityData);
     });
   });
 
@@ -153,7 +153,7 @@ describe('Identities Service', () => {
         rawResult: true,
       };
 
-      updateErrorAssertions(service, errorModel, _id, updateData, updateOptions);
+      updateErrorAssertions(service, model, _id, updateData, updateOptions);
     });
   });
 
@@ -162,7 +162,7 @@ describe('Identities Service', () => {
       deleteAssertions<Identities>(service, model, _id, options, newIdentityData);
     });
     it('should throw an error if the identity is not found', async () => {
-      deleteErrorAssertions<Identities>(service, errorModel, _id, options);
+      deleteErrorAssertions<Identities>(service, model, _id, options);
     });
   });
 });

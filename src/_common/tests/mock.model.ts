@@ -9,9 +9,9 @@ import { Model } from 'mongoose';
  */
 
 export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldThrowError = false): Model<T> {
-  model.countDocuments = jest.fn().mockImplementationOnce(() => ({
-    exec: shouldThrowError ? jest.fn().mockResolvedValueOnce(1) : jest.fn().mockResolvedValueOnce(0),
-  }));
+  // model.countDocuments = jest.fn().mockImplementationOnce(() => ({
+  //   exec: shouldThrowError ? jest.fn().mockResolvedValueOnce(1) : jest.fn().mockResolvedValueOnce(0),
+  // }));
 
   // Mock the model methods
   // First call resolves, second call rejects
@@ -21,10 +21,10 @@ export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldTh
     }));
 
   model.find = throwOrResolve([stub], []);
-  model.findOne = throwOrResolve(stub, new NotFoundException());
-  model.findById = throwOrResolve(stub, new NotFoundException());
-  model.findByIdAndUpdate = throwOrResolve(updatedStub ? updatedStub : stub, new NotFoundException());
-  model.findByIdAndDelete = throwOrResolve(stub, new NotFoundException());
+  model.findOne = throwOrResolve(stub, NotFoundException);
+  model.findById = throwOrResolve(stub, NotFoundException);
+  model.findByIdAndUpdate = throwOrResolve(updatedStub ? updatedStub : stub, NotFoundException);
+  model.findByIdAndDelete = throwOrResolve(stub, NotFoundException);
 
   // Mock the model methods
   // First call resolves, second call resolves

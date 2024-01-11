@@ -98,6 +98,8 @@ describe('Identities Service', () => {
   describe('findAndCount', () => {
     it('should return an array of identities or throw an error', async () => {
       findAndCountAssertions<Identities>(service, model, filter, projection, options, newIdentityData);
+    });
+    it('should throw a Notfound error', async () => {
       findAndCountErrorAssertions<Identities>(service, _id, projection, options);
     });
   });
@@ -105,7 +107,6 @@ describe('Identities Service', () => {
   describe('findById', () => {
     it('should return a single identity by id or throw an error', async () => {
       findByIdAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
-      //findByIdErrorAssertions<Identities>(service, _id, projection, options);
     });
     it('should return an empty array and count 0 documents', async () => {
       findByIdErrorAssertions<Identities>(service, _id, projection, options);
@@ -115,6 +116,8 @@ describe('Identities Service', () => {
   describe('findOne', () => {
     it('should return a single identity matching the filter or throw an error', async () => {
       findOneAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
+    });
+    it('should throw a Notfound error', async () => {
       findOneErrorAssertions<Identities>(service, _id, projection, options);
     });
   });
@@ -122,6 +125,8 @@ describe('Identities Service', () => {
   describe('create', () => {
     it('should create and return a new identity or throw an error', async () => {
       createAssertions<Identities>(service, model, newIdentityData, newIdentityData);
+    });
+    it('should throw a Notfound error', async () => {
       createErrorAssertions<Identities>(service, newIdentityData);
     });
   });
@@ -137,6 +142,16 @@ describe('Identities Service', () => {
       };
 
       updateAssertions(service, model, _id, updateData, updateOptions, updatedIdentityData);
+    });
+    it('should throw a Notfound error', async () => {
+      const updateData = {
+        'inetOrgPerson.cn': 'updated-cn',
+      };
+      const updateOptions: QueryOptions<Identities> & { rawResult: true } = {
+        options: options,
+        rawResult: true,
+      };
+
       updateErrorAssertions(service, _id, updateData, updateOptions);
     });
   });
@@ -144,6 +159,8 @@ describe('Identities Service', () => {
   describe('delete', () => {
     it('should delete and return the deleted identity or throw an error', async () => {
       deleteAssertions<Identities>(service, model, _id, options, newIdentityData);
+    });
+    it('should throw a Notfound error', async () => {
       deleteErrorAssertions<Identities>(service, _id, options);
     });
   });

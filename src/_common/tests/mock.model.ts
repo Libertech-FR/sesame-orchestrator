@@ -8,11 +8,7 @@ import { Model } from 'mongoose';
  * @param shouldThrowError
  */
 
-export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldThrowError = false): Model<T> {
-  // model.countDocuments = jest.fn().mockImplementationOnce(() => ({
-  //   exec: shouldThrowError ? jest.fn().mockResolvedValueOnce(1) : jest.fn().mockResolvedValueOnce(0),
-  // }));
-
+export function createMockModel<T>(model: Model<T>, stub, updatedStub?): Model<T> {
   // Mock the model methods
   // First call resolves, second call rejects
   const throwOrResolve = (resolvedValue, rejectedValue) =>
@@ -41,6 +37,8 @@ export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldTh
       exec: jest.fn().mockResolvedValueOnce(0),
     }));
 
+  // Mock the model methods
+  // First call resolves, second call resolves
   model.find = jest
     .fn()
     .mockImplementationOnce(() => ({

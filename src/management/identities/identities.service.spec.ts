@@ -63,7 +63,6 @@ describe('Identities Service', () => {
 
   beforeEach(async () => {
     model = createMockModel(identitiesModel, newIdentityData, updatedIdentityData);
-    //errorModel = createMockModel(identitiesModel, newIdentityData, updatedIdentityData, true);
 
     // Mock the module
     const module: TestingModule = await Test.createTestingModule({
@@ -101,9 +100,6 @@ describe('Identities Service', () => {
       findAndCountAssertions<Identities>(service, model, filter, projection, options, newIdentityData);
       findAndCountErrorAssertions<Identities>(service, model, _id, projection, options);
     });
-    // it('should throw an error if the identity is not found', async () => {
-    //   findAndCountErrorAssertions<Identities>(service, model, _id, projection, options);
-    // });
   });
 
   describe('findById', () => {
@@ -111,9 +107,6 @@ describe('Identities Service', () => {
       findByIdAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
       findByIdErrorAssertions<Identities>(service, model, _id, projection, options);
     });
-    // it('should throw an error if the identity is not found', async () => {
-    //   findByIdErrorAssertions<Identities>(service, model, _id, projection, options);
-    // });
   });
 
   describe('findOne', () => {
@@ -121,9 +114,6 @@ describe('Identities Service', () => {
       findOneAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
       findOneErrorAssertions<Identities>(service, model, _id, projection, options);
     });
-    // it('should throw an error if the identity is not found', async () => {
-    //   findOneErrorAssertions<Identities>(service, model, _id, projection, options);
-    // });
   });
 
   describe('create', () => {
@@ -131,9 +121,6 @@ describe('Identities Service', () => {
       createAssertions<Identities>(service, model, newIdentityData, newIdentityData);
       createErrorAssertions<Identities>(service, model, newIdentityData);
     });
-    // it('should throw an error if the identity is not created', async () => {
-    //   createErrorAssertions<Identities>(service, model, newIdentityData);
-    // });
   });
 
   describe('update', () => {
@@ -149,17 +136,6 @@ describe('Identities Service', () => {
       updateAssertions(service, model, _id, updateData, updateOptions, updatedIdentityData);
       updateErrorAssertions(service, model, _id, updateData, updateOptions);
     });
-    // it('should throw an error if the identity is not found', async () => {
-    //   const updateData = {
-    //     'inetOrgPerson.cn': 'updated-cn',
-    //   };
-    //   const updateOptions: QueryOptions<Identities> & { rawResult: true } = {
-    //     options: options,
-    //     rawResult: true,
-    //   };
-
-    //   updateErrorAssertions(service, model, _id, updateData, updateOptions);
-    // });
   });
 
   describe('delete', () => {
@@ -167,8 +143,5 @@ describe('Identities Service', () => {
       deleteAssertions<Identities>(service, model, _id, options, newIdentityData);
       deleteErrorAssertions<Identities>(service, model, _id, options);
     });
-    // it('should throw an error if the identity is not found', async () => {
-    //   deleteErrorAssertions<Identities>(service, model, _id, options);
-    // });
   });
 });

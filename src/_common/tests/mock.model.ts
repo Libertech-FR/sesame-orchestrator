@@ -16,9 +16,14 @@ export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldTh
   // Mock the model methods
   // First call resolves, second call rejects
   const throwOrResolve = (resolvedValue, rejectedValue) =>
-    jest.fn().mockImplementationOnce(() => ({
-      exec: jest.fn().mockResolvedValueOnce(resolvedValue).mockRejectedValueOnce(rejectedValue),
-    }));
+    jest
+      .fn()
+      .mockImplementationOnce(() => ({
+        exec: jest.fn().mockResolvedValueOnce(resolvedValue),
+      }))
+      .mockImplementationOnce(() => ({
+        exec: jest.fn().mockRejectedValueOnce(rejectedValue),
+      }));
 
   model.find = throwOrResolve([stub], []);
   model.findOne = throwOrResolve(stub, NotFoundException);

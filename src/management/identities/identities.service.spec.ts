@@ -105,6 +105,9 @@ describe('Identities Service', () => {
   describe('findById', () => {
     it('should return a single identity by id or throw an error', async () => {
       findByIdAssertions<Identities>(service, model, _id, projection, options, newIdentityData);
+      //findByIdErrorAssertions<Identities>(service, _id, projection, options);
+    });
+    it('should return an empty array and count 0 documents', async () => {
       findByIdErrorAssertions<Identities>(service, _id, projection, options);
     });
   });

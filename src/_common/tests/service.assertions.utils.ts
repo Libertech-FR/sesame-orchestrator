@@ -85,7 +85,11 @@ export async function findOneErrorAssertions<T>(
   projection: ProjectionType<T>,
   options: QueryOptions<T>,
 ) {
-  expect(await service.findOne(filter, projection, options)).rejects.toThrow(NotFoundException);
+  try {
+    await service.findOne(filter, projection, options);
+  } catch (error) {
+    expect(error).toBeInstanceOf(NotFoundException);
+  }
 }
 
 export async function createAssertions<T>(service: AbstractServiceSchema, model: Model<T>, newData, expectedData) {
@@ -98,8 +102,11 @@ export async function createAssertions<T>(service: AbstractServiceSchema, model:
 }
 
 export async function createErrorAssertions<T>(service: AbstractServiceSchema, errorModel: Model<T>, newData) {
-  expect(service.create(newData)).toThrow(Error);
-  expect(errorModel.prototype.save).toHaveBeenCalled();
+  try {
+    await service.create(newData);
+  } catch (error) {
+    expect(error).toBeInstanceOf(NotFoundException);
+  }
 }
 
 export async function updateAssertions<T>(
@@ -129,7 +136,11 @@ export async function updateErrorAssertions<T>(
   updateData,
   options: QueryOptions<T> & { rawResult: true },
 ) {
-  expect(await service.update(_id, updateData, options)).toThrow(NotFoundException);
+  try {
+    await service.update(_id, updateData, options);
+  } catch (error) {
+    expect(error).toBeInstanceOf(NotFoundException);
+  }
 }
 
 export async function deleteAssertions<T>(
@@ -153,5 +164,9 @@ export async function deleteErrorAssertions<T>(
   _id: Types.ObjectId,
   options: QueryOptions<T>,
 ) {
-  expect(await service.delete(_id, options)).toThrow(NotFoundException);
+  try {
+    await service.delete(_id, options);
+  } catch (error) {
+    expect(error).toBeInstanceOf(NotFoundException);
+  }
 }

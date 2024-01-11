@@ -25,7 +25,6 @@ export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldTh
         exec: jest.fn().mockRejectedValueOnce(rejectedValue),
       }));
 
-  model.find = throwOrResolve([stub], []);
   model.findOne = throwOrResolve(stub, new NotFoundException());
   model.findById = throwOrResolve(stub, new NotFoundException());
   model.findByIdAndUpdate = throwOrResolve(updatedStub ? updatedStub : stub, new NotFoundException());
@@ -40,6 +39,15 @@ export function createMockModel<T>(model: Model<T>, stub, updatedStub?, shouldTh
     }))
     .mockImplementationOnce(() => ({
       exec: jest.fn().mockResolvedValueOnce(0),
+    }));
+
+  model.find = jest
+    .fn()
+    .mockImplementationOnce(() => ({
+      exec: jest.fn().mockResolvedValueOnce([stub]),
+    }))
+    .mockImplementationOnce(() => ({
+      exec: jest.fn().mockResolvedValueOnce([]),
     }));
 
   if (!model.prototype.save) {

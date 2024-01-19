@@ -19,6 +19,9 @@ dev: ## Run development server
 exec: ## Execute a command in the development container
 	@docker compose --project-directory docker run -it --rm $(DEV_CONTAINER_NAME) bash
 
+run-docs: ## Execute a command in the development container
+	@docker compose --project-directory docker run -p 8080:8080 -it --rm $(DEV_CONTAINER_NAME) yarn generate:docServer
+
 install: ## Execute a command in the development container
 	@docker compose --project-directory docker run -it --rm $(DEV_CONTAINER_NAME) yarn install
 

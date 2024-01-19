@@ -1,0 +1,474 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Sesame Orchestrator</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">Sesame Orchestrator</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content additional-page">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Documentation des Tests Jest et NestJS</h1>
+<h2>Table des matières</h2>
+<ul>
+<li><a href="#documentation-des-tests-jest-et-nestjs">Documentation des Tests Jest et NestJS</a><ul>
+<li><a href="#table-des-mati%C3%A8res">Table des matières</a></li>
+<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#pr%C3%A9requis">Prérequis</a></li>
+</ul>
+</li>
+<li><a href="#stubs">Stubs</a><ul>
+<li><a href="#exemple">Exemple</a></li>
+</ul>
+</li>
+<li><a href="#constantes">Constantes</a></li>
+<li><a href="#utilisation-de-mongodbtestinstance">Utilisation de MongoDbTestInstance</a><ul>
+<li><a href="#fonctions">Fonctions</a></li>
+<li><a href="#constantes-1">Constantes</a></li>
+<li><a href="#exemple-dutilisation">Exemple d&#39;utilisation</a></li>
+</ul>
+</li>
+<li><a href="#mock-du-module-et-cr%C3%A9er-des-mod%C3%A8les-simul%C3%A9s-avec-createmockmodel">Mock du module et créer des modèles simulés avec <code>createMockModel</code></a><ul>
+<li><a href="#exemple-1">Exemple</a></li>
+</ul>
+</li>
+<li><a href="#assertions-dans-les-tests">Assertions dans les tests</a><ul>
+<li><a href="#assertions-findandcount">Assertions findAndCount</a><ul>
+<li><a href="#exemple-2">Exemple</a></li>
+</ul>
+</li>
+<li><a href="#assertions-findbyid">Assertions findById</a><ul>
+<li><a href="#exemple-3">Exemple</a></li>
+</ul>
+</li>
+<li><a href="#assertions-findone">Assertions findOne</a><ul>
+<li><a href="#exemple-4">Exemple</a></li>
+</ul>
+</li>
+<li><a href="#assertions-create">Assertions create</a><ul>
+<li><a href="#exemple-5">Exemple</a></li>
+</ul>
+</li>
+<li><a href="#assertions-update">Assertions update</a><ul>
+<li><a href="#exemple-6">Exemple</a></li>
+</ul>
+</li>
+<li><a href="#assertions-delete">Assertions delete</a><ul>
+<li><a href="#exemple-7">Exemple</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#exemple-complet-dun-cas-de-test">Exemple complet d&#39;un cas de test</a><ul>
+<li><a href="#configuration-du-test">Configuration du Test</a></li>
+</ul>
+</li>
+<li><a href="#r%C3%A9f%C3%A9rences-suppl%C3%A9mentaires">Références supplémentaires</a></li>
+</ul>
+</li>
+</ul>
+<h2>Introduction</h2>
+<p>Ce document fournit des directives et des exemples pour tester les services NestJS en utilisant Jest et MongoDB Memory Server. Dans ce document, nous allons prendre comme exemple le service <code>IdentitiesService</code> et le modèle <code>Identities</code>.</p>
+<p>Cette methode ne fonctionne que pour les services CRUD qui héritent d&#39;<code>AbstractServiceSchema</code>.</p>
+<h3>Prérequis</h3>
+<ul>
+<li>Node.js</li>
+<li>NestJS</li>
+<li>Jest</li>
+<li>MongoDB Memory Server</li>
+</ul>
+<h2>Stubs</h2>
+<p>Les stubs sont utilisés pour simuler des données dans les tests. Les stubs sont créés dans le dossier <code>stubs</code> au sein du module ou se trouve le test et sont utilisés dans les tests.</p>
+<h3>Exemple</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">import { IdentitiesUpdateDto } from &#39;./../_dto/identities.dto&#39;;
+import { IdentitiesDto } from &#39;~/management/identities/_dto/identities.dto&#39;;
+import { IdentityLifecycle } from &#39;~/management/identities/_enums/lifecycle.enum&#39;;
+import { IdentityState } from &#39;~/management/identities/_enums/states.enum&#39;;
+import { additionalFieldsPartDtoStub } from &#39;./_parts/addtionalFields.dto.stub&#39;;
+import { inetOrgPersonDtoStub } from &#39;./_parts/inetOrgPerson.dto.stub&#39;;
+
+export const IdentitiesDtoStub = (): IdentitiesDto =&gt; {
+  return {
+    state: IdentityState.TO_CREATE,
+    lifecycle: IdentityLifecycle.INACTIVE,
+    inetOrgPerson: inetOrgPersonDtoStub(),
+    additionalFields: additionalFieldsPartDtoStub(),
+  };
+};
+
+export const IdentitiesUpdateDtoStub = (): IdentitiesUpdateDto =&gt; {
+  const inetOrgPerson = inetOrgPersonDtoStub();
+  inetOrgPerson.cn = &#39;updated-cn&#39;;
+  return {
+    state: IdentityState.TO_CREATE,
+    lifecycle: IdentityLifecycle.INACTIVE,
+    inetOrgPerson,
+    additionalFields: additionalFieldsPartDtoStub(),
+  };
+};</code></pre></div><p>Ici pour clarifier les données, nous avons déporté une partie des données dans des fichiers séparés stocké dans le dossier <code>_parts</code> du dossier <code>stubs</code>.</p>
+<p>Voici un exemple de stub pour <code>inetOrgPersonDtoStub</code>:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">import { inetOrgPersonDto } from &#39;~/management/identities/_dto/_parts/inetOrgPerson.dto&#39;;
+
+export const inetOrgPersonDtoStub = (): inetOrgPersonDto =&gt; {
+  return {
+    cn: &#39;cn&#39;,
+    sn: &#39;sn&#39;,
+    uid: &#39;uid&#39;,
+    displayName: &#39;displayName&#39;,
+    facsimileTelephoneNumber: &#39;facsimileTelephoneNumber&#39;,
+    givenName: &#39;givenName&#39;,
+    labeledURI: &#39;labeledURI&#39;,
+    mail: &#39;mail&#39;,
+    mobile: &#39;mobile&#39;,
+    postalAddress: &#39;postalAddress&#39;,
+    preferredLanguage: &#39;preferredLanguage&#39;,
+    telephoneNumber: &#39;telephoneNumber&#39;,
+    title: &#39;title&#39;,
+    userCertificate: &#39;userCertificate&#39;,
+    userPassword: &#39;userPassword&#39;,
+  };
+};</code></pre></div><h2>Constantes</h2>
+<p>Les constantes suivantes sont utilisées dans les tests.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">describe(&#39;Identities Service&#39;, () =&gt; {
+  let mongoDbTestInstance: MongoDbTestInstance;
+  let service: IdentitiesService;
+  let model: Model&lt;Identities&gt;;
+  let identitiesModel: Model&lt;Identities&gt;;
+  const _id = new Types.ObjectId();
+  const newIdentityData = {
+    _id,
+    ...IdentitiesDtoStub(),
+  };
+  const updatedIdentityData = {
+    _id,
+    ...IdentitiesUpdateDtoStub(),
+  };
+
+  const options: QueryOptions&lt;Identities&gt; = {
+    limit: 10,
+    skip: 0,
+    sort: {
+      &#39;metadata.createdAt&#39;: &#39;asc&#39;,
+    },
+  };
+  const projection: ProjectionType&lt;Identities&gt; = {
+    state: 1,
+    inetOrgPerson: 1,
+    additionalFields: 1,
+  };
+  const filter: FilterQuery&lt;Identities&gt; = {};
+});</code></pre></div><h2>Utilisation de MongoDbTestInstance</h2>
+<p>La classe <code>MongoDbTestInstance</code> est utilisée pour créer une instance MongoDB temporaire pour les tests.</p>
+<h3>Fonctions</h3>
+<p><code>start()</code> démarre une instance MongoDB temporaire pour les tests.</p>
+<p><code>stop()</code> arrête l&#39;instance MongoDB temporaire.</p>
+<p><code>clearDatabase()</code> supprime toutes les données de la base de données temporaire.</p>
+<p><code>getModel()</code> crée un modèle Mongoose à partir d&#39;un schéma Mongoose.</p>
+<h3>Constantes</h3>
+<p><code>mongod: MongoMemoryServer</code> est l&#39;instance MongoDB temporaire.</p>
+<p><code>mongoConnection: Connection</code> est la connexion à l&#39;instance MongoDB temporaire.</p>
+<h3>Exemple d&#39;utilisation</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">beforeAll(async () =&gt; {
+    mongoDbTestInstance = new MongoDbTestInstance();
+    await mongoDbTestInstance.start();
+    identitiesModel = await mongoDbTestInstance.getModel&lt;Identities&gt;(Identities.name, IdentitiesSchema);
+});
+
+afterEach(async () =&gt; {
+    await mongoDbTestInstance.clearDatabase();
+});
+
+afterAll(async () =&gt; {
+    await mongoDbTestInstance.stop();
+});</code></pre></div><h2>Mock du module et créer des modèles simulés avec <code>createMockModel</code></h2>
+<p><code>createMockModel</code> est utilisé pour simuler des modèles Mongoose pour les tests.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">function createMockModel&lt;T&gt;(model: Model&lt;T&gt;, stub, updatedStub?): Model&lt;T&gt;</code></pre></div><p><code>model</code> est le modèle Mongoose à simuler.</p>
+<p><code>stub</code> est le stub à utiliser pour simuler les données.</p>
+<p><code>updatedStub</code> est le stub à utiliser pour simuler les données mises à jour.</p>
+<p>La fonction retourne un modèle Mongoose simulé.</p>
+<h3>Exemple</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">  beforeEach(async () =&gt; {
+    model = createMockModel(identitiesModel, newIdentityData, updatedIdentityData);
+
+    // Mock the module
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [IdentitiesController],
+      providers: [
+        IdentitiesService,
+        {
+          provide: getModelToken(Identities.name),
+          useValue: identitiesModel,
+        },
+        IdentitiesValidationService,
+      ],
+      imports: [IdentitiesValidationModule],
+    }).compile();
+
+    // Get the service
+    service = module.get&lt;IdentitiesService&gt;(IdentitiesService);
+  });</code></pre></div><h2>Assertions dans les tests</h2>
+<p>Les fonctions fournies aident à affirmer diverses conditions dans les tests. Ces méthodes sont utilisables uniquement pour les services CRUD qui héritent d&#39;<code>AbstractServiceSchema</code>.</p>
+<h3>Assertions findAndCount</h3>
+<p><code>findAndCountAssertions</code> vérifie la méthode de service <code>findAndCount</code>.</p>
+<h4>Exemple</h4>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">  describe(&#39;findAndCount&#39;, () =&gt; {
+    it(&#39;should return an array of identities or throw an error&#39;, async () =&gt; {
+      findAndCountAssertions&lt;Identities&gt;(service, model, filter, projection, options, newIdentityData);
+      findAndCountErrorAssertions&lt;Identities&gt;(service, filter, projection, options);
+    });
+  });</code></pre></div><h3>Assertions findById</h3>
+<p><code>findByIdAssertions</code> vérifie la fonctionnalité de la méthode de service <code>findById</code>.</p>
+<h4>Exemple</h4>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">  describe(&#39;findById&#39;, () =&gt; {
+    it(&#39;should return a single identity by id or throw an error&#39;, async () =&gt; {
+      findByIdAssertions&lt;Identities&gt;(service, model, _id, projection, options, newIdentityData);
+    });
+    it(&#39;should return an empty array and count 0 documents&#39;, async () =&gt; {
+      findByIdErrorAssertions&lt;Identities&gt;(service, _id, projection, options);
+    });
+  });</code></pre></div><h3>Assertions findOne</h3>
+<p><code>findOneAssertions</code> assure le bon fonctionnement de la méthode <code>findOne</code> du service.</p>
+<h4>Exemple</h4>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">  describe(&#39;findOne&#39;, () =&gt; {
+    it(&#39;should return a single identity matching the filter or throw an error&#39;, async () =&gt; {
+      findOneAssertions&lt;Identities&gt;(service, model, _id, projection, options, newIdentityData);
+    });
+    it(&#39;should throw a Notfound error&#39;, async () =&gt; {
+      findOneErrorAssertions&lt;Identities&gt;(service, _id, projection, options);
+    });
+  });</code></pre></div><h3>Assertions create</h3>
+<p><code>createAssertions</code> teste la méthode <code>create</code> du service.</p>
+<h4>Exemple</h4>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">  describe(&#39;create&#39;, () =&gt; {
+    it(&#39;should create and return a new identity or throw an error&#39;, async () =&gt; {
+      createAssertions&lt;Identities&gt;(service, model, newIdentityData, newIdentityData);
+    });
+    it(&#39;should throw a Notfound error&#39;, async () =&gt; {
+      createErrorAssertions&lt;Identities&gt;(service, newIdentityData);
+    });
+  });</code></pre></div><h3>Assertions update</h3>
+<p><code>updateAssertions</code> évalue la fonctionnalité <code>update</code>.</p>
+<h4>Exemple</h4>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">  describe(&#39;update&#39;, () =&gt; {
+    it(&#39;should update and return an identity or throw an error&#39;, async () =&gt; {
+      const updateData = {
+        &#39;field&#39;: &#39;updated-field&#39;,
+      };
+      const updateOptions: QueryOptions&lt;Identities&gt; &amp; { rawResult: true } = {
+        options: options,
+        rawResult: true,
+      };
+
+      updateAssertions(service, model, _id, updateData, updateOptions, updatedIdentityData);
+    });
+    it(&#39;should throw a Notfound error&#39;, async () =&gt; {
+      const updateData = {
+        &#39;field&#39;: &#39;updated-field&#39;,
+      };
+      const updateOptions: QueryOptions&lt;Identities&gt; &amp; { rawResult: true } = {
+        options: options,
+        rawResult: true,
+      };
+
+      updateErrorAssertions(service, _id, updateData, updateOptions);
+    });
+  });</code></pre></div><h3>Assertions delete</h3>
+<p><code>deleteAssertions</code> évalue la méthode <code>delete</code> dans le service.</p>
+<h4>Exemple</h4>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">  describe(&#39;delete&#39;, () =&gt; {
+    it(&#39;should delete and return the deleted identity or throw an error&#39;, async () =&gt; {
+      deleteAssertions&lt;Identities&gt;(service, model, _id, options, newIdentityData);
+    });
+    it(&#39;should throw a Notfound error&#39;, async () =&gt; {
+      deleteErrorAssertions&lt;Identities&gt;(service, _id, options);
+    });
+  });</code></pre></div><h2>Exemple complet d&#39;un cas de test</h2>
+<p>Un exemple de cas de test pour <code>IdentitiesService</code> en utilisant les méthodes ci-dessus.</p>
+<h3>Configuration du Test</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">beforeAll(async () =&gt; {
+    mongoDbTestInstance = new MongoDbTestInstance();
+    await mongoDbTestInstance.start();
+    identitiesModel = await mongoDbTestInstance.getModel&lt;Identities&gt;(Identities.name, IdentitiesSchema);
+});
+
+beforeEach(async () =&gt; {
+    model = createMockModel(identitiesModel, newIdentityData, updatedIdentityData);
+    // Autres configurations de test
+});
+
+afterEach(async () =&gt; {
+    await mongoDbTestInstance.clearDatabase();
+    jest.clearAllMocks();
+});
+
+afterAll(async () =&gt; {
+    await mongoDbTestInstance.stop();
+});</code></pre></div><h2>Références supplémentaires</h2>
+<p>Cette documentation couvre l&#39;essentiel des tests des services NestJS en utilisant Jest. Pour plus d&#39;informations détaillées, référez-vous à la documentation de Jest et NestJS.</p>
+<ul>
+<li><a href="https://docs.nestjs.com/fundamentals/testing">Tests NestJS</a></li>
+<li><a href="https://jestjs.io/docs/en/getting-started">Jest</a></li>
+<li><a href="https://github.com/nodkz/mongodb-memory-server">MongoDB Memory Server</a></li>
+<li><a href="https://betterprogramming.pub/testing-controllers-in-nestjs-and-mongo-with-jest-63e1b208503c">Article sur les tests en  NestJS avec Mongo</a></li>
+</ul>
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'additional-page';
+            var COMPODOC_CURRENT_PAGE_URL = 'ecriture-des-test-et-utilisation-des-utilitaires.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

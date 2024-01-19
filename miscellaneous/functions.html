@@ -122,10 +122,40 @@
                             <a href="#AutoIncrementPlugin" title="src/_common/plugins/mongoose/auto-increment.plugin.ts" ><b>AutoIncrementPlugin</b>&nbsp;&nbsp;&nbsp;(src/.../auto-increment.plugin.ts)</a>
                         </li>
                         <li>
-                            <a href="#createMockModel" title="src/_common/testsHelpers/mock.model.ts" ><b>createMockModel</b>&nbsp;&nbsp;&nbsp;(src/.../mock.model.ts)</a>
+                            <a href="#createAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>createAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#createErrorAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>createErrorAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#createMockModel" title="src/_common/tests/mock.model.ts" ><b>createMockModel</b>&nbsp;&nbsp;&nbsp;(src/.../mock.model.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#deleteAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>deleteAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#deleteErrorAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>deleteErrorAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
                         </li>
                         <li>
                             <a href="#FileRawBodyInterceptor" title="src/_common/interceptors/file-raw-body.interceptor.ts" ><b>FileRawBodyInterceptor</b>&nbsp;&nbsp;&nbsp;(src/.../file-raw-body.interceptor.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#findAndCountAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>findAndCountAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#findAndCountErrorAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>findAndCountErrorAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#findByIdAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>findByIdAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#findByIdErrorAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>findByIdErrorAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#findOneAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>findOneAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#findOneErrorAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>findOneErrorAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
                         </li>
                         <li>
                             <a href="#isNullOrUndefined" title="src/_common/plugins/mongoose/auto-increment.plugin.ts" ><b>isNullOrUndefined</b>&nbsp;&nbsp;&nbsp;(src/.../auto-increment.plugin.ts)</a>
@@ -141,6 +171,12 @@
                         </li>
                         <li>
                             <a href="#swagger" title="src/swagger.ts" ><b>swagger</b>&nbsp;&nbsp;&nbsp;(src/.../swagger.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#updateAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>updateAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#updateErrorAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>updateErrorAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
                         </li>
                     </ul>
                 </td>
@@ -281,7 +317,1143 @@
             </tr>
         </tbody>
     </table>
-</section>    <h3>src/_common/testsHelpers/mock.model.ts</h3>
+</section>    <h3>src/_common/tests/service.assertions.utils.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createAssertions"></a>
+                    <span class="name">
+                        <span ><b>createAssertions</b></span>
+                        <a href="#createAssertions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>createAssertions(service: <a href="../injectables/AbstractServiceSchema.html" target="_self">AbstractServiceSchema</a>, model: Model, newData, expectedData)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>service</td>
+                                            <td>
+                                                            <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>model</td>
+                                            <td>
+                                                        <code>Model</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>newData</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>expectedData</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createErrorAssertions"></a>
+                    <span class="name">
+                        <span ><b>createErrorAssertions</b></span>
+                        <a href="#createErrorAssertions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>createErrorAssertions(service: <a href="../injectables/AbstractServiceSchema.html" target="_self">AbstractServiceSchema</a>, newData)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>service</td>
+                                            <td>
+                                                            <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>newData</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteAssertions"></a>
+                    <span class="name">
+                        <span ><b>deleteAssertions</b></span>
+                        <a href="#deleteAssertions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>deleteAssertions(service: <a href="../injectables/AbstractServiceSchema.html" target="_self">AbstractServiceSchema</a>, model: Model, _id, options: QueryOptions, expectedData)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>service</td>
+                                            <td>
+                                                            <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>model</td>
+                                            <td>
+                                                        <code>Model</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>_id</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>QueryOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>expectedData</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteErrorAssertions"></a>
+                    <span class="name">
+                        <span ><b>deleteErrorAssertions</b></span>
+                        <a href="#deleteErrorAssertions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>deleteErrorAssertions(service: <a href="../injectables/AbstractServiceSchema.html" target="_self">AbstractServiceSchema</a>, _id, options: QueryOptions)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>service</td>
+                                            <td>
+                                                            <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>_id</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>QueryOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAndCountAssertions"></a>
+                    <span class="name">
+                        <span ><b>findAndCountAssertions</b></span>
+                        <a href="#findAndCountAssertions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findAndCountAssertions(service: <a href="../injectables/AbstractServiceSchema.html" target="_self">AbstractServiceSchema</a>, model: Model, filter: FilterQuery, projection: ProjectionType, options: QueryOptions, expectedData)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>service</td>
+                                            <td>
+                                                            <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>model</td>
+                                            <td>
+                                                        <code>Model</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>filter</td>
+                                            <td>
+                                                        <code>FilterQuery</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>projection</td>
+                                            <td>
+                                                        <code>ProjectionType</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>QueryOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>expectedData</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAndCountErrorAssertions"></a>
+                    <span class="name">
+                        <span ><b>findAndCountErrorAssertions</b></span>
+                        <a href="#findAndCountErrorAssertions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findAndCountErrorAssertions(service: <a href="../injectables/AbstractServiceSchema.html" target="_self">AbstractServiceSchema</a>, filter: FilterQuery, projection: ProjectionType, options: QueryOptions)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>service</td>
+                                            <td>
+                                                            <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>filter</td>
+                                            <td>
+                                                        <code>FilterQuery</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>projection</td>
+                                            <td>
+                                                        <code>ProjectionType</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>QueryOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByIdAssertions"></a>
+                    <span class="name">
+                        <span ><b>findByIdAssertions</b></span>
+                        <a href="#findByIdAssertions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findByIdAssertions(service: <a href="../injectables/AbstractServiceSchema.html" target="_self">AbstractServiceSchema</a>, model: Model, _id, projection: ProjectionType, options: QueryOptions, expectedData)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>service</td>
+                                            <td>
+                                                            <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>model</td>
+                                            <td>
+                                                        <code>Model</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>_id</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>projection</td>
+                                            <td>
+                                                        <code>ProjectionType</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>QueryOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>expectedData</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByIdErrorAssertions"></a>
+                    <span class="name">
+                        <span ><b>findByIdErrorAssertions</b></span>
+                        <a href="#findByIdErrorAssertions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findByIdErrorAssertions(service: <a href="../injectables/AbstractServiceSchema.html" target="_self">AbstractServiceSchema</a>, _id, projection: ProjectionType, options: QueryOptions)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>service</td>
+                                            <td>
+                                                            <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>_id</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>projection</td>
+                                            <td>
+                                                        <code>ProjectionType</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>QueryOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findOneAssertions"></a>
+                    <span class="name">
+                        <span ><b>findOneAssertions</b></span>
+                        <a href="#findOneAssertions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findOneAssertions(service: <a href="../injectables/AbstractServiceSchema.html" target="_self">AbstractServiceSchema</a>, model: Model, filter: FilterQuery, projection: ProjectionType, options: QueryOptions, expectedData)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>service</td>
+                                            <td>
+                                                            <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>model</td>
+                                            <td>
+                                                        <code>Model</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>filter</td>
+                                            <td>
+                                                        <code>FilterQuery</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>projection</td>
+                                            <td>
+                                                        <code>ProjectionType</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>QueryOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>expectedData</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findOneErrorAssertions"></a>
+                    <span class="name">
+                        <span ><b>findOneErrorAssertions</b></span>
+                        <a href="#findOneErrorAssertions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findOneErrorAssertions(service: <a href="../injectables/AbstractServiceSchema.html" target="_self">AbstractServiceSchema</a>, filter: FilterQuery, projection: ProjectionType, options: QueryOptions)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>service</td>
+                                            <td>
+                                                            <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>filter</td>
+                                            <td>
+                                                        <code>FilterQuery</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>projection</td>
+                                            <td>
+                                                        <code>ProjectionType</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>QueryOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateAssertions"></a>
+                    <span class="name">
+                        <span ><b>updateAssertions</b></span>
+                        <a href="#updateAssertions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>updateAssertions(service: <a href="../injectables/AbstractServiceSchema.html" target="_self">AbstractServiceSchema</a>, model: Model, _id, updateData, options, expectedData)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>service</td>
+                                            <td>
+                                                            <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>model</td>
+                                            <td>
+                                                        <code>Model</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>_id</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>updateData</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>expectedData</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateErrorAssertions"></a>
+                    <span class="name">
+                        <span ><b>updateErrorAssertions</b></span>
+                        <a href="#updateErrorAssertions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>updateErrorAssertions(service: <a href="../injectables/AbstractServiceSchema.html" target="_self">AbstractServiceSchema</a>, _id, updateData, options)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>service</td>
+                                            <td>
+                                                            <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>_id</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>updateData</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/_common/tests/mock.model.ts</h3>
     <section data-compodoc="block-methods">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>
@@ -305,6 +1477,8 @@
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>Mock a model</p>
+</div>
 
                             <div class="io-description">
                                 <b>Parameters :</b>

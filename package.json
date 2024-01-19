@@ -20,7 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "schematics:inherit": "nest generate -c @kradihsoy/lt-schematics inherit",
-    "generate:doc": "npx @compodoc/compodoc -p tsconfig.json -d docs --includes ./docs -n 'Sesame Orchestrator'"
+    "generate:doc": "npx @compodoc/compodoc -p tsconfig.json -d docs --includes ./docs --includesName 'Documentation complémentaire' -n 'Sesame Orchestrator'"
   },
   "dependencies": {
     "@kradihsoy/lt-schematics": "^1.0.13",

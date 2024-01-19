@@ -1,14 +1,32 @@
 [
     {
-        "title": "Demon",
-        "file": "DAEMON.md"
+        "title": "Documentation technique",
+        "children": [
+            {
+                "title": "Demon",
+                "file": "./technical/DAEMON.md"
+            },
+            {
+                "title": "Queue processor service",
+                "file": "./technical/QueueProcessorService.md"
+            },
+            {
+                "title": "Ecriture des test et utilisation des utilitaires",
+                "file": "./technical/Tests.md"
+            },
+            {
+                "title": "Validation des attributss additionnels des identités",
+                "file": "IdentitiesValidation.md"
+            }
+        ]
     },
     {
-        "title": "Queue processor service",
-        "file": "QueueProcessorService.md"
-    },
-    {
-        "title": "Ecriture des test et utilisation des utilitaires",
-        "file": "Tests.md"
+        "title": "Documentation utilisateur",
+        "children": [
+            {
+                "title": "Installation",
+                "file": "./user/INSTALL.md"
+            }
+        ]
     }
 ]

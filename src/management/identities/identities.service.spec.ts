@@ -28,7 +28,6 @@ describe('Identities Service', () => {
   let mongoDbTestInstance: MongoDbTestInstance;
   let service: IdentitiesService;
   let model: Model<Identities>;
-  //let errorModel: Model<Identities>;
   let identitiesModel: Model<Identities>;
   const _id = new Types.ObjectId();
   const newIdentityData = {

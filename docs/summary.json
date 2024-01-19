@@ -17,7 +17,7 @@
             },
             {
                 "title": "Validation des attributss additionnels des identités",
-                "file": "IdentitiesValidation.md"
+                "file": "./technical/IdentitiesValidation.md"
             }
         ]
     },
@@ -25,8 +25,8 @@
         "title": "Documentation utilisateur",
         "children": [
             {
-                "title": "Installation",
-                "file": "./user/INSTALL.md"
+                "title": "IdentitiesValidation",
+                "file": "./user/IdentitiesValidation.md"
             }
         ]
     }

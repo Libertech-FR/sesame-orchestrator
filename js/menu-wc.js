@@ -49,18 +49,35 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ? 'data-bs-target="#additional-pages"'
                             : 'data-bs-target="#xs-additional-pages"' }>
                             <span class="icon ion-ios-book"></span>
-                            <span>Additional documentation</span>
+                            <span>Documentation complémentaire</span>
                             <span class="icon ion-ios-arrow-down"></span>
                         </div>
                         <ul class="links collapse " ${ isNormalMode ? 'id="additional-pages"' : 'id="xs-additional-pages"' }>
-                                    <li class="link ">
-                                        <a href="additional-documentation/demon.html" data-type="entity-link" data-context-id="additional">Demon</a>
-                                    </li>
-                                    <li class="link ">
-                                        <a href="additional-documentation/queue-processor-service.html" data-type="entity-link" data-context-id="additional">Queue processor service</a>
-                                    </li>
-                                    <li class="link ">
-                                        <a href="additional-documentation/ecriture-des-test-et-utilisation-des-utilitaires.html" data-type="entity-link" data-context-id="additional">Ecriture des test et utilisation des utilitaires</a>
+                                    <li class="chapter inner">
+                                        <a data-type="chapter-link" href="additional-documentation/documentation-technique.html" data-context-id="additional">
+                                            <div class="menu-toggler linked" data-bs-toggle="collapse" ${ isNormalMode ?
+                                            'data-bs-target="#additional-page-2328095069b5635ad0864569ae0154f42bca92591d9104ef9eb8ab1bc580a63b616a32ac8fbd616c322ffcdfdf35fc298440d563a18939223071682f47311fb6"' : 'data-bs-target="#xs-additional-page-2328095069b5635ad0864569ae0154f42bca92591d9104ef9eb8ab1bc580a63b616a32ac8fbd616c322ffcdfdf35fc298440d563a18939223071682f47311fb6"' }>
+                                                <span class="link-name">Documentation technique</span>
+                                                <span class="icon ion-ios-arrow-down"></span>
+                                            </div>
+                                        </a>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="additional-page-2328095069b5635ad0864569ae0154f42bca92591d9104ef9eb8ab1bc580a63b616a32ac8fbd616c322ffcdfdf35fc298440d563a18939223071682f47311fb6"' : 'id="xs-additional-page-2328095069b5635ad0864569ae0154f42bca92591d9104ef9eb8ab1bc580a63b616a32ac8fbd616c322ffcdfdf35fc298440d563a18939223071682f47311fb6"' }>
+                                            <li class="link for-chapter2">
+                                                <a href="additional-documentation/documentation-technique/demon.html" data-type="entity-link" data-context="sub-entity" data-context-id="additional">Demon</a>
+                                            </li>
+                                            <li class="link for-chapter2">
+                                                <a href="additional-documentation/documentation-technique/queue-processor-service.html" data-type="entity-link" data-context="sub-entity" data-context-id="additional">Queue processor service</a>
+                                            </li>
+                                            <li class="link for-chapter2">
+                                                <a href="additional-documentation/documentation-technique/ecriture-des-test-et-utilisation-des-utilitaires.html" data-type="entity-link" data-context="sub-entity" data-context-id="additional">Ecriture des test et utilisation des utilitaires</a>
+                                            </li>
+                                            <li class="link for-chapter2">
+                                                <a href="additional-documentation/documentation-technique/validation-des-attributss-additionnels-des-identités.html" data-type="entity-link" data-context="sub-entity" data-context-id="additional">Validation des attributss additionnels des identités</a>
+                                            </li>
+                                            <li class="link for-chapter2">
+                                                <a href="additional-documentation/documentation-utilisateur/identitiesvalidation.html" data-type="entity-link" data-context="sub-entity" data-context-id="additional">IdentitiesValidation</a>
+                                            </li>
+                                        </ul>
                                     </li>
                         </ul>
                     </li>

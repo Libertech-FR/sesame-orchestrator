@@ -106,7 +106,9 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (afterEvent?.data) data = { ...data, ...afterEvent.data }
       }
     }
-    if (!data) throw new NotFoundException()
+    if (!data) {
+      this.logger.debug(['findById', JSON.stringify(Object.values(arguments))].join(' '))
+      throw new NotFoundException()}
     return data
   }
 
@@ -129,7 +131,9 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       }
     }
     let data = await this._model.findOne<Query<T | null, T, any, T>>(filter, projection, options).exec()
-    if (!data) throw new NotFoundException()
+    if (!data) {
+      this.logger.debug(['findById', JSON.stringify(Object.values(arguments))].join(' '))
+      throw new NotFoundException()}
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterFindOne'].join(EventEmitterSeparator),
@@ -226,7 +230,9 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         } as QueryOptions<T> & { includeResultMetadata: true },
       )
       .exec()
-    if (!updated) throw new NotFoundException()
+    if (!updated) {
+      this.logger.debug(['findById', JSON.stringify(Object.values(arguments))].join(' '))
+      throw new NotFoundException()}
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterFindAndCount'].join(EventEmitterSeparator),
@@ -252,7 +258,9 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       }
     }
     let deleted = await this._model.findByIdAndDelete<Query<T | null, T, any, T>>({ _id }, options).exec()
-    if (!deleted) throw new NotFoundException()
+    if (!deleted) {
+      this.logger.debug(['findById', JSON.stringify(Object.values(arguments))].join(' '))
+      throw new NotFoundException()}
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterFindAndCount'].join(EventEmitterSeparator),

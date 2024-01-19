@@ -4,9 +4,10 @@ import { AuthModule } from './auth/auth.module';
 import { CoreService } from './core.service';
 import { CoreController } from './core.controller';
 import { BackendsModule } from './backends/backends.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
-  imports: [AuthModule, BackendsModule],
+  imports: [AuthModule, BackendsModule, LoggerModule],
   providers: [CoreService],
   controllers: [CoreController],
 })

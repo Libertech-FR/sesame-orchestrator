@@ -8,6 +8,8 @@ import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { RedisOptions } from 'ioredis';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -52,5 +54,7 @@ import { RedisOptions } from 'ioredis';
     CoreModule.register(),
     ManagementModule.register(),
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

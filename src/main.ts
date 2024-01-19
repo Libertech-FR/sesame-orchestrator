@@ -3,11 +3,55 @@ import { AppModule } from './app.module';
 import configInstance from './config';
 import { LogLevel, Logger } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
+import { createLogger } from 'winston';
+import * as winston from 'winston';
+import 'winston-mongodb';
 
 declare const module: any;
 (async (): Promise<void> => {
+  const winstonFormat = {
+    pretty: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.timestamp(),
+      nestWinstonModuleUtilities.format.nestLike('Sesame-orchestrator', {
+        colors: true,
+        prettyPrint: true,
+      }),
+    ),
+    json: winston.format.combine(
+      winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), // Timestamp format
+      winston.format.errors({ stack: true }), // Log stack trace if available
+      winston.format.json(), // Format logs as JSON
+      winston.format.metadata({ fillExcept: ['message', 'level', 'timestamp', 'label'] }), // Add additional metadata
+    ),
+  };
+
+  const winstonTransports = {
+    console: new winston.transports.Console({
+      level: 'info',
+      format: winstonFormat.pretty,
+    }),
+    mongodb: new winston.transports.MongoDB({
+      db: configInstance().mongoose.uri,
+      collection: 'logs',
+      level: 'debug',
+      options: {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      },
+      format: winstonFormat.json,
+    }),
+  };
+  const winstonInstance = createLogger({
+    transports: [winstonTransports.console, winstonTransports.mongodb],
+  });
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: setLogLevel() as LogLevel[],
+    //logger: setLogLevel() as LogLevel[],
+    logger: WinstonModule.createLogger({
+      instance: winstonInstance,
+    }),
     cors: true,
   });
   // app.use(rawBodyBuffer(cfg?.application?.bodyParser));

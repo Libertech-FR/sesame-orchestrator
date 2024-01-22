@@ -4,7 +4,7 @@
 Le projet Sésame vise à développer une application open source de synchronisation d'identités, permettant de gérer la synchronisation entre différentes sources de données (bases de données, annuaires LDAP/Active Directory, applications tierces). Le système se compose de deux modules principaux, l'orchestrateur et le daemon. Et de scripts et projets tel que les backends de synchronisation et les interfaces utilisateur frontend pour la configuration et la manipulation des données.
 
 ## Schemas
-  <iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FOplQ0tHFHS5rFz5K6OCgEd%2FSesame%3Ftype%3Dwhiteboard%26node-id%3D0%253A1%26t%3DYRLiiC1pQyJ7uT2U-1" allowfullscreen></iframe>
+  <iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="1080" height="1350" src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FOplQ0tHFHS5rFz5K6OCgEd%2FSesame%3Ftype%3Dwhiteboard%26node-id%3D0%253A1%26t%3DYRLiiC1pQyJ7uT2U-1" allowfullscreen></iframe>
 
 ## Fonctionnalités Principales
 1. **Orchestrateur :**

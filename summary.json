@@ -1,5 +1,9 @@
 [
     {
+        "title": "Cahier des charges",
+        "file": "Specifications.md"
+    },
+    {
         "title": "Documentation technique",
         "file": "Documentation_technique.md",
         "children": [

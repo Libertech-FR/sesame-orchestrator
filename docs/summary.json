@@ -27,6 +27,7 @@
     },
     {
         "title": "Documentation utilisateur",
+        "file": "Documentation_utilisateur.md",
         "children": [
             {
                 "title": "IdentitiesValidation",

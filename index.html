@@ -93,19 +93,43 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
+<h1>Projet Sésame - Synchronisation d&#39;Identités Multi-sources</h1>
 <h2>Description</h2>
-<p>Orchestrator du projet Sesame</p>
-<h2>Installation</h2>
-<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">$ yarn install</code></pre></div><h2>Running the app</h2>
-<b>Example :</b><div><pre class="line-numbers"><code class="language-bash"># development
-$ yarn start:dev</code></pre></div><h2>Variables d&#39;environnements</h2>
+<p>Sésame est une application open source conçue pour faciliter la synchronisation d&#39;identités entre différentes sources de données, y compris des bases de données, des annuaires LDAP/Active Directory et des applications tierces, vers des serveurs OpenLDAP ou Active Directory. Le projet se compose de deux modules principaux : l&#39;orchestrateur et le démon.</p>
+<h2>Modules</h2>
+<h3>Orchestrateur</h3>
+<ul>
+<li>Gère la synchronisation des identités.</li>
+<li>Maintient une base d&#39;identités pour faciliter la synchronisation.</li>
+<li>Permet la configuration de schémas additionnels pour une flexibilité totale.</li>
+<li>Expose des entrypoints via une API REST avec des tokens JWT.</li>
+</ul>
+<h3>Deamon</h3>
+<ul>
+<li>Déclenche les scripts backend pour effectuer les opérations de synchronisation.</li>
+<li>Utilise BullMQ et Redis pour communiquer avec l&#39;orchestrateur.</li>
+</ul>
+<h2>Schémas d&#39;Identité</h2>
+<ul>
+<li>Utilise le schéma LDAP <code>InetOrgPerson</code> pour stocker les informations dans une base de données MongoDB.</li>
+<li>Possibilité de configurer des schémas additionnels pour des champs différents dans chaque enregistrement.</li>
+<li>Permet de définir le typage, les règles, et la présence des champs dans les identités.</li>
+<li>Schémas optionnels tels que <code>Supann</code> et/ou <code>Renater</code> pour une utilisation fréquente.</li>
+</ul>
+<h2>Technologies utilisées</h2>
+<ul>
+<li>Langages : NodeJS et NestJS.</li>
+<li>Communication Démon-Orchestrateur : BullMQ et Redis.</li>
+<li>Authentification Orchestrateur : Comptes stockés dans MongoDB, mots de passe dans un serveur tiers (OpenLDAP).</li>
+<li>Backends : Scripts système en Python, PowerShell, Perl, Bash, etc.</li>
+</ul>
+<h2>Interfaces Utilisateur</h2>
+<ul>
+<li>Frontend : Interfaces permettant la configuration de l&#39;orchestrateur et la manipulation des données à importer.</li>
+</ul>
+<h2>Conclusion</h2>
+<p>Sésame offre une solution puissante et flexible pour la synchronisation d&#39;identités à partir de diverses sources vers des serveurs cibles. Son architecture modulaire et ses fonctionnalités avancées en font un outil idéal pour les environnements complexes nécessitant une gestion fine des schémas et des processus de synchronisation.</p>
+<h2>Variables d&#39;environnements</h2>
 <b>Example :</b><div><pre class="line-numbers"><code class="language-none">#Host Redis
 REDIS_HOST=redis
 #Port Redis

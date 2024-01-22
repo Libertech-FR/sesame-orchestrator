@@ -34,15 +34,16 @@ import { IdentityState } from './_enums/states.enum';
           });
 
           // Pre save hook
-          // This hook is used to set the state to TO_SYNCED if the state is TO_CREATE
+          // This hook is used to set the state to TO_SYNC if the state is TO_CREATE
           schema.pre('save', async function (next) {
             console.log('pre save');
-            if (this.state === IdentityState.TO_CREATE) this.state = IdentityState.TO_SYNCED;
+            if (this.state === IdentityState.TO_CREATE) this.state = IdentityState.TO_SYNC;
             next();
           });
 
           return schema;
         },
+        //TODO: Si le schema est save, pousser dans la queue de sync
       },
     ]),
   ],

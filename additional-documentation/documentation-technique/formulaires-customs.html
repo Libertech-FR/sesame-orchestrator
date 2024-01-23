@@ -1,0 +1,740 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Sesame Orchestrator</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../../images/favicon.ico">
+	   <link rel="stylesheet" href="../../styles/style.css">
+        <link rel="stylesheet" href="../../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../../" class="navbar-brand">Sesame Orchestrator</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content additional-page">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Documentation du Composant Formulaire Dynamique</h1>
+<h2>Sommaire</h2>
+<ul>
+<li><a href="#documentation-du-composant-formulaire-dynamique">Documentation du Composant Formulaire Dynamique</a><ul>
+<li><a href="#sommaire">Sommaire</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#structure-du-json-de-configuration">Structure du JSON de Configuration</a><ul>
+<li><a href="#champ-title">Champ <code>title</code></a></li>
+<li><a href="#champ-description">Champ <code>description</code></a></li>
+<li><a href="#champ-type">Champ <code>type</code></a></li>
+<li><a href="#champ-defaultvalues">Champ <code>defaultValues</code></a></li>
+<li><a href="#champ-sections">Champ <code>sections</code></a><ul>
+<li><a href="#exemple-de-section">Exemple de section</a></li>
+</ul>
+</li>
+<li><a href="#champs-dans-fields">Champs dans fields</a><ul>
+<li><a href="#exemple-de-champ">Exemple de champ</a></li>
+</ul>
+</li>
+<li><a href="#autres-champs-importants">Autres champs importants</a></li>
+</ul>
+</li>
+<li><a href="#exemple-complet-dun-json-de-formulaire-pour-la-creation-de-ticket">Exemple complet d&#39;un json de formulaire pour la creation de ticket</a></li>
+<li><a href="#documentation-des-composants-vuejs">Documentation des Composants Vue.js</a><ul>
+<li><a href="#buildervue"><code>builder.vue</code></a><ul>
+<li><a href="#aper%C3%A7u">Aperçu</a></li>
+<li><a href="#structure">Structure</a></li>
+<li><a href="#fonctionnalit%C3%A9s">Fonctionnalités</a></li>
+<li><a href="#script">Script</a></li>
+</ul>
+</li>
+<li><a href="#tk-form-typevue"><code>tk-form-type.vue</code></a><ul>
+<li><a href="#aper%C3%A7u-1">Aperçu</a></li>
+<li><a href="#structure-1">Structure</a></li>
+<li><a href="#fonctionnalit%C3%A9s-1">Fonctionnalités</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#types-de-formulaires">Types de formulaires</a><ul>
+<li><a href="#tk-form-stepper"><code>tk-form-stepper</code></a><ul>
+<li><a href="#aper%C3%A7u-2">Aperçu</a></li>
+<li><a href="#structure-2">Structure</a></li>
+<li><a href="#fonctionnalit%C3%A9s-2">Fonctionnalités</a></li>
+</ul>
+</li>
+<li><a href="#tk-form-tabs"><code>tk-form-tabs</code></a><ul>
+<li><a href="#aper%C3%A7u-3">Aperçu</a></li>
+<li><a href="#structure-3">Structure</a></li>
+<li><a href="#fonctionnalit%C3%A9s-3">Fonctionnalités</a></li>
+</ul>
+</li>
+<li><a href="#tk-form-base"><code>tk-form-base</code></a><ul>
+<li><a href="#aper%C3%A7u-4">Aperçu</a></li>
+<li><a href="#structure-4">Structure</a></li>
+<li><a href="#fonctionnalit%C3%A9s-4">Fonctionnalités</a></li>
+</ul>
+</li>
+<li><a href="#%C3%A9num%C3%A9rations-et-types">Énumérations et Types</a><ul>
+<li><a href="#formtypes"><code>FormTypes</code></a></li>
+<li><a href="#crudmode"><code>CRUDMode</code></a></li>
+<li><a href="#ticketformfield-et-ticketformsection"><code>TicketFormField</code> et <code>TicketFormSection</code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2>Introduction</h2>
+<p>Cette documentation décrit le composant de formulaire dynamique utilisé dans les applications avec NestJS et Mongoose, en utilisant des composants du framework Quasar. Le formulaire est construit dynamiquement à partir d&#39;une configuration JSON.
+Ce fichier json est stocké dans la base de données et est récupéré par l&#39;API pour construire le formulaire, tout est géré dans le module nestjs <code>/tickets/form</code></p>
+<h2>Structure du JSON de Configuration</h2>
+<h3>Champ <code>title</code></h3>
+<ul>
+<li><strong>Type</strong>: <code>string</code></li>
+<li><strong>Description</strong>: Titre du formulaire.</li>
+<li><strong>Exemple</strong>: <code>&quot;title&quot;: &quot;Creation de ticket&quot;</code></li>
+</ul>
+<h3>Champ <code>description</code></h3>
+<ul>
+<li><strong>Type</strong>: <code>string</code></li>
+<li><strong>Description</strong>: Description ou instructions pour le formulaire.</li>
+<li><strong>Exemple</strong>: <code>&quot;description&quot;: &quot;Veuillez remplir le formulaire ci-dessous pour créer un nouveau ticket.&quot;</code></li>
+</ul>
+<h3>Champ <code>type</code></h3>
+<ul>
+<li><strong>Type</strong>: <code>number</code></li>
+<li><strong>Description</strong>: Type de formulaire, représenté par un numéro (par exemple, 0 pour base, 1 pour étapes).</li>
+<li><strong>Exemple</strong>: <code>&quot;type&quot;: 1</code></li>
+</ul>
+<h3>Champ <code>defaultValues</code></h3>
+<ul>
+<li><strong>Type</strong>: <code>object</code></li>
+<li><strong>Description</strong>: Valeurs par défaut pour certains champs du formulaire.</li>
+<li><strong>Exemple</strong>: <code>&quot;defaultValues&quot;: { &quot;lifestep&quot;: 1 }</code></li>
+</ul>
+<h3>Champ <code>sections</code></h3>
+<ul>
+<li><strong>Type</strong>: <code>object</code></li>
+<li><strong>Description</strong>: Sections du formulaire, chacune contenant ses propres champs.</li>
+<li><strong>Sous-champs</strong>:<ul>
+<li><code>label</code>: Nom de la section.</li>
+<li><code>type</code>: Type de la section (similaire au type de formulaire).</li>
+<li><code>description</code>: Description de la section.</li>
+<li><code>icon</code>: Icône représentant la section.</li>
+<li><code>fields</code>: Champs de la section.</li>
+</ul>
+</li>
+</ul>
+<h4>Exemple de section</h4>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-json">&quot;sections&quot;: {
+  &quot;envelope&quot;: {
+    &quot;label&quot;: &quot;Enveloppe&quot;,
+    &quot;type&quot;: 0,
+    &quot;description&quot;: &quot;Veuillez remplir les champs ci-dessous pour créer une nouvelle enveloppe.&quot;,
+    &quot;icon&quot;: &quot;mdi-email&quot;,
+    &quot;fields&quot;: {
+      // Définition des champs ici...
+    }
+  }
+}</code></pre></div><h3>Champs dans fields</h3>
+<p>Chaque champ dans fields est un objet avec les propriétés suivantes :</p>
+<ul>
+<li><code>component</code>: Type de composant Quasar à utiliser (par exemple, autocomplete).</li>
+<li><code>label</code>: Étiquette du champ.</li>
+<li><code>model-value</code>: Chemin de liaison de données pour le champ.</li>
+<li><code>row et col</code>: Positionnement du champ dans une grille.</li>
+<li><code>attrsOnDefault</code>, <code>attrsOnCreate</code>, <code>attrsOnRead</code>, <code>attrsOnUpdate</code>, <code>attrsOnDelete</code>: Objets définissant les attributs et comportements du champ dans différents états. Pour connaître les attributs disponibles, consultez la documentation de Quasar Framework. Les composants disponibles sont les suivants : <ul>
+<li><a href="https://quasar.dev/vue-components/select#qselect-api">select</a></li>
+<li><a href="https://quasar.dev/vue-components/input#qinput-api">input</a></li>
+<li><a href="https://quasar.dev/vue-components/autocomplete#qautocomplete-api">autocomplete</a></li>
+<li><a href="https://quasar.dev/vue-components/checkbox#qcheckbox-api">checkbox</a></li>
+<li><a href="https://quasar.dev/vue-components/radio#qradio-api">radio</a></li>
+</ul>
+</li>
+</ul>
+<h4>Exemple de champ</h4>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-json">&quot;senders&quot;: {
+  &quot;component&quot;: &quot;autocomplete&quot;,
+  &quot;label&quot;: &quot;Appelant&quot;,
+  &quot;model-value&quot;: &quot;envelope.senders&quot;,
+  &quot;attrsOnDefault&quot;: {
+    &quot;filled&quot;: true,
+    &quot;dense&quot;: true,
+    // Autres attributs...
+  },
+    &quot;attrsOnCreate&quot;: {
+        // Autres attributs...
+    },
+    &quot;attrsOnRead&quot;: {
+        &quot;disable&quot;: true
+        // Autres attributs...
+    },
+    &quot;attrsOnUpdate&quot;: {
+        // Autres attributs...
+    },
+    &quot;attrsOnDelete&quot;: {
+        &quot;disable&quot;: true
+        // Autres attributs...
+    },
+  &quot;row&quot;: 1,
+  &quot;col&quot;: 4
+}</code></pre></div><h3>Autres champs importants</h3>
+<ul>
+<li><code>submitButtonText</code>: Texte du bouton de soumission.</li>
+<li><code>submitApiUrl</code>: URL à appeler lors de la soumission du formulaire.</li>
+<li><code>redirectUrl</code>: URL de redirection après la soumission, l&#39;id de la nouvelle entrée est automatiquement ajoutée a la fin de l&#39;url.</li>
+</ul>
+<h2>Exemple complet d&#39;un json de formulaire pour la creation de ticket</h2>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-json">{
+  &quot;title&quot;: &quot;Creation de ticket&quot;,
+  &quot;description&quot;: &quot;Veuillez remplir le formulaire ci-dessous pour créer un nouveau ticket.&quot;,
+  &quot;type&quot;: 1,
+  &quot;defaultValues&quot;: {
+    &quot;lifestep&quot;: 1
+  },
+  &quot;sections&quot;: {
+    &quot;envelope&quot;: {
+      &quot;label&quot;: &quot;Enveloppe&quot;,
+      &quot;type&quot;: 0,
+      &quot;description&quot;: &quot;Veuillez remplir les champs ci-dessous pour créer une nouvelle enveloppe.&quot;,
+      &quot;icon&quot;: &quot;mdi-email&quot;,
+      &quot;fields&quot;: {
+        &quot;senders&quot;: {
+          &quot;component&quot;: &quot;autocomplete&quot;,
+          &quot;label&quot;: &quot;Appelant&quot;,
+          &quot;model-value&quot;: &quot;envelope.senders&quot;,
+          &quot;attrsOnDefault&quot;: {
+            &quot;apiUrl&quot;: &quot;/core/entities&quot;,
+            &quot;optionLabel&quot;: &quot;name&quot;,
+            &quot;modelLabel&quot;: &quot;name&quot;,
+            &quot;searchField&quot;: &quot;profile.commonName&quot;,
+            &quot;dense&quot;: true,
+            &quot;multiple&quot;: true,
+            &quot;filled&quot;: true,
+            &quot;transformKeys&quot;: {
+              &quot;_id&quot;: &quot;id&quot;,
+              &quot;profile.commonName&quot;: &quot;name&quot;,
+              &quot;type&quot;: &quot;type&quot;
+            }
+          },
+          &quot;row&quot;: 1,
+          &quot;col&quot;: 4,
+          &quot;attrsOnCreate&quot;: {
+            &quot;disable&quot;: false
+          },
+          &quot;attrsOnRead&quot;: {
+            &quot;disable&quot;: true
+          },
+          &quot;attrsOnUpdate&quot;: {
+            &quot;disable&quot;: false
+          },
+          &quot;attrsOnDelete&quot;: {
+            &quot;disable&quot;: true
+          }
+        },
+        &quot;observers&quot;: {
+          &quot;component&quot;: &quot;autocomplete&quot;,
+          &quot;label&quot;: &quot;Concernés&quot;,
+          &quot;model-value&quot;: &quot;envelope.observers&quot;,
+          &quot;attrsOnDefault&quot;: {
+            &quot;apiUrl&quot;: &quot;/core/entities&quot;,
+            &quot;optionLabel&quot;: &quot;name&quot;,
+            &quot;modelLabel&quot;: &quot;name&quot;,
+            &quot;searchField&quot;: &quot;profile.commonName&quot;,
+            &quot;dense&quot;: true,
+            &quot;multiple&quot;: true,
+            &quot;filled&quot;: true,
+            &quot;transformKeys&quot;: {
+              &quot;_id&quot;: &quot;id&quot;,
+              &quot;profile.commonName&quot;: &quot;name&quot;,
+              &quot;type&quot;: &quot;type&quot;
+            }
+          },
+          &quot;row&quot;: 1,
+          &quot;col&quot;: 4,
+          &quot;attrsOnCreate&quot;: {},
+          &quot;attrsOnRead&quot;: {
+            &quot;disable&quot;: true
+          },
+          &quot;attrsOnUpdate&quot;: {},
+          &quot;attrsOnDelete&quot;: {
+            &quot;disable&quot;: true
+          }
+        },
+        &quot;assigned&quot;: {
+          &quot;component&quot;: &quot;autocomplete&quot;,
+          &quot;label&quot;: &quot;Assignés&quot;,
+          &quot;model-value&quot;: &quot;envelope.assigned&quot;,
+          &quot;attrsOnDefault&quot;: {
+            &quot;apiUrl&quot;: &quot;/core/entities&quot;,
+            &quot;optionLabel&quot;: &quot;name&quot;,
+            &quot;searchField&quot;: &quot;profile.commonName&quot;,
+            &quot;modelLabel&quot;: &quot;name&quot;,
+            &quot;dense&quot;: true,
+            &quot;multiple&quot;: true,
+            &quot;filled&quot;: true,
+            &quot;additionalFilters&quot;: [
+              {
+                &quot;field&quot;: &quot;type&quot;,
+                &quot;value&quot;: 2,
+                &quot;operator&quot;: &quot;&lt;=#&quot;
+              }
+            ],
+            &quot;transformKeys&quot;: {
+              &quot;_id&quot;: &quot;id&quot;,
+              &quot;profile.commonName&quot;: &quot;name&quot;,
+              &quot;type&quot;: &quot;type&quot;
+            }
+          },
+          &quot;row&quot;: 1,
+          &quot;col&quot;: 4,
+          &quot;attrsOnCreate&quot;: {},
+          &quot;attrsOnRead&quot;: {
+            &quot;disable&quot;: true
+          },
+          &quot;attrsOnUpdate&quot;: {},
+          &quot;attrsOnDelete&quot;: {
+            &quot;disable&quot;: true
+          }
+        }
+      }
+    },
+    &quot;infos&quot;: {
+      &quot;label&quot;: &quot;Informations&quot;,
+      &quot;type&quot;: 0,
+      &quot;description&quot;: &quot;Veuillez remplir les champs ci-dessous pour renseigner les informations du ticket.&quot;,
+      &quot;icon&quot;: &quot;mdi-information&quot;,
+      &quot;fields&quot;: {
+        &quot;subject&quot;: {
+          &quot;component&quot;: &quot;input&quot;,
+          &quot;label&quot;: &quot;Sujet&quot;,
+          &quot;model-value&quot;: &quot;subject&quot;,
+          &quot;row&quot;: 1,
+          &quot;col&quot;: 12,
+          &quot;attrsOnDefault&quot;: {
+            &quot;dense&quot;: true,
+            &quot;filled&quot;: true
+          },
+          &quot;attrsOnCreate&quot;: {},
+          &quot;attrsOnRead&quot;: {
+            &quot;disable&quot;: true
+          },
+          &quot;attrsOnUpdate&quot;: {},
+          &quot;attrsOnDelete&quot;: {
+            &quot;disable&quot;: true
+          }
+        },
+        &quot;project&quot;: {
+          &quot;component&quot;: &quot;autocomplete&quot;,
+          &quot;label&quot;: &quot;Projet(s)&quot;,
+          &quot;model-value&quot;: &quot;project&quot;,
+          &quot;row&quot;: 2,
+          &quot;col&quot;: 6,
+          &quot;attrsOnDefault&quot;: {
+            &quot;apiUrl&quot;: &quot;/core/project&quot;,
+            &quot;optionLabel&quot;: &quot;name&quot;,
+            &quot;modelLabel&quot;: &quot;name&quot;,
+            &quot;searchField&quot;: &quot;name&quot;,
+            &quot;dense&quot;: true,
+            &quot;multiple&quot;: true,
+            &quot;filled&quot;: true,
+            &quot;transformKeys&quot;: {
+              &quot;_id&quot;: &quot;id&quot;,
+              &quot;name&quot;: &quot;name&quot;
+            }
+          },
+          &quot;attrsOnCreate&quot;: {},
+          &quot;attrsOnRead&quot;: {
+            &quot;disable&quot;: true
+          },
+          &quot;attrsOnUpdate&quot;: {},
+          &quot;attrsOnDelete&quot;: {
+            &quot;disable&quot;: true
+          }
+        },
+        &quot;priority&quot;: {
+          &quot;component&quot;: &quot;select&quot;,
+          &quot;label&quot;: &quot;Priorité&quot;,
+          &quot;model-value&quot;: &quot;priority&quot;,
+          &quot;row&quot;: 3,
+          &quot;col&quot;: 6,
+          &quot;attrsOnDefault&quot;: {
+            &quot;options&quot;: [
+              {
+                &quot;id&quot;: &quot;612345678901234567890123&quot;,
+                &quot;name&quot;: &quot;Low&quot;
+              },
+              {
+                &quot;id&quot;: &quot;712345678901234567890123&quot;,
+                &quot;name&quot;: &quot;Normal&quot;
+              },
+              {
+                &quot;id&quot;: &quot;812345678901234567890123&quot;,
+                &quot;name&quot;: &quot;High&quot;
+              },
+              {
+                &quot;id&quot;: &quot;912345678901234567890123&quot;,
+                &quot;name&quot;: &quot;Urgent&quot;
+              }
+            ],
+            &quot;option-label&quot;: &quot;name&quot;,
+            &quot;dense&quot;: true,
+            &quot;filled&quot;: true
+          },
+          &quot;attrsOnCreate&quot;: {},
+          &quot;attrsOnRead&quot;: {
+            &quot;disable&quot;: true
+          },
+          &quot;attrsOnUpdate&quot;: {},
+          &quot;attrsOnDelete&quot;: {
+            &quot;disable&quot;: true
+          }
+        },
+        &quot;impact&quot;: {
+          &quot;component&quot;: &quot;select&quot;,
+          &quot;label&quot;: &quot;Impact&quot;,
+          &quot;model-value&quot;: &quot;impact&quot;,
+          &quot;row&quot;: 3,
+          &quot;col&quot;: 6,
+          &quot;attrsOnDefault&quot;: {
+            &quot;options&quot;: [
+              {
+                &quot;id&quot;: &quot;612345678901234567890123&quot;,
+                &quot;name&quot;: &quot;Low&quot;
+              },
+              {
+                &quot;id&quot;: &quot;712345678901234567890123&quot;,
+                &quot;name&quot;: &quot;Medium&quot;
+              },
+              {
+                &quot;id&quot;: &quot;812345678901234567890123&quot;,
+                &quot;name&quot;: &quot;High&quot;
+              },
+              {
+                &quot;id&quot;: &quot;912345678901234567890123&quot;,
+                &quot;name&quot;: &quot;Critical&quot;
+              }
+            ],
+            &quot;option-label&quot;: &quot;name&quot;,
+            &quot;dense&quot;: true,
+            &quot;filled&quot;: true
+          },
+          &quot;attrsOnCreate&quot;: {},
+          &quot;attrsOnRead&quot;: {
+            &quot;disable&quot;: true
+          },
+          &quot;attrsOnUpdate&quot;: {},
+          &quot;attrsOnDelete&quot;: {
+            &quot;disable&quot;: true
+          }
+        },
+        &quot;sla&quot;: {
+          &quot;component&quot;: &quot;autocomplete&quot;,
+          &quot;label&quot;: &quot;SLA&quot;,
+          &quot;model-value&quot;: &quot;sla&quot;,
+          &quot;row&quot;: 2,
+          &quot;col&quot;: 6,
+          &quot;attrsOnDefault&quot;: {
+            &quot;apiUrl&quot;: &quot;/tickets/sla&quot;,
+            &quot;optionLabel&quot;: &quot;name&quot;,
+            &quot;modelLabel&quot;: &quot;name&quot;,
+            &quot;searchField&quot;: &quot;name&quot;,
+            &quot;dense&quot;: true,
+            &quot;multiple&quot;: true,
+            &quot;filled&quot;: true,
+            &quot;transformKeys&quot;: {
+              &quot;_id&quot;: &quot;id&quot;,
+              &quot;name&quot;: &quot;name&quot;
+            }
+          },
+          &quot;attrsOnCreate&quot;: {},
+          &quot;attrsOnRead&quot;: {
+            &quot;disable&quot;: true
+          },
+          &quot;attrsOnUpdate&quot;: {},
+          &quot;attrsOnDelete&quot;: {
+            &quot;disable&quot;: true
+          }
+        },
+        &quot;type&quot;: {
+          &quot;component&quot;: &quot;select&quot;,
+          &quot;label&quot;: &quot;Type&quot;,
+          &quot;model-value&quot;: &quot;type&quot;,
+          &quot;row&quot;: 3,
+          &quot;col&quot;: 6,
+          &quot;attrsOnDefault&quot;: {
+            &quot;options&quot;: [
+              {
+                &quot;value&quot;: 1,
+                &quot;name&quot;: &quot;Incident&quot;
+              },
+              {
+                &quot;value&quot;: 2,
+                &quot;name&quot;: &quot;Demande&quot;
+              }
+            ],
+            &quot;option-label&quot;: &quot;name&quot;,
+            &quot;emit-value&quot;: true,
+            &quot;options-map&quot;: true,
+            &quot;dense&quot;: true,
+            &quot;filled&quot;: true
+          },
+          &quot;attrsOnCreate&quot;: {},
+          &quot;attrsOnRead&quot;: {
+            &quot;disable&quot;: true
+          },
+          &quot;attrsOnUpdate&quot;: {},
+          &quot;attrsOnDelete&quot;: {
+            &quot;disable&quot;: true
+          }
+        }
+      }
+    }
+  },
+  &quot;submitButtonText&quot;: &quot;Soumettre le formulaire&quot;,
+  &quot;submitApiUrl&quot;: &quot;/tickets/ticket&quot;,
+  &quot;redirectUrl&quot;: &quot;/ticket&quot;
+}</code></pre></div><h2>Documentation des Composants Vue.js</h2>
+<h3><code>builder.vue</code></h3>
+<h4>Aperçu</h4>
+<p>Le composant <code>builder.vue</code> est un constructeur de formulaires dynamique utilisant les composants du Framework Quasar. Il est conçu pour les opérations CRUD (Créer, Lire, Mettre à jour, Supprimer) et prend en charge différents types de champs et de dispositions.</p>
+<h4>Structure</h4>
+<ul>
+<li><strong>QCard</strong> : Conteneur principal avec une barre d&#39;outils affichant le titre et la description du formulaire.</li>
+<li><strong>TkFormType</strong> : Composant personnalisé rendant les champs de formulaire basés sur la structure JSON fournie.</li>
+<li><strong>QCardActions</strong> : Contient des boutons d&#39;action et des emplacements pour des actions personnalisées.</li>
+</ul>
+<h4>Fonctionnalités</h4>
+<ul>
+<li>Rendu dynamique des champs de formulaire.</li>
+<li>Prise en charge de plusieurs modes CRUD.</li>
+<li>Personnalisable via des emplacements (slots).</li>
+</ul>
+<h4>Script</h4>
+<ul>
+<li>Utilise l&#39;API de Composition Vue 3.</li>
+<li>Méthodes <code>reset</code>, <code>resetValidation</code> et <code>submit</code> pour les interactions avec le formulaire.</li>
+<li>Émet un événement <code>submit</code> avec les données du formulaire.</li>
+</ul>
+<hr>
+<h3><code>tk-form-type.vue</code></h3>
+<h4>Aperçu</h4>
+<p>Composant pour rendre différents types de dispositions de formulaire : <code>base</code>, <code>stepper</code>, <code>tabs</code>.</p>
+<h4>Structure</h4>
+<ul>
+<li>Composant dynamique basé sur la propriété <code>type</code>.</li>
+<li>Prend en charge différentes structures de formulaire telles que le formulaire de base, le stepper et les onglets.</li>
+</ul>
+<h4>Fonctionnalités</h4>
+<ul>
+<li>Rendu flexible basé sur la propriété <code>type</code>.</li>
+<li>Utilise des propriétés calculées pour déterminer la disposition du formulaire.</li>
+</ul>
+<hr>
+<h2>Types de formulaires</h2>
+<h3><code>tk-form-stepper</code></h3>
+<h4>Aperçu</h4>
+<p>Un composant de type stepper pour naviguer à travers différentes sections de formulaire.</p>
+<h4>Structure</h4>
+<ul>
+<li><strong>QStepper</strong> : Composant stepper de Quasar pour la navigation entre les sections.</li>
+<li>Étapes générées dynamiquement en fonction de la propriété <code>sections</code>.</li>
+</ul>
+<h4>Fonctionnalités</h4>
+<ul>
+<li>Prend en charge la navigation à travers les sections du formulaire.</li>
+<li>Crée dynamiquement des étapes basées sur les données fournies.</li>
+</ul>
+<hr>
+<h3><code>tk-form-tabs</code></h3>
+<h4>Aperçu</h4>
+<p>Disposition de formulaire basée sur des onglets pour organiser les sections de formulaire.</p>
+<h4>Structure</h4>
+<ul>
+<li><strong>QTabs</strong> : Conteneur pour les en-têtes des onglets.</li>
+<li><strong>QTabPanels</strong> : Panneaux qui rendent le contenu de chaque onglet.</li>
+</ul>
+<h4>Fonctionnalités</h4>
+<ul>
+<li>Permet de passer entre les sections du formulaire à l&#39;aide d&#39;onglets.</li>
+<li>Génère dynamiquement des onglets en fonction des données fournies.</li>
+</ul>
+<hr>
+<h3><code>tk-form-base</code></h3>
+<h4>Aperçu</h4>
+<p>Disposition de formulaire de base avec un système de grille pour le placement des champs.</p>
+<h4>Structure</h4>
+<ul>
+<li>Utilise une classe <code>.row</code> pour organiser les champs en lignes.</li>
+<li>Crée dynamiquement des champs de formulaire en fonction de la propriété <code>fields</code>.</li>
+</ul>
+<h4>Fonctionnalités</h4>
+<ul>
+<li>Disposition de grille flexible pour les champs de formulaire.</li>
+<li>Rendu de composant personnalisé pour chaque champ.</li>
+</ul>
+<hr>
+<h3>Énumérations et Types</h3>
+<h4><code>FormTypes</code></h4>
+<p>Définit différents types de dispositions de formulaire : Base, Étapes, Onglets.
+&#39;BASE&#39; = 0,
+&#39;STEPS&#39; = 1,
+&#39;TABS&#39; = 2,</p>
+<h4><code>CRUDMode</code></h4>
+<p>Définit les opérations CRUD : Créer, Lire, Mettre à jour.</p>
+<h4><code>TicketFormField</code> et <code>TicketFormSection</code></h4>
+<p>Types définissant la structure des champs de formulaire et des sections.</p>
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 2;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'additional-page';
+            var COMPODOC_CURRENT_PAGE_URL = 'formulaires-customs.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../../js/libs/custom-elements.min.js"></script>
+       <script src="../../js/libs/lit-html.js"></script>
+
+       <script src="../../js/menu-wc.js" defer></script>
+       <script nomodule src="../../js/menu-wc_es5.js" defer></script>
+
+       <script src="../../js/libs/bootstrap-native.js"></script>
+
+       <script src="../../js/libs/es6-shim.min.js"></script>
+       <script src="../../js/libs/EventDispatcher.js"></script>
+       <script src="../../js/libs/promise.min.js"></script>
+       <script src="../../js/libs/zepto.min.js"></script>
+
+       <script src="../../js/compodoc.js"></script>
+
+       <script src="../../js/tabs.js"></script>
+       <script src="../../js/menu.js"></script>
+       <script src="../../js/libs/clipboard.min.js"></script>
+       <script src="../../js/libs/prism.js"></script>
+       <script src="../../js/sourceCode.js"></script>
+          <script src="../../js/search/search.js"></script>
+          <script src="../../js/search/lunr.min.js"></script>
+          <script src="../../js/search/search-lunr.js"></script>
+          <script src="../../js/search/search_index.js"></script>
+       <script src="../../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

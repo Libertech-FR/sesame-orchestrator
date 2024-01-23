@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content additional-page">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -100,23 +100,124 @@
 
 
 
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >FormUpdateDto</li>
+</ol>
 
-
-
-
-
-
-
-
-
-<h1>Table des matières</h1>
-<ul>
-<li><a href="https://libertech-fr.github.io/sesame-orchestrator/additional-documentation/documentation-technique/demon.html">DAEMON</a></li>
-<li><a href="https://libertech-fr.github.io/sesame-orchestrator/additional-documentation/documentation-technique/validation-des-identit%C3%A9s.html">IdentitiesValidation</a></li>
-<li><a href="https://libertech-fr.github.io/sesame-orchestrator/additional-documentation/documentation-technique/queue-processor-service.html">QueueProcessorService</a></li>
-<li><a href="https://libertech-fr.github.io/sesame-orchestrator/additional-documentation/documentation-technique/ecriture-des-test-et-utilisation-des-utilitaires.html">Tests</a></li>
-<li><a href="https://libertech-fr.github.io/sesame-orchestrator/additional-documentation/documentation-technique/formulaires-customs.html">Formulaires Curstom</a></li>
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
 </ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/core/form/_dto/form.dto.ts</code>
+        </p>
+
+
+
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                        <code>PartialType(FormDto)</code>
+            </p>
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MixedValue } from &#x27;./../../../_common/types/mixed-value.type&#x27;
+import { Mixed } from &#x27;mongoose&#x27;
+import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;
+import { IsString, IsEnum, IsObject, ValidateNested, IsOptional, IsMongoId } from &#x27;class-validator&#x27;
+import { ObjectId } from &#x27;mongodb&#x27;
+import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;
+import { FormTypeList, FormTypes } from &#x27;../_enum/types&#x27;
+import { MetadataDto } from &#x27;~/_common/abstracts/dto/metadata.dto&#x27;
+import { forwardRef } from &#x27;@nestjs/common&#x27;
+import { Type } from &#x27;class-transformer&#x27;
+import { FormSectionDto } from &#x27;./parts/section.dto&#x27;
+
+export class FormCreateDto extends MetadataDto {
+  @IsString()
+  @ApiProperty()
+  title: string
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  description?: string
+
+  @IsEnum(FormTypeList)
+  @ApiProperty({ enum: FormTypeList })
+  type: FormTypes
+
+  @IsObject()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  defaultValues: { [key: string]: MixedValue }
+
+  @ValidateNested({ each: true })
+  @Type(() &#x3D;&gt; FormSectionDto)
+  // @ApiProperty({ type: () &#x3D;&gt; FormSectionDto, isArray: true })
+  sections: { [key: string]: FormSectionDto }
+
+  @IsString()
+  @ApiProperty()
+  submitButtonText: string
+
+  @IsString()
+  @ApiProperty()
+  submitApiUrl: string
+
+  @IsObject()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  redirectUrl?: string
+}
+
+export class FormDto extends FormCreateDto {}
+
+
+export class FormUpdateDto extends PartialType(FormDto) {}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
 
                    </div><div class="search-results">
     <div class="has-results">
@@ -143,8 +244,8 @@
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'additional-page';
-            var COMPODOC_CURRENT_PAGE_URL = 'documentation-technique.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'FormUpdateDto.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

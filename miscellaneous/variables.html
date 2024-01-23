@@ -161,6 +161,18 @@
                             <a href="#EventEmitterSeparator" title="src/_common/constants/event-emitter.constant.ts" ><b>EventEmitterSeparator</b>&nbsp;&nbsp;&nbsp;(src/.../event-emitter.constant.ts)</a>
                         </li>
                         <li>
+                            <a href="#FormFieldPartSchema" title="src/core/form/_schemas/parts/field.part.schema.ts" ><b>FormFieldPartSchema</b>&nbsp;&nbsp;&nbsp;(src/.../field.part.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#FormSchema" title="src/core/form/_schemas/form.schema.ts" ><b>FormSchema</b>&nbsp;&nbsp;&nbsp;(src/.../form.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#FormSectionPartSchema" title="src/core/form/_schemas/parts/section.part.schema.ts" ><b>FormSectionPartSchema</b>&nbsp;&nbsp;&nbsp;(src/.../section.part.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#FormTypeList" title="src/core/form/_enum/types.ts" ><b>FormTypeList</b>&nbsp;&nbsp;&nbsp;(src/.../types.ts)</a>
+                        </li>
+                        <li>
                             <a href="#IdentitiesDtoStub" title="src/management/identities/_stubs/identities.dto.stub.ts" ><b>IdentitiesDtoStub</b>&nbsp;&nbsp;&nbsp;(src/.../identities.dto.stub.ts)</a>
                         </li>
                         <li>
@@ -779,6 +791,106 @@
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>&#x27;.&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/core/form/_schemas/parts/field.part.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FormFieldPartSchema"></a>
+                    <span class="name">
+                        <span ><b>FormFieldPartSchema</b></span>
+                        <a href="#FormFieldPartSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(FormFieldPart)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/core/form/_schemas/form.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FormSchema"></a>
+                    <span class="name">
+                        <span ><b>FormSchema</b></span>
+                        <a href="#FormSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(Form)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/core/form/_schemas/parts/section.part.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FormSectionPartSchema"></a>
+                    <span class="name">
+                        <span ><b>FormSectionPartSchema</b></span>
+                        <a href="#FormSectionPartSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(FormSectionPart)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/core/form/_enum/types.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FormTypeList"></a>
+                    <span class="name">
+                        <span ><b>FormTypeList</b></span>
+                        <a href="#FormTypeList"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>number[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Object.keys(FormTypes)
+  .filter((k) &#x3D;&gt; typeof FormTypes[k as any] &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) // eslint-disable-line
+  .map((k) &#x3D;&gt; parseInt(FormTypes[k as any], 10))</code>
                     </td>
                 </tr>
 

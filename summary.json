@@ -22,6 +22,10 @@
             {
                 "title": "Validation des identités",
                 "file": "./technical/IdentitiesValidation.md"
+            },
+            {
+                "title": "Formulaires customs",
+                "file": "./technical/CustomForms.md"
             }
         ]
     },

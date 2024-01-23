@@ -109,31 +109,72 @@
 
 
 
-<h1>Documentation Utilisateur - Validation des Identités</h1>
-<h2>Introduction</h2>
-<p>Ce guide explique comment interagir avec le système de validation des identités dans notre application. Cette fonctionnalité assure que toutes les données relatives aux identités sont valides et conformes aux exigences de l&#39;organisation.</p>
-<h2>Validation des Données</h2>
-<p>Lorsque vous soumettez des données d&#39;identité (par exemple, via un formulaire ou une API), le système effectue les vérifications suivantes :</p>
+<h1>Documentation du Système de Validation d&#39;Identité</h1>
+<h2>Vue d&#39;ensemble</h2>
+<p>Le système de validation d&#39;identité utilise des fichiers de configuration YAML pour définir des règles de validation pour différents types d&#39;objets d&#39;identité. Chaque fichier YAML correspond à une <code>objectClass</code> spécifique et définit les attributs requis et leurs types pour cette classe.</p>
+<h2>Fichiers de Configuration</h2>
+<p>Le fichier de configuration YAML doit être nommé selon le nom de l&#39;<code>objectClass</code> qu&#39;il définit, par exemple <code>supann.yml</code> pour l&#39;<code>objectClass</code> <code>supannPerson</code>. Il doit être placé dans le dossier <code>TBD</code>.</p>
+<h3>Exemple de Fichier YAML (<code>supann.yml</code>)</h3>
+<p>Ce fichier définit la structure et les attributs requis pour l&#39;<code>objectClass</code> <code>supannPerson</code>.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">objectClasses:
+  - name: supannPerson
+    desc: &#39;SUPANN person object class&#39;
+    attributes:
+      - supannEmpId
+      - supannCivilite
+      - supannBirthName
+      # more attributes...
+
+attributes:
+  - name: supannEmpId
+    desc: &#39;Employee ID&#39;
+    type: string
+
+  - name: supannCivilite
+    desc: &#39;Title (Mr, Ms, etc.)&#39;
+    type: string
+
+  - name: supannBirthName
+    desc: &#39;Birth name&#39;
+    type: string
+    # more attributes...</code></pre></div><h3>Exemple Générique de Fichier YAML</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">objectClasses:
+  - name: [Nom de l&#39;ObjectClass]
+    desc: &#39;[Description de l&#39;ObjectClass]&#39;
+    attributes:
+      - [Nom de l&#39;attribut 1]
+      - [Nom de l&#39;attribut 2]
+      # plus d&#39;attributs...
+
+attributes:
+  - name: [Nom de l&#39;attribut 1]
+    desc: &#39;[Description de l&#39;attribut]&#39;
+    type: [Type de l&#39;attribut]
+    required: [true/false]
+    # plus de détails d&#39;attributs...</code></pre></div><h2>JSON de Validation</h2>
+<p>Pour valider une entrée, un objet JSON doit être fourni avec les champs suivants :</p>
 <ul>
-<li>Tous les champs obligatoires sont présents.</li>
-<li>Les données correspondent aux types attendus (chaînes, nombres, dates, etc.).</li>
-<li>Les valeurs respectent les contraintes spécifiques (par exemple, formats d&#39;email ou de téléphone).</li>
+<li><code>state</code>: État de l&#39;entrée, -1 pour une création.</li>
+<li><code>inetOrgPerson</code>: Informations générales de la personne.</li>
+<li><code>additionalFields</code>: Contient <code>objectClasses</code> (un tableau de noms d&#39;<code>objectClass</code>) et <code>attributes</code> (les attributs spécifiques pour chaque <code>objectClass</code>).</li>
 </ul>
-<h2>Erreurs de Validation</h2>
-<p>En cas d&#39;erreur de validation, le système vous fournira un retour détaillé sur les problèmes rencontrés. Cela peut inclure :</p>
-<ul>
-<li>Des champs manquants.</li>
-<li>Des données de type incorrect.</li>
-<li>Des violations de contraintes spécifiques.</li>
-</ul>
-<h2>Conseils d&#39;Utilisation</h2>
-<ul>
-<li>Assurez-vous de fournir toutes les informations requises.</li>
-<li>Vérifiez que les données sont dans le bon format.</li>
-<li>En cas d&#39;erreur, consultez le message de retour pour des corrections spécifiques.</li>
-</ul>
-<h2>Contact</h2>
-<p>Pour toute question ou problème, veuillez contacter notre équipe de support technique.</p>
+<h2>Exemple</h2>
+<p>Voici un exemple de JSON à valider :</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-json">{
+  &quot;state&quot;: -1,
+  &quot;inetOrgPerson&quot;: {
+    // [Détails de inetOrgPerson]
+  },
+  &quot;additionalFields&quot;: {
+    &quot;objectClasses&quot;: [&quot;supann&quot;],
+    &quot;attributes&quot;: {
+      &quot;supann&quot;: {
+        // [Détails des attributs supann]
+      }
+    }
+  }
+}</code></pre></div><h2>Remarques</h2>
+<p>Assurez-vous que le fichier YAML correspondant à votre <code>objectClass</code> est disponible et correctement configuré.</p>
 
                    </div><div class="search-results">
     <div class="has-results">
@@ -161,7 +202,7 @@
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 2;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'additional-page';
-            var COMPODOC_CURRENT_PAGE_URL = 'identitiesvalidation.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'documentation-du-systeme-de-validation-des-schemas-complémentaires-de-l&#x27;identité.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

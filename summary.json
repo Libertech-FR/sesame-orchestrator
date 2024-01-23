@@ -30,7 +30,7 @@
         "file": "Documentation_utilisateur.md",
         "children": [
             {
-                "title": "IdentitiesValidation",
+                "title": "Documentation du Systeme de Validation des schemas complémentaires de l'identité",
                 "file": "./user/IdentitiesValidation.md"
             }
         ]

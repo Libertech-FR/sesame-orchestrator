@@ -1,25 +1,92 @@
 
-# Documentation Utilisateur - Validation des Identités
+# Documentation du Système de Validation d'Identité
 
-## Introduction
-Ce guide explique comment interagir avec le système de validation des identités dans notre application. Cette fonctionnalité assure que toutes les données relatives aux identités sont valides et conformes aux exigences de l'organisation.
+## Vue d'ensemble
 
-## Validation des Données
-Lorsque vous soumettez des données d'identité (par exemple, via un formulaire ou une API), le système effectue les vérifications suivantes :
-- Tous les champs obligatoires sont présents.
-- Les données correspondent aux types attendus (chaînes, nombres, dates, etc.).
-- Les valeurs respectent les contraintes spécifiques (par exemple, formats d'email ou de téléphone).
+Le système de validation d'identité utilise des fichiers de configuration YAML pour définir des règles de validation pour différents types d'objets d'identité. Chaque fichier YAML correspond à une `objectClass` spécifique et définit les attributs requis et leurs types pour cette classe.
 
-## Erreurs de Validation
-En cas d'erreur de validation, le système vous fournira un retour détaillé sur les problèmes rencontrés. Cela peut inclure :
-- Des champs manquants.
-- Des données de type incorrect.
-- Des violations de contraintes spécifiques.
+## Fichiers de Configuration
 
-## Conseils d'Utilisation
-- Assurez-vous de fournir toutes les informations requises.
-- Vérifiez que les données sont dans le bon format.
-- En cas d'erreur, consultez le message de retour pour des corrections spécifiques.
+Le fichier de configuration YAML doit être nommé selon le nom de l'`objectClass` qu'il définit, par exemple `supann.yml` pour l'`objectClass` `supannPerson`. Il doit être placé dans le dossier `TBD`.
 
-## Contact
-Pour toute question ou problème, veuillez contacter notre équipe de support technique.
+### Exemple de Fichier YAML (`supann.yml`)
+
+Ce fichier définit la structure et les attributs requis pour l'`objectClass` `supannPerson`.
+
+```yaml
+objectClasses:
+  - name: supannPerson
+    desc: 'SUPANN person object class'
+    attributes:
+      - supannEmpId
+      - supannCivilite
+      - supannBirthName
+      # more attributes...
+
+attributes:
+  - name: supannEmpId
+    desc: 'Employee ID'
+    type: string
+
+  - name: supannCivilite
+    desc: 'Title (Mr, Ms, etc.)'
+    type: string
+
+  - name: supannBirthName
+    desc: 'Birth name'
+    type: string
+    # more attributes...
+```
+
+### Exemple Générique de Fichier YAML
+
+```yaml
+objectClasses:
+  - name: [Nom de l'ObjectClass]
+    desc: '[Description de l'ObjectClass]'
+    attributes:
+      - [Nom de l'attribut 1]
+      - [Nom de l'attribut 2]
+      # plus d'attributs...
+
+attributes:
+  - name: [Nom de l'attribut 1]
+    desc: '[Description de l'attribut]'
+    type: [Type de l'attribut]
+    required: [true/false]
+    # plus de détails d'attributs...
+```
+
+## JSON de Validation
+
+Pour valider une entrée, un objet JSON doit être fourni avec les champs suivants :
+
+- `state`: État de l'entrée, -1 pour une création.
+- `inetOrgPerson`: Informations générales de la personne.
+- `additionalFields`: Contient `objectClasses` (un tableau de noms d'`objectClass`) et `attributes` (les attributs spécifiques pour chaque `objectClass`).
+
+## Exemple
+
+Voici un exemple de JSON à valider :
+
+```json
+{
+  "state": -1,
+  "inetOrgPerson": {
+    // [Détails de inetOrgPerson]
+  },
+  "additionalFields": {
+    "objectClasses": ["supann"],
+    "attributes": {
+      "supann": {
+        // [Détails des attributs supann]
+      }
+    }
+  }
+}
+```
+
+## Remarques
+
+Assurez-vous que le fichier YAML correspondant à votre `objectClass` est disponible et correctement configuré.
+

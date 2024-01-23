@@ -112,12 +112,36 @@
 <h1>Documentation du Système de Validation d&#39;Identité</h1>
 <h2>Vue d&#39;ensemble</h2>
 <p>Le système de validation d&#39;identité utilise des fichiers de configuration YAML pour définir des règles de validation pour différents types d&#39;objets d&#39;identité. Chaque fichier YAML correspond à une <code>objectClass</code> spécifique et définit les attributs requis et leurs types pour cette classe.</p>
-<h2>Fichiers de Configuration</h2>
-<p>Le fichier de configuration YAML doit être nommé selon le nom de l&#39;<code>objectClass</code> qu&#39;il définit, par exemple <code>supann.yml</code> pour l&#39;<code>objectClass</code> <code>supannPerson</code>. Il doit être placé dans le dossier <code>TBD</code>.</p>
-<h3>Exemple de Fichier YAML (<code>supann.yml</code>)</h3>
-<p>Ce fichier définit la structure et les attributs requis pour l&#39;<code>objectClass</code> <code>supannPerson</code>.</p>
+<h2>Validation des champs InetOrgPerson</h2>
+<p>Les champs de base de l&#39;objet <code>inetOrgPerson</code> sont validés par défaut. </p>
+<h3>Champs obligatoires :</h3>
+<ul>
+<li><code>cn</code> </li>
+<li><code>sn</code></li>
+<li><code>uid</code></li>
+</ul>
+<h3>Champs facultatifs :</h3>
+<ul>
+<li><code>displayName</code></li>
+<li><code>facsimileTelephoneNumber</code></li>
+<li><code>givenName</code></li>
+<li><code>labeledURI</code></li>
+<li><code>mail</code></li>
+<li><code>mobile</code></li>
+<li><code>postalAddress</code></li>
+<li><code>preferredLanguage</code></li>
+<li><code>telephoneNumber</code></li>
+<li><code>title</code></li>
+<li><code>userCertificate</code></li>
+<li><code>userPassword</code></li>
+</ul>
+<h2>Validation des champs des schema additionnels</h2>
+<h3>Fichiers de Configuration</h3>
+<p>Le fichier de configuration YAML doit être nommé selon le nom de l&#39;<code>objectClass</code> qu&#39;il définit, par exemple <code>supann.yml</code> pour l&#39;<code>objectClass</code> <code>supann</code>. Il doit être placé dans le dossier <code>TBD</code>.</p>
+<h4>Exemple de Fichier YAML (<code>supann.yml</code>)</h4>
+<p>Ce fichier définit la structure et les attributs requis pour l&#39;<code>objectClass</code> <code>supann</code>.</p>
 <b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">objectClasses:
-  - name: supannPerson
+  - name: supann
     desc: &#39;SUPANN person object class&#39;
     attributes:
       - supannEmpId
@@ -137,7 +161,7 @@ attributes:
   - name: supannBirthName
     desc: &#39;Birth name&#39;
     type: string
-    # more attributes...</code></pre></div><h3>Exemple Générique de Fichier YAML</h3>
+    # more attributes...</code></pre></div><h4>Exemple Générique de Fichier YAML</h4>
 <b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">objectClasses:
   - name: [Nom de l&#39;ObjectClass]
     desc: &#39;[Description de l&#39;ObjectClass]&#39;
@@ -151,14 +175,14 @@ attributes:
     desc: &#39;[Description de l&#39;attribut]&#39;
     type: [Type de l&#39;attribut]
     required: [true/false]
-    # plus de détails d&#39;attributs...</code></pre></div><h2>JSON de Validation</h2>
+    # plus de détails d&#39;attributs...</code></pre></div><h3>JSON de Validation</h3>
 <p>Pour valider une entrée, un objet JSON doit être fourni avec les champs suivants :</p>
 <ul>
 <li><code>state</code>: État de l&#39;entrée, -1 pour une création.</li>
 <li><code>inetOrgPerson</code>: Informations générales de la personne.</li>
 <li><code>additionalFields</code>: Contient <code>objectClasses</code> (un tableau de noms d&#39;<code>objectClass</code>) et <code>attributes</code> (les attributs spécifiques pour chaque <code>objectClass</code>).</li>
 </ul>
-<h2>Exemple</h2>
+<h3>Exemple</h3>
 <p>Voici un exemple de JSON à valider :</p>
 <b>Example :</b><div><pre class="line-numbers"><code class="language-json">{
   &quot;state&quot;: -1,
@@ -173,7 +197,7 @@ attributes:
       }
     }
   }
-}</code></pre></div><h2>Remarques</h2>
+}</code></pre></div><h3>Remarques</h3>
 <p>Assurez-vous que le fichier YAML correspondant à votre <code>objectClass</code> est disponible et correctement configuré.</p>
 
                    </div><div class="search-results">

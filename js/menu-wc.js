@@ -75,7 +75,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                                 <a href="additional-documentation/documentation-technique/ecriture-des-test-et-utilisation-des-utilitaires.html" data-type="entity-link" data-context="sub-entity" data-context-id="additional">Ecriture des test et utilisation des utilitaires</a>
                                             </li>
                                             <li class="link for-chapter2">
-                                                <a href="additional-documentation/documentation-technique/validation-des-attributss-additionnels-des-identités.html" data-type="entity-link" data-context="sub-entity" data-context-id="additional">Validation des attributss additionnels des identités</a>
+                                                <a href="additional-documentation/documentation-technique/validation-des-identités.html" data-type="entity-link" data-context="sub-entity" data-context-id="additional">Validation des identités</a>
                                             </li>
                                         </ul>
                                     </li>

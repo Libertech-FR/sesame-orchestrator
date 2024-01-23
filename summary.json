@@ -20,7 +20,7 @@
                 "file": "./technical/Tests.md"
             },
             {
-                "title": "Validation des attributss additionnels des identités",
+                "title": "Validation des identités",
                 "file": "./technical/IdentitiesValidation.md"
             }
         ]

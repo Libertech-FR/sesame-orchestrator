@@ -37,5 +37,4 @@ lerna-debug.log*
 docker/docker-compose.yml
 docker/docker-compose.yml
 
-docs/*
-!docs/*.md
+documentation/*

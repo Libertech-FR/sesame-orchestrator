@@ -23,48 +23,63 @@ attributes:
   - name: supannEmpId
     desc: 'Employee ID'
     type: string
+    
   - name: supannCivilite
     desc: 'Title (Mr, Ms, etc.)'
     type: string
+
   - name: supannBirthName
     desc: 'Birth name'
     type: string
+
   - name: supannBirthDate
     desc: 'Date of birth'
     type: date
+
   - name: supannBirthPlace
     desc: 'Place of birth'
     type: string
+
   - name: supannMailPerso
     desc: 'Personal email'
     type: string
+
   - name: supannMailPro
     desc: 'Professional email'
     type: string
+
   - name: supannTelPerso
     desc: 'Personal phone number'
     type: string
+
   - name: supannTelPro
     desc: 'Professional phone number'
     type: string
+
   - name: supannPostalAddress
     desc: 'Postal address'
     type: string
+
   - name: supannRole
     desc: 'Role in the organization'
     type: string
+
   - name: supannStatus
     desc: 'Employment status'
     type: string
+
   - name: supannEtablissement
     desc: 'Institution'
     type: string
+
   - name: supannAffectationPrincipale
     desc: 'Primary assignment'
     type: string
+
   - name: supannAffectationSecondaire
     desc: 'Secondary assignment'
     type: string
+
   - name: supannCodeINE
     desc: 'National Education Identifier'
     type: string

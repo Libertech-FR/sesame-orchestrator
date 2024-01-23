@@ -153,58 +153,53 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MixedValue } from &#x27;./../../../_common/types/mixed-value.type&#x27;
-import { Mixed } from &#x27;mongoose&#x27;
-import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;
-import { IsString, IsEnum, IsObject, ValidateNested, IsOptional, IsMongoId } from &#x27;class-validator&#x27;
-import { ObjectId } from &#x27;mongodb&#x27;
-import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;
-import { FormTypeList, FormTypes } from &#x27;../_enum/types&#x27;
-import { MetadataDto } from &#x27;~/_common/abstracts/dto/metadata.dto&#x27;
-import { forwardRef } from &#x27;@nestjs/common&#x27;
-import { Type } from &#x27;class-transformer&#x27;
-import { FormSectionDto } from &#x27;./parts/section.dto&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;;
+import { IsString, IsEnum, IsObject, ValidateNested, IsOptional } from &#x27;class-validator&#x27;;
+import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
+import { FormTypeList, FormTypes } from &#x27;../_enum/types&#x27;;
+import { MetadataDto } from &#x27;~/_common/abstracts/dto/metadata.dto&#x27;;
+import { Type } from &#x27;class-transformer&#x27;;
+import { FormSectionDto } from &#x27;./parts/section.dto&#x27;;
 
 export class FormCreateDto extends MetadataDto {
   @IsString()
   @ApiProperty()
-  title: string
+  title: string;
 
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
-  description?: string
+  description?: string;
 
   @IsEnum(FormTypeList)
   @ApiProperty({ enum: FormTypeList })
-  type: FormTypes
+  type: FormTypes;
 
   @IsObject()
   @IsOptional()
   @ApiProperty({ required: false })
-  defaultValues: { [key: string]: MixedValue }
+  defaultValues: { [key: string]: MixedValue };
 
   @ValidateNested({ each: true })
   @Type(() &#x3D;&gt; FormSectionDto)
   // @ApiProperty({ type: () &#x3D;&gt; FormSectionDto, isArray: true })
-  sections: { [key: string]: FormSectionDto }
+  sections: { [key: string]: FormSectionDto };
 
   @IsString()
   @ApiProperty()
-  submitButtonText: string
+  submitButtonText: string;
 
   @IsString()
   @ApiProperty()
-  submitApiUrl: string
+  submitApiUrl: string;
 
   @IsObject()
   @IsOptional()
   @ApiProperty({ required: false })
-  redirectUrl?: string
+  redirectUrl?: string;
 }
 
 export class FormDto extends FormCreateDto {}
-
 
 export class FormUpdateDto extends PartialType(FormDto) {}
 </code></pre>

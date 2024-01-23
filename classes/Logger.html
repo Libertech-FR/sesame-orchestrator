@@ -147,16 +147,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Schema, SchemaFactory } from &#x27;@nestjs/mongoose&#x27;
-import { Document } from &#x27;mongoose&#x27;
-import { Abstract } from &#x27;~/_common/abstracts/abstract/schemas/abstract.schema&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Schema, SchemaFactory } from &#x27;@nestjs/mongoose&#x27;;
+import { Document } from &#x27;mongoose&#x27;;
+import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
 
-export type LoggerDocument &#x3D; Logger &amp; Document
+export type LoggerDocument &#x3D; Logger &amp; Document;
 
 @Schema({ versionKey: false })
 export class Logger extends AbstractSchema {}
 
-export const LoggerSchema &#x3D; SchemaFactory.createForClass(Logger)
+export const LoggerSchema &#x3D; SchemaFactory.createForClass(Logger);
 </code></pre>
     </div>
 </div>

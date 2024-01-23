@@ -5,17 +5,42 @@
 
 Le système de validation d'identité utilise des fichiers de configuration YAML pour définir des règles de validation pour différents types d'objets d'identité. Chaque fichier YAML correspond à une `objectClass` spécifique et définit les attributs requis et leurs types pour cette classe.
 
-## Fichiers de Configuration
+## Validation des champs InetOrgPerson
 
-Le fichier de configuration YAML doit être nommé selon le nom de l'`objectClass` qu'il définit, par exemple `supann.yml` pour l'`objectClass` `supannPerson`. Il doit être placé dans le dossier `TBD`.
+Les champs de base de l'objet `inetOrgPerson` sont validés par défaut. 
 
-### Exemple de Fichier YAML (`supann.yml`)
+### Champs obligatoires :
+- `cn` 
+- `sn`
+- `uid`
 
-Ce fichier définit la structure et les attributs requis pour l'`objectClass` `supannPerson`.
+### Champs facultatifs :
+- `displayName`
+- `facsimileTelephoneNumber`
+- `givenName`
+- `labeledURI`
+- `mail`
+- `mobile`
+- `postalAddress`
+- `preferredLanguage`
+- `telephoneNumber`
+- `title`
+- `userCertificate`
+- `userPassword`
+
+## Validation des champs des schema additionnels
+
+### Fichiers de Configuration
+
+Le fichier de configuration YAML doit être nommé selon le nom de l'`objectClass` qu'il définit, par exemple `supann.yml` pour l'`objectClass` `supann`. Il doit être placé dans le dossier `TBD`.
+
+#### Exemple de Fichier YAML (`supann.yml`)
+
+Ce fichier définit la structure et les attributs requis pour l'`objectClass` `supann`.
 
 ```yaml
 objectClasses:
-  - name: supannPerson
+  - name: supann
     desc: 'SUPANN person object class'
     attributes:
       - supannEmpId
@@ -38,7 +63,7 @@ attributes:
     # more attributes...
 ```
 
-### Exemple Générique de Fichier YAML
+#### Exemple Générique de Fichier YAML
 
 ```yaml
 objectClasses:
@@ -57,7 +82,7 @@ attributes:
     # plus de détails d'attributs...
 ```
 
-## JSON de Validation
+### JSON de Validation
 
 Pour valider une entrée, un objet JSON doit être fourni avec les champs suivants :
 
@@ -65,7 +90,7 @@ Pour valider une entrée, un objet JSON doit être fourni avec les champs suivan
 - `inetOrgPerson`: Informations générales de la personne.
 - `additionalFields`: Contient `objectClasses` (un tableau de noms d'`objectClass`) et `attributes` (les attributs spécifiques pour chaque `objectClass`).
 
-## Exemple
+### Exemple
 
 Voici un exemple de JSON à valider :
 
@@ -86,7 +111,7 @@ Voici un exemple de JSON à valider :
 }
 ```
 
-## Remarques
+### Remarques
 
 Assurez-vous que le fichier YAML correspondant à votre `objectClass` est disponible et correctement configuré.
 

@@ -59,8 +59,8 @@ declare const module: any;
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     (await import('./swagger')).default(app);
   }
-  await app.listen(3000, async (): Promise<void> => {
-    Logger.log(`Application is running on port: ${process.env.PORT || 3000}`);
+  await app.listen(4000, async (): Promise<void> => {
+    Logger.log(`Application is running on port: 4000`);
   });
   if (module.hot) {
     module.hot.accept();

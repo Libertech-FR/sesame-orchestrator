@@ -10,8 +10,7 @@ services:
     volumes:
       - '..:/data'
     ports:
-      - '3002:3000'
-      - '9229:9229'
+      - '4002:4000'
     networks:
       - dev
   sesame-redis:

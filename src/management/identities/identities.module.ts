@@ -1,4 +1,4 @@
-import { Logger, Module } from '@nestjs/common';
+import { BadRequestException, Logger, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { IdentitiesSchema, Identities } from './_schemas/identities.schema';
 import { IdentitiesService } from './identities.service';
@@ -27,8 +27,12 @@ import { IdentityState } from './_enums/states.enum';
               Logger.log(`additionalFields validation end for ${this.inetOrgPerson.cn}  `);
             } catch (error) {
               Logger.error(`additionalFields validation error for ${this.inetOrgPerson.cn}  `, error);
+              if (error instanceof BadRequestException) {
+                Logger.error(`additionalFields validation error for ${this.inetOrgPerson.cn}  `, error.getResponse());
+                throw new Error(error.getResponse().toString());
+              }
               if (this.state === IdentityState.TO_CREATE) this.state = IdentityState.TO_COMPLETE;
-              else throw error;
+              else throw new Error(error);
             }
             next();
           });
@@ -37,7 +41,7 @@ import { IdentityState } from './_enums/states.enum';
           // This hook is used to set the state to TO_SYNC if the state is TO_CREATE
           schema.pre('save', async function (next) {
             console.log('pre save');
-            if (this.state === IdentityState.TO_CREATE) this.state = IdentityState.TO_SYNC;
+            if (this.state === IdentityState.TO_CREATE) this.state = IdentityState.TO_VALIDATE;
             next();
           });
 

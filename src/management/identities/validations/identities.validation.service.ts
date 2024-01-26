@@ -1,29 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { parse } from 'yaml';
 import { existsSync, readFileSync } from 'fs';
-import { ConfigObjectAttributeDTO, ConfigObjectSchemaDTO } from './_dto/config.dto';
+import { ConfigObjectSchemaDTO } from './_dto/config.dto';
 import * as yup from 'yup';
 import { construct, diff } from 'radash';
 import { AdditionalFieldsPart } from '../_schemas/_parts/additionalFields.part.schema';
+import Ajv from 'ajv';
+import { buildYup } from 'schema-to-yup';
+import ajvErrors from 'ajv-errors';
+import validSchema from './_config/validSchema';
+import { BadConfig } from '~/_common/errors/BadConfig';
 
+/**
+ * Service responsible for validating identities.
+ */
 @Injectable()
 export class IdentitiesValidationService {
-  constructor() {}
+  private ajv: Ajv = new Ajv({ allErrors: true });
+  private validateSchema;
 
+  constructor() {
+    ajvErrors(this.ajv);
+    this.validateSchema = this.ajv.compile(validSchema);
+  }
+
+  /**
+   * Validates additional fields for identities.
+   * @param data - The additional fields data to validate.
+   * @returns A promise that resolves if validation succeeds, or rejects with validation errors.
+   */
   async validate(data: AdditionalFieldsPart): Promise<object> {
     const objectClasses = data.objectClasses;
     const attributes = data.attributes;
     const attributesKeys = Object.keys(attributes);
     const validations = {};
+    let reject = false;
 
-    const missingAtribute = diff(objectClasses, attributesKeys);
-    if (missingAtribute.length > 0) {
-      for (const attribute of missingAtribute) {
-        validations[attribute] = `Missing attribute '${attribute}'`;
-      }
+    // Check for missing attributes
+    for (const attribute of diff(objectClasses, attributesKeys)) {
+      validations[attribute] = `Missing attribute '${attribute}'`;
+      reject = true;
     }
 
-    let reject = false;
     for (const key of attributesKeys) {
       if (!objectClasses.includes(key)) {
         validations[key] =
@@ -40,66 +58,51 @@ export class IdentitiesValidationService {
       }
 
       const schema: ConfigObjectSchemaDTO = parse(readFileSync(path, 'utf8'));
-      const yupSchema = await this.createSchema(schema.attributes);
-      try {
-        const validation = await yupSchema.validate(attributes[key], { strict: true, abortEarly: false });
-        validations[key] = validation;
-      } catch (error) {
-        if (error instanceof yup.ValidationError) {
-          error.inner.forEach((err) => {
-            validations[`${key}.${err.path}`] = err.errors[0];
-          });
-          reject = true;
-        }
+      if (!this.validateSchema(schema)) {
+        validations[key] = `Schema ${key}.yml invalide: ${this.ajv.errorsText(this.validateSchema.errors)}`;
+        reject = true;
+        continue;
       }
     }
+
+    if (reject) {
+      throw new BadRequestException(validations);
+    }
+
+    // Validate each attribute
+    for (const key of attributesKeys) {
+      const validationError = await this.validateAttribute(key, attributes[key]);
+      if (validationError) {
+        validations[key] = validationError;
+        reject = true;
+      }
+    }
+
     if (reject) {
       return Promise.reject({
         message: 'Validation failed',
         validations: construct(validations),
       });
     }
-    return Promise.resolve(construct(validations));
+    return Promise.resolve({ message: 'Validation succeeded' });
   }
 
-  private getValidator(type, required = false): yup.AnyObject {
-    let validator: yup.AnyObject;
-    switch (type) {
-      case 'string':
-        validator = yup.string();
-        break;
-      case 'number':
-        validator = yup.number();
-        break;
-      case 'boolean':
-        validator = yup.boolean();
-        break;
-      case 'date':
-        validator = yup.date();
-        break;
-      case 'array':
-        validator = yup.array();
-        break;
-      case 'object':
-        validator = yup.object();
-        break;
-      default:
-        validator = yup.string();
-        break;
+  /**
+   * Validates a single attribute.
+   * @param key - The key of the attribute to validate.
+   * @param attribute - The attribute value to validate.
+   * @returns A promise that resolves with an error message if validation fails, otherwise null.
+   */
+  private async validateAttribute(key: string, attribute: any): Promise<string | null> {
+    const path = `./src/management/identities/validations/_config/${key}.yml`;
+    const schema: ConfigObjectSchemaDTO = parse(readFileSync(path, 'utf8'));
+
+    const yupSchema = buildYup(schema, { noSortEdges: true });
+    try {
+      await yupSchema.validate(attribute, { strict: true, abortEarly: false });
+      return null;
+    } catch (error) {
+      return error.inner.map((err) => `${key}.${err.path}: ${err.errors[0]}`).join(', ');
     }
-
-    if (required) {
-      validator = validator.required();
-    }
-
-    return validator;
-  }
-
-  async createSchema(attributes: ConfigObjectAttributeDTO[]): Promise<yup.ObjectSchema<any>> {
-    const schema: { [key: string]: yup.AnySchema } = attributes.reduce((acc, attribute) => {
-      acc[attribute.name] = this.getValidator(attribute.type, attribute.required);
-      return acc;
-    }, {});
-    return yup.object().shape(schema);
   }
 }

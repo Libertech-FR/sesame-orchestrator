@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { IdentitiesDto, IdentitiesCreateDto, IdentitiesUpdateDto } from './_dto/identities.dto';
 import { IdentitiesService } from './identities.service';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
@@ -18,6 +29,8 @@ import { IdentitiesValidationService } from './validations/identities.validation
 import { MixedValue } from '~/_common/types/mixed-value.type';
 import { Identities } from './_schemas/identities.schema';
 import { Document } from 'mongoose';
+import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
+import { IdentityState } from './_enums/states.enum';
 
 @ApiTags('management')
 @Controller('identities')
@@ -52,16 +65,26 @@ export class IdentitiesController extends AbstractController {
     >
   > {
     try {
+      let statusCode = HttpStatus.CREATED;
+      let message = null;
       const data = await this._service.create<Identities>(body);
-      return res.status(HttpStatus.CREATED).json({
-        statusCode: HttpStatus.CREATED,
+      if (data.state === IdentityState.TO_COMPLETE) {
+        statusCode = HttpStatus.ACCEPTED;
+        message = 'Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.';
+      }
+      return res.status(statusCode).json({
+        statusCode,
         data,
+        message,
       });
     } catch (error) {
+      let validations = error.validations;
+      if (error instanceof ValidationSchemaException || error instanceof ValidationConfigException)
+        validations = error.getResponse().response;
       return res.status(HttpStatus.BAD_REQUEST).json({
         statusCode: HttpStatus.BAD_REQUEST,
         message: error.message,
-        validations: error.validations,
+        validations: validations,
       });
     }
   }
@@ -107,10 +130,12 @@ export class IdentitiesController extends AbstractController {
         data,
       });
     } catch (error) {
+      let validations = error.validations;
+      if (error instanceof BadRequestException) validations = error.getResponse();
       return res.status(HttpStatus.BAD_REQUEST).json({
         statusCode: HttpStatus.BAD_REQUEST,
         message: error.message,
-        validations: error.validations,
+        validations: validations,
       });
     }
   }

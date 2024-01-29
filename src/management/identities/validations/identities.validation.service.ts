@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { parse } from 'yaml';
 import { existsSync, readFileSync } from 'fs';
 import { ConfigObjectSchemaDTO } from './_dto/config.dto';
@@ -9,7 +9,7 @@ import Ajv from 'ajv';
 import { buildYup } from 'schema-to-yup';
 import ajvErrors from 'ajv-errors';
 import validSchema from './_config/validSchema';
-import { BadConfig } from '~/_common/errors/BadConfig';
+import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
 
 /**
  * Service responsible for validating identities.
@@ -18,10 +18,12 @@ import { BadConfig } from '~/_common/errors/BadConfig';
 export class IdentitiesValidationService {
   private ajv: Ajv = new Ajv({ allErrors: true });
   private validateSchema;
+  private logger: Logger;
 
   constructor() {
     ajvErrors(this.ajv);
     this.validateSchema = this.ajv.compile(validSchema);
+    this.logger = new Logger();
   }
 
   /**
@@ -38,21 +40,23 @@ export class IdentitiesValidationService {
 
     // Check for missing attributes
     for (const attribute of diff(objectClasses, attributesKeys)) {
-      validations[attribute] = `Missing attribute '${attribute}'`;
+      validations[attribute] = `Attribut '${attribute}' manquant dans les champs additionnels`;
       reject = true;
     }
 
     for (const key of attributesKeys) {
       if (!objectClasses.includes(key)) {
         validations[key] =
-          `${key} is not a valid object class in this context, valid object classes are: ${objectClasses.join(', ')}'`;
+          `${key} n'est pas une classe d'objet valide dans ce contexte, les classes d'objets valides sont: ${objectClasses.join(
+            ', ',
+          )}'`;
         reject = true;
         continue;
       }
 
       const path = `./src/management/identities/validations/_config/${key}.yml`;
       if (!existsSync(path)) {
-        validations[key] = `Config '${key}.yml' not found`;
+        validations[key] = `Fichier de config '${key}.yml' introuvable`;
         reject = true;
         continue;
       }
@@ -66,7 +70,7 @@ export class IdentitiesValidationService {
     }
 
     if (reject) {
-      throw new BadRequestException(validations);
+      throw new ValidationConfigException(validations);
     }
 
     // Validate each attribute
@@ -79,10 +83,7 @@ export class IdentitiesValidationService {
     }
 
     if (reject) {
-      return Promise.reject({
-        message: 'Validation failed',
-        validations: construct(validations),
-      });
+      throw new ValidationSchemaException(validations);
     }
     return Promise.resolve({ message: 'Validation succeeded' });
   }
@@ -102,7 +103,10 @@ export class IdentitiesValidationService {
       await yupSchema.validate(attribute, { strict: true, abortEarly: false });
       return null;
     } catch (error) {
-      return error.inner.map((err) => `${key}.${err.path}: ${err.errors[0]}`).join(', ');
+      return error.inner.reduce((acc, err) => {
+        acc[err.path] = err.message;
+        return acc;
+      }, {});
     }
   }
 }

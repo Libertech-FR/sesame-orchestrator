@@ -7,6 +7,7 @@ import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-win
 import { createLogger } from 'winston';
 import * as winston from 'winston';
 import 'winston-mongodb';
+import { appendFile } from 'fs';
 
 declare const module: any;
 (async (): Promise<void> => {
@@ -59,6 +60,7 @@ declare const module: any;
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     (await import('./swagger')).default(app);
   }
+
   await app.listen(3000, async (): Promise<void> => {
     Logger.log(`Application is running on port: ${process.env.PORT || 3000}`);
   });

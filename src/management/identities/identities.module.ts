@@ -6,6 +6,7 @@ import { IdentitiesController } from './identities.controller';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { IdentitiesValidationModule } from './validations/identities.validation.module';
 import { IdentityState } from './_enums/states.enum';
+import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
 
 @Module({
   imports: [
@@ -21,18 +22,32 @@ import { IdentityState } from './_enums/states.enum';
           // If the validation fails and the state is TO_CREATE, the state is set to TO_COMPLETE
           // Else the error is thrown
           schema.pre('validate', async function (next) {
+            const commonLogMessage = `additionalFields error for ${this.inetOrgPerson.cn}  `;
             try {
               Logger.log(`additionalFields validation start for ${this.inetOrgPerson.cn}  `);
+
               await validationService.validate(this.additionalFields);
+
               Logger.log(`additionalFields validation end for ${this.inetOrgPerson.cn}  `);
             } catch (error) {
-              Logger.error(`additionalFields validation error for ${this.inetOrgPerson.cn}  `, error);
-              if (error instanceof BadRequestException) {
-                Logger.error(`additionalFields validation error for ${this.inetOrgPerson.cn}  `, error.getResponse());
-                throw new Error(error.getResponse().toString());
+              // If the error is a ValidationConfigException, we throw it
+              if (error instanceof ValidationConfigException) {
+                Logger.error(commonLogMessage, error.getResponse());
+                throw new ValidationConfigException(error);
               }
-              if (this.state === IdentityState.TO_CREATE) this.state = IdentityState.TO_COMPLETE;
-              else throw new Error(error);
+
+              // If the error is a ValidationSchemaException and the state is TO_CREATE, we set it to TO_COMPLETE
+              // Else we throw it
+              if (error instanceof ValidationSchemaException) {
+                Logger.error(commonLogMessage, error.getResponse());
+                if (this.state === IdentityState.TO_CREATE) {
+                  Logger.warn(commonLogMessage, 'Setting state to TO_COMPLETE');
+                  this.state = IdentityState.TO_COMPLETE;
+                } else throw new ValidationSchemaException(error);
+              } else {
+                Logger.error(commonLogMessage, error);
+                throw new Error(error);
+              }
             }
             next();
           });
@@ -40,7 +55,6 @@ import { IdentityState } from './_enums/states.enum';
           // Pre save hook
           // This hook is used to set the state to TO_SYNC if the state is TO_CREATE
           schema.pre('save', async function (next) {
-            console.log('pre save');
             if (this.state === IdentityState.TO_CREATE) this.state = IdentityState.TO_VALIDATE;
             next();
           });

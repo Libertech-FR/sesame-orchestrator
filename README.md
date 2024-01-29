@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://libertech-fr.github.io/sesame-orchestrator" target="blank"><img src="https://raw.githubusercontent.com/Libertech-FR/sesame-orchestrator/main/static/sesame-logo.svg" width="200" alt="Sesame Logo" /></a>
+  <a href="https://libertech-fr.github.io/sesame-orchestrator" target="blank"><img src="./static/sesame-logo.svg" width="200" alt="Sesame Logo" /></a>
 </p>
 <p align="center">Sésame ochestrator - Synchronisation d'Identités Multi-sources</p>
 <p align="center">

@@ -1,9 +1,8 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { parse } from 'yaml';
 import { existsSync, readFileSync } from 'fs';
 import { ConfigObjectSchemaDTO } from './_dto/config.dto';
-import * as yup from 'yup';
-import { construct, diff } from 'radash';
+import { diff } from 'radash';
 import { AdditionalFieldsPart } from '../_schemas/_parts/additionalFields.part.schema';
 import Ajv from 'ajv';
 import { buildYup } from 'schema-to-yup';
@@ -70,7 +69,7 @@ export class IdentitiesValidationService {
     }
 
     if (reject) {
-      throw new ValidationConfigException(validations);
+      throw new ValidationConfigException({ validations });
     }
 
     // Validate each attribute
@@ -83,7 +82,7 @@ export class IdentitiesValidationService {
     }
 
     if (reject) {
-      throw new ValidationSchemaException(validations);
+      throw new ValidationSchemaException({ validations });
     }
     return Promise.resolve({ message: 'Validation succeeded' });
   }

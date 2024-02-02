@@ -14,7 +14,6 @@ import { IdentitiesDto, IdentitiesCreateDto, IdentitiesUpdateDto } from './_dto/
 import { IdentitiesService } from './identities.service';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
-import { Types } from 'mongoose';
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator';
 import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-response.decorator';
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
@@ -28,10 +27,11 @@ import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } 
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { MixedValue } from '~/_common/types/mixed-value.type';
 import { Identities } from './_schemas/identities.schema';
-import { Document } from 'mongoose';
-import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
+import { Types, Document } from 'mongoose';
 import { IdentityState } from './_enums/states.enum';
+// import { IdentitiesValidationFilter } from '~/_common/filters/identities-validation.filter';
 
+// @UseFilters(new IdentitiesValidationFilter())
 @ApiTags('management')
 @Controller('identities')
 export class IdentitiesController extends AbstractController {
@@ -64,29 +64,21 @@ export class IdentitiesController extends AbstractController {
       any
     >
   > {
-    try {
-      let statusCode = HttpStatus.CREATED;
-      let message = null;
-      const data = await this._service.create<Identities>(body);
-      if (data.state === IdentityState.TO_COMPLETE) {
-        statusCode = HttpStatus.ACCEPTED;
-        message = 'Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.';
-      }
-      return res.status(statusCode).json({
-        statusCode,
-        data,
-        message,
-      });
-    } catch (error) {
-      let validations = error.validations;
-      if (error instanceof ValidationSchemaException || error instanceof ValidationConfigException)
-        validations = error.getResponse().response;
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: error.message,
-        validations: validations,
-      });
+    let statusCode = HttpStatus.CREATED;
+    let message = null;
+    const data = await this._service.create<Identities>(body);
+    // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
+    // Else the state is TO_VALIDATE, we return a 201 status code
+    if ((data as Identities).state === IdentityState.TO_COMPLETE) {
+      statusCode = HttpStatus.ACCEPTED;
+      message = 'Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.';
     }
+
+    return res.status(statusCode).json({
+      statusCode,
+      data,
+      message,
+    });
   }
 
   @Get()

@@ -7,6 +7,8 @@ import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-win
 import { createLogger } from 'winston';
 import * as winston from 'winston';
 import 'winston-mongodb';
+import passport from "passport";
+import { Response } from "express";
 
 declare const module: any;
 (async (): Promise<void> => {
@@ -29,7 +31,7 @@ declare const module: any;
 
   const winstonTransports = {
     console: new winston.transports.Console({
-      level: 'info',
+      level: 'debug',
       format: winstonFormat.pretty,
     }),
     mongodb: new winston.transports.MongoDB({
@@ -52,15 +54,22 @@ declare const module: any;
     logger: WinstonModule.createLogger({
       instance: winstonInstance,
     }),
+    // rawBody: true,
     cors: true,
   });
+  // eslint-disable-next-line
+  // app.use((_: any, res: Response, next: () => void) => {
+  //   res.removeHeader('x-powered-by')
+  //   next()
+  // })
+  // app.use(passport.initialize())
   // app.use(rawBodyBuffer(cfg?.application?.bodyParser));
   if (process.env.production !== 'production') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     (await import('./swagger')).default(app);
   }
   await app.listen(4000, async (): Promise<void> => {
-    Logger.log(`Application is running on port: 4000`);
+    Logger.log(`Sesame - Orchestrator is READY on <http://127.0.0.1:4000> !`);
   });
   if (module.hot) {
     module.hot.accept();

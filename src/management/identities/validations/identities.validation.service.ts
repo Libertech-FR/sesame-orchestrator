@@ -44,6 +44,7 @@ export class IdentitiesValidationService {
     }
 
     for (const key of attributesKeys) {
+      // Check for invalid object classes
       if (!objectClasses.includes(key)) {
         validations[key] =
           `${key} n'est pas une classe d'objet valide dans ce contexte, les classes d'objets valides sont: ${objectClasses.join(
@@ -53,6 +54,7 @@ export class IdentitiesValidationService {
         continue;
       }
 
+      // Check for missing schema files
       const path = `./src/management/identities/validations/_config/${key}.yml`;
       if (!existsSync(path)) {
         validations[key] = `Fichier de config '${key}.yml' introuvable`;
@@ -60,6 +62,7 @@ export class IdentitiesValidationService {
         continue;
       }
 
+      // Check for invalid schema
       const schema: ConfigObjectSchemaDTO = parse(readFileSync(path, 'utf8'));
       if (!this.validateSchema(schema)) {
         validations[key] = `Schema ${key}.yml invalide: ${this.ajv.errorsText(this.validateSchema.errors)}`;
@@ -93,7 +96,7 @@ export class IdentitiesValidationService {
    * @param attribute - The attribute value to validate.
    * @returns A promise that resolves with an error message if validation fails, otherwise null.
    */
-  private async validateAttribute(key: string, attribute: any): Promise<string | null> {
+  public async validateAttribute(key: string, attribute: any): Promise<string | null> {
     const path = `./src/management/identities/validations/_config/${key}.yml`;
     const schema: ConfigObjectSchemaDTO = parse(readFileSync(path, 'utf8'));
 

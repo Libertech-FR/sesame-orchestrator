@@ -10,7 +10,7 @@ export class AdditionalFieldsPart {
   attributes: Record<string, MixedValue>;
 
   @Prop({ type: Object, required: false })
-  validations: Record<string, string>;
+  validations?: Record<string, string>;
 }
 
 export const AdditionalFieldsPartSchema = SchemaFactory.createForClass(AdditionalFieldsPart);

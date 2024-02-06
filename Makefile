@@ -44,7 +44,7 @@ stop-dbs: ## Stop dependencies for development
 	@docker compose --project-directory docker rm -f $(APPNAME)-redis $(APPNAME)-mongo
 
 run-test: ## Run tests
-	act --container-architecture="linux/arm64"
+	act --container-architecture="linux/arm64" -j test
 
 gen-doc:
 	npx @compodoc/compodoc -p tsconfig.json -s -d docs --includes ./markdowns -n "Sesame Orchestrator"

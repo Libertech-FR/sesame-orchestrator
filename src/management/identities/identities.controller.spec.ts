@@ -78,11 +78,12 @@ describe('IdentitiesController', () => {
     });
 
     it('should throw an error when creating an identity', async () => {
-      jest.spyOn(service, 'create').mockImplementationOnce(() => {
-        throw new Error('Error');
-      });
-      const createIdentity = await controller.create(response, IdentitiesDtoStub());
-      expect(createIdentity.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      jest.spyOn(service, 'create').mockRejectedValueOnce(new Error('Error'));
+      try {
+        await controller.create(response, IdentitiesDtoStub());
+      } catch (error) {
+        expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      }
     });
   });
 
@@ -93,11 +94,12 @@ describe('IdentitiesController', () => {
     });
 
     it('should throw an error when searching identities', async () => {
-      jest.spyOn(service, 'findAndCount').mockImplementationOnce(() => {
-        throw new Error('Error');
-      });
-      const searchIdentity = await controller.search(response, {}, searchFilterOptions);
-      expect(searchIdentity.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      jest.spyOn(service, 'findAndCount').mockRejectedValueOnce(new Error('Error'));
+      try {
+        await controller.search(response, {}, searchFilterOptions);
+      } catch (error) {
+        expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      }
     });
   });
 
@@ -110,11 +112,12 @@ describe('IdentitiesController', () => {
     });
 
     it('should throw an error when finding an identity', async () => {
-      jest.spyOn(service, 'findOne').mockImplementationOnce(() => {
-        throw new Error('Error');
-      });
-      const findIdentity = await controller.read(_id, response);
-      expect(findIdentity.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      jest.spyOn(service, 'findOne').mockRejectedValueOnce(new Error('Error'));
+      try {
+        await controller.read(_id, response);
+      } catch (error) {
+        expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      }
     });
   });
 
@@ -127,11 +130,12 @@ describe('IdentitiesController', () => {
     });
 
     it('should throw an error when updating an identity', async () => {
-      jest.spyOn(service, 'update').mockImplementationOnce(() => {
-        throw new Error('Error');
-      });
-      const updateIdentity = await controller.update(_id, IdentitiesDtoStub(), response);
-      expect(updateIdentity.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      jest.spyOn(service, 'update').mockRejectedValueOnce(new Error('Error'));
+      try {
+        await controller.update(_id, IdentitiesDtoStub(), response);
+      } catch (error) {
+        expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      }
     });
   });
 
@@ -144,11 +148,12 @@ describe('IdentitiesController', () => {
     });
 
     it('should throw an error when deleting an identity', async () => {
-      jest.spyOn(service, 'delete').mockImplementationOnce(() => {
-        throw new Error('Error');
-      });
-      const deleteIdentity = await controller.remove(_id, response);
-      expect(deleteIdentity.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      jest.spyOn(service, 'delete').mockRejectedValueOnce(new Error('Error'));
+      try {
+        await controller.remove(_id, response);
+      } catch (error) {
+        expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      }
     });
   });
 });

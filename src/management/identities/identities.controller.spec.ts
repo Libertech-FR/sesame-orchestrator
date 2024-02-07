@@ -45,7 +45,7 @@ describe('IdentitiesController', () => {
         () => Promise.resolve({ ...IdentitiesDtoStub(), _id, state: IdentityState.TO_COMPLETE }),
       ],
       findAndCount: [
-        () => Promise.resolve({ data: [{ ...IdentitiesDtoStub(), _id }], total: 1 }),
+        () => Promise.resolve([[{ ...IdentitiesDtoStub(), _id }], 1]),
         () => Promise.reject(new Error('Error')), // Function that throws an error
       ],
       findOne: [() => Promise.resolve({ ...IdentitiesDtoStub(), _id }), () => Promise.reject(new Error('Error'))],

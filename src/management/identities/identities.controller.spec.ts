@@ -38,45 +38,19 @@ describe('IdentitiesController', () => {
     identitiesModel = await mongoDbTestInstance.getModel<Identities>(Identities.name, IdentitiesSchema);
     _id = new Types.ObjectId();
 
-    // service = createMockService<IdentitiesService>(IdentitiesService, {
-    //   create: [{ ...identitiesCreated }, { ...identitiesAccepted }],
-    //   findAndCount: [{ data: [identitiesWithId], total: 1 }],
-    //   findOne: [{ ...identitiesWithId }],
-    //   update: [{ ...identitiesWithId }],
-    //   delete: [{ ...identitiesWithId }],
-    // });
-
     service = createMockService<IdentitiesService>(IdentitiesService, {
       create: [
-        // First call returns a newly created identity with a status of CREATED
-        Promise.resolve({ ...IdentitiesDtoStub(), _id, state: IdentityState.TO_VALIDATE }),
-        // Second call simulates a scenario where creation leads to ACCEPTED status due to validations
-        Promise.resolve({ ...IdentitiesDtoStub(), _id, state: IdentityState.TO_COMPLETE }),
+        // Use functions that return promises for resolve or reject
+        () => Promise.resolve({ ...IdentitiesDtoStub(), _id, state: IdentityState.TO_VALIDATE }),
+        () => Promise.resolve({ ...IdentitiesDtoStub(), _id, state: IdentityState.TO_COMPLETE }),
       ],
       findAndCount: [
-        // Successful search, returns an array of identities and a total count
-        Promise.resolve({ data: [{ ...IdentitiesDtoStub(), _id }], total: 1 }),
-        // Simulate a failure in searching identities
-        Promise.reject(new Error('Error')),
+        () => Promise.resolve({ data: [{ ...IdentitiesDtoStub(), _id }], total: 1 }),
+        () => Promise.reject(new Error('Error')), // Function that throws an error
       ],
-      findOne: [
-        // Successfully finds an identity
-        Promise.resolve({ ...IdentitiesDtoStub(), _id }),
-        // Simulates an error when finding an identity
-        Promise.reject(new Error('Error')),
-      ],
-      update: [
-        // Successfully updates an identity
-        Promise.resolve({ ...IdentitiesDtoStub(), _id }),
-        // Simulates an error in updating an identity
-        Promise.reject(new Error('Error')),
-      ],
-      delete: [
-        // Successfully deletes an identity
-        Promise.resolve({ ...IdentitiesDtoStub(), _id }),
-        // Simulates an error in deleting an identity
-        Promise.reject(new Error('Error')),
-      ],
+      findOne: [() => Promise.resolve({ ...IdentitiesDtoStub(), _id }), () => Promise.reject(new Error('Error'))],
+      update: [() => Promise.resolve({ ...IdentitiesDtoStub(), _id }), () => Promise.reject(new Error('Error'))],
+      delete: [() => Promise.resolve({ ...IdentitiesDtoStub(), _id }), () => Promise.reject(new Error('Error'))],
     });
 
     const module: TestingModule = await Test.createTestingModule({

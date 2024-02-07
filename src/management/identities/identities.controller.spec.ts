@@ -49,6 +49,7 @@ describe('IdentitiesController', () => {
         () => Promise.reject(new Error('Error')), // Function that throws an error
       ],
       findOne: [() => Promise.resolve({ ...IdentitiesDtoStub(), _id }), () => Promise.reject(new Error('Error'))],
+      findById: [() => Promise.resolve({ ...IdentitiesDtoStub(), _id }), () => Promise.reject(new Error('Error'))],
       update: [() => Promise.resolve({ ...IdentitiesDtoStub(), _id }), () => Promise.reject(new Error('Error'))],
       delete: [() => Promise.resolve({ ...IdentitiesDtoStub(), _id }), () => Promise.reject(new Error('Error'))],
     });

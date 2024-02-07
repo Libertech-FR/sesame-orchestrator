@@ -86,23 +86,16 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content class">
+               <div class="content controller">
                    <div class="content-data">
 
 
 
 
 
-
-
-
-
-
-
-
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >MongooseValidationFilter</li>
+  <li class="breadcrumb-item">Controllers</li>
+  <li class="breadcrumb-item" >IdentitiesValidationController</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,18 +119,24 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/_common/filters/mongoose-validation.filter.ts</code>
+            <code>src/management/identities/validations/identities.validation.controller.ts</code>
         </p>
 
+            <p class="comment">
+                <h3>Prefix</h3>
+            </p>
+            <p class="comment">
+                <code>identities/validation</code>
+            </p>
 
 
 
             <p class="comment">
-                <h3>Implements</h3>
+                <h3>Extends</h3>
             </p>
             <p class="comment">
-                        <code>ExceptionFilter</code>
             </p>
+
 
 
             <section data-compodoc="block-index">
@@ -154,12 +153,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
-                                <a href="#catch" >catch</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                <a href="#getValidationErrors" >getValidationErrors</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#validate" >validate</a>
                             </li>
                         </ul>
                     </td>
@@ -173,8 +170,6 @@
     </table>
 </section>
 
-
-
             <section data-compodoc="block-methods">
     
     <h3 id="methods">
@@ -184,26 +179,35 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="catch"></a>
+                    <a name="validate"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
-                        <span ><b>catch</b></span>
-                        <a href="#catch"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Async</span>
+                        <span ><b>validate</b></span>
+                        <a href="#validate"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>catch(exception: Error.ValidationError | Error.CastError | ValidationError, host: ArgumentsHost)</code>
+                    <code>validate(res: Response, body: <a href="../classes/AdditionalFieldsPart.html" target="_self">AdditionalFieldsPart</a>)</code>
                 </td>
             </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post()<br /></code>
+                </td>
+            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="8"
-                                    class="link-to-prism">src/_common/filters/mongoose-validation.filter.ts:8</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.controller.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -224,9 +228,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>exception</td>
+                                                <td>res</td>
                                             <td>
-                                                        <code>Error.ValidationError | Error.CastError | ValidationError</code>
+                                                        <code>Response</code>
                                             </td>
 
                                             <td>
@@ -236,78 +240,9 @@
 
                                         </tr>
                                         <tr>
-                                                <td>host</td>
+                                                <td>body</td>
                                             <td>
-                                                        <code>ArgumentsHost</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getValidationErrors"></a>
-                    <span class="name">
-                            <span class="modifier">Protected</span>
-                        <span ><b>getValidationErrors</b></span>
-                        <a href="#getValidationErrors"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getValidationErrors(err: Error.ValidationError | Error.CastError | ValidationError)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">src/_common/filters/mongoose-validation.filter.ts:34</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>err</td>
-                                            <td>
-                                                        <code>Error.ValidationError | Error.CastError | ValidationError</code>
+                                                            <code><a href="../classes/AdditionalFieldsPart.html" target="_self" >AdditionalFieldsPart</a></code>
                                             </td>
 
                                             <td>
@@ -320,7 +255,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Record&lt;string, any&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;Response&lt;literal type, any&gt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -330,71 +265,66 @@
             </tr>
         </tbody>
     </table>
-</section>
-
-
-
-
-
-    </div>
+</section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from &#x27;@nestjs/common&#x27;;
-import { Request, Response } from &#x27;express&#x27;;
-import { Error } from &#x27;mongoose&#x27;;
-import { ValidationError } from &#x27;class-validator&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, HttpStatus, Post, Res } from &#x27;@nestjs/common&#x27;;
+import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
+import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { Response } from &#x27;express&#x27;;
+import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
+import { AdditionalFieldsPart } from &#x27;../_schemas/_parts/additionalFields.part.schema&#x27;;
+import { IdentitiesValidationService } from &#x27;./identities.validation.service&#x27;;
 
-@Catch(Error.ValidationError, Error.CastError, ValidationError)
-export class MongooseValidationFilter implements ExceptionFilter {
-  public catch(exception: Error.ValidationError | Error.CastError | ValidationError, host: ArgumentsHost) {
-    const ctx &#x3D; host.switchToHttp();
-    const request &#x3D; ctx.getRequest&lt;Request&gt;();
-    const response &#x3D; ctx.getResponse&lt;Response&gt;();
-
-    Logger.debug(exception[&#x27;message&#x27;], &#x27;MongooseValidationFilter&#x27;);
-    const debug &#x3D; {};
-    if (process.env.NODE_ENV !&#x3D;&#x3D; &#x27;production&#x27; &amp;&amp; request.query[&#x27;debug&#x27;]) {
-      debug[&#x27;_exception&#x27;] &#x3D; exception;
-    }
-    response.status(HttpStatus.NOT_ACCEPTABLE).json(
-      // @ts-expect-error( )
-      HttpException.createBody(
-        {
-          statusCode: HttpStatus.NOT_ACCEPTABLE,
-          message: exception[&#x27;message&#x27;],
-          validations: this.getValidationErrors(exception),
-          ...debug,
-        },
-        exception.constructor.name,
-        HttpStatus.NOT_ACCEPTABLE,
-      ),
-    );
+@ApiTags(&#x27;management&#x27;)
+@Controller(&#x27;identities/validation&#x27;)
+export class IdentitiesValidationController extends AbstractController {
+  constructor(protected readonly _service: IdentitiesValidationService) {
+    super();
   }
 
-  // eslint-disable-next-line
-  protected getValidationErrors(err: Error.ValidationError | Error.CastError | ValidationError): Record&lt;string, any&gt; {
-    const validations &#x3D; {};
-    if (err instanceof Error.ValidationError) {
-      for (const key in err.errors) {
-        if (err.errors[key][&#x27;constraints&#x27;]) {
-          Object.keys(err.errors[key][&#x27;constraints&#x27;]).forEach((ckey) &#x3D;&gt; {
-            const property &#x3D; err.errors[key][&#x27;property&#x27;];
-            validations[&#x60;${key}.${property}&#x60;] &#x3D; err.errors[key][&#x27;constraints&#x27;][ckey];
-          });
-          continue;
-        }
-        validations[key] &#x3D; err.errors[key].message;
-      }
-    } else if (err instanceof Error.CastError) {
-      validations[err.path] &#x3D; err.message;
+  @Post()
+  public async validate(
+    @Res()
+    res: Response,
+    @Body() body: AdditionalFieldsPart,
+  ): Promise&lt;
+    Response&lt;
+      {
+        statusCode: number;
+        data?: any;
+        message?: string;
+        validations?: MixedValue;
+      },
+      any
+    &gt;
+  &gt; {
+    try {
+      const data &#x3D; await this._service.validate(body);
+      return res.status(HttpStatus.CREATED).json({
+        statusCode: HttpStatus.CREATED,
+        data,
+      });
+    } catch (error) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: error.message,
+        validations: error.validations,
+      });
     }
-    return validations;
   }
 }
 </code></pre>
     </div>
 </div>
+
+
+
+
+
+
+
 
 
 
@@ -429,8 +359,8 @@ export class MongooseValidationFilter implements ExceptionFilter {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'MongooseValidationFilter.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
+            var COMPODOC_CURRENT_PAGE_URL = 'IdentitiesValidationController.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

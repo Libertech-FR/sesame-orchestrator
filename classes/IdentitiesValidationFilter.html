@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >MongooseValidationFilter</li>
+  <li class="breadcrumb-item" >IdentitiesValidationFilter</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/_common/filters/mongoose-validation.filter.ts</code>
+            <code>src/_common/filters/identities-validation.filter.ts</code>
         </p>
 
 
@@ -154,12 +154,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Public</span>
                                 <a href="#catch" >catch</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                <a href="#getValidationErrors" >getValidationErrors</a>
                             </li>
                         </ul>
                     </td>
@@ -186,7 +181,6 @@
                 <td class="col-md-4">
                     <a name="catch"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
                         <span ><b>catch</b></span>
                         <a href="#catch"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -194,16 +188,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>catch(exception: Error.ValidationError | Error.CastError | ValidationError, host: ArgumentsHost)</code>
+<code>catch(exception: <a href="../classes/ValidationException.html" target="_self">ValidationException</a>, host: ArgumentsHost)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="8"
-                                    class="link-to-prism">src/_common/filters/mongoose-validation.filter.ts:8</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="7"
+                                    class="link-to-prism">src/_common/filters/identities-validation.filter.ts:7</a></div>
                         </td>
                     </tr>
 
@@ -226,7 +219,7 @@
                                         <tr>
                                                 <td>exception</td>
                                             <td>
-                                                        <code>Error.ValidationError | Error.CastError | ValidationError</code>
+                                                            <code><a href="../classes/ValidationException.html" target="_self" >ValidationException</a></code>
                                             </td>
 
                                             <td>
@@ -251,76 +244,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getValidationErrors"></a>
-                    <span class="name">
-                            <span class="modifier">Protected</span>
-                        <span ><b>getValidationErrors</b></span>
-                        <a href="#getValidationErrors"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getValidationErrors(err: Error.ValidationError | Error.CastError | ValidationError)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">src/_common/filters/mongoose-validation.filter.ts:34</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>err</td>
-                                            <td>
-                                                        <code>Error.ValidationError | Error.CastError | ValidationError</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Record&lt;string, any&gt;</code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -340,56 +264,24 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from &#x27;@nestjs/common&#x27;;
-import { Request, Response } from &#x27;express&#x27;;
-import { Error } from &#x27;mongoose&#x27;;
-import { ValidationError } from &#x27;class-validator&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ArgumentsHost, Catch, ExceptionFilter, Logger } from &#x27;@nestjs/common&#x27;;
+import { ValidationException } from &#x27;~/_common/errors/ValidationException&#x27;;
+import { Response } from &#x27;express&#x27;;
 
-@Catch(Error.ValidationError, Error.CastError, ValidationError)
-export class MongooseValidationFilter implements ExceptionFilter {
-  public catch(exception: Error.ValidationError | Error.CastError | ValidationError, host: ArgumentsHost) {
+@Catch(ValidationException)
+export class IdentitiesValidationFilter implements ExceptionFilter {
+  catch(exception: ValidationException, host: ArgumentsHost) {
     const ctx &#x3D; host.switchToHttp();
-    const request &#x3D; ctx.getRequest&lt;Request&gt;();
     const response &#x3D; ctx.getResponse&lt;Response&gt;();
+    const status &#x3D; exception.getStatus();
 
-    Logger.debug(exception[&#x27;message&#x27;], &#x27;MongooseValidationFilter&#x27;);
-    const debug &#x3D; {};
-    if (process.env.NODE_ENV !&#x3D;&#x3D; &#x27;production&#x27; &amp;&amp; request.query[&#x27;debug&#x27;]) {
-      debug[&#x27;_exception&#x27;] &#x3D; exception;
-    }
-    response.status(HttpStatus.NOT_ACCEPTABLE).json(
-      // @ts-expect-error( )
-      HttpException.createBody(
-        {
-          statusCode: HttpStatus.NOT_ACCEPTABLE,
-          message: exception[&#x27;message&#x27;],
-          validations: this.getValidationErrors(exception),
-          ...debug,
-        },
-        exception.constructor.name,
-        HttpStatus.NOT_ACCEPTABLE,
-      ),
-    );
-  }
+    Logger.debug(exception[&#x27;message&#x27;], &#x27;IdentitiesValidationFilter&#x27;);
 
-  // eslint-disable-next-line
-  protected getValidationErrors(err: Error.ValidationError | Error.CastError | ValidationError): Record&lt;string, any&gt; {
-    const validations &#x3D; {};
-    if (err instanceof Error.ValidationError) {
-      for (const key in err.errors) {
-        if (err.errors[key][&#x27;constraints&#x27;]) {
-          Object.keys(err.errors[key][&#x27;constraints&#x27;]).forEach((ckey) &#x3D;&gt; {
-            const property &#x3D; err.errors[key][&#x27;property&#x27;];
-            validations[&#x60;${key}.${property}&#x60;] &#x3D; err.errors[key][&#x27;constraints&#x27;][ckey];
-          });
-          continue;
-        }
-        validations[key] &#x3D; err.errors[key].message;
-      }
-    } else if (err instanceof Error.CastError) {
-      validations[err.path] &#x3D; err.message;
-    }
-    return validations;
+    return response.status(status).json({
+      statusCode: status,
+      message: exception.message,
+      validations: exception.getValidations(),
+    });
   }
 }
 </code></pre>
@@ -430,7 +322,7 @@ export class MongooseValidationFilter implements ExceptionFilter {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'MongooseValidationFilter.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'IdentitiesValidationFilter.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

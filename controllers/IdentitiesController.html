@@ -239,8 +239,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -331,8 +331,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="99"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:99</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="114"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:114</a></div>
                         </td>
                     </tr>
 
@@ -423,8 +423,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="144"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:144</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="161"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:161</a></div>
                         </td>
                     </tr>
 
@@ -514,8 +514,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -618,8 +618,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="121"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:121</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="138"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:138</a></div>
                         </td>
                     </tr>
 
@@ -693,12 +693,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Res,
+} from &#x27;@nestjs/common&#x27;;
 import { IdentitiesDto, IdentitiesCreateDto, IdentitiesUpdateDto } from &#x27;./_dto/identities.dto&#x27;;
 import { IdentitiesService } from &#x27;./identities.service&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { Types } from &#x27;mongoose&#x27;;
 import { ApiCreateDecorator } from &#x27;~/_common/decorators/api-create.decorator&#x27;;
 import { ApiDeletedResponseDecorator } from &#x27;~/_common/decorators/api-deleted-response.decorator&#x27;;
 import { ApiPaginatedDecorator } from &#x27;~/_common/decorators/api-paginated.decorator&#x27;;
@@ -712,8 +722,11 @@ import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } 
 import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
 import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
 import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
-import { Document } from &#x27;mongoose&#x27;;
+import { Types, Document } from &#x27;mongoose&#x27;;
+import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
+// import { IdentitiesValidationFilter } from &#x27;~/_common/filters/identities-validation.filter&#x27;;
 
+// @UseFilters(new IdentitiesValidationFilter())
 @ApiTags(&#x27;management&#x27;)
 @Controller(&#x27;identities&#x27;)
 export class IdentitiesController extends AbstractController {
@@ -746,19 +759,21 @@ export class IdentitiesController extends AbstractController {
       any
     &gt;
   &gt; {
-    try {
-      const data &#x3D; await this._service.create&lt;Identities&gt;(body);
-      return res.status(HttpStatus.CREATED).json({
-        statusCode: HttpStatus.CREATED,
-        data,
-      });
-    } catch (error) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: error.message,
-        validations: error.validations,
-      });
+    let statusCode &#x3D; HttpStatus.CREATED;
+    let message &#x3D; null;
+    const data &#x3D; await this._service.create&lt;Identities&gt;(body);
+    // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
+    // Else the state is TO_VALIDATE, we return a 201 status code
+    if ((data as Identities).state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
+      statusCode &#x3D; HttpStatus.ACCEPTED;
+      message &#x3D; &#x27;Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.&#x27;;
     }
+
+    return res.status(statusCode).json({
+      statusCode,
+      data,
+      message,
+    });
   }
 
   @Get()
@@ -802,10 +817,12 @@ export class IdentitiesController extends AbstractController {
         data,
       });
     } catch (error) {
+      let validations &#x3D; error.validations;
+      if (error instanceof BadRequestException) validations &#x3D; error.getResponse();
       return res.status(HttpStatus.BAD_REQUEST).json({
         statusCode: HttpStatus.BAD_REQUEST,
         message: error.message,
-        validations: error.validations,
+        validations: validations,
       });
     }
   }

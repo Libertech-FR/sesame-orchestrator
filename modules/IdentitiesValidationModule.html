@@ -217,6 +217,16 @@
                     </ul>
                 </div>
                 <div class="col-sm-3">
+                    <h3>Controllers<a href="https://docs.nestjs.com/controllers" target="_blank" rel="noopener noreferrer"
+                            title="Official documentation about module controllers"><span
+                                class="icon ion-ios-information-circle-outline"></a></h3>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <a href="../controllers/IdentitiesValidationController.html">IdentitiesValidationController</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-sm-3">
                     <h3>Exports<a href="https://angular.io/api/core/NgModule#exports" target="_blank" rel="noopener noreferrer"
                             title="Official documentation about module exports"><span
                                 class="icon ion-ios-information-circle-outline"></a></h3>
@@ -236,8 +246,10 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
 import { IdentitiesValidationService } from &#x27;./identities.validation.service&#x27;;
+import { IdentitiesValidationController } from &#x27;./identities.validation.controller&#x27;;
 
 @Module({
+  controllers: [IdentitiesValidationController],
   providers: [IdentitiesValidationService],
   exports: [IdentitiesValidationService],
 })

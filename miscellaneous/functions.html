@@ -131,6 +131,9 @@
                             <a href="#createMockModel" title="src/_common/tests/mock.model.ts" ><b>createMockModel</b>&nbsp;&nbsp;&nbsp;(src/.../mock.model.ts)</a>
                         </li>
                         <li>
+                            <a href="#createMockService" title="src/_common/tests/mock.service.ts" ><b>createMockService</b>&nbsp;&nbsp;&nbsp;(src/.../mock.service.ts)</a>
+                        </li>
+                        <li>
                             <a href="#deleteAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>deleteAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
                         </li>
                         <li>
@@ -156,6 +159,9 @@
                         </li>
                         <li>
                             <a href="#findOneErrorAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>findOneErrorAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#handleValidationError" title="src/management/identities/identities.module.ts" ><b>handleValidationError</b>&nbsp;&nbsp;&nbsp;(src/.../identities.module.ts)</a>
                         </li>
                         <li>
                             <a href="#isNullOrUndefined" title="src/_common/plugins/mongoose/auto-increment.plugin.ts" ><b>isNullOrUndefined</b>&nbsp;&nbsp;&nbsp;(src/.../auto-increment.plugin.ts)</a>
@@ -1540,6 +1546,92 @@
             </tr>
         </tbody>
     </table>
+</section>    <h3>src/_common/tests/mock.service.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createMockService"></a>
+                    <span class="name">
+                        <span ><b>createMockService</b></span>
+                        <a href="#createMockService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>createMockService(service, methodStubs: Record)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Enhances createMockService to handle an arbitrary number of call behaviors dynamically.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>service</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>The service class to mock.</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>methodStubs</td>
+                                            <td>
+                                                        <code>Record</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>An object where keys are method names and values are arrays of behaviors for those methods.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>T</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>A mock service instance with dynamically stubbed methods.</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    <h3>src/_common/interceptors/file-raw-body.interceptor.ts</h3>
     <section data-compodoc="block-methods">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -1610,6 +1702,85 @@
                         </div>
                             <div class="io-description">
                                 
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/management/identities/identities.module.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleValidationError"></a>
+                    <span class="name">
+                        <span ><b>handleValidationError</b></span>
+                        <a href="#handleValidationError"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>handleValidationError(error, identity: <a href="../classes/Identities.html" target="_self">Identities</a>, logPrefix: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>error</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>identity</td>
+                                            <td>
+                                                            <code><a href="../classes/Identities.html" target="_self" >Identities</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>logPrefix</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                 </td>
             </tr>

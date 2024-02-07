@@ -126,6 +126,13 @@
         </p>
 
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>Service responsible for validating identities.</p>
+
+            </p>
 
 
 
@@ -133,6 +140,29 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#ajv" >ajv</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#logger" >logger</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#validateSchema" >validateSchema</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -144,15 +174,12 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#createSchema" >createSchema</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#getValidator" >getValidator</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
                                 <a href="#validate" >validate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#validateAttribute" >validateAttribute</a>
                             </li>
                         </ul>
                     </td>
@@ -177,7 +204,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -190,155 +217,6 @@
     <h3 id="methods">
         Methods
     </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="createSchema"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>createSchema</b></span>
-                        <a href="#createSchema"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createSchema(attributes: <a href="../classes/ConfigObjectAttributeDTO.html" target="_self">ConfigObjectAttributeDTO[]</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="98"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:98</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>attributes</td>
-                                            <td>
-                                                            <code><a href="../classes/ConfigObjectAttributeDTO.html" target="_self" >ConfigObjectAttributeDTO[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;yup.ObjectSchema&lt;any&gt;&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getValidator"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>getValidator</b></span>
-                        <a href="#getValidator"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getValidator(type, required)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="65"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:65</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                            <td>Optional</td>
-                                                <td>Default value</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>type</td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-                                            <td>
-                                            </td>
-
-                                        </tr>
-                                        <tr>
-                                                <td>required</td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-                                            <td>
-                                                    <code>false</code>
-                                            </td>
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>yup.AnyObject</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -361,14 +239,16 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:33</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>Validates additional fields for identities.</p>
+</div>
 
                             <div class="io-description">
                                 <b>Parameters :</b>
@@ -379,6 +259,7 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Description</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -393,6 +274,12 @@
                                             </td>
 
 
+                                            <td>
+                                                    <ul>
+<li>The additional fields data to validate.</li>
+</ul>
+
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -402,10 +289,195 @@
 
                         </div>
                             <div class="io-description">
-                                
+                                <p>A promise that resolves if validation succeeds, or rejects with validation errors.</p>
+
                             </div>
                 </td>
             </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="validateAttribute"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>validateAttribute</b></span>
+                        <a href="#validateAttribute"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>validateAttribute(key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, attribute: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="99"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:99</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Validates a single attribute.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>key</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>The key of the attribute to validate.</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>attribute</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>The attribute value to validate.</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string | null&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>A promise that resolves with an error message if validation fails, otherwise null.</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ajv"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>ajv</b></span>
+                        <a href="#ajv"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Ajv</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Ajv({ allErrors: true })</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logger"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>logger</b></span>
+                        <a href="#logger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/Logger.html" target="_self" >Logger</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="validateSchema"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>validateSchema</b></span>
+                        <a href="#validateSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:19</a></div>
+                        </td>
+                    </tr>
+
+
         </tbody>
     </table>
 </section>
@@ -414,109 +486,118 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Logger } from &#x27;@nestjs/common&#x27;;
 import { parse } from &#x27;yaml&#x27;;
 import { existsSync, readFileSync } from &#x27;fs&#x27;;
-import { ConfigObjectAttributeDTO, ConfigObjectSchemaDTO } from &#x27;./_dto/config.dto&#x27;;
-import * as yup from &#x27;yup&#x27;;
-import { construct, diff } from &#x27;radash&#x27;;
+import { ConfigObjectSchemaDTO } from &#x27;./_dto/config.dto&#x27;;
+import { diff } from &#x27;radash&#x27;;
 import { AdditionalFieldsPart } from &#x27;../_schemas/_parts/additionalFields.part.schema&#x27;;
+import Ajv from &#x27;ajv&#x27;;
+import { buildYup } from &#x27;schema-to-yup&#x27;;
+import ajvErrors from &#x27;ajv-errors&#x27;;
+import validSchema from &#x27;./_config/validSchema&#x27;;
+import { ValidationConfigException, ValidationSchemaException } from &#x27;~/_common/errors/ValidationException&#x27;;
 
+/**
+ * Service responsible for validating identities.
+ */
 @Injectable()
 export class IdentitiesValidationService {
-  constructor() {}
+  private ajv: Ajv &#x3D; new Ajv({ allErrors: true });
+  private validateSchema;
+  private logger: Logger;
 
+  constructor() {
+    ajvErrors(this.ajv);
+    this.validateSchema &#x3D; this.ajv.compile(validSchema);
+    this.logger &#x3D; new Logger();
+  }
+
+  /**
+   * Validates additional fields for identities.
+   * @param data - The additional fields data to validate.
+   * @returns A promise that resolves if validation succeeds, or rejects with validation errors.
+   */
   async validate(data: AdditionalFieldsPart): Promise&lt;object&gt; {
     const objectClasses &#x3D; data.objectClasses;
     const attributes &#x3D; data.attributes;
     const attributesKeys &#x3D; Object.keys(attributes);
     const validations &#x3D; {};
+    let reject &#x3D; false;
 
-    const missingAtribute &#x3D; diff(objectClasses, attributesKeys);
-    if (missingAtribute.length &gt; 0) {
-      for (const attribute of missingAtribute) {
-        validations[attribute] &#x3D; &#x60;Missing attribute &#x27;${attribute}&#x27;&#x60;;
-      }
+    // Check for missing attributes
+    for (const attribute of diff(objectClasses, attributesKeys)) {
+      validations[attribute] &#x3D; &#x60;Attribut &#x27;${attribute}&#x27; manquant dans les champs additionnels&#x60;;
+      reject &#x3D; true;
     }
 
-    let reject &#x3D; false;
     for (const key of attributesKeys) {
+      // Check for invalid object classes
       if (!objectClasses.includes(key)) {
         validations[key] &#x3D;
-          &#x60;${key} is not a valid object class in this context, valid object classes are: ${objectClasses.join(&#x27;, &#x27;)}&#x27;&#x60;;
+          &#x60;${key} n&#x27;est pas une classe d&#x27;objet valide dans ce contexte, les classes d&#x27;objets valides sont: ${objectClasses.join(
+            &#x27;, &#x27;,
+          )}&#x27;&#x60;;
         reject &#x3D; true;
         continue;
       }
 
+      // Check for missing schema files
       const path &#x3D; &#x60;./src/management/identities/validations/_config/${key}.yml&#x60;;
       if (!existsSync(path)) {
-        validations[key] &#x3D; &#x60;Config &#x27;${key}.yml&#x27; not found&#x60;;
+        validations[key] &#x3D; &#x60;Fichier de config &#x27;${key}.yml&#x27; introuvable&#x60;;
         reject &#x3D; true;
         continue;
       }
 
+      // Check for invalid schema
       const schema: ConfigObjectSchemaDTO &#x3D; parse(readFileSync(path, &#x27;utf8&#x27;));
-      const yupSchema &#x3D; await this.createSchema(schema.attributes);
-      try {
-        const validation &#x3D; await yupSchema.validate(attributes[key], { strict: true, abortEarly: false });
-        validations[key] &#x3D; validation;
-      } catch (error) {
-        if (error instanceof yup.ValidationError) {
-          error.inner.forEach((err) &#x3D;&gt; {
-            validations[&#x60;${key}.${err.path}&#x60;] &#x3D; err.errors[0];
-          });
-          reject &#x3D; true;
-        }
+      if (!this.validateSchema(schema)) {
+        validations[key] &#x3D; &#x60;Schema ${key}.yml invalide: ${this.ajv.errorsText(this.validateSchema.errors)}&#x60;;
+        reject &#x3D; true;
+        continue;
       }
     }
+
     if (reject) {
-      return Promise.reject({
-        message: &#x27;Validation failed&#x27;,
-        validations: construct(validations),
-      });
+      throw new ValidationConfigException({ validations });
     }
-    return Promise.resolve(construct(validations));
+
+    // Validate each attribute
+    for (const key of attributesKeys) {
+      const validationError &#x3D; await this.validateAttribute(key, attributes[key]);
+      if (validationError) {
+        validations[key] &#x3D; validationError;
+        reject &#x3D; true;
+      }
+    }
+
+    if (reject) {
+      throw new ValidationSchemaException({ validations });
+    }
+    return Promise.resolve({ message: &#x27;Validation succeeded&#x27; });
   }
 
-  private getValidator(type, required &#x3D; false): yup.AnyObject {
-    let validator: yup.AnyObject;
-    switch (type) {
-      case &#x27;string&#x27;:
-        validator &#x3D; yup.string();
-        break;
-      case &#x27;number&#x27;:
-        validator &#x3D; yup.number();
-        break;
-      case &#x27;boolean&#x27;:
-        validator &#x3D; yup.boolean();
-        break;
-      case &#x27;date&#x27;:
-        validator &#x3D; yup.date();
-        break;
-      case &#x27;array&#x27;:
-        validator &#x3D; yup.array();
-        break;
-      case &#x27;object&#x27;:
-        validator &#x3D; yup.object();
-        break;
-      default:
-        validator &#x3D; yup.string();
-        break;
+  /**
+   * Validates a single attribute.
+   * @param key - The key of the attribute to validate.
+   * @param attribute - The attribute value to validate.
+   * @returns A promise that resolves with an error message if validation fails, otherwise null.
+   */
+  public async validateAttribute(key: string, attribute: any): Promise&lt;string | null&gt; {
+    const path &#x3D; &#x60;./src/management/identities/validations/_config/${key}.yml&#x60;;
+    const schema: ConfigObjectSchemaDTO &#x3D; parse(readFileSync(path, &#x27;utf8&#x27;));
+
+    const yupSchema &#x3D; buildYup(schema, { noSortEdges: true });
+    try {
+      await yupSchema.validate(attribute, { strict: true, abortEarly: false });
+      return null;
+    } catch (error) {
+      return error.inner.reduce((acc, err) &#x3D;&gt; {
+        acc[err.path] &#x3D; err.message;
+        return acc;
+      }, {});
     }
-
-    if (required) {
-      validator &#x3D; validator.required();
-    }
-
-    return validator;
-  }
-
-  async createSchema(attributes: ConfigObjectAttributeDTO[]): Promise&lt;yup.ObjectSchema&lt;any&gt;&gt; {
-    const schema: { [key: string]: yup.AnySchema } &#x3D; attributes.reduce((acc, attribute) &#x3D;&gt; {
-      acc[attribute.name] &#x3D; this.getValidator(attribute.type, attribute.required);
-      return acc;
-    }, {});
-    return yup.object().shape(schema);
   }
 }
 </code></pre>

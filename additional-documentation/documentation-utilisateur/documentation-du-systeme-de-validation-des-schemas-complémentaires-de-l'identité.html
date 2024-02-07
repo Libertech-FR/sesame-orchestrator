@@ -116,7 +116,7 @@
 <p>Les champs de base de l&#39;objet <code>inetOrgPerson</code> sont validés par défaut. </p>
 <h3>Champs obligatoires :</h3>
 <ul>
-<li><code>cn</code> </li>
+<li><code>cn</code>  </li>
 <li><code>sn</code></li>
 <li><code>uid</code></li>
 </ul>
@@ -138,44 +138,124 @@
 <h2>Validation des champs des schema additionnels</h2>
 <h3>Fichiers de Configuration</h3>
 <p>Le fichier de configuration YAML doit être nommé selon le nom de l&#39;<code>objectClass</code> qu&#39;il définit, par exemple <code>supann.yml</code> pour l&#39;<code>objectClass</code> <code>supann</code>. Il doit être placé dans le dossier <code>TBD</code>.</p>
-<h4>Exemple de Fichier YAML (<code>supann.yml</code>)</h4>
+<p>Vous pouvez vous baser sur le template si dessous pour créer votre fichier YAML. Les champs $schema, type, properties et required sont obligatoires. Vpis ajouterez le champs désirés dans properties. Pour les champs requis, vous les listerez dans required.</p>
+<h4>Exemple Générique de Fichier YAML</h4>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">$schema: &quot;http://json-schema.org/draft-07/schema#&quot;
+type: &quot;object&quot;
+properties:
+    [Nom de l&#39;attribut 1] :
+        description: &quot;[Description de l&#39;attribut]&quot;
+        type: [Type de l&#39;attribut]
+        [Autres options]
+    # plus de détails d&#39;attributs...
+required:
+    - [Nom de l&#39;attribut 1]
+    - [Nom de l&#39;attribut 2]
+    # plus d&#39;attributs requis...
+</code></pre></div><h4>Exemple de Fichier YAML (<code>supann.yml</code>)</h4>
 <p>Ce fichier définit la structure et les attributs requis pour l&#39;<code>objectClass</code> <code>supann</code>.</p>
-<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">objectClasses:
-  - name: supann
-    desc: &#39;SUPANN person object class&#39;
-    attributes:
-      - supannEmpId
-      - supannCivilite
-      - supannBirthName
-      # more attributes...
-
-attributes:
-  - name: supannEmpId
-    desc: &#39;Employee ID&#39;
-    type: string
-
-  - name: supannCivilite
-    desc: &#39;Title (Mr, Ms, etc.)&#39;
-    type: string
-
-  - name: supannBirthName
-    desc: &#39;Birth name&#39;
-    type: string
-    # more attributes...</code></pre></div><h4>Exemple Générique de Fichier YAML</h4>
-<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">objectClasses:
-  - name: [Nom de l&#39;ObjectClass]
-    desc: &#39;[Description de l&#39;ObjectClass]&#39;
-    attributes:
-      - [Nom de l&#39;attribut 1]
-      - [Nom de l&#39;attribut 2]
-      # plus d&#39;attributs...
-
-attributes:
-  - name: [Nom de l&#39;attribut 1]
-    desc: &#39;[Description de l&#39;attribut]&#39;
-    type: [Type de l&#39;attribut]
-    required: [true/false]
-    # plus de détails d&#39;attributs...</code></pre></div><h3>JSON de Validation</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">$schema: &quot;http://json-schema.org/draft-07/schema#&quot;
+type: &quot;object&quot;
+properties:
+  supannEmpId:
+    type: &quot;string&quot;
+    description: &quot;Employee ID&quot;
+  supannCivilite:
+    type: &quot;string&quot;
+    description: &quot;Title (Mr, Ms, etc.)&quot;
+  supannBirthName:
+    type: &quot;string&quot;
+    description: &quot;Birth name&quot;
+  supannBirthDate:
+    type: &quot;string&quot;
+    format: &quot;date&quot;
+    description: &quot;Date of birth&quot;
+  # plus d&#39;attributs...
+required:
+  - &quot;supannEmpId&quot;
+  - &quot;supannCivilite&quot;
+  - &quot;supannBirthName&quot;</code></pre></div><h3>Options</h3>
+<p>Chaque attribut peut avoir des options supplémentaires pour définir des règles de validation spécifiques. Les options sont définies en tant que clés dans le fichier YAML.</p>
+<h4>Array (Tableau)</h4>
+<ul>
+<li><p><strong>ensure</strong>: Assure que la valeur est toujours un tableau.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: array
+ensure: true</code></pre></div></li>
+<li><p><strong>compact</strong>: Supprime les valeurs vides du tableau.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: array
+compact: true</code></pre></div></li>
+<li><p><strong>items (of)</strong> : Définit le type des éléments du tableau.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: array
+items: 
+  type: string</code></pre></div></li>
+<li><p><strong>maxItems (max)</strong> : Définit le nombre maximum d&#39;éléments du tableau.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: array
+maxItems: 5</code></pre></div></li>
+<li><p><strong>minItems (min)</strong> : Définit le nombre minimum d&#39;éléments du tableau.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: array
+minItems: 2</code></pre></div></li>
+</ul>
+<h4>Boolean (Booléen)</h4>
+<ul>
+<li><em>Pas de clés spécifiques</em><b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: boolean</code></pre></div></li>
+</ul>
+<h4>Date</h4>
+<ul>
+<li><strong>maxDate (max)</strong>: Définit la date maximum.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: date
+maxDate: &#39;2024-01-01&#39;</code></pre></div></li>
+<li><strong>minDate (min)</strong>: Définit la date minimum.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: date
+minDate: &#39;2020-01-01&#39;</code></pre></div></li>
+</ul>
+<h4>Number (Nombre)</h4>
+<ul>
+<li><strong>integer</strong>: Définit que la valeur doit être un entier.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: number
+integer: true</code></pre></div></li>
+<li><strong>moreThan (exclusiveMinimum)</strong>: Définit la valeur minimum.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: number
+moreThan: 10</code></pre></div></li>
+<li><strong>lessThan (exclusiveMaximum)</strong>: Définit la valeur maximum.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: number
+lessThan: 20</code></pre></div></li>
+<li><strong>positive</strong>: Définit que la valeur doit être positive.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: number
+positive: true</code></pre></div></li>
+<li><strong>negative</strong>: Définit que la valeur doit être négative.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: number
+negative: true</code></pre></div></li>
+<li><strong>min (minimum)</strong>: Définit la valeur minimum.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: number
+min: 5</code></pre></div></li>
+<li><strong>max (maximum)</strong>: Définit la valeur maximum.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: number
+max: 100</code></pre></div></li>
+<li><strong>truncate</strong>: Tronque la valeur.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: number
+truncate: true</code></pre></div></li>
+<li><strong>round</strong>: Arrondi la valeur.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: number
+round: true</code></pre></div></li>
+</ul>
+<h4>Object (Objet)</h4>
+<ul>
+<li><strong>camelCase</strong>: Convertit les clés de l&#39;objet en camelCase.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: object
+camelCase: true</code></pre></div></li>
+<li><strong>constantCase</strong>: Convertit les clés de l&#39;objet en CONSTANT_CASE.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: object
+constantCase: true</code></pre></div></li>
+<li><strong>noUnknown (propertyNames)</strong>: Définit que l&#39;objet ne peut pas contenir de clés non définies.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: object
+noUnknown: true</code></pre></div></li>
+</ul>
+<h4>String (Chaîne de caractères)</h4>
+<ul>
+<li><strong>minLength (min)</strong>: Définit la longueur minimum de la chaîne de caractères.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
+minLength: 5</code></pre></div></li>
+<li><strong>maxLength (max)</strong>: Définit la longueur maximum de la chaîne de caractères.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
+maxLength: 20</code></pre></div></li>
+<li><strong>pattern (matches or regex)</strong>: Définit une expression régulière à respecter.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
+pattern: &#39;^[a-zA-Z]+$&#39;</code></pre></div></li>
+<li><strong>email (format: &#39;email&#39;)</strong>: Définit que la chaîne de caractères doit être un email.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
+email: true</code></pre></div></li>
+<li><strong>url (format: &#39;url&#39;)</strong>: Définit que la chaîne de caractères doit être une URL.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
+url: true</code></pre></div></li>
+<li><strong>lowercase</strong>: Convertit la chaîne de caractères en minuscule.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
+lowercase: true</code></pre></div></li>
+<li><strong>uppercase</strong>: Convertit la chaîne de caractères en majuscule.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
+uppercase: true</code></pre></div></li>
+<li><strong>trim</strong>: Supprime les espaces en début et fin de chaîne de caractères.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
+trim: true</code></pre></div></li>
+</ul>
+<h3>JSON de Validation</h3>
 <p>Pour valider une entrée, un objet JSON doit être fourni avec les champs suivants :</p>
 <ul>
 <li><code>state</code>: État de l&#39;entrée, -1 pour une création.</li>

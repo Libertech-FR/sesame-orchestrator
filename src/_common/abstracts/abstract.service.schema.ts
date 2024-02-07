@@ -65,18 +65,18 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       }
     }
     let count = await this._model.countDocuments(filter).exec()
-    let total = await this._model.find<T & Query<T, T, any, T>>(filter, projection, options).exec()
+    let data = await this._model.find<T & Query<T, T, any, T>>(filter, projection, options).exec()
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterFindAndCount'].join(EventEmitterSeparator),
-        { total, count },
+        { data, count },
       )
       for (const afterEvent of afterEvents) {
-        if (afterEvent?.total) total = { ...total, ...afterEvent.total }
+        if (afterEvent?.data) data = { ...data, ...afterEvent.data }
         if (afterEvent?.count) count += afterEvent.count
       }
     }
-    return [total, count]
+    return [data, count]
   }
 
   public async findById<T extends AbstractSchema | Document>(

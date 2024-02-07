@@ -1,12 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import configInstance from './config';
-import { LogLevel, Logger } from '@nestjs/common';
+import { All, LogLevel, Logger } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
 import { createLogger } from 'winston';
 import * as winston from 'winston';
 import 'winston-mongodb';
+import { AllExceptionFilter } from './_common/filters/all-exception.filter';
+import { IdentitiesValidationFilter } from './_common/filters/identities-validation.filter';
+import { MongooseValidationFilter } from './_common/filters/mongoose-validation.filter';
 
 declare const module: any;
 (async (): Promise<void> => {
@@ -59,9 +62,12 @@ declare const module: any;
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     (await import('./swagger')).default(app);
   }
+
+  app.useGlobalFilters(new AllExceptionFilter(), new MongooseValidationFilter(), new IdentitiesValidationFilter());
   await app.listen(4000, async (): Promise<void> => {
     Logger.log(`Application is running on port: 4000`);
   });
+
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose((): Promise<void> => app.close());

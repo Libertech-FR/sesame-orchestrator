@@ -18,7 +18,7 @@ export const IdentitiesUpdateDtoStub = (): IdentitiesUpdateDto => {
   const inetOrgPerson = inetOrgPersonDtoStub();
   inetOrgPerson.cn = 'updated-cn';
   return {
-    state: IdentityState.TO_CREATE,
+    state: IdentityState.TO_COMPLETE,
     lifecycle: IdentityLifecycle.INACTIVE,
     inetOrgPerson,
     additionalFields: additionalFieldsPartDtoStub(),

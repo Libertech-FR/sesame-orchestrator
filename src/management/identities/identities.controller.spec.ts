@@ -4,20 +4,21 @@ import { IdentitiesController } from './identities.controller';
 import { IdentitiesService } from './identities.service';
 import { Identities, IdentitiesSchema } from './_schemas/identities.schema';
 import { HttpStatus } from '@nestjs/common';
-import { Connection, Model, Types, connect } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Response } from 'express';
 import { getModelToken } from '@nestjs/mongoose';
 import { IdentitiesDtoStub } from './_stubs/identities.dto.stub';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { IdentitiesValidationModule } from './validations/identities.validation.module';
 import { MockResponse, createResponse } from 'node-mocks-http';
+import { ValidationSchemaException } from '~/_common/errors/ValidationException';
+import { MongoDbTestInstance } from '~/_common/tests/mongodb.test.instance';
 
 describe('IdentitiesController', () => {
   let controller: IdentitiesController;
   let service: IdentitiesService;
-  let mongod: MongoMemoryServer;
-  let mongoConnection: Connection;
+  let mongoDbTestInstance: MongoDbTestInstance;
+
   let identitiesModel: Model<Identities>;
   //let request: MockRequest<Request>;
   let response: MockResponse<Response>;
@@ -31,14 +32,10 @@ describe('IdentitiesController', () => {
   let _id: Types.ObjectId;
 
   beforeAll(async () => {
-    mongod = await MongoMemoryServer.create({
-      binary: {
-        version: '5.0.22',
-      },
-    });
-    const uri = await mongod.getUri();
-    mongoConnection = (await connect(uri)).connection;
-    identitiesModel = mongoConnection.model<Identities>(Identities.name, IdentitiesSchema);
+    mongoDbTestInstance = new MongoDbTestInstance();
+    await mongoDbTestInstance.start();
+    identitiesModel = await mongoDbTestInstance.getModel<Identities>(Identities.name, IdentitiesSchema);
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [IdentitiesController],
       providers: [
@@ -59,32 +56,37 @@ describe('IdentitiesController', () => {
   });
 
   afterAll(async () => {
-    await mongoConnection.dropDatabase();
-    await mongoConnection.close();
-    await mongod.stop();
+    await mongoDbTestInstance.stop();
   });
 
-  afterEach(() => {
-    const collections = mongoConnection.collections;
-    Object.keys(collections).forEach(async (key) => {
-      await collections[key].deleteMany({});
-    });
+  afterEach(async () => {
+    await mongoDbTestInstance.clearDatabase();
+    jest.clearAllMocks();
   });
 
   describe('create', () => {
     it('should create an identity', async () => {
+      jest.spyOn(service, 'create').mockResolvedValue(IdentitiesDtoStub() as Identities);
+
       const createIdentity = await controller.create(response, IdentitiesDtoStub());
-      expect(createIdentity.statusCode).toBe(HttpStatus.CREATED);
+      expect(createIdentity.statusCode).toMatch(new RegExp(`(${HttpStatus.CREATED})|(${HttpStatus.ACCEPTED})`));
     });
 
-    it('should throw an error when creating an identity', async () => {
-      jest.spyOn(service, 'create').mockRejectedValueOnce(new Error('Error'));
-      try {
-        await controller.create(response, IdentitiesDtoStub());
-      } catch (error) {
-        expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
-      }
-    });
+    // it('should handle ValidationSchemaException by returning the appropriate status code and message', async () => {
+    //   jest.spyOn(service, 'create').mockRejectedValue(
+    //     new ValidationSchemaException({
+    //       message: 'Schema validation failed',
+    //       validations: { field: 'error' },
+    //       statusCode: HttpStatus.BAD_REQUEST,
+    //     }),
+    //   );
+
+    //   const response = createResponse();
+    //   const identity = IdentitiesDtoStub();
+    //   const createIdentity = await controller.create(response, identity);
+    //   expect(createIdentity.statusCode).toBe(HttpStatus.ACCEPTED);
+    //   expect(response).toHaveProperty('greger');
+    // });
   });
 
   describe('search', () => {

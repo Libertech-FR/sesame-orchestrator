@@ -30,6 +30,13 @@
       - [Exemple](#exemple-7)
   - [Exemple complet d'un cas de test](#exemple-complet-dun-cas-de-test)
     - [Configuration du Test](#configuration-du-test)
+  - [Test d'un controller CRUD](#test-dun-controller-crud)
+    - [Vue d'ensemble](#vue-densemble)
+    - [Fonction : `createMockService`](#fonction--createmockservice)
+      - [But](#but)
+      - [Paramètres](#paramètres)
+      - [Retours](#retours)
+      - [Exemple d'utilisation](#exemple-dutilisation-1)
   - [Références supplémentaires](#références-supplémentaires)
 
 ## Introduction
@@ -345,6 +352,50 @@ afterAll(async () => {
     await mongoDbTestInstance.stop();
 });
 ```
+
+## Test d'un controller CRUD
+Cette documentation fournit un aperçu détaillé de la fonction utilitaire `createMockService`, conçue pour faciliter la création de services mock pour les besoins de test dans les applications TypeScript, en mettant un accent particulier sur celles utilisant Jest et NestJS. L'initiation du test est similaire à celle des tests de services au niveau du module et de l'instantiation de la base mongoDB.
+
+### Vue d'ensemble
+La fonction `createMockService` améliore dynamiquement la création de services mock, permettant de configurer un nombre arbitraire de comportements d'appel de méthode de manière dynamique. Elle simplifie le processus de configuration des implémentations mock pour les méthodes de service, supportant à la fois des valeurs fixes et des comportements dynamiques définis par des fonctions, y compris des comportements asynchrones basés sur des promesses et la gestion des erreurs.
+
+### Fonction : `createMockService`
+
+#### But
+
+Générer une instance de service mock avec des méthodes simulées selon les comportements spécifiés, rationalisant le test de divers scénarios incluant le succès, l'échec, et les exceptions.
+
+#### Paramètres
+
+- **service** (`new (...args: any[]) => T`): Le constructeur de la classe de service à mocker. Ce paramètre prend une référence de classe que le service mock va imiter.
+
+- **methodStubs** (`Record<string, any[] | any>`): Un objet où les clés représentent les noms des méthodes à mocker, et les valeurs sont les comportements à simuler pour ces méthodes. Ces comportements peuvent être spécifiés comme des valeurs uniques pour un comportement uniforme à travers les appels, des tableaux de valeurs pour définir des comportements séquentiels d'appels, des fonctions pour calculer dynamiquement les valeurs de retour, ou des instances de `Error` pour simuler des exceptions.
+
+#### Retours
+
+- **T**: Une instance mock de la classe de service (`T`), avec des méthodes simulées comme spécifié par le paramètre `methodStubs`.
+
+#### Exemple d'utilisation
+
+```typescript
+service = createMockService<IdentitiesService>(IdentitiesService, {
+  create: [
+    () => Promise.resolve({ ...IdentitiesDtoStub(), _id, state: IdentityState.TO_VALIDATE }),
+    () => Promise.resolve({ ...IdentitiesDtoStub(), _id, state: IdentityState.TO_COMPLETE }),
+  ],
+  findAndCount: [
+    () => Promise.resolve([[{ ...IdentitiesDtoStub(), _id }], 1]),
+    () => Promise.reject(new Error('Erreur')), // Fonction qui lance une erreur
+  ],
+  // Autres simulations de méthodes...
+});
+```
+
+Dans cet exemple, la fonction `createMockService` est utilisée pour mocker un `IdentitiesService` avec des comportements spécifiques pour les méthodes `create`, `findAndCount`, et d'autres, démontrant comment gérer à la fois les opérations réussies et les erreurs.
+
+**Importance de l'ordre des valeurs retournées** : Il est crucial de comprendre que l'ordre des valeurs retournées dans l'exemple a une importance significative car il correspondra à l'ordre des appels dans les tests. Cela signifie que le comportement simulé pour le premier appel sera le premier dans la liste, et ainsi de suite, permettant une simulation précise des scénarios de test.
+
+
 
 ## Références supplémentaires
 Cette documentation couvre l'essentiel des tests des services NestJS en utilisant Jest. Pour plus d'informations détaillées, référez-vous à la documentation de Jest et NestJS.

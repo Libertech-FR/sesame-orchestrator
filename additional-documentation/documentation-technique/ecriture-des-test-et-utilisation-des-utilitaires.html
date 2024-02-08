@@ -164,6 +164,17 @@
 <li><a href="#configuration-du-test">Configuration du Test</a></li>
 </ul>
 </li>
+<li><a href="#test-dun-controller-crud">Test d&#39;un controller CRUD</a><ul>
+<li><a href="#vue-densemble">Vue d&#39;ensemble</a></li>
+<li><a href="#fonction--createmockservice">Fonction : <code>createMockService</code></a><ul>
+<li><a href="#but">But</a></li>
+<li><a href="#param%C3%A8tres">Paramètres</a></li>
+<li><a href="#retours">Retours</a></li>
+<li><a href="#exemple-dutilisation-1">Exemple d&#39;utilisation</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#r%C3%A9f%C3%A9rences-suppl%C3%A9mentaires">Références supplémentaires</a></li>
 </ul>
 </li>
@@ -404,7 +415,38 @@ afterEach(async () =&gt; {
 
 afterAll(async () =&gt; {
     await mongoDbTestInstance.stop();
-});</code></pre></div><h2>Références supplémentaires</h2>
+});</code></pre></div><h2>Test d&#39;un controller CRUD</h2>
+<p>Cette documentation fournit un aperçu détaillé de la fonction utilitaire <code>createMockService</code>, conçue pour faciliter la création de services mock pour les besoins de test dans les applications TypeScript, en mettant un accent particulier sur celles utilisant Jest et NestJS. L&#39;initiation du test est similaire à celle des tests de services au niveau du module et de l&#39;instantiation de la base mongoDB.</p>
+<h3>Vue d&#39;ensemble</h3>
+<p>La fonction <code>createMockService</code> améliore dynamiquement la création de services mock, permettant de configurer un nombre arbitraire de comportements d&#39;appel de méthode de manière dynamique. Elle simplifie le processus de configuration des implémentations mock pour les méthodes de service, supportant à la fois des valeurs fixes et des comportements dynamiques définis par des fonctions, y compris des comportements asynchrones basés sur des promesses et la gestion des erreurs.</p>
+<h3>Fonction : <code>createMockService</code></h3>
+<h4>But</h4>
+<p>Générer une instance de service mock avec des méthodes simulées selon les comportements spécifiés, rationalisant le test de divers scénarios incluant le succès, l&#39;échec, et les exceptions.</p>
+<h4>Paramètres</h4>
+<ul>
+<li><p><strong>service</strong> (<code>new (...args: any[]) =&gt; T</code>): Le constructeur de la classe de service à mocker. Ce paramètre prend une référence de classe que le service mock va imiter.</p>
+</li>
+<li><p><strong>methodStubs</strong> (<code>Record&lt;string, any[] | any&gt;</code>): Un objet où les clés représentent les noms des méthodes à mocker, et les valeurs sont les comportements à simuler pour ces méthodes. Ces comportements peuvent être spécifiés comme des valeurs uniques pour un comportement uniforme à travers les appels, des tableaux de valeurs pour définir des comportements séquentiels d&#39;appels, des fonctions pour calculer dynamiquement les valeurs de retour, ou des instances de <code>Error</code> pour simuler des exceptions.</p>
+</li>
+</ul>
+<h4>Retours</h4>
+<ul>
+<li><strong>T</strong>: Une instance mock de la classe de service (<code>T</code>), avec des méthodes simulées comme spécifié par le paramètre <code>methodStubs</code>.</li>
+</ul>
+<h4>Exemple d&#39;utilisation</h4>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">service = createMockService&lt;IdentitiesService&gt;(IdentitiesService, {
+  create: [
+    () =&gt; Promise.resolve({ ...IdentitiesDtoStub(), _id, state: IdentityState.TO_VALIDATE }),
+    () =&gt; Promise.resolve({ ...IdentitiesDtoStub(), _id, state: IdentityState.TO_COMPLETE }),
+  ],
+  findAndCount: [
+    () =&gt; Promise.resolve([[{ ...IdentitiesDtoStub(), _id }], 1]),
+    () =&gt; Promise.reject(new Error(&#39;Erreur&#39;)), // Fonction qui lance une erreur
+  ],
+  // Autres simulations de méthodes...
+});</code></pre></div><p>Dans cet exemple, la fonction <code>createMockService</code> est utilisée pour mocker un <code>IdentitiesService</code> avec des comportements spécifiques pour les méthodes <code>create</code>, <code>findAndCount</code>, et d&#39;autres, démontrant comment gérer à la fois les opérations réussies et les erreurs.</p>
+<p><strong>Importance de l&#39;ordre des valeurs retournées</strong> : Il est crucial de comprendre que l&#39;ordre des valeurs retournées dans l&#39;exemple a une importance significative car il correspondra à l&#39;ordre des appels dans les tests. Cela signifie que le comportement simulé pour le premier appel sera le premier dans la liste, et ainsi de suite, permettant une simulation précise des scénarios de test.</p>
+<h2>Références supplémentaires</h2>
 <p>Cette documentation couvre l&#39;essentiel des tests des services NestJS en utilisant Jest. Pour plus d&#39;informations détaillées, référez-vous à la documentation de Jest et NestJS.</p>
 <ul>
 <li><a href="https://docs.nestjs.com/fundamentals/testing">Tests NestJS</a></li>

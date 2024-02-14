@@ -13,10 +13,10 @@ export interface MongoosePlugin {
 export interface ConfigInstance {
   application: {
     bodyParser: {
-      limit: string
-    }
-  }
-  helmet: HelmetOptions
+      limit: string;
+    };
+  };
+  helmet: HelmetOptions;
   mongoose: {
     uri: string;
     options: MongooseModuleOptions;

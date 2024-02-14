@@ -66,12 +66,12 @@ declare const module: any;
   });
   // eslint-disable-next-line
   app.use((_: any, res: Response, next: () => void) => {
-    res.removeHeader('x-powered-by')
-    next()
-  })
-  app.use(passport.initialize())
+    res.removeHeader('x-powered-by');
+    next();
+  });
+  app.use(passport.initialize());
   app.use(rawBodyBuffer(cfg?.application?.bodyParser));
-  app.use(cookieParser())
+  app.use(cookieParser());
   if (process.env.production !== 'production') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     (await import('./swagger')).default(app);

@@ -278,7 +278,6 @@
 import { AuthController } from &#x27;./auth.controller&#x27;;
 import { AuthService } from &#x27;./auth.service&#x27;;
 import { IAuthModuleOptions, PassportModule } from &#x27;@nestjs/passport&#x27;;
-import { HeaderApiKeyStrategy } from &#x27;~/core/auth/_strategies/auth-header-api-key.strategy&#x27;;
 import { ConfigModule, ConfigService } from &#x27;@nestjs/config&#x27;;
 import { AgentsModule } from &#x27;~/core/agents/agents.module&#x27;;
 import { JwtModule, JwtModuleOptions } from &#x27;@nestjs/jwt&#x27;;
@@ -304,7 +303,7 @@ import { LocalStrategy } from &#x27;~/core/auth/_strategies/local.strategy&#x27;
     AgentsModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, HeaderApiKeyStrategy, JwtStrategy, LocalStrategy],
+  providers: [AuthService, JwtStrategy, LocalStrategy],
 })
 export class AuthModule {}
 </code></pre>

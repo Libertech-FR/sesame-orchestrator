@@ -66,7 +66,6 @@
     "nest-winston": "^1.9.4",
     "nestjs-request-context": "^3.0.0",
     "passport": "^0.6.0",
-    "passport-headerapikey": "^1.2.2",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "radash": "^11.0.0",

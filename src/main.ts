@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import configInstance from './config';
-import { All, LogLevel, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
 import { createLogger } from 'winston';
@@ -81,15 +81,15 @@ declare const module: any;
   }
 })();
 
-function setLogLevel(): LogLevel[] {
-  const config = configInstance();
-  const logLevelMap: Record<LogLevel | string, LogLevel[]> = {
-    fatal: ['fatal'],
-    error: ['error', 'fatal'],
-    warn: ['error', 'fatal', 'warn'],
-    info: ['error', 'fatal', 'warn', 'log'],
-    debug: ['error', 'fatal', 'warn', 'log', 'debug'],
-    verbose: ['error', 'fatal', 'warn', 'log', 'debug', 'verbose'],
-  };
-  return logLevelMap[config.logLevel] || logLevelMap['warn'];
-}
+// function setLogLevel(): LogLevel[] {
+//   const config = configInstance();
+//   const logLevelMap: Record<LogLevel | string, LogLevel[]> = {
+//     fatal: ['fatal'],
+//     error: ['error', 'fatal'],
+//     warn: ['error', 'fatal', 'warn'],
+//     info: ['error', 'fatal', 'warn', 'log'],
+//     debug: ['error', 'fatal', 'warn', 'log', 'debug'],
+//     verbose: ['error', 'fatal', 'warn', 'log', 'debug', 'verbose'],
+//   };
+//   return logLevelMap[config.logLevel] || logLevelMap['warn'];
+// }

@@ -4,7 +4,7 @@ import { ModuleRef } from '@nestjs/core';
 import { Redis } from 'ioredis';
 import { randomBytes } from 'crypto';
 import { InjectRedis } from '@nestjs-modules/ioredis';
-import { argon2id, verify as argon2Verify } from 'argon2';
+import { verify as argon2Verify } from 'argon2';
 import { Agents } from '~/core/agents/_schemas/agents.schema';
 import { AgentsService } from '~/core/agents/agents.service';
 import { AgentType } from '~/_common/types/agent.type';

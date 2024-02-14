@@ -1,7 +1,6 @@
-import { Types } from 'mongoose';
 import { FormTypes } from '../_enum/types';
-import { Form } from '../_schemas/form.schema';
 import { MixedValue } from '~/_common/types/mixed-value.type';
+
 interface TicketFormField {
   component: string;
   label: string;
@@ -36,6 +35,7 @@ interface TicketFormSection {
   };
 }
 
+/* eslint-disable */
 interface TicketForm {
   title: string;
   description: string;
@@ -46,3 +46,4 @@ interface TicketForm {
   submitButtonText: string;
   submitApiUrl: string;
 }
+/* eslint-enable */

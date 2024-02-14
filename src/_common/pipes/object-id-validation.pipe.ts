@@ -3,10 +3,12 @@ import { Types } from 'mongoose';
 
 @Injectable()
 export class ObjectIdValidationPipe implements PipeTransform<string, Types.ObjectId> {
+  /* eslint-disable */
   public transform(value: string | Types.ObjectId, _metadata: ArgumentMetadata): Types.ObjectId {
     if (!Types.ObjectId.isValid(value)) {
       throw new BadRequestException(`Invalid ObjectId <${value}>`);
     }
     return new Types.ObjectId(value);
   }
+  /* eslint-enable */
 }

@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } fr
 import { FormDto, FormUpdateDto } from './_dto/form.dto';
 import { FormService } from './form.service';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
-import { ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   SearchFilterSchema,
   FilterSchema,

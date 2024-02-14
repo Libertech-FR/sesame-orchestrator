@@ -1,9 +1,5 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsString, IsEnum, IsObject, ValidateNested, IsOptional, IsMongoId } from 'class-validator';
-import { ObjectId } from 'mongodb';
-import { MixedValue } from '~/_common/types/mixed-value.type';
-import { MetadataDto } from '~/_common/abstracts/dto/metadata.dto';
-import { forwardRef } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { FormFieldDto } from './field.dto';
 import { FormTypes } from '../../_enum/types';

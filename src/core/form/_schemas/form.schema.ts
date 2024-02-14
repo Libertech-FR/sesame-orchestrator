@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Mixed } from 'mongoose';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
 import { FormTypes } from '../_enum/types';
 import { FormSectionPart, FormSectionPartSchema } from './parts/section.part.schema';

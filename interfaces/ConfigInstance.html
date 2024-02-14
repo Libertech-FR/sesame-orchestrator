@@ -148,6 +148,18 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
+                                        <a href="#application" 
+>
+                                            application
+                                        </a>
+                                </li>
+                                <li>
+                                        <a href="#helmet" 
+>
+                                            helmet
+                                        </a>
+                                </li>
+                                <li>
                                         <a href="#ioredis" 
 >
                                             ioredis
@@ -206,6 +218,72 @@
 
             <section data-compodoc="block-properties">
                 <h3 id="inputs">Properties</h3>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="application"></a>
+                                        <span class="name "><b>application</b>
+                                            <a href="#application">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>application:     <code>literal type</code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code>literal type</code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="helmet"></a>
+                                        <span class="name "><b>helmet</b>
+                                            <a href="#helmet">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>helmet:     <code>HelmetOptions</code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code>HelmetOptions</code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
                     <table class="table table-sm table-bordered">
                         <tbody>
                                 <tr>
@@ -477,6 +555,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MongooseModuleOptions } from &#x27;@nestjs/mongoose&#x27;;
 import { RedisOptions } from &#x27;ioredis&#x27;;
+import { HelmetOptions } from &#x27;helmet&#x27;;
 import { SwaggerCustomOptions } from &#x27;@nestjs/swagger&#x27;;
 import { IAuthModuleOptions } from &#x27;@nestjs/passport&#x27;;
 import { JwtModuleOptions } from &#x27;@nestjs/jwt&#x27;;
@@ -487,6 +566,12 @@ export interface MongoosePlugin {
   options?: Record&lt;string, any&gt;; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 export interface ConfigInstance {
+  application: {
+    bodyParser: {
+      limit: string;
+    };
+  };
+  helmet: HelmetOptions;
   mongoose: {
     uri: string;
     options: MongooseModuleOptions;
@@ -513,12 +598,24 @@ export interface ConfigInstance {
 }
 
 export default (): ConfigInstance &#x3D;&gt; ({
-  // redis: {
-  //   host: process.env.REDIS_HOST || &#x27;localhost&#x27;,
-  //   port: parseInt(process.env.REDIS_PORT) || 6379,
-  //   user: process.env.REDIS_USER || &#x27;&#x27;,
-  //   password: process.env.REDIS_PASSWORD || &#x27;&#x27;,
-  // },
+  application: {
+    bodyParser: {
+      limit: &#x27;500mb&#x27;,
+    },
+  },
+  helmet: {
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: [&quot;&#x27;self&#x27;&quot;],
+        objectSrc: [&quot;&#x27;self&#x27;&quot;],
+        frameSrc: [&quot;&#x27;self&#x27;&quot;],
+        styleSrc: [&quot;&#x27;self&#x27;&quot;],
+        fontSrc: [&quot;&#x27;self&#x27;&quot;],
+        imgSrc: [&quot;&#x27;self&#x27;&quot;],
+        scriptSrc: [&quot;&#x27;self&#x27;&quot;],
+      },
+    },
+  },
   ioredis: {
     uri: process.env[&#x27;REDIS_URI&#x27;] || &#x27;redis://localhost:6379/0&#x27;,
     options: {
@@ -531,16 +628,7 @@ export default (): ConfigInstance &#x3D;&gt; ({
     options: {
       directConnection: true,
     },
-    plugins: [
-      // {
-      //   package: &#x27;mongoose-delete&#x27;,
-      //   enabled: true,
-      //   options: {
-      //     overrideMethods: true,
-      //     deletedAt: true,
-      //   },
-      // },
-    ],
+    plugins: [],
   },
   passport: {
     options: {

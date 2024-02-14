@@ -41,7 +41,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "schematics:inherit": "nest generate -c @kradihsoy/lt-schematics inherit",
     "generate:doc": "npx @compodoc/compodoc -c .compodocrc",
-    "generate:docServer": "npx @compodoc/compodoc -s -c .compodocrc -d ./documentation"
+    "generate:docServer": "npx @compodoc/compodoc -s -c .compodocrc -d ./documentation",
+    "prepare": "husky"
   },
   "dependencies": {
     "@kradihsoy/lt-schematics": "^1.0.13",
@@ -56,9 +57,9 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.3.1",
     "@streamkits/nestjs_module_scrud": "^0.0.16",
-    "argon2": "^0.31.2",
     "ajv": "^8.12.0",
     "ajv-errors": "^3.0.0",
+    "argon2": "^0.31.2",
     "bullmq": "^4.14.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
@@ -74,8 +75,8 @@
     "reflect-metadata": "^0.1.13",
     "request-ip": "^3.3.0",
     "rxjs": "^7.8.1",
-    "types-package-json": "^2.0.39",
     "schema-to-yup": "^1.12.18",
+    "types-package-json": "^2.0.39",
     "winston": "^3.11.0",
     "winston-mongodb": "^5.1.1",
     "winston-transport": "^4.6.0",
@@ -103,6 +104,7 @@
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
+    "husky": "^9.0.11",
     "jest": "^29.5.0",
     "mockingoose": "^2.16.2",
     "mongodb-memory-server": "^9.1.3",

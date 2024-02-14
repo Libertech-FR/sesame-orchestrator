@@ -9,6 +9,7 @@ export class MongooseValidationFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
+
     Logger.debug(exception['message'], 'MongooseValidationFilter');
     const debug = {};
     if (process.env.NODE_ENV !== 'production' && request.query['debug']) {

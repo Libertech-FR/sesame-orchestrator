@@ -83,7 +83,7 @@ stop: ## Stop the container
 	@docker stop $(APP_NAME)-redis || true
 
 run-test: ## Run tests
-	@act --container-architecture="linux/arm64"
+	act --container-architecture="linux/arm64" -j test
 
 gen-doc:
 	@npx @compodoc/compodoc -p tsconfig.json -s -d docs --includes ./markdowns -n "Sesame Orchestrator"

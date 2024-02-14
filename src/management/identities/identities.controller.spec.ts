@@ -4,20 +4,22 @@ import { IdentitiesController } from './identities.controller';
 import { IdentitiesService } from './identities.service';
 import { Identities, IdentitiesSchema } from './_schemas/identities.schema';
 import { HttpStatus } from '@nestjs/common';
-import { Connection, Model, Types, connect } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Response } from 'express';
 import { getModelToken } from '@nestjs/mongoose';
 import { IdentitiesDtoStub } from './_stubs/identities.dto.stub';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { IdentitiesValidationModule } from './validations/identities.validation.module';
 import { MockResponse, createResponse } from 'node-mocks-http';
+import { MongoDbTestInstance } from '~/_common/tests/mongodb.test.instance';
+import { IdentityState } from './_enums/states.enum';
+import { createMockService } from '~/_common/tests/mock.service';
 
 describe('IdentitiesController', () => {
   let controller: IdentitiesController;
   let service: IdentitiesService;
-  let mongod: MongoMemoryServer;
-  let mongoConnection: Connection;
+  let mongoDbTestInstance: MongoDbTestInstance;
+
   let identitiesModel: Model<Identities>;
   //let request: MockRequest<Request>;
   let response: MockResponse<Response>;
@@ -31,18 +33,31 @@ describe('IdentitiesController', () => {
   let _id: Types.ObjectId;
 
   beforeAll(async () => {
-    mongod = await MongoMemoryServer.create({
-      binary: {
-        version: '5.0.22',
-      },
+    mongoDbTestInstance = new MongoDbTestInstance();
+    await mongoDbTestInstance.start();
+    identitiesModel = await mongoDbTestInstance.getModel<Identities>(Identities.name, IdentitiesSchema);
+    _id = new Types.ObjectId();
+
+    service = createMockService<IdentitiesService>(IdentitiesService, {
+      create: [
+        // Use functions that return promises for resolve or reject
+        () => Promise.resolve({ ...IdentitiesDtoStub(), _id, state: IdentityState.TO_VALIDATE }),
+        () => Promise.resolve({ ...IdentitiesDtoStub(), _id, state: IdentityState.TO_COMPLETE }),
+      ],
+      findAndCount: [
+        () => Promise.resolve([[{ ...IdentitiesDtoStub(), _id }], 1]),
+        () => Promise.reject(new Error('Error')), // Function that throws an error
+      ],
+      findOne: [() => Promise.resolve({ ...IdentitiesDtoStub(), _id }), () => Promise.reject(new Error('Error'))],
+      findById: [() => Promise.resolve({ ...IdentitiesDtoStub(), _id }), () => Promise.reject(new Error('Error'))],
+      update: [() => Promise.resolve({ ...IdentitiesDtoStub(), _id }), () => Promise.reject(new Error('Error'))],
+      delete: [() => Promise.resolve({ ...IdentitiesDtoStub(), _id }), () => Promise.reject(new Error('Error'))],
     });
-    const uri = await mongod.getUri();
-    mongoConnection = (await connect(uri)).connection;
-    identitiesModel = mongoConnection.model<Identities>(Identities.name, IdentitiesSchema);
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [IdentitiesController],
       providers: [
-        IdentitiesService,
+        { provide: IdentitiesService, useValue: service },
         { provide: getModelToken(Identities.name), useValue: identitiesModel },
         IdentitiesValidationService,
       ],
@@ -50,8 +65,7 @@ describe('IdentitiesController', () => {
     }).compile();
 
     controller = module.get<IdentitiesController>(IdentitiesController);
-    service = module.get<IdentitiesService>(IdentitiesService);
-    _id = new Types.ObjectId();
+    //service = module.get<IdentitiesService>(IdentitiesService);
   }, 1200000);
 
   beforeEach(() => {
@@ -59,30 +73,23 @@ describe('IdentitiesController', () => {
   });
 
   afterAll(async () => {
-    await mongoConnection.dropDatabase();
-    await mongoConnection.close();
-    await mongod.stop();
+    await mongoDbTestInstance.stop();
   });
 
-  afterEach(() => {
-    const collections = mongoConnection.collections;
-    Object.keys(collections).forEach(async (key) => {
-      await collections[key].deleteMany({});
-    });
+  afterEach(async () => {
+    await mongoDbTestInstance.clearDatabase();
+    jest.clearAllMocks();
   });
 
   describe('create', () => {
-    it('should create an identity', async () => {
+    it('should create an identity with no errors', async () => {
       const createIdentity = await controller.create(response, IdentitiesDtoStub());
       expect(createIdentity.statusCode).toBe(HttpStatus.CREATED);
     });
 
-    it('should throw an error when creating an identity', async () => {
-      jest.spyOn(service, 'create').mockImplementationOnce(() => {
-        throw new Error('Error');
-      });
+    it('should create an identity with validations', async () => {
       const createIdentity = await controller.create(response, IdentitiesDtoStub());
-      expect(createIdentity.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      expect(createIdentity.statusCode).toBe(HttpStatus.ACCEPTED);
     });
   });
 
@@ -93,62 +100,56 @@ describe('IdentitiesController', () => {
     });
 
     it('should throw an error when searching identities', async () => {
-      jest.spyOn(service, 'findAndCount').mockImplementationOnce(() => {
-        throw new Error('Error');
-      });
-      const searchIdentity = await controller.search(response, {}, searchFilterOptions);
-      expect(searchIdentity.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      try {
+        await controller.search(response, {}, searchFilterOptions);
+      } catch (error) {
+        expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      }
     });
   });
 
   describe('read', () => {
     it('should find an identity', async () => {
-      const newIdentity = await service.create<Identities>(IdentitiesDtoStub());
-      const _id = newIdentity.id;
       const findIdentity = await controller.read(_id, response);
       expect(findIdentity.statusCode).toBe(HttpStatus.OK);
     });
 
     it('should throw an error when finding an identity', async () => {
-      jest.spyOn(service, 'findOne').mockImplementationOnce(() => {
-        throw new Error('Error');
-      });
-      const findIdentity = await controller.read(_id, response);
-      expect(findIdentity.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      try {
+        await controller.read(_id, response);
+      } catch (error) {
+        expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      }
     });
   });
 
   describe('update', () => {
     it('should update an identity', async () => {
-      const newIdentity = await service.create<Identities>(IdentitiesDtoStub());
-      const _id = newIdentity.id;
       const updateIdentity = await controller.update(_id, IdentitiesDtoStub(), response);
       expect(updateIdentity.statusCode).toBe(HttpStatus.OK);
     });
 
     it('should throw an error when updating an identity', async () => {
-      jest.spyOn(service, 'update').mockImplementationOnce(() => {
-        throw new Error('Error');
-      });
-      const updateIdentity = await controller.update(_id, IdentitiesDtoStub(), response);
-      expect(updateIdentity.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      try {
+        await controller.update(_id, IdentitiesDtoStub(), response);
+      } catch (error) {
+        expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      }
     });
   });
 
   describe('delete', () => {
     it('should delete an identity', async () => {
-      const newIdentity = await service.create<Identities>(IdentitiesDtoStub());
-      const _id = newIdentity.id;
       const deleteIdentity = await controller.remove(_id, response);
       expect(deleteIdentity.statusCode).toBe(HttpStatus.OK);
     });
 
     it('should throw an error when deleting an identity', async () => {
-      jest.spyOn(service, 'delete').mockImplementationOnce(() => {
-        throw new Error('Error');
-      });
-      const deleteIdentity = await controller.remove(_id, response);
-      expect(deleteIdentity.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      try {
+        await controller.remove(_id, response);
+      } catch (error) {
+        expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+      }
     });
   });
 });

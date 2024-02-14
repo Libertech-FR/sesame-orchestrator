@@ -1,6 +1,8 @@
 include .env
-DEV_CONTAINER_NAME = "sesame-orchestrator"
-APPNAME = "sesame"
+APP_PORT = 4002
+IMG_NAME = "ghcr.io/libertech-fr/sesame-orchestrator"
+APP_NAME = "sesame-orchestrator"
+PLATFORM = "linux/amd64"
 
 .DEFAULT_GOAL := help
 help:
@@ -8,43 +10,80 @@ help:
 	@grep -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) \
 		| sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-15s\033[0m %s\n", $$1, $$2}'
 
-dev: ## Run development server
-	@docker compose --project-directory docker run -d --rm \
-		--service-ports \
-		--use-aliases \
-		--name $(DEV_CONTAINER_NAME) \
-		$(DEV_CONTAINER_NAME) yarn start:dev
-	@docker logs -f $(DEV_CONTAINER_NAME)
+build: ## Build the container
+	@docker build --platform $(PLATFORM) -t $(IMG_NAME) .
 
-exec: ## Execute a command in the development container
-	@docker compose --project-directory docker run -it --rm $(DEV_CONTAINER_NAME) bash
+dev: ## Start development environment
+	@docker run --rm -it \
+		-e NODE_ENV=development \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--network dev \
+		--platform $(PLATFORM) \
+		--name $(APP_NAME) \
+		-p $(APP_PORT):4000 \
+		-v $(CURDIR):/data \
+		$(IMG_NAME) yarn start:dev
 
-run-docs: ## Execute a command in the development container
-	@docker compose --project-directory docker run -p 8080:8080 -it --rm $(DEV_CONTAINER_NAME) yarn generate:docServer
+install: ## Install dependencies
+	@docker run -it --rm \
+		-e NODE_ENV=development \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--platform $(PLATFORM) \
+		--network dev \
+		-v $(CURDIR):/data \
+		$(IMG_NAME) yarn install
 
-install: ## Execute a command in the development container
-	@docker compose --project-directory docker run -it --rm $(DEV_CONTAINER_NAME) yarn install
+exec: ## Run a shell in the container
+	@docker run -it --rm \
+		-e NODE_ENV=development \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--platform $(PLATFORM) \
+		--network dev \
+		-v $(CURDIR):/data \
+		$(IMG_NAME) sh
 
-dbs: ## Run dependencies for development
-	@docker volume create $(APPNAME)-mongo
-	@docker compose --project-directory docker up -d $(APPNAME)-redis
-	@docker compose --project-directory docker up -d $(APPNAME)-mongo
-	@docker exec -it $(APPNAME)-mongo mongo --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: '127.0.0.1:27017'}]})" || true
+dbs: ## Start databases
+	@docker volume create $(APP_NAME)-mongodb
+	@docker run -d --rm \
+		--name $(APP_NAME)-mongodb \
+		-v $(APP_NAME)-mongodb:/data/db \
+		-p 27017:27017 \
+		-e MONGODB_REPLICA_SET_MODE=primary \
+		-e MONGODB_REPLICA_SET_NAME=rs0 \
+		-e ALLOW_EMPTY_PASSWORD=yes \
+		--platform $(PLATFORM) \
+		--network dev \
+		--health-interval=5s \
+		--health-timeout=3s \
+		--health-start-period=5s \
+		--health-retries=3 \
+		--health-cmd="mongo --eval \"db.stats().ok\" || exit 1" \
+		mongo:7.0 --replSet rs0 --wiredTigerCacheSizeGB 1.5 || true
+	@docker volume create $(APP_NAME)-redis
+	@docker run -d --rm \
+		--name $(APP_NAME)-redis \
+		-v $(APP_NAME)-redis:/data \
+		--platform $(PLATFORM) \
+		--network dev \
+		-p 6379:6379 \
+		--health-interval=5s \
+		--health-timeout=3s \
+		--health-start-period=5s \
+		--health-retries=3 \
+		--health-cmd="redis-cli ping || exit 1" \
+		redis || true
+	@docker exec -it $(APP_NAME)-mongodb mongo --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: '127.0.0.1:27017'}]})" || true
 
-stop: ## Stop all containers
-	@docker compose --project-directory docker down $(DEV_CONTAINER_NAME) $(APPNAME)-redis $(APPNAME)-mongo --remove-orphans
-	@docker compose --project-directory rm -f
-
-stop-dev: ## Stop development container
-	@docker compose --project-directory docker down $(DEV_CONTAINER_NAME) --remove-orphans
-	@docker compose --project-directory rm -f $(DEV_CONTAINER_NAME)
-
-stop-dbs: ## Stop dependencies for development
-	@docker compose --project-directory docker down $(APPNAME)-redis $(APPNAME)-mongo --remove-orphans
-	@docker compose --project-directory docker rm -f $(APPNAME)-redis $(APPNAME)-mongo
+stop: ## Stop the container
+	@docker stop $(APP_NAME) || true
+	@docker stop $(APP_NAME)-mongodb || true
+	@docker stop $(APP_NAME)-redis || true
 
 run-test: ## Run tests
 	act --container-architecture="linux/arm64" -j test
 
 gen-doc:
-	npx @compodoc/compodoc -p tsconfig.json -s -d docs --includes ./markdowns -n "Sesame Orchestrator"
+	@npx @compodoc/compodoc -p tsconfig.json -s -d docs --includes ./markdowns -n "Sesame Orchestrator"

@@ -35,8 +35,7 @@ export abstract class AbstractService {
 
   public get moduleName(): string {
     //TODO: change modulename from module ref ?
-    if (!this.request)
-      throw new Error('Request is not defined in ' + this.constructor.name);
+    if (!this.request) throw new Error('Request is not defined in ' + this.constructor.name);
     const moduleName = this.request.path.split('/').slice(1).shift();
     return moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
   }

@@ -98,6 +98,7 @@ export async function createAssertions<T>(service: AbstractServiceSchema, model:
   expect(result).toEqual(expectedData);
 }
 
+/* eslint-disable */
 export async function createErrorAssertions<T>(service: AbstractServiceSchema, newData) {
   try {
     await service.create(newData);
@@ -105,6 +106,7 @@ export async function createErrorAssertions<T>(service: AbstractServiceSchema, n
     expect(error).toBeInstanceOf(Error);
   }
 }
+/* eslint-enable */
 
 export async function updateAssertions<T>(
   service: AbstractServiceSchema,

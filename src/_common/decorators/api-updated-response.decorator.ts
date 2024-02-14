@@ -1,20 +1,10 @@
 import { applyDecorators, HttpStatus, Type } from '@nestjs/common';
-import {
-  ApiBadRequestResponse,
-  ApiExtraModels,
-  ApiNotFoundResponse,
-  getSchemaPath,
-} from '@nestjs/swagger';
-import {
-  ApiOkResponse,
-  ApiResponseOptions,
-} from '@nestjs/swagger/dist/decorators/api-response.decorator';
+import { ApiBadRequestResponse, ApiExtraModels, ApiNotFoundResponse, getSchemaPath } from '@nestjs/swagger';
+import { ApiOkResponse, ApiResponseOptions } from '@nestjs/swagger/dist/decorators/api-response.decorator';
 import { ErrorSchemaDto } from '~/_common/dto/error-schema.dto';
 import { NotFoundDto } from '~/_common/dto/not-found.dto';
 
-export const ApiUpdatedResponseDecorator = <
-  TModel extends Type<NonNullable<unknown>>,
->(
+export const ApiUpdatedResponseDecorator = <TModel extends Type<NonNullable<unknown>>>(
   model: TModel,
   responseOptions?: ApiResponseOptions | null | undefined,
   badRequestOptions?: ApiResponseOptions | null | undefined,

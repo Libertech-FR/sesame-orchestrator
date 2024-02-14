@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import configInstance from './config';
-import { All, LogLevel, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
 import { createLogger } from 'winston';
@@ -32,7 +32,7 @@ declare const module: any;
 
   const winstonTransports = {
     console: new winston.transports.Console({
-      level: 'info',
+      level: 'debug',
       format: winstonFormat.pretty,
     }),
     mongodb: new winston.transports.MongoDB({
@@ -55,8 +55,15 @@ declare const module: any;
     logger: WinstonModule.createLogger({
       instance: winstonInstance,
     }),
+    // rawBody: true,
     cors: true,
   });
+  // eslint-disable-next-line
+  // app.use((_: any, res: Response, next: () => void) => {
+  //   res.removeHeader('x-powered-by')
+  //   next()
+  // })
+  // app.use(passport.initialize())
   // app.use(rawBodyBuffer(cfg?.application?.bodyParser));
   if (process.env.production !== 'production') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -65,7 +72,7 @@ declare const module: any;
 
   app.useGlobalFilters(new AllExceptionFilter(), new MongooseValidationFilter(), new IdentitiesValidationFilter());
   await app.listen(4000, async (): Promise<void> => {
-    Logger.log(`Application is running on port: 4000`);
+    Logger.log(`Sesame - Orchestrator is READY on <http://127.0.0.1:4000> !`);
   });
 
   if (module.hot) {
@@ -74,15 +81,15 @@ declare const module: any;
   }
 })();
 
-function setLogLevel(): LogLevel[] {
-  const config = configInstance();
-  const logLevelMap: Record<LogLevel | string, LogLevel[]> = {
-    fatal: ['fatal'],
-    error: ['error', 'fatal'],
-    warn: ['error', 'fatal', 'warn'],
-    info: ['error', 'fatal', 'warn', 'log'],
-    debug: ['error', 'fatal', 'warn', 'log', 'debug'],
-    verbose: ['error', 'fatal', 'warn', 'log', 'debug', 'verbose'],
-  };
-  return logLevelMap[config.logLevel] || logLevelMap['warn'];
-}
+// function setLogLevel(): LogLevel[] {
+//   const config = configInstance();
+//   const logLevelMap: Record<LogLevel | string, LogLevel[]> = {
+//     fatal: ['fatal'],
+//     error: ['error', 'fatal'],
+//     warn: ['error', 'fatal', 'warn'],
+//     info: ['error', 'fatal', 'warn', 'log'],
+//     debug: ['error', 'fatal', 'warn', 'log', 'debug'],
+//     verbose: ['error', 'fatal', 'warn', 'log', 'debug', 'verbose'],
+//   };
+//   return logLevelMap[config.logLevel] || logLevelMap['warn'];
+// }

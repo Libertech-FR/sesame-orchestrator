@@ -10,21 +10,13 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { RedisOptions } from 'ioredis';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { RequestContextModule } from 'nestjs-request-context';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
-    }),
-    BullModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        connection: {
-          host: configService.get('ioredis.host'),
-          port: configService.get('ioredis.port'),
-        },
-      }),
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -51,6 +43,17 @@ import { AppService } from './app.service';
         },
       }),
     }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        connection: {
+          host: configService.get('ioredis.host'),
+          port: configService.get('ioredis.port'),
+        },
+      }),
+    }),
+    RequestContextModule,
     CoreModule.register(),
     ManagementModule.register(),
   ],

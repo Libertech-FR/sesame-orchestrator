@@ -1,11 +1,6 @@
 import { Controller, Logger, Get, Res, UseGuards } from '@nestjs/common';
 import { BackendsService } from './backends.service';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 

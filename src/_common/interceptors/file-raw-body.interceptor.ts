@@ -1,12 +1,4 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Inject,
-  mixin,
-  NestInterceptor,
-  Optional,
-  Type,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, Inject, mixin, NestInterceptor, Optional, Type } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import multer from 'multer';
 import { MULTER_MODULE_OPTIONS } from '@nestjs/platform-express/multer/files.constants';
@@ -38,19 +30,15 @@ export function FileRawBodyInterceptor(fieldName: string, localOptions?: any): T
       await new Promise<void>((resolve, reject) => {
         const request = ctx.getRequest<Request & { rawBody: string }>();
         request.rawBody = '';
-        request.prependListener(
-          'data',
-          (chunk) => (request.rawBody += chunk.toString()),
-        );
+        request.prependListener('data', (chunk) => (request.rawBody += chunk.toString()));
         // eslint-disable-next-line
         this.multer.single(fieldName)(request, ctx.getResponse(), (err: any) => {
-            if (err) {
-              const error = transformException(err);
-              return reject(error);
-            }
-            resolve();
-          },
-        );
+          if (err) {
+            const error = transformException(err);
+            return reject(error);
+          }
+          resolve();
+        });
       });
       return next.handle();
     }

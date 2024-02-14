@@ -4,9 +4,7 @@ import { ApiResponseOptions } from '@nestjs/swagger/dist/decorators/api-response
 import { ApiPaginatedResponseDecorator } from '~/_common/decorators/api-paginated-response.decorator';
 import { PaginatedFilterDto } from '~/_common/dto/paginated-filter.dto';
 
-export const ApiPaginatedDecorator = <
-  TModel extends Type<NonNullable<unknown>>,
->(
+export const ApiPaginatedDecorator = <TModel extends Type<NonNullable<unknown>>>(
   model: TModel,
   options?: ApiResponseOptions | null | undefined,
 ) => {

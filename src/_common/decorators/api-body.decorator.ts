@@ -1,10 +1,5 @@
 import { applyDecorators, Type } from '@nestjs/common';
-import {
-  ApiBody,
-  ApiBodyOptions,
-  ApiExtraModels,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { ApiBody, ApiBodyOptions, ApiExtraModels, getSchemaPath } from '@nestjs/swagger';
 
 export const ApiBodyDecorator = <TModel extends Type<NonNullable<unknown>>>(
   model: TModel,

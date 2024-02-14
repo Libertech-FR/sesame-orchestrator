@@ -1,6 +1,8 @@
 import { MongooseModuleOptions } from '@nestjs/mongoose';
 import { RedisOptions } from 'ioredis';
 import { SwaggerCustomOptions } from '@nestjs/swagger';
+import { IAuthModuleOptions } from '@nestjs/passport';
+import { JwtModuleOptions } from '@nestjs/jwt';
 
 export interface MongoosePlugin {
   package: string;
@@ -16,6 +18,12 @@ export interface ConfigInstance {
   ioredis: {
     uri: string;
     options: RedisOptions;
+  };
+  passport: {
+    options: IAuthModuleOptions;
+  };
+  jwt: {
+    options: JwtModuleOptions;
   };
   swagger: {
     path: string;
@@ -56,6 +64,22 @@ export default (): ConfigInstance => ({
       //   },
       // },
     ],
+  },
+  passport: {
+    options: {
+      defaultStrategy: 'jwt',
+      property: 'user',
+      session: false,
+    },
+  },
+  jwt: {
+    options: {
+      /**
+       * @see https://randomkeygen.com/
+       */
+      secret: process.env['JWT_SECRET'],
+      // jwksUri: 'http://127.0.0.1:2000/jwks',
+    },
   },
   logLevel: process.env['LOG_LEVEL'] || 'info',
   nameQueue: process.env['NAME_QUEUE'] || 'backend',

@@ -5,7 +5,9 @@ export const additionalFieldsPartDtoStub = (): additionalFieldsPartDto => {
     objectClasses: ['supann'],
     attributes: {
       supann: {
-        supannEmpId: 'supannEmpId',
+        supannEmpId: '12345',
+        supannCivilite: 'Mr',
+        supannBirthName: 'Doe',
       },
     },
   };

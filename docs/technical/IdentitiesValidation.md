@@ -1,18 +1,26 @@
 
-# Documentation Technique - Service de Validation des Identités
+# Documentation Technique - Service de Validation des Identités (Mise à Jour)
 
 ## Description
-Ce document décrit le fonctionnement du service de validation des identités dans une application NestJS, en utilisant `yup` pour la validation des données.
+Cette documentation mise à jour décrit les améliorations apportées au service de validation des identités dans une application NestJS. Ce service utilise `yup` pour la validation des données et `ajv` pour gérer la validation des schémas JSON et YML. Les fichiers de configuration YML sont chargés dynamiquement et convertis en schémas `yup` pour valider les données utilisateur.
 
 ## Services
 
 ### IdentitiesValidationService
 
+#### Modifications Clés
+- Extraction de la logique de validation d'attributs dans une méthode privée `validateAttribute`, améliorant la lisibilité et la maintenabilité.
+- Utilisation améliorée de la gestion des erreurs pour fournir des messages d'erreur spécifiques.
+- Commentaires et annotations de type TypeScript ajoutés pour une meilleure compréhension et utilisation du type checking de TypeScript.
+
 #### Méthodes
 - `validate(data: AdditionalFieldsPart): Promise<object>`
   - Valide les données fournies en utilisant des schémas de validation `yup`.
-  - Les schémas de validation sont chargés à partir de fichiers de configuration YAML spécifiques à chaque classe d'objet.
-  - En cas d'erreur de validation, une promesse rejetée est renvoyée avec les détails des erreurs.
+  - Les schémas sont chargés à partir de fichiers YAML spécifiques à chaque classe d'objet.
+  - Renvoie une promesse rejetée avec les détails des erreurs en cas d'échec de la validation.
+- `private validateAttribute(key: string, attribute: any): Promise<string | null>`
+  - Valide un attribut individuel.
+  - Renvoie un message d'erreur spécifique ou `null` si la validation réussit.
 
 #### Utilisation
 ```typescript
@@ -22,12 +30,8 @@ class IdentitiesValidationService {
     // ... Implémentation de la validation
   }
 
-  private getValidator(type, required = false): yup.AnyObject {
-    // ... Implémentation du sélecteur de validateur
-  }
-
-  async createSchema(attributes: ConfigObjectAttributeDTO[]): Promise<yup.ObjectSchema<any>> {
-    // ... Création du schéma yup
+  private async validateAttribute(key: string, attribute: any): Promise<string | null> {
+    // ... Implémentation de la validation d'un attribut individuel
   }
 }
 ```
@@ -38,21 +42,26 @@ class IdentitiesValidationService {
 - Représente les champs supplémentaires d'une identité.
 - Utilisé par `IdentitiesValidationService` pour la validation.
 
-### inetOrgPerson
-- Représente une personne dans l'organisation.
-- Défini avec des champs spécifiques comme `cn`, `sn`, `uid`, etc.
+### ConfigObjectSchemaDTO
+- Nouveau modèle ajouté pour représenter les schémas de configuration des objets.
 
 ## Configuration
 
 ### Fichiers YAML
 - Chaque classe d'objet a son fichier de configuration YAML correspondant.
-- Exemple : `supann.yml` contient la configuration pour la classe d'objet `supannPerson`.
+- Ces fichiers sont utilisés pour générer des schémas de validation `yup`.
 
-## Intégration avec Mongoose
-- Les schémas Mongoose sont utilisés pour définir le modèle de données.
-- Des hooks (`pre validate`, `pre save`) sont utilisés pour intégrer la validation `yup` dans le cycle de vie des documents Mongoose.
+## Intégrations
+
+### Intégration avec AJV
+- AJV est utilisé pour compiler et valider les schémas JSON.
+- Amélioration de la gestion des erreurs et des validations de schémas.
+
+### Intégration avec Mongoose
+- Les schémas Mongoose sont définis comme auparavant.
+- La validation `yup` est intégrée dans le cycle de vie des documents Mongoose via des hooks (`pre validate`, `pre save`).
 
 ## Module
 
 ### IdentitiesModule
-- Configure le schéma Mongoose et intègre le service de validation.
+- Configure le schéma Mongoose et intègre le service de validation avec les améliorations apportées.

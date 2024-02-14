@@ -4,15 +4,20 @@ import configInstance from './config';
 import { Logger } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
+import cookieParser from 'cookie-parser';
 import { createLogger } from 'winston';
 import * as winston from 'winston';
 import 'winston-mongodb';
 import { AllExceptionFilter } from './_common/filters/all-exception.filter';
 import { IdentitiesValidationFilter } from './_common/filters/identities-validation.filter';
 import { MongooseValidationFilter } from './_common/filters/mongoose-validation.filter';
+import { Response } from 'express';
+import passport from 'passport';
+import { rawBodyBuffer } from '~/_common/middlewares/raw-body-buffer.middleware';
 
 declare const module: any;
 (async (): Promise<void> => {
+  const cfg = configInstance();
   const winstonFormat = {
     pretty: winston.format.combine(
       winston.format.colorize(),
@@ -36,7 +41,7 @@ declare const module: any;
       format: winstonFormat.pretty,
     }),
     mongodb: new winston.transports.MongoDB({
-      db: configInstance().mongoose.uri,
+      db: cfg.mongoose.uri,
       collection: 'logs',
       level: 'debug',
       options: {
@@ -55,16 +60,18 @@ declare const module: any;
     logger: WinstonModule.createLogger({
       instance: winstonInstance,
     }),
-    // rawBody: true,
+    bodyParser: false,
+    rawBody: true,
     cors: true,
   });
   // eslint-disable-next-line
-  // app.use((_: any, res: Response, next: () => void) => {
-  //   res.removeHeader('x-powered-by')
-  //   next()
-  // })
-  // app.use(passport.initialize())
-  // app.use(rawBodyBuffer(cfg?.application?.bodyParser));
+  app.use((_: any, res: Response, next: () => void) => {
+    res.removeHeader('x-powered-by')
+    next()
+  })
+  app.use(passport.initialize())
+  app.use(rawBodyBuffer(cfg?.application?.bodyParser));
+  app.use(cookieParser())
   if (process.env.production !== 'production') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     (await import('./swagger')).default(app);

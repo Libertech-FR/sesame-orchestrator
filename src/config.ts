@@ -1,5 +1,6 @@
 import { MongooseModuleOptions } from '@nestjs/mongoose';
 import { RedisOptions } from 'ioredis';
+import { HelmetOptions } from 'helmet';
 import { SwaggerCustomOptions } from '@nestjs/swagger';
 import { IAuthModuleOptions } from '@nestjs/passport';
 import { JwtModuleOptions } from '@nestjs/jwt';
@@ -10,6 +11,12 @@ export interface MongoosePlugin {
   options?: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 export interface ConfigInstance {
+  application: {
+    bodyParser: {
+      limit: string
+    }
+  }
+  helmet: HelmetOptions
   mongoose: {
     uri: string;
     options: MongooseModuleOptions;
@@ -36,12 +43,24 @@ export interface ConfigInstance {
 }
 
 export default (): ConfigInstance => ({
-  // redis: {
-  //   host: process.env.REDIS_HOST || 'localhost',
-  //   port: parseInt(process.env.REDIS_PORT) || 6379,
-  //   user: process.env.REDIS_USER || '',
-  //   password: process.env.REDIS_PASSWORD || '',
-  // },
+  application: {
+    bodyParser: {
+      limit: '500mb',
+    },
+  },
+  helmet: {
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        objectSrc: ["'self'"],
+        frameSrc: ["'self'"],
+        styleSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        imgSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+      },
+    },
+  },
   ioredis: {
     uri: process.env['REDIS_URI'] || 'redis://localhost:6379/0',
     options: {
@@ -54,16 +73,7 @@ export default (): ConfigInstance => ({
     options: {
       directConnection: true,
     },
-    plugins: [
-      // {
-      //   package: 'mongoose-delete',
-      //   enabled: true,
-      //   options: {
-      //     overrideMethods: true,
-      //     deletedAt: true,
-      //   },
-      // },
-    ],
+    plugins: [],
   },
   passport: {
     options: {

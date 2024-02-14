@@ -7,9 +7,10 @@ export type KeyringsDocument = Keyrings & Document;
 @Schema({ versionKey: false })
 export class Keyrings extends AbstractSchema {
   @Prop({
-    type: Boolean,
+    type: String,
+    unique: true,
   })
-  public secretKey: string;
+  public token: string;
 
   @Prop({
     type: [String],

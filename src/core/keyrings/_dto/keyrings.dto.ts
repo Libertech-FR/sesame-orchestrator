@@ -1,20 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { IsDateString, IsIP, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto';
-import { Prop } from '@nestjs/mongoose';
 
 export class KeyringsCreateDto extends CustomFieldsDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  public secretKey: string;
+  public token: string;
 
-  @Prop({
-    type: [String],
-  })
+  @IsString({ each: true })
+  @IsIP(4, { each: true })
   public allowedNetworks?: string[];
 
-  @Prop({ type: Date })
+  @IsDateString()
   public suspendedAt?: Date;
 }
 

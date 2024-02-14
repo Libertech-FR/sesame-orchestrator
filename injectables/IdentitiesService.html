@@ -318,7 +318,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:15</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:14</a></code>
 </div>
                         </td>
                     </tr>
@@ -414,7 +414,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:33</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:35</a></code>
 </div>
                         </td>
                     </tr>
@@ -510,7 +510,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:22</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:24</a></code>
 </div>
                         </td>
                     </tr>
@@ -1309,8 +1309,10 @@ export class IdentitiesService extends AbstractServiceSchema {
     super();
   }
 
-
-  public async create&lt;T extends AbstractSchema | Document&gt;(data?: any, options?: SaveOptions): Promise&lt;Document&lt;T, any, T&gt;&gt; {
+  public async create&lt;T extends AbstractSchema | Document&gt;(
+    data?: any,
+    options?: SaveOptions,
+  ): Promise&lt;Document&lt;T, any, T&gt;&gt; {
     // noinspection UnnecessaryLocalVariableJS
     const created: Document&lt;T, any, T&gt; &#x3D; await super.create(data, options);
     //TODO: add backends service logic here
@@ -1328,7 +1330,10 @@ export class IdentitiesService extends AbstractServiceSchema {
     return updated;
   }
 
-  public async delete&lt;T extends AbstractSchema | Document&gt;(_id: Types.ObjectId | any, options?: QueryOptions&lt;T&gt; | null | undefined): Promise&lt;Query&lt;T, T, any, T&gt;&gt; {
+  public async delete&lt;T extends AbstractSchema | Document&gt;(
+    _id: Types.ObjectId | any,
+    options?: QueryOptions&lt;T&gt; | null | undefined,
+  ): Promise&lt;Query&lt;T, T, any, T&gt;&gt; {
     // noinspection UnnecessaryLocalVariableJS
     const deleted &#x3D; await super.delete(_id, options);
     //TODO: add backends service logic here

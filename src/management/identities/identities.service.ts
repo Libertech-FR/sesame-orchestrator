@@ -11,8 +11,10 @@ export class IdentitiesService extends AbstractServiceSchema {
     super();
   }
 
-
-  public async create<T extends AbstractSchema | Document>(data?: any, options?: SaveOptions): Promise<Document<T, any, T>> {
+  public async create<T extends AbstractSchema | Document>(
+    data?: any,
+    options?: SaveOptions,
+  ): Promise<Document<T, any, T>> {
     // noinspection UnnecessaryLocalVariableJS
     const created: Document<T, any, T> = await super.create(data, options);
     //TODO: add backends service logic here
@@ -30,7 +32,10 @@ export class IdentitiesService extends AbstractServiceSchema {
     return updated;
   }
 
-  public async delete<T extends AbstractSchema | Document>(_id: Types.ObjectId | any, options?: QueryOptions<T> | null | undefined): Promise<Query<T, T, any, T>> {
+  public async delete<T extends AbstractSchema | Document>(
+    _id: Types.ObjectId | any,
+    options?: QueryOptions<T> | null | undefined,
+  ): Promise<Query<T, T, any, T>> {
     // noinspection UnnecessaryLocalVariableJS
     const deleted = await super.delete(_id, options);
     //TODO: add backends service logic here

@@ -1,11 +1,11 @@
-import { ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import { PassportStrategy } from '@nestjs/passport'
-import { ExtractJwt, Strategy, VerifiedCallback } from 'passport-jwt'
-import { AuthService } from '../auth.service'
-import { Request } from 'express'
-import { AgentType } from '~/_common/types/agent.type'
-import { JwtPayload } from 'jsonwebtoken'
+import { ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy, VerifiedCallback } from 'passport-jwt';
+import { AuthService } from '../auth.service';
+import { Request } from 'express';
+import { AgentType } from '~/_common/types/agent.type';
+import { JwtPayload } from 'jsonwebtoken';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -18,15 +18,19 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       passReqToCallback: true,
-    })
+    });
   }
 
   // noinspection JSUnusedGlobalSymbols
-  public async validate(_: Request, payload: JwtPayload & { identity: AgentType }, done: VerifiedCallback): Promise<void> {
-    Logger.debug(`Atempt to authenticate with JTI: <${payload.jti}>`, 'JwtStrategy')
-    if (!payload?.identity) return done(new UnauthorizedException(), false)
-    const user = await this.auth.verifyIdentity(payload)
-    if (!user) return done(new ForbiddenException(), false)
-    return done(null, payload?.identity)
+  public async validate(
+    _: Request,
+    payload: JwtPayload & { identity: AgentType },
+    done: VerifiedCallback,
+  ): Promise<void> {
+    Logger.debug(`Atempt to authenticate with JTI: <${payload.jti}>`, 'JwtStrategy');
+    if (!payload?.identity) return done(new UnauthorizedException(), false);
+    const user = await this.auth.verifyIdentity(payload);
+    if (!user) return done(new ForbiddenException(), false);
+    return done(null, payload?.identity);
   }
 }

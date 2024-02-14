@@ -1,17 +1,17 @@
-import { ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common'
-import { PassportStrategy } from '@nestjs/passport'
-import { AuthService } from '~/core/auth/auth.service'
-import { IVerifyOptions, Strategy } from 'passport-local'
-import { Request } from 'express'
-import { ExcludeAgentType, AgentType } from '~/_common/types/agent.type'
-import { omit } from 'radash'
+import { ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { AuthService } from '~/core/auth/auth.service';
+import { IVerifyOptions, Strategy } from 'passport-local';
+import { Request } from 'express';
+import { ExcludeAgentType, AgentType } from '~/_common/types/agent.type';
+import { omit } from 'radash';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   public constructor(private readonly auth: AuthService) {
     super({
       passReqToCallback: true,
-    })
+    });
   }
 
   //TODO: change any
@@ -22,11 +22,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     // eslint-disable-next-line
     done: (error: any, user?: Express.User | false, options?: IVerifyOptions) => void,
   ): Promise<void> {
-    Logger.debug(`Try to authenticate user : ${username}`, 'LocalStrategy')
-    const user = await this.auth.authenticateWithLocal(username, password)
-    console.log(user)
-    if (!user) done(new UnauthorizedException(), false)
+    Logger.debug(`Try to authenticate user : ${username}`, 'LocalStrategy');
+    const user = await this.auth.authenticateWithLocal(username, password);
+    console.log(user);
+    if (!user) done(new UnauthorizedException(), false);
     // if (user.state.current !== IdentityState.ACTIVE) done(new ForbiddenException(), false)
-    done(null, omit(user.toObject(), ExcludeAgentType) as AgentType)
+    done(null, omit(user.toObject(), ExcludeAgentType) as AgentType);
   }
 }

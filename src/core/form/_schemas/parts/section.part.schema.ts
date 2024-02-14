@@ -1,36 +1,36 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { FormTypes } from '../../_enum/types'
-import { FormFieldPart } from './field.part.schema'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { FormTypes } from '../../_enum/types';
+import { FormFieldPart } from './field.part.schema';
 
 @Schema({ _id: false })
 export class FormSectionPart {
   @Prop({
     type: String,
   })
-  label: string
+  label: string;
 
   @Prop({
     type: Number,
     enum: FormTypes,
     default: FormTypes.BASE,
   })
-  type: FormTypes
+  type: FormTypes;
 
   @Prop({
     type: String,
   })
-  icon?: string
+  icon?: string;
 
   @Prop({
     type: String,
   })
-  description?: string
+  description?: string;
 
   @Prop({ type: Map })
-  sections?: Map<string, FormSectionPart>
+  sections?: Map<string, FormSectionPart>;
 
   @Prop({ type: Map })
-  fields: Map<string, FormFieldPart>
+  fields: Map<string, FormFieldPart>;
 }
 
-export const FormSectionPartSchema = SchemaFactory.createForClass(FormSectionPart)
+export const FormSectionPartSchema = SchemaFactory.createForClass(FormSectionPart);

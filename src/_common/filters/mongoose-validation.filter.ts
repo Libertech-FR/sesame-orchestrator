@@ -1,21 +1,11 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  HttpStatus,
-  Logger,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Error } from 'mongoose';
 import { ValidationError } from 'class-validator';
 
 @Catch(Error.ValidationError, Error.CastError, ValidationError)
 export class MongooseValidationFilter implements ExceptionFilter {
-  public catch(
-    exception: Error.ValidationError | Error.CastError | ValidationError,
-    host: ArgumentsHost,
-  ) {
+  public catch(exception: Error.ValidationError | Error.CastError | ValidationError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
@@ -47,8 +37,7 @@ export class MongooseValidationFilter implements ExceptionFilter {
         if (err.errors[key]['constraints']) {
           Object.keys(err.errors[key]['constraints']).forEach((ckey) => {
             const property = err.errors[key]['property'];
-            validations[`${key}.${property}`] =
-              err.errors[key]['constraints'][ckey];
+            validations[`${key}.${property}`] = err.errors[key]['constraints'][ckey];
           });
           continue;
         }

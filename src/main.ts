@@ -7,8 +7,8 @@ import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-win
 import { createLogger } from 'winston';
 import * as winston from 'winston';
 import 'winston-mongodb';
-import passport from "passport";
-import { Response } from "express";
+import passport from 'passport';
+import { Response } from 'express';
 
 declare const module: any;
 (async (): Promise<void> => {

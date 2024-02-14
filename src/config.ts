@@ -1,8 +1,8 @@
 import { MongooseModuleOptions } from '@nestjs/mongoose';
 import { RedisOptions } from 'ioredis';
 import { SwaggerCustomOptions } from '@nestjs/swagger';
-import { IAuthModuleOptions } from "@nestjs/passport";
-import { JwtModuleOptions } from "@nestjs/jwt";
+import { IAuthModuleOptions } from '@nestjs/passport';
+import { JwtModuleOptions } from '@nestjs/jwt';
 
 export interface MongoosePlugin {
   package: string;
@@ -20,11 +20,11 @@ export interface ConfigInstance {
     options: RedisOptions;
   };
   passport: {
-    options: IAuthModuleOptions
-  }
+    options: IAuthModuleOptions;
+  };
   jwt: {
-    options: JwtModuleOptions
-  }
+    options: JwtModuleOptions;
+  };
   swagger: {
     path: string;
     api: string;

@@ -1,8 +1,5 @@
 import { Connection, Model, Schema } from 'mongoose';
-import {
-  AutoIncrementPluginOptions,
-  AutoIncrementPluginTrackerSpec,
-} from './auto-increment.interface';
+import { AutoIncrementPluginOptions, AutoIncrementPluginTrackerSpec } from './auto-increment.interface';
 import { logger } from './auto-increment.logger';
 
 const DEFAULT_INCREMENT = 1;
@@ -51,9 +48,7 @@ export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
       modelName = opt.overwriteModelName(originalModelName, this.constructor as any)
 
       if (!modelName || typeof modelName !== 'string') {
-        throw new Error(
-          '"overwriteModelname" is a function, but did return a falsy type or is not a string!',
-        );
+        throw new Error('"overwriteModelname" is a function, but did return a falsy type or is not a string!');
       }
     } else {
       modelName = opt.overwriteModelName || originalModelName;
@@ -64,11 +59,7 @@ export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
       // needs to be done, otherwise "undefiend" error if the plugin is used in an sub-document
       // eslint-disable-next-line
       const db: Connection = this.db ?? (this as any).ownerDocument().db
-      model = db.model<AutoIncrementPluginTrackerSpec>(
-        opt.trackerModelName,
-        IDSchema,
-        opt.trackerCollection,
-      );
+      model = db.model<AutoIncrementPluginTrackerSpec>(opt.trackerModelName, IDSchema, opt.trackerCollection);
       // test if the counter document already exists
       const counter = await model
         .findOne({
@@ -99,9 +90,7 @@ export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
       typeof this[AutoIncrementIDSkipSymbol] === 'boolean' &&
       AutoIncrementIDSkipSymbol
     ) {
-      logger.info(
-        'Symbol "AutoIncrementIDSkipSymbol" is set to "true", skipping',
-      );
+      logger.info('Symbol "AutoIncrementIDSkipSymbol" is set to "true", skipping');
 
       return;
     }
@@ -126,9 +115,7 @@ export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
       .exec();
 
     if (isNullOrUndefined(leandoc)) {
-      throw new Error(
-        `"findOneAndUpdate" incrementing count failed for "${modelName}" on field "${opt.field}"`,
-      );
+      throw new Error(`"findOneAndUpdate" incrementing count failed for "${modelName}" on field "${opt.field}"`);
     }
 
     logger.info('Setting "%s" to "%d"', opt.field, leandoc.count);

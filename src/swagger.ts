@@ -2,11 +2,11 @@ import { DocumentBuilder, SwaggerCustomOptions, SwaggerModule } from '@nestjs/sw
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
-import { readFileSync } from "fs";
+import { readFileSync } from 'fs';
 
 export default function swagger(app: NestExpressApplication) {
   const config = app.get<ConfigService>(ConfigService);
-  const pkg = JSON.parse(readFileSync('package.json', 'utf-8'))
+  const pkg = JSON.parse(readFileSync('package.json', 'utf-8'));
   const build = new DocumentBuilder()
     .setTitle(pkg.name)
     .setDescription(pkg.description)

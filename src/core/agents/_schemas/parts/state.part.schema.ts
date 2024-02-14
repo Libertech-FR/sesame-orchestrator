@@ -1,6 +1,6 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
-import { AgentState, AgentStateList } from "~/core/agents/_enum/agent-state.enum";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+import { AgentState, AgentStateList } from '~/core/agents/_enum/agent-state.enum';
 
 @Schema({ _id: false })
 export class StatePart extends Document {
@@ -8,13 +8,13 @@ export class StatePart extends Document {
     required: true,
     type: Number,
     enum: AgentStateList,
-    default: AgentState.PENDING
+    default: AgentState.PENDING,
   })
   public current: number;
 
   @Prop({
     type: Date,
-    default: new Date()
+    default: new Date(),
   })
   public lastChangedAt?: Date;
 

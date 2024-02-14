@@ -1,5 +1,5 @@
-import { Agents } from "~/core/agents/_schemas/agents.schema";
+import { Agents } from '~/core/agents/_schemas/agents.schema';
 
-export const ExcludeAgentType: (keyof Agents)[] = ['password']
+export const ExcludeAgentType: (keyof Agents)[] = ['password'];
 
-export type AgentType = Partial<Omit<Agents, 'password'>>
+export type AgentType = Partial<Omit<Agents, 'password'>>;

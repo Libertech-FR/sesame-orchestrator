@@ -1,11 +1,6 @@
 import { Controller, Post, Body, Res, UseGuards, Logger } from '@nestjs/common';
 import { PasswdService } from './passwd.service';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -30,10 +25,7 @@ export class PasswdController {
   @ApiResponse({ status: 500, description: 'Backend error' })
   @ApiBearerAuth()
   @UseGuards(AuthGuard('api-key'))
-  async change(
-    @Body() cpwd: ChangePasswordDto,
-    @Res() res: Response,
-  ): Promise<Response> {
+  async change(@Body() cpwd: ChangePasswordDto, @Res() res: Response): Promise<Response> {
     const data = await this.passwdService.change(cpwd);
     console.log(data);
     data.data.uid = cpwd.uid;
@@ -54,10 +46,7 @@ export class PasswdController {
   @ApiResponse({ status: 500, description: 'Backend error' })
   @ApiBearerAuth()
   @UseGuards(AuthGuard('api-key'))
-  async gettoken(
-    @Body() asktoken: AskTokenDto,
-    @Res() res: Response,
-  ): Promise<Response> {
+  async gettoken(@Body() asktoken: AskTokenDto, @Res() res: Response): Promise<Response> {
     this.logger.log('GetToken for : ' + asktoken.uid);
     const data = await this.passwdService.askToken(asktoken);
     const ret = { token: data };
@@ -70,10 +59,7 @@ export class PasswdController {
   @ApiResponse({ status: 500, description: 'Token KO' })
   @ApiBearerAuth()
   @UseGuards(AuthGuard('api-key'))
-  async verifyToken(
-    @Body() token: VerifyTokenDto,
-    @Res() res: Response,
-  ): Promise<Response> {
+  async verifyToken(@Body() token: VerifyTokenDto, @Res() res: Response): Promise<Response> {
     this.logger.log('Verify token : ' + token.token);
     const ok = await this.passwdService.verifyToken(token.token);
     console.log('reponse : ' + ok);
@@ -90,10 +76,7 @@ export class PasswdController {
   @ApiResponse({ status: 500, description: 'Reset KO' })
   @ApiBearerAuth()
   @UseGuards(AuthGuard('api-key'))
-  async reset(
-    @Body() data: ResetPasswordDto,
-    @Res() res: Response,
-  ): Promise<Response> {
+  async reset(@Body() data: ResetPasswordDto, @Res() res: Response): Promise<Response> {
     //this.logger.log('password reset : ' + data)
     const resetData = await this.passwdService.reset(data);
     //this.logger.log(resetData)

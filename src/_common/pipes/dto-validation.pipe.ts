@@ -29,13 +29,8 @@ export class DtoValidationPipe extends ValidationPipe {
           validations = { ...validations, ...this.validationRecursive(error) };
         }
         const debug = {};
-        const message = `Erreur de validation : ${Object.keys(validations).join(
-          ', ',
-        )}`.trim();
-        Logger.debug(
-          `${message} (${JSON.stringify(validations)})`,
-          'DtoValidationPipe',
-        );
+        const message = `Erreur de validation : ${Object.keys(validations).join(', ')}`.trim();
+        Logger.debug(`${message} (${JSON.stringify(validations)})`, 'DtoValidationPipe');
         // noinspection JSUnresolvedReference
         if (process.env.NODE_ENV !== 'production' && request.query['debug']) {
           debug['_errors'] = errors.map((error) => {
@@ -53,29 +48,20 @@ export class DtoValidationPipe extends ValidationPipe {
     });
   }
 
-  public validationRecursive(
-    error: ValidationError,
-    prefix = '',
-  ): ValidationRecursive {
+  public validationRecursive(error: ValidationError, prefix = ''): ValidationRecursive {
     let validations = {};
     if (error.constraints) {
-      validations[`${prefix + error.property}`] = Object.values(
-        error.constraints,
-      )[0];
+      validations[`${prefix + error.property}`] = Object.values(error.constraints)[0];
     }
     if (error.children.length > 0) {
       for (const errorChild of error.children) {
         if (errorChild.constraints) {
-          validations[`${prefix + error.property}.${errorChild.property}`] =
-            Object.values(errorChild.constraints)[0];
+          validations[`${prefix + error.property}.${errorChild.property}`] = Object.values(errorChild.constraints)[0];
         }
         if (errorChild.children.length > 0) {
           validations = {
             ...validations,
-            ...this.validationRecursive(
-              errorChild,
-              `${prefix + error.property}.${errorChild.property}.`,
-            ),
+            ...this.validationRecursive(errorChild, `${prefix + error.property}.${errorChild.property}.`),
           };
         }
       }

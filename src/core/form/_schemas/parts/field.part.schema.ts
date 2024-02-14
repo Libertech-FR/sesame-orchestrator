@@ -1,51 +1,51 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { MixedValue } from '~/_common/types/mixed-value.type'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { MixedValue } from '~/_common/types/mixed-value.type';
 @Schema()
 export class FormFieldPart {
   @Prop()
-  component: string
+  component: string;
 
   @Prop()
-  label: string
+  label: string;
 
   @Prop()
-  'model-value': string
+  'model-value': string;
 
   @Prop()
-  row: number
+  row: number;
 
   @Prop()
-  col: number
+  col: number;
 
   @Prop({
     type: Object,
     default: {},
   })
-  attrsOnDefault: { [attr: string]: MixedValue } | object
+  attrsOnDefault: { [attr: string]: MixedValue } | object;
 
   @Prop({
     type: Object,
     default: {},
   })
-  attrsOnCreate: { [attr: string]: MixedValue } | object
+  attrsOnCreate: { [attr: string]: MixedValue } | object;
 
   @Prop({
     type: Object,
     default: {},
   })
-  attrsOnRead: { [attr: string]: MixedValue } | object
+  attrsOnRead: { [attr: string]: MixedValue } | object;
 
   @Prop({
     type: Object,
     default: {},
   })
-  attrsOnUpdate: { [attr: string]: MixedValue } | object
+  attrsOnUpdate: { [attr: string]: MixedValue } | object;
 
   @Prop({
     type: Object,
     default: {},
   })
-  attrsOnDelete: { [attr: string]: MixedValue } | object
+  attrsOnDelete: { [attr: string]: MixedValue } | object;
 }
 
-export const FormFieldPartSchema = SchemaFactory.createForClass(FormFieldPart)
+export const FormFieldPartSchema = SchemaFactory.createForClass(FormFieldPart);

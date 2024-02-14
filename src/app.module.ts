@@ -10,7 +10,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { RedisOptions } from 'ioredis';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { RequestContextModule } from "nestjs-request-context";
+import { RequestContextModule } from 'nestjs-request-context';
 
 @Module({
   imports: [

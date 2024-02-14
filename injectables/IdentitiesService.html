@@ -186,17 +186,22 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#count" >count</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
                                 <a href="#create" >create</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#delete" >delete</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#update" >update</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#count" >count</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -217,11 +222,6 @@
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findOne" >findOne</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#update" >update</a>
                             </li>
                         </ul>
                     </td>
@@ -246,7 +246,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">src/management/identities/identities.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/management/identities/identities.service.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -293,102 +293,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="count"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>count</b></span>
-                        <a href="#count"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>count(filter?: FilterQuery<T>, options?: QueryOptions<T>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:42</a></code>
-</div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <b>Type parameters :</b>
-                            <ul class="type-parameters">
-                                    <li>T</li>
-                            </ul>
-                        </td>
-                    </tr>
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>filter</td>
-                                            <td>
-                                                        <code>FilterQuery&lt;T&gt;</code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>options</td>
-                                            <td>
-                                                        <code>QueryOptions&lt;T&gt;</code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="create"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -414,7 +318,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:149</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:15</a></code>
 </div>
                         </td>
                     </tr>
@@ -510,7 +414,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:248</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:33</a></code>
 </div>
                         </td>
                     </tr>
@@ -568,6 +472,209 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>Promise&lt;Query&lt;T, T, any, T&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="update"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>update</b></span>
+                        <a href="#update"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>update(_id: Types.ObjectId | any, update: UpdateQuery<T>, options?)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:22</a></code>
+</div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>_id</td>
+                                            <td>
+                                                        <code>Types.ObjectId | any</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>update</td>
+                                            <td>
+                                                        <code>UpdateQuery&lt;T&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="count"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>count</b></span>
+                        <a href="#count"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>count(filter?: FilterQuery<T>, options?: QueryOptions<T>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:42</a></code>
+</div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>filter</td>
+                                            <td>
+                                                        <code>FilterQuery&lt;T&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>QueryOptions&lt;T&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1009,113 +1116,6 @@
             </tr>
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="update"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>update</b></span>
-                        <a href="#update"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>update(_id: Types.ObjectId | any, update: UpdateQuery<T>, options?)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:191</a></code>
-</div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <b>Type parameters :</b>
-                            <ul class="type-parameters">
-                                    <li>T</li>
-                            </ul>
-                        </td>
-                    </tr>
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>_id</td>
-                                            <td>
-                                                        <code>Types.ObjectId | any</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>update</td>
-                                            <td>
-                                                        <code>UpdateQuery&lt;T&gt;</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>options</td>
-                                            <td>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </section>
             <section data-compodoc="block-properties">
     
@@ -1299,13 +1299,40 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
 import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
-import { Model } from &#x27;mongoose&#x27;;
+import { Document, Model, ModifyResult, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from &#x27;mongoose&#x27;;
 import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
+import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
   constructor(@InjectModel(Identities.name) protected _model: Model&lt;Identities&gt;) {
     super();
+  }
+
+
+  public async create&lt;T extends AbstractSchema | Document&gt;(data?: any, options?: SaveOptions): Promise&lt;Document&lt;T, any, T&gt;&gt; {
+    // noinspection UnnecessaryLocalVariableJS
+    const created: Document&lt;T, any, T&gt; &#x3D; await super.create(data, options);
+    //TODO: add backends service logic here
+    return created;
+  }
+
+  public async update&lt;T extends AbstractSchema | Document&gt;(
+    _id: Types.ObjectId | any,
+    update: UpdateQuery&lt;T&gt;,
+    options?: QueryOptions&lt;T&gt; &amp; { rawResult: true },
+  ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
+    // noinspection UnnecessaryLocalVariableJS
+    const updated &#x3D; await super.update(_id, update, options);
+    //TODO: add backends service logic here
+    return updated;
+  }
+
+  public async delete&lt;T extends AbstractSchema | Document&gt;(_id: Types.ObjectId | any, options?: QueryOptions&lt;T&gt; | null | undefined): Promise&lt;Query&lt;T, T, any, T&gt;&gt; {
+    // noinspection UnnecessaryLocalVariableJS
+    const deleted &#x3D; await super.delete(_id, options);
+    //TODO: add backends service logic here
+    return deleted;
   }
 }
 </code></pre>

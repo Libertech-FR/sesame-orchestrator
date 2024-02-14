@@ -420,7 +420,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/_common/abstracts/abstract.service.ts:44</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/_common/abstracts/abstract.service.ts:43</a></div>
                                 </td>
                             </tr>
 
@@ -468,8 +468,7 @@ export abstract class AbstractService {
 
   public get moduleName(): string {
     //TODO: change modulename from module ref ?
-    if (!this.request)
-      throw new Error(&#x27;Request is not defined in &#x27; + this.constructor.name);
+    if (!this.request) throw new Error(&#x27;Request is not defined in &#x27; + this.constructor.name);
     const moduleName &#x3D; this.request.path.split(&#x27;/&#x27;).slice(1).shift();
     return moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
   }

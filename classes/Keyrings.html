@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -96,9 +96,13 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >HeaderApiKeyStrategy</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >Keyrings</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -122,20 +126,12 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/core/auth/strategies/auth-header-api-key.strategy.ts</code>
+            <code>src/core/keyrings/_schemas/keyrings.schema.ts</code>
         </p>
 
 
 
-            <p class="comment">
-                <h3>Extends</h3>
-            </p>
-            <p class="comment">
-                        <code>PassportStrategy(
-  Strategy,
-  &#x27;api-key&#x27;,
-)</code>
-            </p>
+
 
 
             <section data-compodoc="block-index">
@@ -151,13 +147,21 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Readonly</span>
-                                <a href="#logger" >logger</a>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#allowedNetworks" >allowedNetworks</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
-                                <a href="#validate" >validate</a>
+                                <a href="#secretKey" >secretKey</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#suspendedAt" >suspendedAt</a>
                             </li>
                         </ul>
                     </td>
@@ -172,55 +176,6 @@
     </table>
 </section>
 
-            <section data-compodoc="block-constructor">
-    <h3 id="constructor">Constructor</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor(configService: ConfigService)</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/core/auth/strategies/auth-header-api-key.strategy.ts:11</a></div>
-                            </td>
-                        </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                        <td>configService</td>
-                                                  
-                                                        <td>
-                                                                    <code>ConfigService</code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-</section>
-
 
             <section data-compodoc="block-properties">
     
@@ -231,23 +186,34 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="logger"></a>
+                    <a name="allowedNetworks"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Readonly</span>
-                        <span ><b>logger</b></span>
-                        <a href="#logger"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>allowedNetworks</b></span>
+                        <a href="#allowedNetworks"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>new Logger(HeaderApiKeyStrategy.name)</code>
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Prop({type: undefined})<br />
+                        </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/core/auth/strategies/auth-header-api-key.strategy.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/core/keyrings/_schemas/keyrings.schema.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -258,22 +224,71 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="validate"></a>
+                    <a name="secretKey"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
-                        <span ><b>validate</b></span>
-                        <a href="#validate"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>secretKey</b></span>
+                        <a href="#secretKey"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>() &#x3D;&gt; {...}</code>
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Prop({type: Boolean})<br />
+                        </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/core/auth/strategies/auth-header-api-key.strategy.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/core/keyrings/_schemas/keyrings.schema.ts:12</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="suspendedAt"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>suspendedAt</b></span>
+                        <a href="#suspendedAt"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Prop({type: Date})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/core/keyrings/_schemas/keyrings.schema.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -282,43 +297,42 @@
     </table>
 </section>
 
+
+
+
+
+
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Logger, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
-import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
-import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import Strategy from &#x27;passport-headerapikey&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Prop, Schema, SchemaFactory } from &#x27;@nestjs/mongoose&#x27;;
+import { Document } from &#x27;mongoose&#x27;;
+import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
 
-@Injectable()
-export class HeaderApiKeyStrategy extends PassportStrategy(
-  Strategy,
-  &#x27;api-key&#x27;,
-) {
-  private readonly logger &#x3D; new Logger(HeaderApiKeyStrategy.name);
-  constructor(private readonly configService: ConfigService) {
-    super({ header: &#x27;Authorization&#x27;, prefix: &#x27;Bearer &#x27; }, false);
-  }
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  public validate &#x3D; (apiKey: string, done: (error: Error, data) &#x3D;&gt; {}) &#x3D;&gt; {
-    if (process.env.API_KEY &#x3D;&#x3D;&#x3D; apiKey) {
-      this.logger.log(&#x27;Auth OK&#x27;);
-      done(null, true);
-      return;
-    }
-    this.logger.warn(&#x27;Auth FAILED&#x27;);
-    done(new UnauthorizedException(), null);
-  };
+export type KeyringsDocument &#x3D; Keyrings &amp; Document;
+
+@Schema({ versionKey: false })
+export class Keyrings extends AbstractSchema {
+  @Prop({
+    type: Boolean,
+  })
+  public secretKey: string;
+
+  @Prop({
+    type: [String],
+  })
+  public allowedNetworks?: string[];
+
+  @Prop({ type: Date })
+  public suspendedAt?: Date;
 }
+
+export const KeyringsSchema &#x3D; SchemaFactory.createForClass(Keyrings);
 </code></pre>
     </div>
-
 </div>
-
-
-
-
 
 
 
@@ -353,8 +367,8 @@ export class HeaderApiKeyStrategy extends PassportStrategy(
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'HeaderApiKeyStrategy.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'Keyrings.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

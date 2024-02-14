@@ -241,8 +241,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">src/core/form/form.controller.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">src/core/form/form.controller.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -333,8 +333,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">src/core/form/form.controller.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">src/core/form/form.controller.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -425,8 +425,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="77"
-                                    class="link-to-prism">src/core/form/form.controller.ts:77</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="95"
+                                    class="link-to-prism">src/core/form/form.controller.ts:95</a></div>
                         </td>
                     </tr>
 
@@ -516,8 +516,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">src/core/form/form.controller.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">src/core/form/form.controller.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -620,8 +620,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="66"
-                                    class="link-to-prism">src/core/form/form.controller.ts:66</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">src/core/form/form.controller.ts:80</a></div>
                         </td>
                     </tr>
 
@@ -695,21 +695,27 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from &#x27;@nestjs/common&#x27;
-import { FormDto, FormUpdateDto } from &#x27;./_dto/form.dto&#x27;
-import { FormService } from &#x27;./form.service&#x27;
-import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;
-import { ApiOkResponse, ApiParam, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;
-import { SearchFilterSchema, FilterSchema, SearchFilterOptions, FilterOptions, ObjectIdValidationPipe } from &#x27;@streamkits/nestjs_module_scrud&#x27;
-import { Types } from &#x27;mongoose&#x27;
-import { ApiCreateDecorator } from &#x27;~/_common/decorators/api-create.decorator&#x27;
-import { ApiDeletedResponseDecorator } from &#x27;~/_common/decorators/api-deleted-response.decorator&#x27;
-import { ApiPaginatedDecorator } from &#x27;~/_common/decorators/api-paginated.decorator&#x27;
-import { ApiReadResponseDecorator } from &#x27;~/_common/decorators/api-read-response.decorator&#x27;
-import { ApiUpdateDecorator } from &#x27;~/_common/decorators/api-update.decorator&#x27;
-import { PickProjectionHelper } from &#x27;~/_common/helpers/pick-projection.helper&#x27;
-import { PartialProjectionType } from &#x27;~/_common/types/partial-projection.type&#x27;
-import { Response } from &#x27;express&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from &#x27;@nestjs/common&#x27;;
+import { FormDto, FormUpdateDto } from &#x27;./_dto/form.dto&#x27;;
+import { FormService } from &#x27;./form.service&#x27;;
+import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
+import { ApiParam, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import {
+  SearchFilterSchema,
+  FilterSchema,
+  SearchFilterOptions,
+  FilterOptions,
+  ObjectIdValidationPipe,
+} from &#x27;@streamkits/nestjs_module_scrud&#x27;;
+import { Types } from &#x27;mongoose&#x27;;
+import { ApiCreateDecorator } from &#x27;~/_common/decorators/api-create.decorator&#x27;;
+import { ApiDeletedResponseDecorator } from &#x27;~/_common/decorators/api-deleted-response.decorator&#x27;;
+import { ApiPaginatedDecorator } from &#x27;~/_common/decorators/api-paginated.decorator&#x27;;
+import { ApiReadResponseDecorator } from &#x27;~/_common/decorators/api-read-response.decorator&#x27;;
+import { ApiUpdateDecorator } from &#x27;~/_common/decorators/api-update.decorator&#x27;;
+import { PickProjectionHelper } from &#x27;~/_common/helpers/pick-projection.helper&#x27;;
+import { PartialProjectionType } from &#x27;~/_common/types/partial-projection.type&#x27;;
+import { Response } from &#x27;express&#x27;;
 
 @ApiTags(&#x27;forms&#x27;)
 @Controller(&#x27;form&#x27;)
@@ -720,63 +726,75 @@ export class FormController extends AbstractController {
     type: 1,
     sections: 1,
     submitButtonText: 1,
-  }
+  };
   constructor(private readonly _service: FormService) {
-    super()
+    super();
   }
   @Post()
   @ApiCreateDecorator(FormDto, FormDto)
   @ApiResponse({ type: FormDto })
   public async create(@Res() res: Response, @Body() body: FormDto) {
-    const data &#x3D; await this._service.create(body)
+    const data &#x3D; await this._service.create(body);
     return res.status(HttpStatus.CREATED).json({
       statusCode: HttpStatus.CREATED,
       data,
-    })
+    });
   }
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(FormDto, FormController.projection))
-  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise&lt;Response&gt; {
-    const [data, total] &#x3D; await this._service.findAndCount(searchFilterSchema, FormController.projection, searchFilterOptions)
+  public async search(
+    @Res() res: Response,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+  ): Promise&lt;Response&gt; {
+    const [data, total] &#x3D; await this._service.findAndCount(
+      searchFilterSchema,
+      FormController.projection,
+      searchFilterOptions,
+    );
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,
       data,
-    })
+    });
   }
 
   @Get(&#x27;:_id([0-9a-fA-F]{24})&#x27;)
   @ApiParam({ name: &#x27;_id&#x27;, type: String })
   @ApiReadResponseDecorator(FormDto)
   public async read(@Param(&#x27;_id&#x27;, ObjectIdValidationPipe) _id: Types.ObjectId, @Res() res: Response) {
-    const data &#x3D; await this._service.findById(_id)
+    const data &#x3D; await this._service.findById(_id);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,
-    })
+    });
   }
 
   @Patch(&#x27;:_id([0-9a-fA-F]{24})&#x27;)
   @ApiParam({ name: &#x27;_id&#x27;, type: String })
   @ApiUpdateDecorator(FormUpdateDto, FormDto)
-  public async update(@Param(&#x27;_id&#x27;, ObjectIdValidationPipe) _id: Types.ObjectId, @Body() body: FormUpdateDto, @Res() res: Response) {
-    const data &#x3D; await this._service.update(_id, body)
+  public async update(
+    @Param(&#x27;_id&#x27;, ObjectIdValidationPipe) _id: Types.ObjectId,
+    @Body() body: FormUpdateDto,
+    @Res() res: Response,
+  ) {
+    const data &#x3D; await this._service.update(_id, body);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,
-    })
+    });
   }
 
   @Delete(&#x27;:_id([0-9a-fA-F]{24})&#x27;)
   @ApiParam({ name: &#x27;_id&#x27;, type: String })
   @ApiDeletedResponseDecorator(FormDto)
   public async remove(@Param(&#x27;_id&#x27;, ObjectIdValidationPipe) _id: Types.ObjectId, @Res() res: Response) {
-    const data &#x3D; await this._service.delete(_id)
+    const data &#x3D; await this._service.delete(_id);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,
-    })
+    });
   }
 }
 </code></pre>

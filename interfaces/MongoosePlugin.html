@@ -295,6 +295,8 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MongooseModuleOptions } from &#x27;@nestjs/mongoose&#x27;;
 import { RedisOptions } from &#x27;ioredis&#x27;;
 import { SwaggerCustomOptions } from &#x27;@nestjs/swagger&#x27;;
+import { IAuthModuleOptions } from &#x27;@nestjs/passport&#x27;;
+import { JwtModuleOptions } from &#x27;@nestjs/jwt&#x27;;
 
 export interface MongoosePlugin {
   package: string;
@@ -310,6 +312,12 @@ export interface ConfigInstance {
   ioredis: {
     uri: string;
     options: RedisOptions;
+  };
+  passport: {
+    options: IAuthModuleOptions;
+  };
+  jwt: {
+    options: JwtModuleOptions;
   };
   swagger: {
     path: string;
@@ -350,6 +358,22 @@ export default (): ConfigInstance &#x3D;&gt; ({
       //   },
       // },
     ],
+  },
+  passport: {
+    options: {
+      defaultStrategy: &#x27;jwt&#x27;,
+      property: &#x27;user&#x27;,
+      session: false,
+    },
+  },
+  jwt: {
+    options: {
+      /**
+       * @see https://randomkeygen.com/
+       */
+      secret: process.env[&#x27;JWT_SECRET&#x27;],
+      // jwksUri: &#x27;http://127.0.0.1:2000/jwks&#x27;,
+    },
   },
   logLevel: process.env[&#x27;LOG_LEVEL&#x27;] || &#x27;info&#x27;,
   nameQueue: process.env[&#x27;NAME_QUEUE&#x27;] || &#x27;backend&#x27;,

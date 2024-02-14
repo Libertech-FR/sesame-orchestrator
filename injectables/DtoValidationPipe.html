@@ -241,8 +241,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">src/_common/pipes/dto-validation.pipe.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">src/_common/pipes/dto-validation.pipe.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -343,13 +343,8 @@ export class DtoValidationPipe extends ValidationPipe {
           validations &#x3D; { ...validations, ...this.validationRecursive(error) };
         }
         const debug &#x3D; {};
-        const message &#x3D; &#x60;Erreur de validation : ${Object.keys(validations).join(
-          &#x27;, &#x27;,
-        )}&#x60;.trim();
-        Logger.debug(
-          &#x60;${message} (${JSON.stringify(validations)})&#x60;,
-          &#x27;DtoValidationPipe&#x27;,
-        );
+        const message &#x3D; &#x60;Erreur de validation : ${Object.keys(validations).join(&#x27;, &#x27;)}&#x60;.trim();
+        Logger.debug(&#x60;${message} (${JSON.stringify(validations)})&#x60;, &#x27;DtoValidationPipe&#x27;);
         // noinspection JSUnresolvedReference
         if (process.env.NODE_ENV !&#x3D;&#x3D; &#x27;production&#x27; &amp;&amp; request.query[&#x27;debug&#x27;]) {
           debug[&#x27;_errors&#x27;] &#x3D; errors.map((error) &#x3D;&gt; {
@@ -367,29 +362,20 @@ export class DtoValidationPipe extends ValidationPipe {
     });
   }
 
-  public validationRecursive(
-    error: ValidationError,
-    prefix &#x3D; &#x27;&#x27;,
-  ): ValidationRecursive {
+  public validationRecursive(error: ValidationError, prefix &#x3D; &#x27;&#x27;): ValidationRecursive {
     let validations &#x3D; {};
     if (error.constraints) {
-      validations[&#x60;${prefix + error.property}&#x60;] &#x3D; Object.values(
-        error.constraints,
-      )[0];
+      validations[&#x60;${prefix + error.property}&#x60;] &#x3D; Object.values(error.constraints)[0];
     }
     if (error.children.length &gt; 0) {
       for (const errorChild of error.children) {
         if (errorChild.constraints) {
-          validations[&#x60;${prefix + error.property}.${errorChild.property}&#x60;] &#x3D;
-            Object.values(errorChild.constraints)[0];
+          validations[&#x60;${prefix + error.property}.${errorChild.property}&#x60;] &#x3D; Object.values(errorChild.constraints)[0];
         }
         if (errorChild.children.length &gt; 0) {
           validations &#x3D; {
             ...validations,
-            ...this.validationRecursive(
-              errorChild,
-              &#x60;${prefix + error.property}.${errorChild.property}.&#x60;,
-            ),
+            ...this.validationRecursive(errorChild, &#x60;${prefix + error.property}.${errorChild.property}.&#x60;),
           };
         }
       }

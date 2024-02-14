@@ -241,8 +241,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -335,8 +335,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="57"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:57</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -429,8 +429,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="93"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:93</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -523,8 +523,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -588,12 +588,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Post, Body, Res, UseGuards, Logger } from &#x27;@nestjs/common&#x27;;
 import { PasswdService } from &#x27;./passwd.service&#x27;;
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from &#x27;@nestjs/swagger&#x27;;
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from &#x27;@nestjs/swagger&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { ChangePasswordDto } from &#x27;./dto/change-password.dto&#x27;;
 import { AuthGuard } from &#x27;@nestjs/passport&#x27;;
@@ -618,10 +613,7 @@ export class PasswdController {
   @ApiResponse({ status: 500, description: &#x27;Backend error&#x27; })
   @ApiBearerAuth()
   @UseGuards(AuthGuard(&#x27;api-key&#x27;))
-  async change(
-    @Body() cpwd: ChangePasswordDto,
-    @Res() res: Response,
-  ): Promise&lt;Response&gt; {
+  async change(@Body() cpwd: ChangePasswordDto, @Res() res: Response): Promise&lt;Response&gt; {
     const data &#x3D; await this.passwdService.change(cpwd);
     console.log(data);
     data.data.uid &#x3D; cpwd.uid;
@@ -642,10 +634,7 @@ export class PasswdController {
   @ApiResponse({ status: 500, description: &#x27;Backend error&#x27; })
   @ApiBearerAuth()
   @UseGuards(AuthGuard(&#x27;api-key&#x27;))
-  async gettoken(
-    @Body() asktoken: AskTokenDto,
-    @Res() res: Response,
-  ): Promise&lt;Response&gt; {
+  async gettoken(@Body() asktoken: AskTokenDto, @Res() res: Response): Promise&lt;Response&gt; {
     this.logger.log(&#x27;GetToken for : &#x27; + asktoken.uid);
     const data &#x3D; await this.passwdService.askToken(asktoken);
     const ret &#x3D; { token: data };
@@ -658,10 +647,7 @@ export class PasswdController {
   @ApiResponse({ status: 500, description: &#x27;Token KO&#x27; })
   @ApiBearerAuth()
   @UseGuards(AuthGuard(&#x27;api-key&#x27;))
-  async verifyToken(
-    @Body() token: VerifyTokenDto,
-    @Res() res: Response,
-  ): Promise&lt;Response&gt; {
+  async verifyToken(@Body() token: VerifyTokenDto, @Res() res: Response): Promise&lt;Response&gt; {
     this.logger.log(&#x27;Verify token : &#x27; + token.token);
     const ok &#x3D; await this.passwdService.verifyToken(token.token);
     console.log(&#x27;reponse : &#x27; + ok);
@@ -678,10 +664,7 @@ export class PasswdController {
   @ApiResponse({ status: 500, description: &#x27;Reset KO&#x27; })
   @ApiBearerAuth()
   @UseGuards(AuthGuard(&#x27;api-key&#x27;))
-  async reset(
-    @Body() data: ResetPasswordDto,
-    @Res() res: Response,
-  ): Promise&lt;Response&gt; {
+  async reset(@Body() data: ResetPasswordDto, @Res() res: Response): Promise&lt;Response&gt; {
     //this.logger.log(&#x27;password reset : &#x27; + data)
     const resetData &#x3D; await this.passwdService.reset(data);
     //this.logger.log(resetData)

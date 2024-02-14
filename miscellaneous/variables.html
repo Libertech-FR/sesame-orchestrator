@@ -125,6 +125,12 @@
                             <a href="#AdditionalFieldsPartSchema" title="src/management/identities/_schemas/_parts/additionalFields.part.schema.ts" ><b>AdditionalFieldsPartSchema</b>&nbsp;&nbsp;&nbsp;(src/.../additionalFields.part.schema.ts)</a>
                         </li>
                         <li>
+                            <a href="#AgentsSchema" title="src/core/agents/_schemas/agents.schema.ts" ><b>AgentsSchema</b>&nbsp;&nbsp;&nbsp;(src/.../agents.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#AgentStateList" title="src/core/agents/_enum/agent-state.enum.ts" ><b>AgentStateList</b>&nbsp;&nbsp;&nbsp;(src/.../agent-state.enum.ts)</a>
+                        </li>
+                        <li>
                             <a href="#ApiBodyDecorator" title="src/_common/decorators/api-body.decorator.ts" ><b>ApiBodyDecorator</b>&nbsp;&nbsp;&nbsp;(src/.../api-body.decorator.ts)</a>
                         </li>
                         <li>
@@ -164,10 +170,16 @@
                             <a href="#DEFAULT_STATUS_CODE" title="src/_common/errors/ValidationException.ts" ><b>DEFAULT_STATUS_CODE</b>&nbsp;&nbsp;&nbsp;(src/.../ValidationException.ts)</a>
                         </li>
                         <li>
+                            <a href="#DEFAULT_THIRD_PARTY_AUTH" title="src/core/agents/_schemas/agents.schema.ts" ><b>DEFAULT_THIRD_PARTY_AUTH</b>&nbsp;&nbsp;&nbsp;(src/.../agents.schema.ts)</a>
+                        </li>
+                        <li>
                             <a href="#DEFAULT_VALIDATIONS" title="src/_common/errors/ValidationException.ts" ><b>DEFAULT_VALIDATIONS</b>&nbsp;&nbsp;&nbsp;(src/.../ValidationException.ts)</a>
                         </li>
                         <li>
                             <a href="#EventEmitterSeparator" title="src/_common/constants/event-emitter.constant.ts" ><b>EventEmitterSeparator</b>&nbsp;&nbsp;&nbsp;(src/.../event-emitter.constant.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ExcludeAgentType" title="src/_common/types/agent.type.ts" ><b>ExcludeAgentType</b>&nbsp;&nbsp;&nbsp;(src/.../agent.type.ts)</a>
                         </li>
                         <li>
                             <a href="#FormFieldPartSchema" title="src/core/form/_schemas/parts/field.part.schema.ts" ><b>FormFieldPartSchema</b>&nbsp;&nbsp;&nbsp;(src/.../field.part.schema.ts)</a>
@@ -212,6 +224,9 @@
                             <a href="#invalidTypeAdditionalFieldsStub" title="src/management/identities/validations/_stubs/identities.validation.stub.ts" ><b>invalidTypeAdditionalFieldsStub</b>&nbsp;&nbsp;&nbsp;(src/.../identities.validation.stub.ts)</a>
                         </li>
                         <li>
+                            <a href="#KeyringsSchema" title="src/core/keyrings/_schemas/keyrings.schema.ts" ><b>KeyringsSchema</b>&nbsp;&nbsp;&nbsp;(src/.../keyrings.schema.ts)</a>
+                        </li>
+                        <li>
                             <a href="#LoggerSchema" title="src/core/logger/schemas/logger.schema.ts" ><b>LoggerSchema</b>&nbsp;&nbsp;&nbsp;(src/.../logger.schema.ts)</a>
                         </li>
                         <li>
@@ -233,7 +248,16 @@
                             <a href="#Public" title="src/_common/decorators/public.decorator.ts" ><b>Public</b>&nbsp;&nbsp;&nbsp;(src/.../public.decorator.ts)</a>
                         </li>
                         <li>
+                            <a href="#ReqIdentity" title="src/_common/decorators/params/req-identity.decorator.ts" ><b>ReqIdentity</b>&nbsp;&nbsp;&nbsp;(src/.../req-identity.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SecurityPartSchema" title="src/core/agents/_schemas/parts/security.part.schema.ts" ><b>SecurityPartSchema</b>&nbsp;&nbsp;&nbsp;(src/.../security.part.schema.ts)</a>
+                        </li>
+                        <li>
                             <a href="#setLogLevel" title="src/_common/plugins/mongoose/auto-increment.logger.ts" ><b>setLogLevel</b>&nbsp;&nbsp;&nbsp;(src/.../auto-increment.logger.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#StatePartSchema" title="src/core/agents/_schemas/parts/state.part.schema.ts" ><b>StatePartSchema</b>&nbsp;&nbsp;&nbsp;(src/.../state.part.schema.ts)</a>
                         </li>
                         <li>
                             <a href="#validAdditionalFieldsStub" title="src/management/identities/validations/_stubs/identities.validation.stub.ts" ><b>validAdditionalFieldsStub</b>&nbsp;&nbsp;&nbsp;(src/.../identities.validation.stub.ts)</a>
@@ -301,6 +325,96 @@
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>SchemaFactory.createForClass(AdditionalFieldsPart)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/core/agents/_schemas/agents.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AgentsSchema"></a>
+                    <span class="name">
+                        <span ><b>AgentsSchema</b></span>
+                        <a href="#AgentsSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(Agents).pre(
+  &#x27;save&#x27;,
+  function (this: Agents, next: () &#x3D;&gt; void): void {
+    if (this.isNew) {
+      this.displayName &#x3D; this.displayName || this.username;
+    }
+    next();
+  },
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="DEFAULT_THIRD_PARTY_AUTH"></a>
+                    <span class="name">
+                        <span ><b>DEFAULT_THIRD_PARTY_AUTH</b></span>
+                        <a href="#DEFAULT_THIRD_PARTY_AUTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;local&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/core/agents/_enum/agent-state.enum.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AgentStateList"></a>
+                    <span class="name">
+                        <span ><b>AgentStateList</b></span>
+                        <a href="#AgentStateList"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>number[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Object.keys(AgentState)
+  // eslint-disable-next-line
+  .filter((k) &#x3D;&gt; typeof AgentState[k as any] &#x3D;&#x3D;&#x3D; &#x27;number&#x27;)
+  // eslint-disable-next-line
+  .map((k) &#x3D;&gt; parseInt(AgentState[k as any], 10))</code>
                     </td>
                 </tr>
 
@@ -496,9 +610,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>&lt;
-  TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;,
-&gt;(
+                        <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   model: TModel,
   options?: ApiResponseOptions | null | undefined,
 ) &#x3D;&gt; {
@@ -591,9 +703,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>&lt;
-  TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;,
-&gt;(
+                        <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   model: TModel,
   responseOptions?: ApiResponseOptions | null | undefined,
   notFoundOptions?: ApiResponseOptions | null | undefined,
@@ -679,9 +789,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>&lt;
-  TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;,
-&gt;(
+                        <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   model: TModel,
   responseOptions?: ApiResponseOptions | null | undefined,
   badRequestOptions?: ApiResponseOptions | null | undefined,
@@ -907,6 +1015,35 @@
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>&#x27;.&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/_common/types/agent.type.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ExcludeAgentType"></a>
+                    <span class="name">
+                        <span ><b>ExcludeAgentType</b></span>
+                        <a href="#ExcludeAgentType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[&#x27;password&#x27;]</code>
                     </td>
                 </tr>
 
@@ -1377,6 +1514,29 @@
         </tbody>
     </table>
 </section>
+    <h3>src/core/keyrings/_schemas/keyrings.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="KeyringsSchema"></a>
+                    <span class="name">
+                        <span ><b>KeyringsSchema</b></span>
+                        <a href="#KeyringsSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(Keyrings)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>src/core/logger/schemas/logger.schema.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -1484,8 +1644,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>() &#x3D;&gt;
-  applyDecorators(SetMetadata(META_UNPROTECTED, true))</code>
+                        <i>Default value : </i><code>() &#x3D;&gt; applyDecorators(SetMetadata(META_UNPROTECTED, true))</code>
                     </td>
                 </tr>
 
@@ -1533,6 +1692,86 @@
                     <td class="col-md-4">
                         <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/_common/decorators/params/req-identity.decorator.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ReqIdentity"></a>
+                    <span class="name">
+                        <span ><b>ReqIdentity</b></span>
+                        <a href="#ReqIdentity"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>createParamDecorator((_data: unknown, ctx: ExecutionContext): AgentType &#x3D;&gt; {
+  const request &#x3D; ctx.switchToHttp().getRequest();
+  return request.user;
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/core/agents/_schemas/parts/security.part.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SecurityPartSchema"></a>
+                    <span class="name">
+                        <span ><b>SecurityPartSchema</b></span>
+                        <a href="#SecurityPartSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(SecurityPart).pre(
+  &#x27;save&#x27;,
+  function (this: SecurityPart, next: () &#x3D;&gt; void): void {
+    if (this.isNew) {
+      this.secretKey &#x3D; Math.random().toString(36).slice(-8); //TODO: use crypto lib
+    }
+    next();
+  },
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/core/agents/_schemas/parts/state.part.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="StatePartSchema"></a>
+                    <span class="name">
+                        <span ><b>StatePartSchema</b></span>
+                        <a href="#StatePartSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(StatePart)</code>
                     </td>
                 </tr>
 

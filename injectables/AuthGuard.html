@@ -306,13 +306,11 @@ export class AuthGuard extends AuthGuardInternal([&#x27;jwt&#x27;]) {
     super();
   }
 
-  public canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise&lt;boolean&gt; | Observable&lt;boolean&gt; {
-    const isUnprotected &#x3D; this.reflector.getAllAndOverride&lt;boolean&gt;(
-      META_UNPROTECTED,
-      [context.getClass(), context.getHandler()],
-    );
+  public canActivate(context: ExecutionContext): boolean | Promise&lt;boolean&gt; | Observable&lt;boolean&gt; {
+    const isUnprotected &#x3D; this.reflector.getAllAndOverride&lt;boolean&gt;(META_UNPROTECTED, [
+      context.getClass(),
+      context.getHandler(),
+    ]);
     return isUnprotected || super.canActivate(context);
   }
 }

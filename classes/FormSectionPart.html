@@ -423,42 +423,42 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Prop, Schema, SchemaFactory } from &#x27;@nestjs/mongoose&#x27;
-import { FormTypes } from &#x27;../../_enum/types&#x27;
-import { FormFieldPart } from &#x27;./field.part.schema&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Prop, Schema, SchemaFactory } from &#x27;@nestjs/mongoose&#x27;;
+import { FormTypes } from &#x27;../../_enum/types&#x27;;
+import { FormFieldPart } from &#x27;./field.part.schema&#x27;;
 
 @Schema({ _id: false })
 export class FormSectionPart {
   @Prop({
     type: String,
   })
-  label: string
+  label: string;
 
   @Prop({
     type: Number,
     enum: FormTypes,
     default: FormTypes.BASE,
   })
-  type: FormTypes
+  type: FormTypes;
 
   @Prop({
     type: String,
   })
-  icon?: string
+  icon?: string;
 
   @Prop({
     type: String,
   })
-  description?: string
+  description?: string;
 
   @Prop({ type: Map })
-  sections?: Map&lt;string, FormSectionPart&gt;
+  sections?: Map&lt;string, FormSectionPart&gt;;
 
   @Prop({ type: Map })
-  fields: Map&lt;string, FormFieldPart&gt;
+  fields: Map&lt;string, FormFieldPart&gt;;
 }
 
-export const FormSectionPartSchema &#x3D; SchemaFactory.createForClass(FormSectionPart)
+export const FormSectionPartSchema &#x3D; SchemaFactory.createForClass(FormSectionPart);
 </code></pre>
     </div>
 </div>

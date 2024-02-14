@@ -597,49 +597,49 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;
-import { IsString, IsNumber, ValidateNested } from &#x27;class-validator&#x27;
-import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+import { IsString, IsNumber, ValidateNested } from &#x27;class-validator&#x27;;
+import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
 export class FormFieldDto {
   @IsString()
   @ApiProperty()
-  component: string
+  component: string;
 
   @IsString()
   @ApiProperty()
-  label: string
+  label: string;
 
   @IsString()
   @ApiProperty()
-  &#x27;model-value&#x27;: string
+  &#x27;model-value&#x27;: string;
 
   @IsNumber()
   @ApiProperty()
-  row: number
+  row: number;
 
   @IsNumber()
   @ApiProperty()
-  col: number
+  col: number;
 
   @ValidateNested()
   @ApiProperty()
-  attrsOnDefault: { [attr: string]: MixedValue }
+  attrsOnDefault: { [attr: string]: MixedValue };
 
   @ValidateNested()
   @ApiProperty()
-  attrsOnCreate: { [attr: string]: MixedValue }
+  attrsOnCreate: { [attr: string]: MixedValue };
 
   @ValidateNested()
   @ApiProperty()
-  attrsOnRead: { [attr: string]: MixedValue }
+  attrsOnRead: { [attr: string]: MixedValue };
 
   @ValidateNested()
   @ApiProperty()
-  attrsOnUpdate: { [attr: string]: MixedValue }
+  attrsOnUpdate: { [attr: string]: MixedValue };
 
   @ValidateNested()
   @ApiProperty()
-  attrsOnDelete: { [attr: string]: MixedValue }
+  attrsOnDelete: { [attr: string]: MixedValue };
 }
 </code></pre>
     </div>

@@ -237,7 +237,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/core/form/_dto/parts/section.dto.ts:28</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/core/form/_dto/parts/section.dto.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -276,7 +276,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/core/form/_dto/parts/section.dto.ts:41</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/core/form/_dto/parts/section.dto.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -315,7 +315,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/core/form/_dto/parts/section.dto.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/core/form/_dto/parts/section.dto.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -352,7 +352,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/core/form/_dto/parts/section.dto.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/core/form/_dto/parts/section.dto.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -393,7 +393,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/core/form/_dto/parts/section.dto.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/core/form/_dto/parts/section.dto.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -430,7 +430,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/core/form/_dto/parts/section.dto.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/core/form/_dto/parts/section.dto.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -449,47 +449,43 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;
-import { IsString, IsEnum, IsObject, ValidateNested, IsOptional, IsMongoId } from &#x27;class-validator&#x27;
-import { ObjectId } from &#x27;mongodb&#x27;
-import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;
-import { MetadataDto } from &#x27;~/_common/abstracts/dto/metadata.dto&#x27;
-import { forwardRef } from &#x27;@nestjs/common&#x27;
-import { Type } from &#x27;class-transformer&#x27;
-import { FormFieldDto } from &#x27;./field.dto&#x27;
-import { FormTypes } from &#x27;../../_enum/types&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+import { IsEnum, IsObject, IsOptional, IsString, ValidateNested } from &#x27;class-validator&#x27;;
+import { Type } from &#x27;class-transformer&#x27;;
+import { FormFieldDto } from &#x27;./field.dto&#x27;;
+import { FormTypes } from &#x27;../../_enum/types&#x27;;
 
 export class FormSectionDto {
   @IsString()
   @ApiProperty()
-  label: string
+  label: string;
 
   @IsEnum(FormTypes)
   @ApiProperty()
-  type: FormTypes
+  type: FormTypes;
 
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
-  icon?: string
+  icon?: string;
 
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
-  description?: string
+  description?: string;
 
   @IsObject()
   @ValidateNested({ each: true })
   @IsOptional()
   @Type(() &#x3D;&gt; FormSectionDto)
   @ApiProperty({ type: () &#x3D;&gt; FormSectionDto, required: false })
-  sections?: { [sectionName: string]: FormSectionDto }
+  sections?: { [sectionName: string]: FormSectionDto };
 
   @IsObject()
   @ValidateNested({ each: true })
   @Type(() &#x3D;&gt; FormFieldDto)
   @ApiProperty({ type: FormFieldDto })
-  fields: { [fieldName: string]: FormFieldDto }
+  fields: { [fieldName: string]: FormFieldDto };
 }
 </code></pre>
     </div>

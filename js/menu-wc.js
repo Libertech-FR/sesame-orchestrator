@@ -92,7 +92,10 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </a>
                                         <ul class="links collapse" ${ isNormalMode ? 'id="additional-page-9b5678f1649bc6b36922bab7079ecfca30f9d215d6ebb267c058039de1850780b92d58b849e81db23ae2e0b69228a12e768ab2a632f7b8b097ae545bcf5f5337"' : 'id="xs-additional-page-9b5678f1649bc6b36922bab7079ecfca30f9d215d6ebb267c058039de1850780b92d58b849e81db23ae2e0b69228a12e768ab2a632f7b8b097ae545bcf5f5337"' }>
                                             <li class="link for-chapter2">
-                                                <a href="additional-documentation/documentation-utilisateur/documentation-du-systeme-de-validation-des-schemas-complémentaires-de-l&#x27;identité.html" data-type="entity-link" data-context="sub-entity" data-context-id="additional">Documentation du Systeme de Validation des schemas complémentaires de l&#x27;identité</a>
+                                                <a href="additional-documentation/documentation-utilisateur/création-et-modification-d&#x27;une-identité.html" data-type="entity-link" data-context="sub-entity" data-context-id="additional">Création et modification d&#x27;une identité</a>
+                                            </li>
+                                            <li class="link for-chapter2">
+                                                <a href="additional-documentation/documentation-utilisateur/validation-des-schemas-complémentaires-de-l&#x27;identité.html" data-type="entity-link" data-context="sub-entity" data-context-id="additional">Validation des schemas complémentaires de l&#x27;identité</a>
                                             </li>
                                         </ul>
                                     </li>

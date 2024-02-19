@@ -1,0 +1,292 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Sesame Orchestrator</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../../images/favicon.ico">
+	   <link rel="stylesheet" href="../../styles/style.css">
+        <link rel="stylesheet" href="../../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../../" class="navbar-brand">Sesame Orchestrator</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content additional-page">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Création et Modification d&#39;Identité dans le Système</h1>
+<h2>Sommaire</h2>
+<ul>
+<li><a href="#cr%C3%A9ation-et-modification-didentit%C3%A9-dans-le-syst%C3%A8me">Création et Modification d&#39;Identité dans le Système</a><ul>
+<li><a href="#sommaire">Sommaire</a></li>
+<li><a href="#cr%C3%A9ation-didentit%C3%A9">Création d&#39;Identité</a><ul>
+<li><a href="#endpoint-pour-la-cr%C3%A9ation-didentit%C3%A9">Endpoint pour la Création d&#39;Identité</a></li>
+<li><a href="#corps-de-la-requ%C3%AAte-body">Corps de la Requête (Body)</a><ul>
+<li><a href="#informations-de-base-inetorgperson">Informations de Base (<code>inetOrgPerson</code>)</a><ul>
+<li><a href="#champs-obligatoires-">Champs obligatoires :</a></li>
+<li><a href="#champs-facultatifs-">Champs facultatifs :</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#champs-additionnels">Champs Additionnels</a></li>
+<li><a href="#exemple-de-corps-de-requ%C3%AAte">Exemple de Corps de Requête</a></li>
+<li><a href="#exemple-de-requete-avec-curl">Exemple de requete avec cUrl</a></li>
+<li><a href="#%C3%A9tats-identitystate">États (<code>IdentityState</code>)</a></li>
+<li><a href="#gestion-automatique-du-lifecycle">Gestion Automatique du <code>lifecycle</code></a></li>
+</ul>
+</li>
+<li><a href="#r%C3%A9ponse-attendue">Réponse Attendue</a></li>
+</ul>
+</li>
+<li><a href="#modification-de-lidentit%C3%A9">Modification de l&#39;identité</a></li>
+</ul>
+<h2>Création d&#39;Identité</h2>
+<p>Pour créer une identité dans le système, suivez les instructions ci-dessous. Ces instructions sont destinées à des utilisateurs ayant une certaine connaissance technique, notamment en matière de requêtes HTTP.</p>
+<h3>Endpoint pour la Création d&#39;Identité</h3>
+<p><strong>URL:</strong> <code>/management/identities</code> : Adresse de l&#39;endpoint pour la création d&#39;identité.</p>
+<p><strong>Méthode:</strong> <code>POST</code> : Verbe HTTP utilisé pour créer une nouvelle ressource.</p>
+<p><strong>Header Requis</strong> : <code>Content-Type: application/json</code> : Indique que le corps de la requête est au format JSON.</p>
+<h3>Corps de la Requête (Body)</h3>
+<p>Lors de la création d&#39;une identité, le corps de la requête doit inclure les informations de base de l&#39;identité (<code>inetOrgPerson</code>), ainsi que tout champ additionnel nécessaire selon l&#39;<code>objectClass</code> spécifique. Notez que l&#39;objet <code>inetOrgPerson</code> est validé en dur et non via un fichier YAML.</p>
+<h4>Informations de Base (<code>inetOrgPerson</code>)</h4>
+<p>Les informations de base de l&#39;identité sont définies dans l&#39;objet <code>inetOrgPerson</code>. Les champs requis sont <code>cn</code> (Nom Commun), <code>sn</code> (Nom de Famille), et <code>uid</code> (Identifiant Unique). Ces champs sont validés en dur.</p>
+<h5>Champs obligatoires :</h5>
+<ul>
+<li><code>cn</code>  </li>
+<li><code>sn</code></li>
+<li><code>uid</code></li>
+</ul>
+<h5>Champs facultatifs :</h5>
+<ul>
+<li><code>displayName</code></li>
+<li><code>facsimileTelephoneNumber</code></li>
+<li><code>givenName</code></li>
+<li><code>labeledURI</code></li>
+<li><code>mail</code></li>
+<li><code>mobile</code></li>
+<li><code>postalAddress</code></li>
+<li><code>preferredLanguage</code></li>
+<li><code>telephoneNumber</code></li>
+<li><code>title</code></li>
+<li><code>userCertificate</code></li>
+<li><code>userPassword</code></li>
+</ul>
+<h3>Champs Additionnels</h3>
+<p>Pour les champs additionnels, assurez-vous que les valeurs sont conformes aux attentes du système. Voici comment il se structure :</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-json">{
+  &quot;additionalFields&quot;: {
+    &quot;objectClasses&quot;: [],
+    &quot;attributes&quot;: {}
+  }
+}</code></pre></div><ul>
+<li><p><code>objectClasses</code> : Un tableau contenant les noms des <code>objectClasses</code> concernées. Par exemple, si vous attendez des informations supann, vous devez inclure une valeur <code>supann</code> en chaine de charactères dans ce tableau.</p>
+</li>
+<li><p><code>attributes</code> : Un objet contenant les attributs spécifiques à chaque <code>objectClass</code>. Par exemple, si vous attendez des informations supann, vous devez inclure un objet <code>supann</code> contenant les attributs spécifiques à cette <code>objectClass</code>.</p>
+</li>
+</ul>
+<p>ATTENTION : Les champs additionnels sont validés via des fichiers de configuration YAML spécifiques à chaque <code>objectClass</code>. Assurez-vous que les valeurs envoyées sont conformes à ces fichiers de configuration pour garantir le succès de la création de l&#39;identité. Ces fichiers de configuration sont définis dans la documentation <a href="https://libertech-fr.github.io/sesame-orchestrator/additional-documentation/documentation-utilisateur/documentation-du-systeme-de-validation-des-schemas-compl%C3%A9mentaires-de-l'identit%C3%A9.html">Validation d&#39;identité</a> et doivent être nommés selon le nom de l&#39;<code>objectClass</code> qu&#39;ils définissent, par exemple <code>supann.yml</code> pour l&#39;<code>objectClass</code> <code>supann</code>.</p>
+<h3>Exemple de Corps de Requête</h3>
+<p>Voici un exemple de corps de requête pour la création d&#39;une identité avec les informations minimales requises et un état (<code>state</code>) défini à <code>-1</code> pour indiquer une création :</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-json">{
+  &quot;state&quot;: -1,
+  &quot;inetOrgPerson&quot;: {
+    &quot;cn&quot;: &quot;Nom Commun&quot;,
+    &quot;sn&quot;: &quot;Nom de Famille&quot;,
+    &quot;uid&quot;: &quot;Identifiant Unique&quot;
+  },
+  &quot;additionalFields&quot;: {
+    &quot;objectClasses&quot;: [&quot;supann&quot;],
+    &quot;attributes&quot;: {
+      &quot;supann&quot;: {
+        &quot;supannEmpId&quot;: &quot;123456&quot;,
+        &quot;supannCivilite&quot;: &quot;M.&quot;,
+        &quot;supannBirthName&quot;: &quot;Dupont&quot;,
+        &quot;supannBirthDate&quot;: &quot;1980-12-15&quot;
+      }
+    }
+  }
+}</code></pre></div><h3>Exemple de requete avec cUrl</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">curl -X POST &quot;http://&lt;adresse-du-serveur&gt;/identities&quot; \
+     -H &quot;Content-Type: application/json&quot; \
+     -d &#39;{
+           &quot;state&quot;: -1,
+           &quot;inetOrgPerson&quot;: {
+             &quot;cn&quot;: &quot;Nom Commun&quot;,
+             &quot;sn&quot;: &quot;Nom de Famille&quot;,
+             &quot;uid&quot;: &quot;Identifiant Unique&quot;
+           },
+           &quot;additionalFields&quot;: {
+             &quot;objectClasses&quot;: [&quot;supann&quot;],
+             &quot;attributes&quot;: {
+               &quot;supann&quot;: {
+                 &quot;supannEmpId&quot;: &quot;123456&quot;,
+                 &quot;supannCivilite&quot;: &quot;M.&quot;,
+                 &quot;supannBirthName&quot;: &quot;Dupont&quot;,
+                 &quot;supannBirthDate&quot;: &quot;1980-12-15&quot;
+               }
+             }
+           }
+         }&#39;</code></pre></div><h3>États (<code>IdentityState</code>)</h3>
+<p>Le state doit être défini à <code>-1</code> pour indiquer une création. Par la suite, le système gère automatiquement l&#39;état de l&#39;identité en fonction des actions de validations ou de syncronisation effectuées sur celle-ci.</p>
+<h3>Gestion Automatique du <code>lifecycle</code></h3>
+<p>Le cycle de vie de l&#39;identité (<code>lifecycle</code>) est géré automatiquement par le système. Vous n&#39;avez pas besoin de le spécifier dans votre requête.</p>
+<h2>Réponse Attendue</h2>
+<p>En cas de succès, le système renvoie un statut <code>201 Created</code> avec les détails de l&#39;identité créée. Si des informations supplémentaires sont requises, le statut peut être <code>202 Accepted</code> avec un message indiquant que des champs additionnels sont manquants ou invalides.</p>
+<h1>Modification de l&#39;identité</h1>
+<p>A venir.</p>
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 2;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'additional-page';
+            var COMPODOC_CURRENT_PAGE_URL = 'création-et-modification-d&#x27;une-identité.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../../js/libs/custom-elements.min.js"></script>
+       <script src="../../js/libs/lit-html.js"></script>
+
+       <script src="../../js/menu-wc.js" defer></script>
+       <script nomodule src="../../js/menu-wc_es5.js" defer></script>
+
+       <script src="../../js/libs/bootstrap-native.js"></script>
+
+       <script src="../../js/libs/es6-shim.min.js"></script>
+       <script src="../../js/libs/EventDispatcher.js"></script>
+       <script src="../../js/libs/promise.min.js"></script>
+       <script src="../../js/libs/zepto.min.js"></script>
+
+       <script src="../../js/compodoc.js"></script>
+
+       <script src="../../js/tabs.js"></script>
+       <script src="../../js/menu.js"></script>
+       <script src="../../js/libs/clipboard.min.js"></script>
+       <script src="../../js/libs/prism.js"></script>
+       <script src="../../js/sourceCode.js"></script>
+          <script src="../../js/search/search.js"></script>
+          <script src="../../js/search/lunr.min.js"></script>
+          <script src="../../js/search/search-lunr.js"></script>
+          <script src="../../js/search/search_index.js"></script>
+       <script src="../../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

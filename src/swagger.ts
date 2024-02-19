@@ -15,7 +15,7 @@ export default function swagger(app: NestExpressApplication) {
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access-token')
     .build();
   const document = SwaggerModule.createDocument(app, build);
-  const theme = new SwaggerTheme('v3');
+  const theme = new SwaggerTheme();
   SwaggerModule.setup(config.get<string>('swagger.path'), app, document, {
     ...config.get<SwaggerCustomOptions>('swagger.options'),
     explorer: true,

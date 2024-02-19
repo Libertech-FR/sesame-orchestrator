@@ -620,7 +620,7 @@ export default (): ConfigInstance &#x3D;&gt; ({
     uri: process.env[&#x27;REDIS_URI&#x27;] || &#x27;redis://localhost:6379/0&#x27;,
     options: {
       showFriendlyErrorStack: true,
-      maxRetriesPerRequest: 1,
+      maxRetriesPerRequest: null,
     },
   },
   mongoose: {

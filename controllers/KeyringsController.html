@@ -601,7 +601,7 @@ import { KeyringsCreateDto, KeyringsDto } from &#x27;~/core/keyrings/_dto/keyrin
 @Controller(&#x27;keyrings&#x27;)
 export class KeyringsController extends AbstractController {
   protected static readonly projection: PartialProjectionType&lt;KeyringsDto&gt; &#x3D; {
-    secretKey: 0,
+    //secretKey: 0,
     allowedNetworks: 1,
     suspendedAt: 1,
   };

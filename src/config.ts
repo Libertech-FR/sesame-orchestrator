@@ -65,7 +65,7 @@ export default (): ConfigInstance => ({
     uri: process.env['REDIS_URI'] || 'redis://localhost:6379/0',
     options: {
       showFriendlyErrorStack: true,
-      maxRetriesPerRequest: 1,
+      maxRetriesPerRequest: null,
     },
   },
   mongoose: {

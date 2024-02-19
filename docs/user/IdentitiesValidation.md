@@ -1,5 +1,5 @@
 
-# Documentation du Système de Validation d'Identité
+# Validation d'Identité
 
 ## Vue d'ensemble
 

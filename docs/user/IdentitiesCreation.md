@@ -77,7 +77,7 @@ Pour les champs additionnels, assurez-vous que les valeurs sont conformes aux at
 
 - `attributes` : Un objet contenant les attributs spécifiques à chaque `objectClass`. Par exemple, si vous attendez des informations supann, vous devez inclure un objet `supann` contenant les attributs spécifiques à cette `objectClass`.
 
-ATTENTION : Les champs additionnels sont validés via des fichiers de configuration YAML spécifiques à chaque `objectClass`. Assurez-vous que les valeurs envoyées sont conformes à ces fichiers de configuration pour garantir le succès de la création de l'identité. Ces fichiers de configuration sont définis dans la documentation [Validation d'identité](https://libertech-fr.github.io/sesame-orchestrator/additional-documentation/documentation-utilisateur/documentation-du-systeme-de-validation-des-schemas-compl%C3%A9mentaires-de-l'identit%C3%A9.html) et doivent être nommés selon le nom de l'`objectClass` qu'ils définissent, par exemple `supann.yml` pour l'`objectClass` `supann`.
+ATTENTION : Les champs additionnels sont validés via des fichiers de configuration YAML spécifiques à chaque `objectClass`. Assurez-vous que les valeurs envoyées sont conformes à ces fichiers de configuration pour garantir le succès de la création de l'identité. Ces fichiers de configuration sont définis dans la documentation [Validation d'identité](https://libertech-fr.github.io/sesame-orchestrator/additional-documentation/documentation-utilisateur/validation-des-schemas-compl%C3%A9mentaires-de-l'identit%C3%A9.html) et doivent être nommés selon le nom de l'`objectClass` qu'ils définissent, par exemple `supann.yml` pour l'`objectClass` `supann`.
 
 ### Exemple de Corps de Requête
 

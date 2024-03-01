@@ -11,6 +11,9 @@ import { AgentType } from '~/_common/types/agent.type';
 import { omit } from 'radash';
 import { JwtPayload } from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
+import { resolve } from 'path';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { ConsoleSession } from '~/_common/data/console-session';
 
 @Injectable()
 export class AuthService extends AbstractService implements OnModuleInit {
@@ -32,8 +35,33 @@ export class AuthService extends AbstractService implements OnModuleInit {
     super();
   }
 
-  onModuleInit(): any {
-    Logger.log('Auth service initialized');
+  public async onModuleInit(): Promise<void> {
+    if (process.env.NODE_ENV !== 'production') {
+      this.logger.warn('DEV MODE ENABLED !')
+      const devTokenPath = resolve(process.cwd(), this.DEV_TOKEN_PATH)
+      if (existsSync(devTokenPath)) {
+        try {
+          const data = JSON.parse(readFileSync(devTokenPath, 'utf-8'))
+          if (data.access_token) {
+            this.logger.log(`TOKEN ALREADY EXIST : <${data.access_token}>`)
+            return
+          }
+        } catch (e) {
+          this.logger.error(`TOKEN FILE CORRUPTED ! REGENERATING...`)
+        }
+      }
+      const { access_token } = await this.createTokens(new ConsoleSession(), false, {
+        expiresIn: '1y',
+      })
+      writeFileSync(
+        devTokenPath,
+        JSON.stringify({
+          access_token,
+        }),
+      )
+
+      this.logger.log(`NEW TOKEN CREATED : <${access_token}>`)
+    }
   }
 
   public async authenticateWithLocal(username: string, password: string): Promise<Agents | null> {

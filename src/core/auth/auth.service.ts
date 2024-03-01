@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, Logger, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { AbstractService } from '~/_common/abstracts/abstract.service';
 import { ModuleRef } from '@nestjs/core';
 import { Redis } from 'ioredis';
@@ -37,30 +37,30 @@ export class AuthService extends AbstractService implements OnModuleInit {
 
   public async onModuleInit(): Promise<void> {
     if (process.env.NODE_ENV !== 'production') {
-      this.logger.warn('DEV MODE ENABLED !')
-      const devTokenPath = resolve(process.cwd(), this.DEV_TOKEN_PATH)
+      this.logger.warn('DEV MODE ENABLED !');
+      const devTokenPath = resolve(process.cwd(), this.DEV_TOKEN_PATH);
       if (existsSync(devTokenPath)) {
         try {
-          const data = JSON.parse(readFileSync(devTokenPath, 'utf-8'))
+          const data = JSON.parse(readFileSync(devTokenPath, 'utf-8'));
           if (data.access_token) {
-            this.logger.log(`TOKEN ALREADY EXIST : <${data.access_token}>`)
-            return
+            this.logger.log(`TOKEN ALREADY EXIST : <${data.access_token}>`);
+            return;
           }
         } catch (e) {
-          this.logger.error(`TOKEN FILE CORRUPTED ! REGENERATING...`)
+          this.logger.error(`TOKEN FILE CORRUPTED ! REGENERATING...`);
         }
       }
       const { access_token } = await this.createTokens(new ConsoleSession(), false, {
         expiresIn: '1y',
-      })
+      });
       writeFileSync(
         devTokenPath,
         JSON.stringify({
           access_token,
         }),
-      )
+      );
 
-      this.logger.log(`NEW TOKEN CREATED : <${access_token}>`)
+      this.logger.log(`NEW TOKEN CREATED : <${access_token}>`);
     }
   }
 

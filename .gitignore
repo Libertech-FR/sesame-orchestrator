@@ -38,3 +38,4 @@ docker/docker-compose.yml
 docker/docker-compose.yml
 
 documentation/*
+.dev-token.json

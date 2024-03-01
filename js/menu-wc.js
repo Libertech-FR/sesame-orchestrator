@@ -571,6 +571,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/inetOrgPersonUpdateDto.html" data-type="entity-link" >inetOrgPersonUpdateDto</a>
                             </li>
                             <li class="link">
+                                <a href="classes/InternalLogger.html" data-type="entity-link" >InternalLogger</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/Keyrings.html" data-type="entity-link" >Keyrings</a>
                             </li>
                             <li class="link">

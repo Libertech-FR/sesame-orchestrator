@@ -1315,7 +1315,7 @@ export class IdentitiesService extends AbstractServiceSchema {
   ): Promise&lt;Document&lt;T, any, T&gt;&gt; {
     // noinspection UnnecessaryLocalVariableJS
     const created: Document&lt;T, any, T&gt; &#x3D; await super.create(data, options);
-    //TODO: add backends service logic here
+    //TODO: add backends service logic here (TO_SYNC)
     return created;
   }
 
@@ -1326,7 +1326,7 @@ export class IdentitiesService extends AbstractServiceSchema {
   ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
     // noinspection UnnecessaryLocalVariableJS
     const updated &#x3D; await super.update(_id, update, options);
-    //TODO: add backends service logic here
+    //TODO: add backends service logic here (TO_SYNC)
     return updated;
   }
 
@@ -1335,8 +1335,9 @@ export class IdentitiesService extends AbstractServiceSchema {
     options?: QueryOptions&lt;T&gt; | null | undefined,
   ): Promise&lt;Query&lt;T, T, any, T&gt;&gt; {
     // noinspection UnnecessaryLocalVariableJS
+    //TODO: soft delete
     const deleted &#x3D; await super.delete(_id, options);
-    //TODO: add backends service logic here
+    //TODO: add backends service logic here (TO_SYNC)
     return deleted;
   }
 }

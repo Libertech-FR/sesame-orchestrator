@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AbstractSchema } from './schemas/abstract.schema';
 import {
   Document,
   FilterQuery,
@@ -12,9 +11,10 @@ import {
   Types,
   UpdateQuery,
 } from 'mongoose';
+import { EventEmitterSeparator } from '~/_common/constants/event-emitter.constant';
 import { AbstractService, AbstractServiceContext } from './abstract.service';
 import { ServiceSchemaInterface } from './interfaces/service.schema.interface';
-import { EventEmitterSeparator } from '~/_common/constants/event-emitter.constant';
+import { AbstractSchema } from './schemas/abstract.schema';
 
 @Injectable()
 export abstract class AbstractServiceSchema extends AbstractService implements ServiceSchemaInterface {
@@ -191,7 +191,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
   public async update<T extends AbstractSchema | Document>(
     _id: Types.ObjectId | any,
     update: UpdateQuery<T>,
-    options?: QueryOptions<T> & { rawResult: true },
+    options?: QueryOptions<T>,
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
     const logInfos = Object.values({
       ...arguments,
@@ -243,7 +243,65 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       }
     }
     return updated
+  }    
+
+  public async upsert<T extends AbstractSchema | Document>(
+  filter: FilterQuery<T>,
+  update: UpdateQuery<T>,
+  options?: QueryOptions<T>
+  ): Promise<ModifyResult<Query<T, T, any, T>>> {
+    this.logger.debug(['upsert', JSON.stringify(Object.values(arguments))].join(' '));
+    if (this.eventEmitter) {
+      const beforeEvents = await this.eventEmitter?.emitAsync(
+        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'beforeUpsert'].join(EventEmitterSeparator),
+        { filter, update, options },
+      );
+      for (const beforeEvent of beforeEvents) {
+        if (beforeEvent?.stop) throw beforeEvent?.stop;
+        if (beforeEvent?.filter) filter = { ...filter, ...beforeEvent.filter };
+        if (beforeEvent?.update) update = { ...update, ...beforeEvent.update };
+        if (beforeEvent?.options) options = { ...options, ...beforeEvent.options };
+      }
+    }
+    const validation = await this._model.validate(update)
+    console.log('validation', validation)
+    let result = await this._model
+      .findOneAndUpdate<Query<T | null, T, any, T>>(
+        filter,
+        {
+          ...update,
+          $set: {
+            ...(update?.$set || {}),
+            'metadata.lastUpdatedBy': this.request?.user?.username || 'anonymous',
+            'metadata.lastUpdatedAt': new Date(),
+          }
+        },
+        {
+          upsert: true,
+          new: true,
+          runValidators: true,
+          ...options,
+        } as QueryOptions<T> & { includeResultMetadata: true },
+      )
+      .exec();
+
+    if (this.eventEmitter) {
+      const afterEvents = await this.eventEmitter?.emitAsync(
+        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterUpsert'].join(EventEmitterSeparator),
+        { result },
+      );
+      for (const afterEvent of afterEvents) {
+        if (afterEvent?.result) result = { ...result, ...afterEvent.result };
+      }
+    }
+
+    if (!result) {
+      throw new NotFoundException();
+    }
+
+    return result;
   }
+  
 
   public async delete<T extends AbstractSchema | Document>(_id: Types.ObjectId | any, options?: QueryOptions<T> | null | undefined): Promise<Query<T, T, any, T>> {
     this.logger.debug(['delete', JSON.stringify(Object.values(arguments))].join(' '))

@@ -1,6 +1,7 @@
 include .env
 APP_PORT = 4002
 IMG_NAME = "ghcr.io/libertech-fr/sesame-orchestrator"
+BASE_NAME = "sesame"
 APP_NAME = "sesame-orchestrator"
 PLATFORM = "linux/amd64"
 
@@ -46,10 +47,10 @@ exec: ## Run a shell in the container
 		$(IMG_NAME) sh
 
 dbs: ## Start databases
-	@docker volume create $(APP_NAME)-mongodb
+	@docker volume create $(BASE_NAME)-mongodb
 	@docker run -d --rm \
-		--name $(APP_NAME)-mongodb \
-		-v $(APP_NAME)-mongodb:/data/db \
+		--name $(BASE_NAME)-mongodb \
+		-v $(BASE_NAME)-mongodb:/data/db \
 		-p 27017:27017 \
 		-e MONGODB_REPLICA_SET_MODE=primary \
 		-e MONGODB_REPLICA_SET_NAME=rs0 \
@@ -64,8 +65,8 @@ dbs: ## Start databases
 		mongo:7.0 --replSet rs0 --wiredTigerCacheSizeGB 1.5 || true
 	@docker volume create $(APP_NAME)-redis
 	@docker run -d --rm \
-		--name $(APP_NAME)-redis \
-		-v $(APP_NAME)-redis:/data \
+		--name $(BASE_NAME)-redis \
+		-v $(BASE_NAME)-redis:/data \
 		--platform $(PLATFORM) \
 		--network dev \
 		-p 6379:6379 \
@@ -75,12 +76,12 @@ dbs: ## Start databases
 		--health-retries=3 \
 		--health-cmd="redis-cli ping || exit 1" \
 		redis || true
-	@docker exec -it $(APP_NAME)-mongodb mongo --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: '127.0.0.1:27017'}]})" || true
+	@docker exec -it $(BASE_NAME)-mongodb mongo --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: '127.0.0.1:27017'}]})" || true
 
 stop: ## Stop the container
 	@docker stop $(APP_NAME) || true
-	@docker stop $(APP_NAME)-mongodb || true
-	@docker stop $(APP_NAME)-redis || true
+	@docker stop $(BASE_NAME)-mongodb || true
+	@docker stop $(BASE_NAME)-redis || true
 
 run-test: ## Run tests
 	act --container-architecture="linux/arm64" -j test

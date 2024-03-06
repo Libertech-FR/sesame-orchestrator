@@ -1,0 +1,49 @@
+version: '3'
+services:
+  sesame-orchestrator:
+    build: .
+    container_name: sesame-orchestrator
+    environment:
+      - NODE_ENV=development
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - API_KEY=abcdef
+    volumes:
+      - '..:/data'
+    ports:
+      - '4002:4000'
+    networks:
+      - dev
+  sesame-redis:
+    image: redis
+    container_name: sesame-redis
+    volumes:
+      - sesame-redis:/data
+    restart: always
+    networks:
+      - dev
+    ports:
+      - '6379:6379'
+    command: redis-server --appendonly yes
+  sesame-mongo:
+    image: mongo:5.0
+    container_name: sesame-mongo
+    command: mongod --replSet rs0 --wiredTigerCacheSizeGB 1.5
+    environment:
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_REPLICA_SET_NAME=rs0
+      - ALLOW_EMPTY_PASSWORD=yes
+    restart: always
+    networks:
+      - dev
+    ports:
+      - '27017:27017'
+    volumes:
+      - sesame-mongo:/data/db
+
+volumes:
+  sesame-mongo:
+  sesame-redis:
+
+networks:
+  dev:
+    external: true

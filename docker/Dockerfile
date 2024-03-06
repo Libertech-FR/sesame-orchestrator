@@ -9,7 +9,7 @@ RUN apt clean -y \
     && export LC_ALL=${LC_ALL} \
     && locale-gen ${LANG} \
     && dpkg-reconfigure --frontend ${DEBIAN_FRONTEND} locales \
-    && apt install --no-install-recommends -yq  procps supervisor
+    && apt install --no-install-recommends -yq procps supervisor
 
 COPY ./rootfs /
 

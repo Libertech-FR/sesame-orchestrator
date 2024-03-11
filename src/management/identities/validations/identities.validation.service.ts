@@ -81,13 +81,15 @@ export class IdentitiesValidationService {
       if (validationError) {
         validations[key] = validationError;
         reject = true;
+      } else {
+        delete validations[key];
       }
     }
 
     if (reject) {
       throw new ValidationSchemaException({ validations });
     }
-    return Promise.resolve({ message: 'Validation succeeded' });
+    return Promise.resolve({ message: 'Validation succeeded', validations });
   }
 
   /**

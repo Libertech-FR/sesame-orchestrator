@@ -1,4 +1,4 @@
-import { additionalFieldsPartDto } from './_dto/_parts/additionalFields.dto';
+import { additionalFieldsPartDto } from '~/management/identities/_dto/_parts/additionalFields.dto';
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Identities } from './_schemas/identities.schema';
@@ -8,6 +8,7 @@ import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
 import { IdentityState } from './_enums/states.enum';
+import { merge } from 'radash';
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -31,15 +32,35 @@ export class IdentitiesService extends AbstractServiceSchema {
     data?: any,
     options?: QueryOptions<T>,
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
+    Logger.log(`Upserting identity: ${JSON.stringify(data)}`);
     const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
+    data.additionalFields.validations = {};
     try {
       Logger.log(`${logPrefix} Starting additionalFields validation.`);
-      await this._validation.validate(data.additionalFields);
+      const validations = await this._validation.validate(data.additionalFields);
       Logger.log(`${logPrefix} AdditionalFields validation successful.`);
+      Logger.log(`Validations : ${validations}`);
       data.state = IdentityState.TO_VALIDATE;
     } catch (error) {
       data = this.handleValidationError(error, data, logPrefix);
     }
+
+    const identity = await this._model.findOne({ 'inetOrgPerson.uid': data.inetOrgPerson.uid });
+    if (identity) {
+      Logger.log(`${logPrefix} Identity already exists. Updating.`);
+      data.additionalFields.objectClasses = [
+        ...new Set([...identity.additionalFields.objectClasses, ...data.additionalFields.objectClasses]),
+      ];
+      data.additionalFields.attributes = {
+        ...identity.additionalFields.attributes,
+        ...data.additionalFields.attributes,
+      };
+      data.additionalFields.validations = {
+        ...identity.additionalFields.validations,
+        ...data.additionalFields.validations,
+      };
+    }
+
     const upsert = await super.upsert({ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, data, options);
     return upsert;
     //TODO: add backends service logic here
@@ -75,10 +96,10 @@ export class IdentitiesService extends AbstractServiceSchema {
 
     if (error instanceof ValidationSchemaException) {
       Logger.warn(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
+      identity.additionalFields.validations = error.getValidations();
       if (identity.state === IdentityState.TO_CREATE) {
         Logger.warn(`${logPrefix} State set to TO_COMPLETE.`);
         identity.state = IdentityState.TO_COMPLETE;
-        identity.additionalFields.validations = error.getValidations();
         return identity;
       } else {
         Logger.error(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);

@@ -263,8 +263,6 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options = { ...options, ...beforeEvent.options };
       }
     }
-    const validation = await this._model.validate(update)
-    console.log('validation', validation)
     let result = await this._model
       .findOneAndUpdate<Query<T | null, T, any, T>>(
         filter,

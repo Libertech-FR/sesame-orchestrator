@@ -12,6 +12,7 @@ export interface MongoosePlugin {
 }
 export interface ConfigInstance {
   application: {
+    logLevel: string;
     bodyParser: {
       limit: string;
     };
@@ -37,13 +38,13 @@ export interface ConfigInstance {
     api: string;
     options: SwaggerCustomOptions;
   };
-  logLevel: string;
   nameQueue: string;
   secret: string;
 }
 
 export default (): ConfigInstance => ({
   application: {
+    logLevel: process.env['LOG_LEVEL'] || 'info',
     bodyParser: {
       limit: '500mb',
     },
@@ -91,7 +92,6 @@ export default (): ConfigInstance => ({
       // jwksUri: 'http://127.0.0.1:2000/jwks',
     },
   },
-  logLevel: process.env['LOG_LEVEL'] || 'info',
   nameQueue: process.env['NAME_QUEUE'] || 'backend',
   secret: process.env['SECRET'] || 'mySecret',
   swagger: {

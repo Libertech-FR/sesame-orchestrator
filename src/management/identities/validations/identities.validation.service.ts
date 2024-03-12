@@ -89,7 +89,7 @@ export class IdentitiesValidationService {
     if (reject) {
       throw new ValidationSchemaException({ validations });
     }
-    return Promise.resolve({ message: 'Validation succeeded', validations });
+    return Promise.resolve({ message: 'Validation succeeded' });
   }
 
   /**

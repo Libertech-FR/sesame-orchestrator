@@ -3,7 +3,7 @@ import { Response } from 'express';
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
-    Logger.debug(exception['message'], 'MongooseValidationFilter');
+    Logger.debug(exception['message'], 'AllExceptionFilter');
 
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();

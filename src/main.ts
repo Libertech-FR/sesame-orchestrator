@@ -1,17 +1,16 @@
-import { ModuleRef, NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import configInstance from './config';
-import { Logger } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
-import { AllExceptionFilter } from './_common/filters/all-exception.filter';
-import { IdentitiesValidationFilter } from './_common/filters/identities-validation.filter';
-import { MongooseValidationFilter } from './_common/filters/mongoose-validation.filter';
 import { Response } from 'express';
 import passport from 'passport';
 import { rawBodyBuffer } from '~/_common/middlewares/raw-body-buffer.middleware';
-import { InternalLogger } from './core/logger/internal.logger';
+import { AllExceptionFilter } from './_common/filters/all-exception.filter';
+import { IdentitiesValidationFilter } from './_common/filters/identities-validation.filter';
+import { MongooseValidationFilter } from './_common/filters/mongoose-validation.filter';
 import { getLogLevel } from './_common/functions/get-log-level';
+import { AppModule } from './app.module';
+import configInstance from './config';
+import { InternalLogger } from './core/logger/internal.logger';
 
 declare const module: any;
 (async (): Promise<void> => {

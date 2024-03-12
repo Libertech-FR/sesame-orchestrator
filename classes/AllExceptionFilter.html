@@ -268,7 +268,7 @@ import { Response } from &#x27;express&#x27;;
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
-    Logger.debug(exception[&#x27;message&#x27;], &#x27;MongooseValidationFilter&#x27;);
+    Logger.debug(exception[&#x27;message&#x27;], &#x27;AllExceptionFilter&#x27;);
 
     const ctx &#x3D; host.switchToHttp();
     const response &#x3D; ctx.getResponse&lt;Response&gt;();

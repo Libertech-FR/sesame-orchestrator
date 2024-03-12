@@ -33,6 +33,11 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <span class="icon ion-ios-paper"></span>README
                             </a>
                         </li>
+                        <li class="link">
+                            <a href="license.html"  data-type="chapter-link">
+                                <span class="icon ion-ios-paper"></span>LICENSE
+                            </a>
+                        </li>
                                 <li class="link">
                                     <a href="dependencies.html" data-type="chapter-link">
                                         <span class="icon ion-ios-list"></span>Dependencies
@@ -571,9 +576,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/inetOrgPersonUpdateDto.html" data-type="entity-link" >inetOrgPersonUpdateDto</a>
                             </li>
                             <li class="link">
-                                <a href="classes/InternalLogger.html" data-type="entity-link" >InternalLogger</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/Keyrings.html" data-type="entity-link" >Keyrings</a>
                             </li>
                             <li class="link">
@@ -653,6 +655,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/DtoValidationPipe.html" data-type="entity-link" >DtoValidationPipe</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/InternalLogger.html" data-type="entity-link" >InternalLogger</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/JwtStrategy.html" data-type="entity-link" >JwtStrategy</a>
                                 </li>
                                 <li class="link">
@@ -685,6 +690,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/ConfigInstance.html" data-type="entity-link" >ConfigInstance</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/InternalLoggerOptions.html" data-type="entity-link" >InternalLoggerOptions</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/InternalLogOptions.html" data-type="entity-link" >InternalLogOptions</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/MongoosePlugin.html" data-type="entity-link" >MongoosePlugin</a>

@@ -47,6 +47,7 @@ RUN apt clean -y \
   && locale-gen ${LANG} \
   && dpkg-reconfigure --frontend ${DEBIAN_FRONTEND} locales \
   && apt install --no-install-recommends -yq \
+  procps \
   git \
   jq \
   nano \

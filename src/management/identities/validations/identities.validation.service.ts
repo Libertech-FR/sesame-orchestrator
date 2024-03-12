@@ -81,6 +81,8 @@ export class IdentitiesValidationService {
       if (validationError) {
         validations[key] = validationError;
         reject = true;
+      } else {
+        delete validations[key];
       }
     }
 

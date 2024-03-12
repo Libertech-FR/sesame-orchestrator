@@ -1,0 +1,71 @@
+$schema: "http://json-schema.org/draft-07/schema#"
+type: "object"
+properties:
+  supannEmpId:
+    type: "string"
+    description: "Employee ID"
+  supannCivilite:
+    type: "string"
+    description: "Title (Mr, Ms, etc.)"
+  supannBirthName:
+    type: "string"
+    description: "Birth name"
+  supannBirthDate:
+    type: "string"
+    format: "date"
+    description: "Date of birth"
+  supannBirthPlace:
+    type: "string"
+    description: "Place of birth"
+  supannMailPerso:
+    type: "string"
+    format: "email"
+    description: "Personal email"
+  supannMailPro:
+    type: "string"
+    format: "email"
+    description: "Professional email"
+  supannTelPerso:
+    type: "string"
+    description: "Personal phone number"
+  supannTelPro:
+    type: "string"
+    description: "Professional phone number"
+  supannPostalAddress:
+    type: "string"
+    description: "Postal address"
+  supannRole:
+    type: "string"
+    description: "Role in the organization"
+  supannStatus:
+    type: "string"
+    description: "Employment status"
+  supannEtablissement:
+    type: "string"
+    description: "Institution"
+  supannAffectationPrincipale:
+    type: "string"
+    description: "Primary assignment"
+  supannAffectationSecondaire:
+    type: "string"
+    description: "Secondary assignment"
+  supannCodeINE:
+    type: "string"
+    description: "National Education Identifier"
+required:
+  - "supannEmpId"
+  - "supannCivilite"
+  - "supannBirthName"
+  - "supannBirthDate"
+  - "supannBirthPlace"
+  - "supannMailPerso"
+  - "supannMailPro"
+  - "supannTelPerso"
+  - "supannTelPro"
+  - "supannPostalAddress"
+  - "supannRole"
+  - "supannStatus"
+  - "supannEtablissement"
+  - "supannAffectationPrincipale"
+  - "supannAffectationSecondaire"
+  - "supannCodeINE"

@@ -81,6 +81,40 @@ export class IdentitiesController extends AbstractController {
     });
   }
 
+  @Post('upsert')
+  @ApiCreateDecorator(IdentitiesCreateDto, IdentitiesDto)
+  public async upsert(
+    @Res()
+    res: Response,
+    @Body() body: IdentitiesCreateDto,
+  ): Promise<
+    Response<
+      {
+        statusCode: number;
+        data?: Document<Identities, any, Identities>;
+        message?: string;
+        validations?: MixedValue;
+      },
+      any
+    >
+  > {
+    let statusCode = HttpStatus.CREATED;
+    let message = null;
+    const data = await this._service.upsert<Identities>(body);
+    // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
+    // Else the state is TO_VALIDATE, we return a 201 status code
+    if ((data as unknown as Identities).state === IdentityState.TO_COMPLETE) {
+      statusCode = HttpStatus.ACCEPTED;
+      message = 'Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.';
+    }
+
+    return res.status(statusCode).json({
+      statusCode,
+      data,
+      message,
+    });
+  }
+
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(IdentitiesDto, IdentitiesController.projection))
   public async search(

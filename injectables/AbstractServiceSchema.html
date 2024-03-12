@@ -223,6 +223,11 @@
                                     <span class="modifier">Async</span>
                                 <a href="#update" >update</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#upsert" >upsert</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -507,8 +512,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="248"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:248</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="304"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:304</a></div>
                         </td>
                     </tr>
 
@@ -998,7 +1003,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>update(_id: Types.ObjectId | any, update: UpdateQuery<T>, options?)</code>
+                    <code>update(_id: Types.ObjectId | any, update: UpdateQuery<T>, options?: QueryOptions<T>)</code>
                 </td>
             </tr>
 
@@ -1061,6 +1066,109 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
+                                                        <code>QueryOptions&lt;T&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="upsert"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>upsert</b></span>
+                        <a href="#upsert"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>upsert(filter: FilterQuery<T>, update: UpdateQuery<T>, options?: QueryOptions<T>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="248"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:248</a></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>filter</td>
+                                            <td>
+                                                        <code>FilterQuery&lt;T&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>update</td>
+                                            <td>
+                                                        <code>UpdateQuery&lt;T&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>QueryOptions&lt;T&gt;</code>
                                             </td>
 
                                             <td>
@@ -1284,7 +1392,6 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { AbstractSchema } from &#x27;./schemas/abstract.schema&#x27;;
 import {
   Document,
   FilterQuery,
@@ -1297,9 +1404,10 @@ import {
   Types,
   UpdateQuery,
 } from &#x27;mongoose&#x27;;
+import { EventEmitterSeparator } from &#x27;~/_common/constants/event-emitter.constant&#x27;;
 import { AbstractService, AbstractServiceContext } from &#x27;./abstract.service&#x27;;
 import { ServiceSchemaInterface } from &#x27;./interfaces/service.schema.interface&#x27;;
-import { EventEmitterSeparator } from &#x27;~/_common/constants/event-emitter.constant&#x27;;
+import { AbstractSchema } from &#x27;./schemas/abstract.schema&#x27;;
 
 @Injectable()
 export abstract class AbstractServiceSchema extends AbstractService implements ServiceSchemaInterface {
@@ -1476,7 +1584,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
   public async update&lt;T extends AbstractSchema | Document&gt;(
     _id: Types.ObjectId | any,
     update: UpdateQuery&lt;T&gt;,
-    options?: QueryOptions&lt;T&gt; &amp; { rawResult: true },
+    options?: QueryOptions&lt;T&gt;,
   ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
     const logInfos &#x3D; Object.values({
       ...arguments,
@@ -1528,7 +1636,63 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       }
     }
     return updated
+  }    
+
+  public async upsert&lt;T extends AbstractSchema | Document&gt;(
+  filter: FilterQuery&lt;T&gt;,
+  update: UpdateQuery&lt;T&gt;,
+  options?: QueryOptions&lt;T&gt;
+  ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
+    this.logger.debug([&#x27;upsert&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;));
+    if (this.eventEmitter) {
+      const beforeEvents &#x3D; await this.eventEmitter?.emitAsync(
+        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;beforeUpsert&#x27;].join(EventEmitterSeparator),
+        { filter, update, options },
+      );
+      for (const beforeEvent of beforeEvents) {
+        if (beforeEvent?.stop) throw beforeEvent?.stop;
+        if (beforeEvent?.filter) filter &#x3D; { ...filter, ...beforeEvent.filter };
+        if (beforeEvent?.update) update &#x3D; { ...update, ...beforeEvent.update };
+        if (beforeEvent?.options) options &#x3D; { ...options, ...beforeEvent.options };
+      }
+    }
+    let result &#x3D; await this._model
+      .findOneAndUpdate&lt;Query&lt;T | null, T, any, T&gt;&gt;(
+        filter,
+        {
+          ...update,
+          $set: {
+            ...(update?.$set || {}),
+            &#x27;metadata.lastUpdatedBy&#x27;: this.request?.user?.username || &#x27;anonymous&#x27;,
+            &#x27;metadata.lastUpdatedAt&#x27;: new Date(),
+          }
+        },
+        {
+          upsert: true,
+          new: true,
+          runValidators: true,
+          ...options,
+        } as QueryOptions&lt;T&gt; &amp; { includeResultMetadata: true },
+      )
+      .exec();
+
+    if (this.eventEmitter) {
+      const afterEvents &#x3D; await this.eventEmitter?.emitAsync(
+        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;afterUpsert&#x27;].join(EventEmitterSeparator),
+        { result },
+      );
+      for (const afterEvent of afterEvents) {
+        if (afterEvent?.result) result &#x3D; { ...result, ...afterEvent.result };
+      }
+    }
+
+    if (!result) {
+      throw new NotFoundException();
+    }
+
+    return result;
   }
+  
 
   public async delete&lt;T extends AbstractSchema | Document&gt;(_id: Types.ObjectId | any, options?: QueryOptions&lt;T&gt; | null | undefined): Promise&lt;Query&lt;T, T, any, T&gt;&gt; {
     this.logger.debug([&#x27;delete&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;))

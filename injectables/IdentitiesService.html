@@ -194,9 +194,18 @@
                                 <a href="#delete" >delete</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#handleValidationError" >handleValidationError</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#update" >update</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#upsert" >upsert</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -241,12 +250,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(_model: <a href="../classes/Identities.html" target="_self">Model&lt;Identities&gt;</a>)</code>
+<code>constructor(_model: <a href="../classes/Identities.html" target="_self">Model&lt;Identities&gt;</a>, _validation: <a href="../injectables/IdentitiesValidationService.html" target="_self">IdentitiesValidationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/management/identities/identities.service.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/management/identities/identities.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -268,6 +277,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../classes/Identities.html" target="_self" >Model&lt;Identities&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>_validation</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/IdentitiesValidationService.html" target="_self" >IdentitiesValidationService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -318,7 +339,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:14</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:20</a></code>
 </div>
                         </td>
                     </tr>
@@ -414,7 +435,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:35</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:79</a></code>
 </div>
                         </td>
                     </tr>
@@ -485,6 +506,99 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="handleValidationError"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>handleValidationError</b></span>
+                        <a href="#handleValidationError"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleValidationError(error: Error | HttpException, identity: <a href="../classes/Identities.html" target="_self">Identities</a>, logPrefix: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:90</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>error</td>
+                                            <td>
+                                                        <code>Error | HttpException</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>identity</td>
+                                            <td>
+                                                            <code><a href="../classes/Identities.html" target="_self" >Identities</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>logPrefix</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Identities.html" target="_self" >Identities</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="update"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -510,7 +624,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:24</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:68</a></code>
 </div>
                         </td>
                     </tr>
@@ -566,6 +680,102 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="upsert"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>upsert</b></span>
+                        <a href="#upsert"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>upsert(data?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>, options?: QueryOptions<T>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:29</a></code>
+</div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>QueryOptions&lt;T&gt;</code>
                                             </td>
 
                                             <td>
@@ -1296,16 +1506,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpException, Injectable, Logger } from &#x27;@nestjs/common&#x27;;
 import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
 import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
 import { Document, Model, ModifyResult, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from &#x27;mongoose&#x27;;
 import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
 import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
+import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
+import { ValidationConfigException, ValidationSchemaException } from &#x27;~/_common/errors/ValidationException&#x27;;
+import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
-  constructor(@InjectModel(Identities.name) protected _model: Model&lt;Identities&gt;) {
+  constructor(
+    @InjectModel(Identities.name) protected _model: Model&lt;Identities&gt;,
+    protected readonly _validation: IdentitiesValidationService,
+  ) {
     super();
   }
 
@@ -1313,10 +1529,48 @@ export class IdentitiesService extends AbstractServiceSchema {
     data?: any,
     options?: SaveOptions,
   ): Promise&lt;Document&lt;T, any, T&gt;&gt; {
-    // noinspection UnnecessaryLocalVariableJS
     const created: Document&lt;T, any, T&gt; &#x3D; await super.create(data, options);
-    //TODO: add backends service logic here (TO_SYNC)
     return created;
+    //TODO: add backends service logic here
+  }
+
+  public async upsert&lt;T extends AbstractSchema | Document&gt;(
+    data?: any,
+    options?: QueryOptions&lt;T&gt;,
+  ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
+    Logger.log(&#x60;Upserting identity: ${JSON.stringify(data)}&#x60;);
+    const logPrefix &#x3D; &#x60;Validation [${data.inetOrgPerson.cn}]:&#x60;;
+    data.additionalFields.validations &#x3D; {};
+    try {
+      Logger.log(&#x60;${logPrefix} Starting additionalFields validation.&#x60;);
+      const validations &#x3D; await this._validation.validate(data.additionalFields);
+      Logger.log(&#x60;${logPrefix} AdditionalFields validation successful.&#x60;);
+      Logger.log(&#x60;Validations : ${validations}&#x60;);
+      data.state &#x3D; IdentityState.TO_VALIDATE;
+    } catch (error) {
+      data &#x3D; this.handleValidationError(error, data, logPrefix);
+    }
+
+    //TODO: ameliorer la logique d&#x27;upsert
+    const identity &#x3D; await this._model.findOne({ &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid });
+    if (identity) {
+      Logger.log(&#x60;${logPrefix} Identity already exists. Updating.&#x60;);
+      data.additionalFields.objectClasses &#x3D; [
+        ...new Set([...identity.additionalFields.objectClasses, ...data.additionalFields.objectClasses]),
+      ];
+      data.additionalFields.attributes &#x3D; {
+        ...identity.additionalFields.attributes,
+        ...data.additionalFields.attributes,
+      };
+      data.additionalFields.validations &#x3D; {
+        ...identity.additionalFields.validations,
+        ...data.additionalFields.validations,
+      };
+    }
+
+    const upsert &#x3D; await super.upsert({ &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid }, data, options);
+    return upsert;
+    //TODO: add backends service logic here
   }
 
   public async update&lt;T extends AbstractSchema | Document&gt;(
@@ -1339,6 +1593,29 @@ export class IdentitiesService extends AbstractServiceSchema {
     const deleted &#x3D; await super.delete(_id, options);
     //TODO: add backends service logic here (TO_SYNC)
     return deleted;
+  }
+
+  private handleValidationError(error: Error | HttpException, identity: Identities, logPrefix: string) {
+    if (error instanceof ValidationConfigException) {
+      Logger.error(&#x60;${logPrefix} Validation config error. ${JSON.stringify(error.getValidations())}&#x60;);
+      throw new ValidationConfigException(error.getPayload());
+    }
+
+    if (error instanceof ValidationSchemaException) {
+      Logger.warn(&#x60;${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}&#x60;);
+      identity.additionalFields.validations &#x3D; error.getValidations();
+      if (identity.state &#x3D;&#x3D;&#x3D; IdentityState.TO_CREATE) {
+        Logger.warn(&#x60;${logPrefix} State set to TO_COMPLETE.&#x60;);
+        identity.state &#x3D; IdentityState.TO_COMPLETE;
+        return identity;
+      } else {
+        Logger.error(&#x60;${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}&#x60;);
+        throw new ValidationSchemaException(error.getPayload());
+      }
+    } else {
+      Logger.error(&#x60;${logPrefix} Unhandled error: ${error.message}&#x60;);
+      throw error; // Rethrow the original error if it&#x27;s not one of the handled types.
+    }
   }
 }
 </code></pre>

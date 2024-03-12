@@ -190,6 +190,13 @@
                                     <span class="modifier">Async</span>
                                 <a href="#update" >update</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#upsert" >upsert</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -331,8 +338,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="148"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:148</a></div>
                         </td>
                     </tr>
 
@@ -423,8 +430,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="161"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:161</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="195"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:195</a></div>
                         </td>
                     </tr>
 
@@ -514,8 +521,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="86"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:86</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="120"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:120</a></div>
                         </td>
                     </tr>
 
@@ -618,8 +625,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="138"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:138</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="172"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:172</a></div>
                         </td>
                     </tr>
 
@@ -680,6 +687,97 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="upsert"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>upsert</b></span>
+                        <a href="#upsert"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>upsert(res: Response, body: <a href="../classes/IdentitiesCreateDto.html" target="_self">IdentitiesCreateDto</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;upsert&#x27;)<br />@ApiCreateDecorator(IdentitiesCreateDto, IdentitiesDto)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:86</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../classes/IdentitiesCreateDto.html" target="_self" >IdentitiesCreateDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&lt;literal type, any&gt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -765,6 +863,40 @@ export class IdentitiesController extends AbstractController {
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
     // Else the state is TO_VALIDATE, we return a 201 status code
     if ((data as Identities).state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
+      statusCode &#x3D; HttpStatus.ACCEPTED;
+      message &#x3D; &#x27;Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.&#x27;;
+    }
+
+    return res.status(statusCode).json({
+      statusCode,
+      data,
+      message,
+    });
+  }
+
+  @Post(&#x27;upsert&#x27;)
+  @ApiCreateDecorator(IdentitiesCreateDto, IdentitiesDto)
+  public async upsert(
+    @Res()
+    res: Response,
+    @Body() body: IdentitiesCreateDto,
+  ): Promise&lt;
+    Response&lt;
+      {
+        statusCode: number;
+        data?: Document&lt;Identities, any, Identities&gt;;
+        message?: string;
+        validations?: MixedValue;
+      },
+      any
+    &gt;
+  &gt; {
+    let statusCode &#x3D; HttpStatus.CREATED;
+    let message &#x3D; null;
+    const data &#x3D; await this._service.upsert&lt;Identities&gt;(body);
+    // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
+    // Else the state is TO_VALIDATE, we return a 201 status code
+    if ((data as unknown as Identities).state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
       statusCode &#x3D; HttpStatus.ACCEPTED;
       message &#x3D; &#x27;Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.&#x27;;
     }

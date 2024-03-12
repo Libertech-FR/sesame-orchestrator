@@ -18,6 +18,7 @@ dev: ## Start development environment
 		-e NODE_ENV=development \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
 		--add-host host.docker.internal:host-gateway \
+		--platform $(PLATFORM) \
 		--network dev \
 		--name $(APP_NAME) \
 		-p $(APP_PORT):4000 \

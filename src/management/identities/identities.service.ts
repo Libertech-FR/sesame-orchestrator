@@ -1,4 +1,3 @@
-import { additionalFieldsPartDto } from '~/management/identities/_dto/_parts/additionalFields.dto';
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Identities } from './_schemas/identities.schema';
@@ -8,7 +7,6 @@ import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
 import { IdentityState } from './_enums/states.enum';
-import { merge } from 'radash';
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -45,6 +43,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       data = this.handleValidationError(error, data, logPrefix);
     }
 
+    //TODO: ameliorer la logique d'upsert
     const identity = await this._model.findOne({ 'inetOrgPerson.uid': data.inetOrgPerson.uid });
     if (identity) {
       Logger.log(`${logPrefix} Identity already exists. Updating.`);

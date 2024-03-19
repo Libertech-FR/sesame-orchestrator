@@ -34,10 +34,10 @@ export class IdentitiesService extends AbstractServiceSchema {
     const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
     data.additionalFields.validations = {};
     try {
-      Logger.log(`${logPrefix} Starting additionalFields validation.`);
+      this.logger.log(`${logPrefix} Starting additionalFields validation.`);
       const validations = await this._validation.validate(data.additionalFields);
-      Logger.log(`${logPrefix} AdditionalFields validation successful.`);
-      Logger.log(`Validations : ${validations}`);
+      this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
+      this.logger.log(`Validations : ${validations}`);
       data.state = IdentityState.TO_VALIDATE;
     } catch (error) {
       data = this.handleValidationError(error, data, logPrefix);
@@ -46,7 +46,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     //TODO: ameliorer la logique d'upsert
     const identity = await this._model.findOne({ 'inetOrgPerson.uid': data.inetOrgPerson.uid });
     if (identity) {
-      Logger.log(`${logPrefix} Identity already exists. Updating.`);
+      this.logger.log(`${logPrefix} Identity already exists. Updating.`);
       data.additionalFields.objectClasses = [
         ...new Set([...identity.additionalFields.objectClasses, ...data.additionalFields.objectClasses]),
       ];
@@ -71,6 +71,29 @@ export class IdentitiesService extends AbstractServiceSchema {
     options?: QueryOptions<T> & { rawResult: true },
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
     // noinspection UnnecessaryLocalVariableJS
+    //TODO : add validation logic here
+    const logPrefix = `Validation [${update.inetOrgPerson.cn}]:`;
+    try {
+      this.logger.log(`${logPrefix} Starting additionalFields validation.`);
+      const validations = await this._validation.validate(update.additionalFields);
+      this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
+      this.logger.log(`Validations : ${validations}`);
+    } catch (error) {
+      if (error instanceof ValidationConfigException) {
+        this.logger.error(`${logPrefix} Validation config error. ${JSON.stringify(error.getValidations())}`);
+        throw new ValidationConfigException(error.getPayload());
+      }
+      if (error instanceof ValidationSchemaException) {
+        this.logger.warn(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
+        update.additionalFields.validations = error.getValidations();
+        this.logger.error(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
+        throw new ValidationSchemaException(error.getPayload());
+      } else {
+        this.logger.error(`${logPrefix} Unhandled error: ${error.message}`);
+        throw error; // Rethrow the original error if it's not one of the handled types.
+      }
+    }
+    console.log('update', update);
     const updated = await super.update(_id, update, options);
     //TODO: add backends service logic here (TO_SYNC)
     return updated;
@@ -89,23 +112,23 @@ export class IdentitiesService extends AbstractServiceSchema {
 
   private handleValidationError(error: Error | HttpException, identity: Identities, logPrefix: string) {
     if (error instanceof ValidationConfigException) {
-      Logger.error(`${logPrefix} Validation config error. ${JSON.stringify(error.getValidations())}`);
+      this.logger.error(`${logPrefix} Validation config error. ${JSON.stringify(error.getValidations())}`);
       throw new ValidationConfigException(error.getPayload());
     }
 
     if (error instanceof ValidationSchemaException) {
-      Logger.warn(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
+      this.logger.warn(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
       identity.additionalFields.validations = error.getValidations();
       if (identity.state === IdentityState.TO_CREATE) {
-        Logger.warn(`${logPrefix} State set to TO_COMPLETE.`);
+        this.logger.warn(`${logPrefix} State set to TO_COMPLETE.`);
         identity.state = IdentityState.TO_COMPLETE;
         return identity;
       } else {
-        Logger.error(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
+        this.logger.error(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
         throw new ValidationSchemaException(error.getPayload());
       }
     } else {
-      Logger.error(`${logPrefix} Unhandled error: ${error.message}`);
+      this.logger.error(`${logPrefix} Unhandled error: ${error.message}`);
       throw error; // Rethrow the original error if it's not one of the handled types.
     }
   }

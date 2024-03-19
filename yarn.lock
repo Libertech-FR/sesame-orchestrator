@@ -7438,6 +7438,11 @@ mongodb@^5.9.1:
   optionalDependencies:
     "@mongodb-js/saslprep" "^1.1.0"
 
+mongoose-to-swagger@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/mongoose-to-swagger/-/mongoose-to-swagger-1.5.1.tgz#74f7e08b7872cd4ea9bb8d92e855808cc820cf54"
+  integrity sha512-gwEr0NhA+DyGswtgypIoV/iR0RGX4jY/SE9zmYYk6qpG2C83urcQfYJWzm7PsDPo3snMm8XjBYiAtLyYAqirXA==
+
 mongoose@^8.0.2:
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-8.0.2.tgz#badfa71992893d5692bcbe53db8708f637354c82"

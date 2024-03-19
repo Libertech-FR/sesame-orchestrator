@@ -14,4 +14,10 @@ export class additionalFieldsPartDto {
     name: 'attributes',
   })
   attributes: { [key: string]: any };
+
+  @ApiProperty({
+    type: 'object',
+    name: 'validations',
+  })
+  validations: { [key: string]: { [key: string]: string } };
 }

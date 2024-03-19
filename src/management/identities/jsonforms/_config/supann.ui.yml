@@ -1,51 +1,112 @@
-form:
-  type: VerticalLayout
-  elements:
-    - type: Control
-      scope: "#/properties/supannEmpId"
-      label: "Employee ID"
-    - type: Control
-      scope: "#/properties/supannCivilite"
-      label: "Title (Mr, Ms, etc.)"
-    - type: Control
-      scope: "#/properties/supannBirthName"
-      label: "Birth name"
-    - type: Control
-      scope: "#/properties/supannBirthDate"
-      label: "Date of birth"
-    - type: Control
-      scope: "#/properties/supannBirthPlace"
-      label: "Place of birth"
-    - type: Control
-      scope: "#/properties/supannMailPerso"
-      label: "Personal email"
-    - type: Control
-      scope: "#/properties/supannMailPro"
-      label: "Professional email"
-    - type: Control
-      scope: "#/properties/supannTelPerso"
-      label: "Personal phone number"
-    - type: Control
-      scope: "#/properties/supannTelPro"
-      label: "Professional phone number"
-    - type: Control
-      scope: "#/properties/supannPostalAddress"
-      label: "Postal address"
-    - type: Control
-      scope: "#/properties/supannRole"
-      label: "Role in the organization"
-    - type: Control
-      scope: "#/properties/supannStatus"
-      label: "Employment status"
-    - type: Control
-      scope: "#/properties/supannEtablissement"
-      label: "Institution"
-    - type: Control
-      scope: "#/properties/supannAffectationPrincipale"
-      label: "Primary assignment"
-    - type: Control
-      scope: "#/properties/supannAffectationSecondaire"
-      label: "Secondary assignment"
-    - type: Control
-      scope: "#/properties/supannCodeINE"
-      label: "National Education Identifier"
+type: Group
+label: supann
+elements:
+  - type: HorizontalLayout
+    elements:
+      - type: Control
+        label: supanncivilite
+        scope: "#/properties/supanncivilite"
+        options:
+          required: true
+          suggestion:
+            - M.
+            - Mme
+            - Mlle
+      - type: Control
+        label: supannNomdeNaissance
+        scope: "#/properties/supannNomdeNaissance"
+        options:
+          required: false
+      - type: Control
+        label: supannOIDCDatedeNaissance
+        scope: "#/properties/supannOIDCDatedeNaissance"
+        options:
+          format: date
+          required: true
+          dateFormat: "dd/MM/yyyy"
+  - type: HorizontalLayout
+    elements:
+      - type: Control
+        label: supannOIDCGenre
+        scope: "#/properties/supannOIDCGenre"
+        options:
+          required: true
+      - type: Control
+        label: supannPrenomsEtatCivil
+        scope: "#/properties/supannPrenomsEtatCivil"
+        options:
+          required: true
+      - type: Control
+        label: supannCodeINSEEPaysDeNaissance
+        scope: "#/properties/supannCodeINSEEPaysDeNaissance"
+        options:
+          required: true
+  - type: HorizontalLayout
+    elements:
+      - type: Control
+        label: supannCodeINSEEVilleDeNaissance
+        scope: "#/properties/supannCodeINSEEVilleDeNaissance"
+        options:
+          required: false
+      - type: Control
+        label: supannAutreMail
+        scope: "#/properties/supannAutreMail"
+        options:
+          required: true
+      - type: Control
+        label: supannListeRouge
+        scope: "#/properties/supannListeRouge"
+        options:
+          required: false
+  - type: HorizontalLayout
+    elements:
+      - type: Control
+        label: mailForwardingAddress
+        scope: "#/properties/mailForwardingAddress"
+        options:
+          required: false
+      - type: Control
+        label: supannMailPerso
+        scope: "#/properties/supannMailPerso"
+        options:
+          required: false
+      - type: Control
+        label: supannRoleGenerique
+        scope: "#/properties/supannRoleGenerique"
+        options:
+          required: false
+  - type: HorizontalLayout
+    elements:
+      - type: Control
+        label: supannEmpId
+        scope: "#/properties/supannEmpId"
+        options:
+          format: number
+          required: false
+      - type: Control
+        label: supannParrainDN
+        scope: "#/properties/supannParrainDN"
+        options:
+          required: false
+      - type: Control
+        label: supannTypeEntiteAffectation
+        scope: "#/properties/supannTypeEntiteAffectation"
+        options:
+          required: false
+          readOnly: true
+          suggestion:
+            - "adm"
+            - "etd"
+            - "esn"
+  - type: HorizontalLayout
+    elements:
+      - type: Control
+        label: supannActivite
+        scope: "#/properties/supannActivite"
+        options:
+          required: false
+      - type: Control
+        label: supannEmpDateFin
+        scope: "#/properties/supannEmpDateFin"
+        options:
+          required: false

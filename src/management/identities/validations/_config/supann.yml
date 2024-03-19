@@ -38,7 +38,7 @@ properties:
     type: string
     description: Field corresponding to supannRoleGenerique
   supannEmpId:
-    type: string
+    type: number
     description: Field corresponding to supannEmpId
   supannParrainDN:
     type: string

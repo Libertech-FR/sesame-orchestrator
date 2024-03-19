@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -7,7 +7,7 @@ import { AdditionalFieldsPart } from '../_schemas/_parts/additionalFields.part.s
 import { IdentitiesValidationService } from './identities.validation.service';
 
 @ApiTags('management')
-@Controller('identities/validation')
+@Controller('management/identities/validation')
 export class IdentitiesValidationController extends AbstractController {
   constructor(protected readonly _service: IdentitiesValidationService) {
     super();
@@ -42,5 +42,23 @@ export class IdentitiesValidationController extends AbstractController {
         validations: error.validations,
       });
     }
+  }
+
+  @Get()
+  async searchAll(@Res() res: Response): Promise<any> {
+    const result = await this._service.findAll();
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: result,
+    });
+  }
+
+  @Get(':schema')
+  async search(@Res() res: Response, @Param('schema') schema): Promise<any> {
+    const result = await this._service.findOne(schema);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: result,
+    });
   }
 }

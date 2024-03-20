@@ -11,6 +11,10 @@ import { RedisOptions } from 'ioredis';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RequestContextModule } from 'nestjs-request-context';
+import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { AuthGuard } from './_common/guards/auth.guard';
+import { MongooseValidationFilter } from './_common/filters/mongoose-validation.filter';
+import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe';
 
 @Module({
   imports: [
@@ -58,6 +62,24 @@ import { RequestContextModule } from 'nestjs-request-context';
     ManagementModule.register(),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: AllExceptionFilter,
+    // },
+    {
+      provide: APP_FILTER,
+      useClass: MongooseValidationFilter,
+    },
+    {
+      provide: APP_PIPE,
+      useClass: DtoValidationPipe,
+    },
+  ],
 })
 export class AppModule {}

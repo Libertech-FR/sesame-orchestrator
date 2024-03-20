@@ -4,9 +4,6 @@ import cookieParser from 'cookie-parser';
 import { Response } from 'express';
 import passport from 'passport';
 import { rawBodyBuffer } from '~/_common/middlewares/raw-body-buffer.middleware';
-import { AllExceptionFilter } from './_common/filters/all-exception.filter';
-import { IdentitiesValidationFilter } from './_common/filters/identities-validation.filter';
-import { MongooseValidationFilter } from './_common/filters/mongoose-validation.filter';
 import { getLogLevel } from './_common/functions/get-log-level';
 import { AppModule } from './app.module';
 import configInstance from './config';
@@ -37,7 +34,6 @@ declare const module: any;
     (await import('./swagger')).default(app);
   }
 
-  app.useGlobalFilters(new AllExceptionFilter(), new MongooseValidationFilter(), new IdentitiesValidationFilter());
   await app.listen(4000, async (): Promise<void> => {
     logger.log(`Sesame - Orchestrator is READY on <http://127.0.0.1:4000> !`);
   });

@@ -3,6 +3,7 @@ APP_PORT = 4002
 IMG_NAME = "ghcr.io/libertech-fr/sesame-orchestrator"
 BASE_NAME = "sesame"
 APP_NAME = "sesame-orchestrator"
+PLATFORM = "linux/amd64"
 
 .DEFAULT_GOAL := help
 help:

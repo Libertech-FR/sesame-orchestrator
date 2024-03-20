@@ -100,7 +100,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
     access_token: string;
     refresh_token?: string;
   }> {
-    const scopes = ['teaket'];
+    const scopes = ['sesame'];
     if (refresh_token === false) scopes.push('offline');
     const jwtid = `${identity._id}_${randomBytes(16).toString('hex')}`;
     const access_token = this.jwtService.sign(

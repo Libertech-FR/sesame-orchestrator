@@ -2,7 +2,9 @@ import { Controller, Get, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Response } from 'express';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
+import { Public } from './_common/decorators/public.decorator';
 
+@Public()
 @Controller()
 export class AppController extends AbstractController {
   constructor(private readonly appService: AppService) {

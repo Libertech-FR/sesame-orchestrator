@@ -149,7 +149,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/_common/pipes/dto-validation.pipe.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/_common/pipes/dto-validation.pipe.ts:15</a></div>
                             </td>
                         </tr>
             </tbody>
@@ -169,6 +169,7 @@
   Injectable,
   Scope,
   Inject,
+  ArgumentMetadata,
 } from &#x27;@nestjs/common&#x27;;
 import { REQUEST } from &#x27;@nestjs/core&#x27;;
 import { Request } from &#x27;express&#x27;;
@@ -179,6 +180,10 @@ interface ValidationRecursive {
 
 @Injectable({ scope: Scope.REQUEST })
 export class DtoValidationPipe extends ValidationPipe {
+  public async transform(value: any, metadata: ArgumentMetadata): Promise&lt;any&gt; {
+    return (await super.transform(value, metadata)) || value;
+  }
+
   public constructor(@Inject(REQUEST) protected readonly request: Request) {
     super({
       transform: true,

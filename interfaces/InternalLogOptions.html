@@ -339,76 +339,95 @@ export class InternalLogger extends ConsoleLogger {
   error(message: any, ...optionalParams: [...any, string?]) {
     const [options] &#x3D; optionalParams;
     //TODO: fix optionalParams system
-    const stack &#x3D; optionalParams[optionalParams.length - (optionalParams.length &#x3D;&#x3D;&#x3D; 3 ? -2 : -1)];
-    const context &#x3D; optionalParams.length &#x3D;&#x3D;&#x3D; 3 ? optionalParams[optionalParams.length - 1] : null;
-    if (options instanceof Object) {
-      if (options.target.includes(InternalLogLevel.DB)) this.commonLogDb({ level: &#x27;error&#x27;, message, context }, options);
+    const lastParam &#x3D; optionalParams[optionalParams.length - 1];
+
+    if (options instanceof Object &amp;&amp; options.target) {
+      if (options.target.includes(InternalLogLevel.DB))
+        this.commonLogDb(
+          { level: &#x27;error&#x27;, message, context: typeof lastParam &#x3D;&#x3D;&#x3D; &#x27;string&#x27; ? lastParam : null },
+          options,
+        );
       if (!options.target.includes(InternalLogLevel.CONSOLE)) return;
     }
-    const args &#x3D; [stack];
-    if (context) args.push(context);
-    super.error(...[message, ...args]);
+
+    super.error(...[message, ...optionalParams]);
   }
 
   warn(message: any, ...optionalParams: [...any, string?]) {
     const [options] &#x3D; optionalParams;
-    const context &#x3D; optionalParams[optionalParams.length - 1];
-    if (options instanceof Object) {
-      if (options.target.includes(InternalLogLevel.DB)) this.commonLogDb({ level: &#x27;warn&#x27;, message, context }, options);
+    const lastParam &#x3D; optionalParams[optionalParams.length - 1];
+
+    if (options instanceof Object &amp;&amp; options.target) {
+      if (options.target.includes(InternalLogLevel.DB))
+        this.commonLogDb(
+          { level: &#x27;warn&#x27;, message, context: typeof lastParam &#x3D;&#x3D;&#x3D; &#x27;string&#x27; ? lastParam : null },
+          options,
+        );
       if (!options.target.includes(InternalLogLevel.CONSOLE)) return;
     }
-    const args &#x3D; [];
-    if (context) args.push(context);
-    super.warn(...[message, ...args]);
+
+    super.warn(...[message, ...optionalParams]);
   }
 
   log(message: any, ...optionalParams: [...any, string?]) {
     const [options] &#x3D; optionalParams;
-    const context &#x3D; optionalParams[optionalParams.length - 1];
-    if (options instanceof Object) {
-      if (options.target.includes(InternalLogLevel.DB)) this.commonLogDb({ level: &#x27;log&#x27;, message, context }, options);
+    const lastParam &#x3D; optionalParams[optionalParams.length - 1];
+
+    if (options instanceof Object &amp;&amp; options.target) {
+      if (options.target.includes(InternalLogLevel.DB))
+        this.commonLogDb({ level: &#x27;log&#x27;, message, context: typeof lastParam &#x3D;&#x3D;&#x3D; &#x27;string&#x27; ? lastParam : null }, options);
       if (!options.target.includes(InternalLogLevel.CONSOLE)) return;
     }
-    const args &#x3D; [];
-    if (context) args.push(context);
-    super.log(...[message, ...args]);
+
+    super.log(...[message, ...optionalParams]);
   }
 
   debug(message: any, ...optionalParams: [...any, string?]) {
     const [options] &#x3D; optionalParams;
-    const context &#x3D; optionalParams[optionalParams.length - 1];
-    if (options instanceof Object) {
-      if (options.target.includes(InternalLogLevel.DB)) this.commonLogDb({ level: &#x27;debug&#x27;, message, context }, options);
+    const lastParam &#x3D; optionalParams[optionalParams.length - 1];
+
+    if (options instanceof Object &amp;&amp; options.target) {
+      if (options.target.includes(InternalLogLevel.DB))
+        this.commonLogDb(
+          { level: &#x27;debug&#x27;, message, context: typeof lastParam &#x3D;&#x3D;&#x3D; &#x27;string&#x27; ? lastParam : null },
+          options,
+        );
       if (!options.target.includes(InternalLogLevel.CONSOLE)) return;
     }
-    const args &#x3D; [];
-    if (context) args.push(context);
-    super.debug(...[message, ...args]);
+
+    super.debug(...[message, ...optionalParams]);
   }
 
   verbose(message: any, ...optionalParams: [...any, string?]) {
     const [options] &#x3D; optionalParams;
-    const context &#x3D; optionalParams[optionalParams.length - 1];
-    if (options instanceof Object) {
+    const lastParam &#x3D; optionalParams[optionalParams.length - 1];
+
+    if (options instanceof Object &amp;&amp; options.target) {
       if (options.target.includes(InternalLogLevel.DB))
-        this.commonLogDb({ level: &#x27;verbose&#x27;, message, context }, options);
+        this.commonLogDb(
+          { level: &#x27;verbose&#x27;, message, context: typeof lastParam &#x3D;&#x3D;&#x3D; &#x27;string&#x27; ? lastParam : null },
+          options,
+        );
       if (!options.target.includes(InternalLogLevel.CONSOLE)) return;
     }
-    const args &#x3D; [];
-    if (context) args.push(context);
-    super.verbose(...[message, ...args]);
+
+    super.verbose(...[message, ...optionalParams]);
   }
 
   fatal(message: any, ...optionalParams: [...any, string?]) {
     const [options] &#x3D; optionalParams;
-    const context &#x3D; optionalParams[optionalParams.length - 1];
-    if (options instanceof Object) {
-      if (options.target.includes(InternalLogLevel.DB)) this.commonLogDb({ level: &#x27;fatal&#x27;, message, context }, options);
+    const lastParam &#x3D; optionalParams[optionalParams.length - 1];
+
+    if (options instanceof Object &amp;&amp; options.target) {
+      if (options.target.includes(InternalLogLevel.DB))
+        this.commonLogDb(
+          { level: &#x27;fatal&#x27;, message, context: typeof lastParam &#x3D;&#x3D;&#x3D; &#x27;string&#x27; ? lastParam : null },
+          options,
+        );
       if (!options.target.includes(InternalLogLevel.CONSOLE)) return;
     }
-    const args &#x3D; [];
-    if (context) args.push(context);
-    super.fatal(...[message, ...args]);
+
+    super.fatal(...[message, ...optionalParams]);
   }
 
   private commonLogDb(

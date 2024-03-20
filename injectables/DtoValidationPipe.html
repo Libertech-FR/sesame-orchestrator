@@ -150,6 +150,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#transform" >transform</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#validationRecursive" >validationRecursive</a>
                             </li>
                         </ul>
@@ -176,7 +181,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/_common/pipes/dto-validation.pipe.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/_common/pipes/dto-validation.pipe.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -223,6 +228,88 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="transform"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>transform</b></span>
+                        <a href="#transform"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>transform(value: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>, metadata: ArgumentMetadata)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">src/_common/pipes/dto-validation.pipe.ts:21</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>value</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>metadata</td>
+                                            <td>
+                                                        <code>ArgumentMetadata</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="validationRecursive"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -241,8 +328,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">src/_common/pipes/dto-validation.pipe.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">src/_common/pipes/dto-validation.pipe.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -321,6 +408,7 @@
   Injectable,
   Scope,
   Inject,
+  ArgumentMetadata,
 } from &#x27;@nestjs/common&#x27;;
 import { REQUEST } from &#x27;@nestjs/core&#x27;;
 import { Request } from &#x27;express&#x27;;
@@ -331,6 +419,10 @@ interface ValidationRecursive {
 
 @Injectable({ scope: Scope.REQUEST })
 export class DtoValidationPipe extends ValidationPipe {
+  public async transform(value: any, metadata: ArgumentMetadata): Promise&lt;any&gt; {
+    return (await super.transform(value, metadata)) || value;
+  }
+
   public constructor(@Inject(REQUEST) protected readonly request: Request) {
     super({
       transform: true,

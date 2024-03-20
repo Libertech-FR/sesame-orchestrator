@@ -86,16 +86,26 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content controller">
+               <div class="content interface">
                    <div class="content-data">
 
 
 
 
 
+
+
+
+
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Controllers</li>
-  <li class="breadcrumb-item" >AppController</li>
+  <li class="breadcrumb-item">Interfaces</li>
+  <li class="breadcrumb-item"
+  >
+  WorkerResultInfoInterface</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -119,167 +129,51 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app.controller.ts</code>
+            <code>src/core/backends/_interfaces/worker-result.interface.ts</code>
         </p>
 
 
 
 
-            <p class="comment">
-                <h3>Extends</h3>
-            </p>
-            <p class="comment">
-            </p>
 
 
-
-            <section data-compodoc="block-index">
-    <h3 id="index">Index</h3>
-    <table class="table table-sm table-bordered index-table">
-        <tbody>
-
+            <section data-compodoc="block-indexables">
+    <h3 id="inputs">Indexable</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <h6><b>Methods</b></h6>
+                        <code>[backendName: string]:        <code><a href="../interfaces/BackendResultInterface.html" target="_self" >Partial&lt;BackendResultInterface&gt;</a></code>
+</code>
                     </td>
                 </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                <a href="#getInfo" >getInfo</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
-
-
-
-
-
-        </tbody>
-    </table>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/core/backends/_interfaces/worker-result.interface.ts:9</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
 </section>
 
-            <section data-compodoc="block-methods">
-    
-    <h3 id="methods">
-        Methods
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getInfo"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                        <span ><b>getInfo</b></span>
-                        <a href="#getInfo"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getInfo(res: Response)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Get()<br /></code>
-                </td>
-            </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">src/app.controller.ts:15</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>res</td>
-                                            <td>
-                                                        <code>Response</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Response</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>    </div>
+    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Res } from &#x27;@nestjs/common&#x27;;
-import { AppService } from &#x27;./app.service&#x27;;
-import { Response } from &#x27;express&#x27;;
-import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
-import { Public } from &#x27;./_common/decorators/public.decorator&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BackendResultInterface } from &#x27;./backend-result.interface&#x27;;
 
-@Public()
-@Controller()
-export class AppController extends AbstractController {
-  constructor(private readonly appService: AppService) {
-    super();
-  }
+export interface WorkerResultInterface {
+  jobId: string;
+  status: number;
+  data: WorkerResultInfoInterface;
+}
 
-  @Get()
-  public getInfo(@Res() res: Response): Response {
-    return res.json({
-      ...this.appService.getInfo(),
-    });
-  }
+export interface WorkerResultInfoInterface {
+  [backendName: string]: Partial&lt;BackendResultInterface&gt;;
 }
 </code></pre>
     </div>
 </div>
-
-
-
-
-
-
-
-
 
 
 
@@ -313,8 +207,8 @@ export class AppController extends AbstractController {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
-            var COMPODOC_CURRENT_PAGE_URL = 'AppController.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'WorkerResultInfoInterface.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -149,13 +149,38 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Protected</span>
-                                    <span class="modifier">Readonly</span>
-                                <a href="#queue" >queue</a>
+                                <a href="#_queue" >_queue</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
-                                    <span class="modifier">Readonly</span>
+                                <a href="#config" >config</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#queueEvents" >queueEvents</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#redis" >redis</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#_req" >_req</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#eventEmitter" >eventEmitter</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#logger" >logger</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#moduleRef" >moduleRef</a>
                             </li>
                         </ul>
                     </td>
@@ -170,12 +195,14 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#alive" >alive</a>
+                                <a href="#executeJob" >executeJob</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#list" >list</a>
+                                <a href="#onModuleInit" >onModuleInit</a>
                             </li>
                         </ul>
                     </td>
@@ -195,12 +222,13 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(configService: ConfigService, redis: Redis)</code>
+                                <span class="modifier">Public</span>
+                        <code>constructor(moduleRef: ModuleRef)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">src/core/backends/backends.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/core/backends/backends.service.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -218,22 +246,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>configService</td>
+                                                        <td>moduleRef</td>
                                                   
                                                         <td>
-                                                                    <code>ConfigService</code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>redis</td>
-                                                  
-                                                        <td>
-                                                                    <code>Redis</code>
+                                                                    <code>ModuleRef</code>
                                                         </td>
                                                   
                                                     <td>
@@ -259,26 +275,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="alive"></a>
+                    <a name="executeJob"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>alive</b></span>
-                        <a href="#alive"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>executeJob</b></span>
+                        <a href="#executeJob"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>alive()</code>
+                    <code>executeJob(actionType: <a href="../undefineds/ActionType.html" target="_self">ActionType</a>, payload?: Record<string | number | any>, options?: <a href="../interfaces/ExecuteJobOptions.html" target="_self">ExecuteJobOptions</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -286,10 +303,64 @@
             <tr>
                 <td class="col-md-4">
 
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>actionType</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#ActionType" target="_self" >ActionType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>payload</td>
+                                            <td>
+                                                        <code>Record&lt;string | number | any&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ExecuteJobOptions.html" target="_self" >ExecuteJobOptions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
+                            <b>Returns : </b>    <code>Promise&lt;&gt;</code>
 
                         </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -298,26 +369,33 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="list"></a>
+                    <a name="onModuleInit"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>list</b></span>
-                        <a href="#list"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>onModuleInit</b></span>
+                        <a href="#onModuleInit"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>list()</code>
+                    <code>onModuleInit()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:15</a></div>
+                            <div class="io-line">Inherited from         <code><a href="../classes/AbstractQueueProcessor.html" target="_self" >AbstractQueueProcessor</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:23</a></code>
+</div>
                         </td>
                     </tr>
 
@@ -326,7 +404,7 @@
                 <td class="col-md-4">
 
                         <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                 </td>
@@ -343,12 +421,11 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="queue"></a>
+                    <a name="_queue"></a>
                     <span class="name">
                             <span class="modifier">Protected</span>
-                            <span class="modifier">Readonly</span>
-                        <span ><b>queue</b></span>
-                        <a href="#queue"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>_queue</b></span>
+                        <a href="#_queue"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -366,7 +443,41 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:6</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:11</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="config"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>config</b></span>
+                        <a href="#config"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ConfigService</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/AbstractQueueProcessor.html" target="_self" >AbstractQueueProcessor</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:8</a></code>
 </div>
                         </td>
                     </tr>
@@ -380,8 +491,7 @@
                 <td class="col-md-4">
                     <a name="queueEvents"></a>
                     <span class="name">
-                            <span class="modifier">Protected</span>
-                            <span class="modifier">Readonly</span>
+                            <span class="modifier">Public</span>
                         <span ><b>queueEvents</b></span>
                         <a href="#queueEvents"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -401,7 +511,174 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:7</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:12</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="redis"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>redis</b></span>
+                        <a href="#redis"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Redis</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/AbstractQueueProcessor.html" target="_self" >AbstractQueueProcessor</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:10</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_req"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>_req</b></span>
+                        <a href="#_req"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../injectables/AbstractService.html" target="_self" >AbstractService</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractService.html#source" target="_self" >AbstractService:19</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="eventEmitter"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>eventEmitter</b></span>
+                        <a href="#eventEmitter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter2</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../injectables/AbstractService.html" target="_self" >AbstractService</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractService.html#source" target="_self" >AbstractService:20</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logger"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>logger</b></span>
+                        <a href="#logger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/Logger.html" target="_self" >Logger</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../injectables/AbstractService.html" target="_self" >AbstractService</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractService.html#source" target="_self" >AbstractService:17</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="moduleRef"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>moduleRef</b></span>
+                        <a href="#moduleRef"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ModuleRef</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../injectables/AbstractService.html" target="_self" >AbstractService</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractService.html#source" target="_self" >AbstractService:18</a></code>
 </div>
                         </td>
                     </tr>
@@ -415,33 +692,53 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ConfigService } from &#x27;@nestjs/config&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, HttpStatus, Injectable, RequestTimeoutException } from &#x27;@nestjs/common&#x27;;
+import { ModuleRef } from &#x27;@nestjs/core&#x27;;
+import { Job } from &#x27;bullmq&#x27;;
 import { AbstractQueueProcessor } from &#x27;~/_common/abstracts/abstract.queue.processor&#x27;;
-import { Redis } from &#x27;ioredis&#x27;;
-import { InjectRedis } from &#x27;@nestjs-modules/ioredis&#x27;;
+import { ActionType } from &#x27;./_enum/action-type.enum&#x27;;
+import { ExecuteJobOptions } from &#x27;./_interfaces/execute-job-options.interface&#x27;;
+
+const DEFAULT_SYNC_TIMEOUT &#x3D; 30_000;
 
 @Injectable()
 export class BackendsService extends AbstractQueueProcessor {
-  constructor(
-    protected readonly configService: ConfigService,
-    @InjectRedis() protected readonly redis: Redis,
-  ) {
-    super(configService, redis);
+  public constructor(protected moduleRef: ModuleRef) {
+    super({ moduleRef });
   }
-  async list() {
-    const job &#x3D; await this.queue.add(&#x27;LISTBACKEND&#x27;, &#x27;x&#x27;);
-    this.queueEvents.on(&#x27;failed&#x27;, (errors) &#x3D;&gt; {
-      console.log(errors);
-    });
-    return await job.waitUntilFinished(this.queueEvents, 30000);
-  }
-  async alive() {
-    const job &#x3D; await this.queue.add(&#x27;PING&#x27;, &#x27;x&#x27;);
-    this.queueEvents.on(&#x27;failed&#x27;, (errors) &#x3D;&gt; {
-      console.log(errors);
-    });
-    return await job.waitUntilFinished(this.queueEvents, 30000);
+
+  public async executeJob(
+    actionType: ActionType,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    payload?: Record&lt;string | number, any&gt;,
+    options?: ExecuteJobOptions,
+  ): Promise&lt;[Job, any]&gt; {
+    const job &#x3D; await this.queue.add(actionType, payload, options?.job);
+    if (!options?.async) {
+      let error: Error;
+      try {
+        const response &#x3D; await job.waitUntilFinished(this.queueEvents, options.syncTimeout || DEFAULT_SYNC_TIMEOUT);
+        return [job, response];
+      } catch (err) {
+        error &#x3D; err;
+      }
+      if (options?.timeoutDiscard !&#x3D;&#x3D; false) {
+        job.discard();
+        throw new BadRequestException({
+          status: HttpStatus.BAD_REQUEST,
+          message: &#x60;Sync job ${job.id} failed to finish in time&#x60;,
+          error,
+          job,
+        });
+      }
+      throw new RequestTimeoutException({
+        status: HttpStatus.REQUEST_TIMEOUT,
+        message: &#x60;Job now continue to run in background ${job.id}, timeout wait until finish reached&#x60;,
+        error,
+        job,
+      });
+    }
+    return [job, null];
   }
 }
 </code></pre>

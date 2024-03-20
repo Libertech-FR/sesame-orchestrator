@@ -149,21 +149,16 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#alive" >alive</a>
+                                <a href="#executeJob" >executeJob</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#list" >list</a>
+                                <a href="#sse" >sse</a>
                             </li>
                         </ul>
                     </td>
@@ -186,23 +181,20 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="alive"></a>
+                    <a name="executeJob"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>alive</b></span>
-                        <a href="#alive"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>executeJob</b></span>
+                        <a href="#executeJob"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>alive(res: Response)</code>
+                    <code>executeJob(res: Response, body: <a href="../classes/ExecuteJobDto.html" target="_self">ExecuteJobDto</a>, asyncQuery: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, timeoutDiscardQuery: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, syncTimeout?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -210,14 +202,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;alive&#x27;)<br />@ApiOperation({summary: &#x27;test backends &#x27;})<br />@ApiResponse({status: 200, description: &#x27;command executed &#x27;})<br />@ApiBearerAuth()<br />@UseGuards(undefined)<br /></code>
+                    <code>@Post(&#x27;execute&#x27;)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -245,6 +237,54 @@
 
                                             <td>
                                                     No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../classes/ExecuteJobDto.html" target="_self" >ExecuteJobDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>asyncQuery</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>timeoutDiscardQuery</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>syncTimeout</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
                                             </td>
 
 
@@ -267,23 +307,21 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="list"></a>
+                    <a name="sse"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>list</b></span>
-                        <a href="#list"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>sse</b></span>
+                        <a href="#sse"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>list(res: Response)</code>
+                    <code>sse(res: Response, key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -291,14 +329,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;list&#x27;)<br />@ApiOperation({summary: &#x27;List backends from daemon&#x27;})<br />@ApiResponse({status: 200, description: &#x27;List ok &#x27;})<br />@ApiBearerAuth()<br />@UseGuards(undefined)<br /></code>
+                    <code>@Public()<br />@Sse(&#x27;sse&#x27;)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:63</a></div>
                         </td>
                     </tr>
 
@@ -330,11 +368,23 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>key</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;Observable&lt;MessageEvent&gt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -348,36 +398,88 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Logger, Get, Res, UseGuards } from &#x27;@nestjs/common&#x27;;
-import { BackendsService } from &#x27;./backends.service&#x27;;
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { AuthGuard } from &#x27;@nestjs/passport&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { InjectRedis } from &#x27;@nestjs-modules/ioredis&#x27;;
+import {
+  Body,
+  Controller,
+  HttpStatus,
+  Logger,
+  ParseIntPipe,
+  Post,
+  Query,
+  Res,
+  Sse,
+  UnauthorizedException,
+} from &#x27;@nestjs/common&#x27;;
+import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { Response } from &#x27;express&#x27;;
+import Redis from &#x27;ioredis&#x27;;
+import { Observable, Subscriber } from &#x27;rxjs&#x27;;
+import { Public } from &#x27;~/_common/decorators/public.decorator&#x27;;
+import { ExecuteJobDto } from &#x27;./_dto/execute-job.dto&#x27;;
+import { BackendsService } from &#x27;./backends.service&#x27;;
+
+function fireMessage(observer: Subscriber&lt;MessageEvent&gt;, channel: string, message: any, loggername: string) {
+  try {
+    observer.next({
+      data: { channel, payload: message },
+    } as MessageEvent);
+    Logger.debug(&#x60;Observer send to &lt;${channel}&gt; with data &lt;${message}&gt;&#x60;, loggername);
+  } catch (err) {
+    Logger.error(&#x60;Observer error from &lt;${channel}&gt; with data &lt;${message}&gt;. Error: ${err}&#x60;, loggername);
+  }
+}
 
 @Controller(&#x27;backends&#x27;)
 @ApiTags(&#x27;core&#x27;)
 export class BackendsController {
   private readonly logger &#x3D; new Logger(BackendsController.name);
 
-  constructor(private backendsService: BackendsService) {}
+  constructor(
+    private backendsService: BackendsService,
+    @InjectRedis() protected readonly redis: Redis,
+  ) {}
 
-  @Get(&#x27;list&#x27;)
-  @ApiOperation({ summary: &#x27;List backends from daemon&#x27; })
-  @ApiResponse({ status: 200, description: &#x27;List ok &#x27; })
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard(&#x27;api-key&#x27;))
-  async list(@Res() res: Response): Promise&lt;Response&gt; {
-    const backend &#x3D; await this.backendsService.list();
-    return res.status(200).json(backend);
+  @Post(&#x27;execute&#x27;)
+  public async executeJob(
+    @Res() res: Response,
+    @Body() body: ExecuteJobDto,
+    @Query(&#x27;async&#x27;) asyncQuery: string,
+    @Query(&#x27;timeoutDiscard&#x27;) timeoutDiscardQuery: string,
+    @Query(&#x27;syncTimeout&#x27;, new ParseIntPipe({ optional: true, errorHttpStatusCode: 406 })) syncTimeout?: number,
+  ): Promise&lt;Response&gt; {
+    const async &#x3D; /true|on|yes|1/i.test(asyncQuery);
+    const timeoutDiscard &#x3D; /true|on|yes|1/i.test(timeoutDiscardQuery);
+    const [job, response] &#x3D; await this.backendsService.executeJob(body.action, body.payload, {
+      async,
+      syncTimeout,
+      timeoutDiscard,
+    });
+    return res.status(HttpStatus.ACCEPTED).json({ async, job, response });
   }
-  @Get(&#x27;alive&#x27;)
-  @ApiOperation({ summary: &#x27;test backends &#x27; })
-  @ApiResponse({ status: 200, description: &#x27;command executed &#x27; })
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard(&#x27;api-key&#x27;))
-  async alive(@Res() res: Response): Promise&lt;Response&gt; {
-    const backend &#x3D; await this.backendsService.alive();
-    return res.status(200).json(backend);
+
+  @Public()
+  @Sse(&#x27;sse&#x27;)
+  public async sse(@Res() res: Response, @Query(&#x27;key&#x27;) key: string): Promise&lt;Observable&lt;MessageEvent&gt;&gt; {
+    if (key !&#x3D;&#x3D; &#x27;hZcdVqHScVDsDFdHOdcjmufEKFJVKaS8&#x27;) throw new UnauthorizedException();
+
+    res.socket.on(&#x27;close&#x27;, () &#x3D;&gt; {
+      Logger.debug(&#x60;Observer close connection&#x60;, this.constructor.name);
+    });
+
+    return new Observable((observer) &#x3D;&gt; {
+      this.backendsService.queueEvents.on(&#x27;added&#x27;, (added) &#x3D;&gt;
+        fireMessage(observer, &#x27;job:added&#x27;, added, this.constructor.name),
+      );
+
+      this.backendsService.queueEvents.on(&#x27;completed&#x27;, (completed) &#x3D;&gt;
+        fireMessage(observer, &#x27;job:completed&#x27;, completed, this.constructor.name),
+      );
+
+      this.backendsService.queueEvents.on(&#x27;failed&#x27;, (failed) &#x3D;&gt;
+        fireMessage(observer, &#x27;job:failed&#x27;, failed, this.constructor.name),
+      );
+    });
   }
 }
 </code></pre>

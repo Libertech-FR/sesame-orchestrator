@@ -242,6 +242,8 @@ import { IdentitiesValidationService } from &#x27;./validations/identities.valid
 import { IdentitiesValidationModule } from &#x27;./validations/identities.validation.module&#x27;;
 import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
 import { ValidationConfigException, ValidationSchemaException } from &#x27;~/_common/errors/ValidationException&#x27;;
+import { APP_FILTER } from &#x27;@nestjs/core&#x27;;
+import { IdentitiesValidationFilter } from &#x27;~/_common/filters/identities-validation.filter&#x27;;
 
 @Module({
   imports: [
@@ -277,7 +279,14 @@ import { ValidationConfigException, ValidationSchemaException } from &#x27;~/_co
       },
     ]),
   ],
-  providers: [IdentitiesService, IdentitiesValidationService],
+  providers: [
+    IdentitiesService,
+    IdentitiesValidationService,
+    {
+      provide: APP_FILTER,
+      useClass: IdentitiesValidationFilter,
+    },
+  ],
   controllers: [IdentitiesController],
 })
 export class IdentitiesModule {}

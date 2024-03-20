@@ -178,21 +178,9 @@
                                         </a>
                                 </li>
                                 <li>
-                                        <a href="#nameQueue" 
->
-                                            nameQueue
-                                        </a>
-                                </li>
-                                <li>
                                         <a href="#passport" 
 >
                                             passport
-                                        </a>
-                                </li>
-                                <li>
-                                        <a href="#secret" 
->
-                                            secret
                                         </a>
                                 </li>
                                 <li>
@@ -381,39 +369,6 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="nameQueue"></a>
-                                        <span class="name "><b>nameQueue</b>
-                                            <a href="#nameQueue">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>nameQueue:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
                                         <a name="passport"></a>
                                         <span class="name "><b>passport</b>
                                             <a href="#passport">
@@ -433,39 +388,6 @@
                                     <tr>
                                         <td class="col-md-4">
                                             <i>Type : </i>    <code>literal type</code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="secret"></a>
-                                        <span class="name "><b>secret</b>
-                                            <a href="#secret">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>secret:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
                                         </td>
                                     </tr>
@@ -529,6 +451,7 @@ export interface MongoosePlugin {
 export interface ConfigInstance {
   application: {
     logLevel: string;
+    nameQueue: string;
     bodyParser: {
       limit: string;
     };
@@ -554,13 +477,12 @@ export interface ConfigInstance {
     api: string;
     options: SwaggerCustomOptions;
   };
-  nameQueue: string;
-  secret: string;
 }
 
 export default (): ConfigInstance &#x3D;&gt; ({
   application: {
-    logLevel: process.env[&#x27;LOG_LEVEL&#x27;] || &#x27;info&#x27;,
+    logLevel: process.env[&#x27;SESAME_LOG_LEVEL&#x27;] || &#x27;info&#x27;,
+    nameQueue: process.env[&#x27;SESAME_NAME_QUEUE&#x27;] || &#x27;sesame&#x27;,
     bodyParser: {
       limit: &#x27;500mb&#x27;,
     },
@@ -579,14 +501,14 @@ export default (): ConfigInstance &#x3D;&gt; ({
     },
   },
   ioredis: {
-    uri: process.env[&#x27;REDIS_URI&#x27;] || &#x27;redis://localhost:6379/0&#x27;,
+    uri: process.env[&#x27;SESAME_REDIS_URI&#x27;] || &#x27;redis://localhost:6379/0&#x27;,
     options: {
       showFriendlyErrorStack: true,
       maxRetriesPerRequest: null,
     },
   },
   mongoose: {
-    uri: process.env[&#x27;MONGO_URI&#x27;] || &#x27;mongodb://localhost:27017/backend&#x27;,
+    uri: process.env[&#x27;SESAME_MONGO_URI&#x27;] || &#x27;mongodb://localhost:27017/backend&#x27;,
     options: {
       directConnection: true,
     },
@@ -604,15 +526,13 @@ export default (): ConfigInstance &#x3D;&gt; ({
       /**
        * @see https://randomkeygen.com/
        */
-      secret: process.env[&#x27;JWT_SECRET&#x27;],
+      secret: process.env[&#x27;SESAME_JWT_SECRET&#x27;],
       // jwksUri: &#x27;http://127.0.0.1:2000/jwks&#x27;,
     },
   },
-  nameQueue: process.env[&#x27;NAME_QUEUE&#x27;] || &#x27;backend&#x27;,
-  secret: process.env[&#x27;SECRET&#x27;] || &#x27;mySecret&#x27;,
   swagger: {
-    path: process.env[&#x27;SWAGGER_PATH&#x27;] || &#x27;/swagger&#x27;,
-    api: process.env[&#x27;SWAGGER_API&#x27;] || &#x27;/swagger/json&#x27;,
+    path: &#x27;/swagger&#x27;,
+    api: &#x27;/swagger/json&#x27;,
     options: {
       swaggerOptions: {
         persistAuthorization: true,

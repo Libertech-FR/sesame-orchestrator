@@ -13,6 +13,7 @@ export class IdentitiesCreateDto {
   state: IdentityState;
 
   @IsNumber()
+  @IsOptional()
   @IsEnum(IdentityLifecycle)
   @ApiProperty({ enum: IdentityLifecycle })
   lifecycle: number;

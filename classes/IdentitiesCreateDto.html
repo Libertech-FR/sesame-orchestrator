@@ -163,6 +163,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#lifecycle" >lifecycle</a>
                             </li>
                             <li>
@@ -222,7 +223,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:42</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -260,7 +261,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -273,6 +274,7 @@
                 <td class="col-md-4">
                     <a name="lifecycle"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -292,13 +294,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsNumber()<br />@IsEnum(IdentityLifecycle)<br />@ApiProperty({enum: IdentityLifecycle})<br />
+                            @IsNumber()<br />@IsOptional()<br />@IsEnum(IdentityLifecycle)<br />@ApiProperty({enum: IdentityLifecycle})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -370,6 +372,7 @@ export class IdentitiesCreateDto {
   state: IdentityState;
 
   @IsNumber()
+  @IsOptional()
   @IsEnum(IdentityLifecycle)
   @ApiProperty({ enum: IdentityLifecycle })
   lifecycle: number;

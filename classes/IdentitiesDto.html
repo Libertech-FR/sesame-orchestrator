@@ -169,6 +169,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#lifecycle" >lifecycle</a>
                             </li>
                             <li>
@@ -234,7 +235,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:42</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:43</a></code>
 </div>
                         </td>
                     </tr>
@@ -279,7 +280,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:23</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:24</a></code>
 </div>
                         </td>
                     </tr>
@@ -293,6 +294,7 @@
                 <td class="col-md-4">
                     <a name="lifecycle"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -312,7 +314,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsNumber()<br />@IsEnum(IdentityLifecycle)<br />@ApiProperty({enum: IdentityLifecycle})<br />
+                            @IsNumber()<br />@IsOptional()<br />@IsEnum(IdentityLifecycle)<br />@ApiProperty({enum: IdentityLifecycle})<br />
                         </code>
                     </td>
                 </tr>
@@ -324,7 +326,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:18</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:19</a></code>
 </div>
                         </td>
                     </tr>
@@ -404,6 +406,7 @@ export class IdentitiesCreateDto {
   state: IdentityState;
 
   @IsNumber()
+  @IsOptional()
   @IsEnum(IdentityLifecycle)
   @ApiProperty({ enum: IdentityLifecycle })
   lifecycle: number;

@@ -13,6 +13,7 @@ export interface MongoosePlugin {
 export interface ConfigInstance {
   application: {
     logLevel: string;
+    nameQueue: string;
     bodyParser: {
       limit: string;
     };
@@ -38,13 +39,12 @@ export interface ConfigInstance {
     api: string;
     options: SwaggerCustomOptions;
   };
-  nameQueue: string;
-  secret: string;
 }
 
 export default (): ConfigInstance => ({
   application: {
-    logLevel: process.env['LOG_LEVEL'] || 'info',
+    logLevel: process.env['SESAME_LOG_LEVEL'] || 'info',
+    nameQueue: process.env['SESAME_NAME_QUEUE'] || 'sesame',
     bodyParser: {
       limit: '500mb',
     },
@@ -63,14 +63,14 @@ export default (): ConfigInstance => ({
     },
   },
   ioredis: {
-    uri: process.env['REDIS_URI'] || 'redis://localhost:6379/0',
+    uri: process.env['SESAME_REDIS_URI'] || 'redis://localhost:6379/0',
     options: {
       showFriendlyErrorStack: true,
       maxRetriesPerRequest: null,
     },
   },
   mongoose: {
-    uri: process.env['MONGO_URI'] || 'mongodb://localhost:27017/backend',
+    uri: process.env['SESAME_MONGO_URI'] || 'mongodb://localhost:27017/backend',
     options: {
       directConnection: true,
     },
@@ -88,15 +88,13 @@ export default (): ConfigInstance => ({
       /**
        * @see https://randomkeygen.com/
        */
-      secret: process.env['JWT_SECRET'],
+      secret: process.env['SESAME_JWT_SECRET'],
       // jwksUri: 'http://127.0.0.1:2000/jwks',
     },
   },
-  nameQueue: process.env['NAME_QUEUE'] || 'backend',
-  secret: process.env['SECRET'] || 'mySecret',
   swagger: {
-    path: process.env['SWAGGER_PATH'] || '/swagger',
-    api: process.env['SWAGGER_API'] || '/swagger/json',
+    path: '/swagger',
+    api: '/swagger/json',
     options: {
       swaggerOptions: {
         persistAuthorization: true,

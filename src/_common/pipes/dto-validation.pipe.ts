@@ -7,6 +7,7 @@ import {
   Injectable,
   Scope,
   Inject,
+  ArgumentMetadata,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
@@ -17,6 +18,10 @@ interface ValidationRecursive {
 
 @Injectable({ scope: Scope.REQUEST })
 export class DtoValidationPipe extends ValidationPipe {
+  public async transform(value: any, metadata: ArgumentMetadata): Promise<any> {
+    return (await super.transform(value, metadata)) || value;
+  }
+
   public constructor(@Inject(REQUEST) protected readonly request: Request) {
     super({
       transform: true,

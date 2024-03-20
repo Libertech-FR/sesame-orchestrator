@@ -1,19 +1,38 @@
-import { ConfigService } from '@nestjs/config';
 import { Queue, QueueEvents } from 'bullmq';
-import Redis from 'ioredis';
+import { AbstractService, AbstractServiceContext } from './abstract.service';
+import { Redis, getRedisConnectionToken } from '@nestjs-modules/ioredis';
+import { OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
-export abstract class AbstractQueueProcessor {
-  protected readonly queue: Queue;
-  protected readonly queueEvents: QueueEvents;
-  public constructor(
-    protected readonly config: ConfigService,
-    protected readonly redis: Redis,
-  ) {
-    this.queue = new Queue(this.config.get('nameQueue'), {
+export abstract class AbstractQueueProcessor extends AbstractService implements OnModuleInit {
+  protected config: ConfigService;
+
+  private redis: Redis;
+  protected _queue: Queue;
+  public queueEvents: QueueEvents;
+
+  public get queue(): Queue {
+    return this._queue;
+  }
+
+  public constructor(context?: AbstractServiceContext) {
+    super(context);
+    if (!this.moduleRef) throw new Error('ModuleRef is not defined in ' + this.constructor.name);
+  }
+
+  public async onModuleInit() {
+    this.config = this.moduleRef.get<ConfigService>(ConfigService, { strict: false });
+    this.redis = this.moduleRef.get<Redis>(getRedisConnectionToken(), { strict: false });
+
+    this._queue = new Queue(this.config.get<string>('application.nameQueue'), {
       connection: this.redis,
     });
-    this.queueEvents = new QueueEvents(this.config.get('nameQueue'), {
+    this.queueEvents = new QueueEvents(this.config.get<string>('application.nameQueue'), {
       connection: this.redis,
+    });
+
+    this.queueEvents.on('failed', (errors) => {
+      this.logger.warn('Queue failed', errors);
     });
   }
 }

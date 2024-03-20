@@ -7,6 +7,8 @@ import { IdentitiesValidationService } from './validations/identities.validation
 import { IdentitiesValidationModule } from './validations/identities.validation.module';
 import { IdentitiesJsonformsService } from './jsonforms/identities.jsonforms.service';
 import { IdentitiesJsonformsModule } from './jsonforms/identities.jsonforms.module';
+import { APP_FILTER } from '@nestjs/core';
+import { IdentitiesValidationFilter } from '~/_common/filters/identities-validation.filter';
 
 @Module({
   imports: [
@@ -19,7 +21,15 @@ import { IdentitiesJsonformsModule } from './jsonforms/identities.jsonforms.modu
       },
     ]),
   ],
-  providers: [IdentitiesService, IdentitiesValidationService, IdentitiesJsonformsService],
+  providers: [
+    IdentitiesService,
+    IdentitiesValidationService,
+    {
+      provide: APP_FILTER,
+      useClass: IdentitiesValidationFilter,
+    },
+    IdentitiesJsonformsService,
+  ],
   controllers: [IdentitiesController],
 })
 export class IdentitiesModule {}

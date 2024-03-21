@@ -4,7 +4,7 @@ elements:
   - type: HorizontalLayout
     elements:
       - type: Control
-        label: supanncivilite
+        label: Civilité
         scope: "#/properties/supanncivilite"
         options:
           required: true

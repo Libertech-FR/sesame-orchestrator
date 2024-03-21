@@ -19,5 +19,5 @@ export class additionalFieldsPartDto {
     type: 'object',
     name: 'validations',
   })
-  validations: { [key: string]: { [key: string]: string } };
+  validations?: { [key: string]: { [key: string]: string } };
 }

@@ -121,25 +121,28 @@ export class IdentitiesController extends AbstractController {
     @Res() res: Response,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
-  ): Promise<Response> {
-    try {
-      const [data, total] = await this._service.findAndCount(
-        searchFilterSchema,
-        IdentitiesController.projection,
-        searchFilterOptions,
-      );
-      return res.status(HttpStatus.OK).json({
-        statusCode: HttpStatus.OK,
-        total,
-        data,
-      });
-    } catch (error) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: error.message,
-        validations: error.validations,
-      });
-    }
+  ): Promise<
+    Response<
+      {
+        statusCode: number;
+        data?: Document<Identities, any, Identities>;
+        total?: number;
+        message?: string;
+        validations?: MixedValue;
+      },
+      any
+    >
+  > {
+    const [data, total] = await this._service.findAndCount(
+      searchFilterSchema,
+      IdentitiesController.projection,
+      searchFilterOptions,
+    );
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      total,
+      data,
+    });
   }
 
   @Get(':_id([0-9a-fA-F]{24})')

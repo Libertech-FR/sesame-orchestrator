@@ -87,6 +87,7 @@ export class IdentitiesJsonformsService extends AbstractService {
   }
 
   async findAll(): Promise<any> {
+    // eslint-disable-next-line prefer-rest-params
     this.logger.debug(['findAll', JSON.stringify(Object.values(arguments))].join(' '));
     const configPath = './src/management/identities/jsonforms/_config';
     const files = readdirSync(configPath);
@@ -101,6 +102,7 @@ export class IdentitiesJsonformsService extends AbstractService {
   }
 
   async findOne(schema): Promise<any> {
+    // eslint-disable-next-line prefer-rest-params
     this.logger.debug(['findOne', JSON.stringify(Object.values(arguments))].join(' '));
     const filePath = `./src/management/identities/jsonforms/_config/${schema}.ui.yml`;
     if (!existsSync(filePath)) {

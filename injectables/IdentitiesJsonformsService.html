@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content class">
+               <div class="content injectable">
                    <div class="content-data">
 
 
@@ -96,13 +96,9 @@
 
 
 
-
-
-
-
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >AbstractQueueProcessor</li>
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >IdentitiesJsonformsService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +122,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/_common/abstracts/abstract.queue.processor.ts</code>
+            <code>src/management/identities/jsonforms/identities.jsonforms.service.ts</code>
         </p>
 
 
@@ -136,13 +132,6 @@
             </p>
             <p class="comment">
                             <code><a href="../injectables/AbstractService.html" target="_self" >AbstractService</a></code>
-            </p>
-
-            <p class="comment">
-                <h3>Implements</h3>
-            </p>
-            <p class="comment">
-                        <code>OnModuleInit</code>
             </p>
 
 
@@ -159,20 +148,12 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Protected</span>
-                                <a href="#_queue" >_queue</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                <a href="#config" >config</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                <a href="#queueEvents" >queueEvents</a>
+                                    <span class="modifier">Private</span>
+                                <a href="#ajv" >ajv</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#redis" >redis</a>
+                                <a href="#validateSchema" >validateSchema</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -206,9 +187,20 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#onModuleInit" >onModuleInit</a>
+                                <a href="#findAll" >findAll</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findOne" >findOne</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#generate" >generate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#generateAll" >generateAll</a>
                             </li>
                         </ul>
                     </td>
@@ -218,20 +210,6 @@
 
 
 
-                    <tr>
-                        <td class="col-md-4">
-                            <h6><b>Accessors</b></h6>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <ul class="index-list">
-                                <li>
-                                    <a href="#queue" >queue</a>
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
         </tbody>
     </table>
 </section>
@@ -242,50 +220,237 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                                <span class="modifier">Public</span>
-                        <code>constructor(context?: <a href="../interfaces/AbstractServiceContext.html" target="_self">AbstractServiceContext</a>)</code>
+<code>constructor()</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/_common/abstracts/abstract.queue.processor.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:11</a></div>
                             </td>
                         </tr>
 
-                <tr>
-                    <td class="col-md-4">
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                        <td>context</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../interfaces/AbstractServiceContext.html" target="_self" >AbstractServiceContext</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            Yes
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
             </tbody>
         </table>
 </section>
 
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAll"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findAll</b></span>
+                        <a href="#findAll"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAll()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:89</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findOne"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findOne</b></span>
+                        <a href="#findOne"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findOne(schema)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="104"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:104</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>schema</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="generate"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>generate</b></span>
+                        <a href="#generate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>generate(schema: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>schema</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="generateAll"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>generateAll</b></span>
+                        <a href="#generateAll"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>generateAll()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:80</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
             <section data-compodoc="block-properties">
     
     <h3 id="inputs">
@@ -295,104 +460,49 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="_queue"></a>
-                    <span class="name">
-                            <span class="modifier">Protected</span>
-                        <span ><b>_queue</b></span>
-                        <a href="#_queue"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>Queue</code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/_common/abstracts/abstract.queue.processor.ts:12</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="config"></a>
-                    <span class="name">
-                            <span class="modifier">Protected</span>
-                        <span ><b>config</b></span>
-                        <a href="#config"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>ConfigService</code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/_common/abstracts/abstract.queue.processor.ts:9</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="queueEvents"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                        <span ><b>queueEvents</b></span>
-                        <a href="#queueEvents"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>QueueEvents</code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/_common/abstracts/abstract.queue.processor.ts:13</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="redis"></a>
+                    <a name="ajv"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
-                        <span ><b>redis</b></span>
-                        <a href="#redis"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>ajv</b></span>
+                        <a href="#ajv"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>    <code>Redis</code>
+                        <i>Type : </i>    <code>Ajv</code>
 
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Ajv({ allErrors: true })</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/_common/abstracts/abstract.queue.processor.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:10</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="validateSchema"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>validateSchema</b></span>
+                        <a href="#validateSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -534,130 +644,133 @@
     </table>
 </section>
 
-            <section data-compodoc="block-methods">
-    
-    <h3 id="methods">
-        Methods
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="onModuleInit"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>onModuleInit</b></span>
-                        <a href="#onModuleInit"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>onModuleInit()</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">src/_common/abstracts/abstract.queue.processor.ts:24</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>
-
-
-
-
-
-            <section data-compodoc="block-accessors">
-    <h3 id="accessors">
-        Accessors
-    </h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="queue"></a>
-                        <span class="name"><b>queue</b><a href="#queue"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                        <span class="accessor"><b>get</b><code>queue()</code></span>
-                    </td>
-                </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/_common/abstracts/abstract.queue.processor.ts:15</a></div>
-                                </td>
-                            </tr>
-
-            </tbody>
-        </table>
-</section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Queue, QueueEvents } from &#x27;bullmq&#x27;;
-import { AbstractService, AbstractServiceContext } from &#x27;./abstract.service&#x27;;
-import { getRedisConnectionToken } from &#x27;@nestjs-modules/ioredis&#x27;;
-import { Redis } from &#x27;ioredis&#x27;;
-import { OnModuleInit } from &#x27;@nestjs/common&#x27;;
-import { ConfigService } from &#x27;@nestjs/config&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { AbstractService } from &#x27;~/_common/abstracts/abstract.service&#x27;;
+import { parse, stringify } from &#x27;yaml&#x27;;
+import { existsSync, readFileSync, writeFileSync, readdirSync } from &#x27;fs&#x27;;
+import Ajv from &#x27;ajv&#x27;;
+import { ValidationConfigException } from &#x27;~/_common/errors/ValidationException&#x27;;
 
-export abstract class AbstractQueueProcessor extends AbstractService implements OnModuleInit {
-  protected config: ConfigService;
+@Injectable()
+export class IdentitiesJsonformsService extends AbstractService {
+  private ajv: Ajv &#x3D; new Ajv({ allErrors: true });
+  private validateSchema;
 
-  private redis: Redis;
-  protected _queue: Queue;
-  public queueEvents: QueueEvents;
-
-  public get queue(): Queue {
-    return this._queue;
+  constructor() {
+    super();
+    //this.validateSchema &#x3D; this.ajv.compile(validSchema);
   }
 
-  public constructor(context?: AbstractServiceContext) {
-    super(context);
-    if (!this.moduleRef) throw new Error(&#x27;ModuleRef is not defined in &#x27; + this.constructor.name);
+  async generate(schema: string): Promise&lt;any&gt; {
+    if (schema) {
+      console.log(&#x60;Generating jsonforms for schema: ${schema}&#x60;);
+      const filePath &#x3D; &#x60;./src/management/identities/validations/_config/${schema}.yml&#x60;;
+
+      if (!existsSync(filePath)) {
+        console.log(&#x60;File not found: ${filePath}&#x60;);
+        const message &#x3D; &#x60;File not found: ${filePath}&#x60;;
+        throw new ValidationConfigException({ message });
+      }
+
+      const jsonSchema &#x3D; parse(readFileSync(filePath, &#x27;utf-8&#x27;));
+
+      // const jsonForm &#x3D; {
+      //   type: &#x27;VerticalLayout&#x27;,
+      //   elements: Object.keys(jsonSchema.properties).map((key) &#x3D;&gt; {
+      //     return {
+      //       type: &#x27;Control&#x27;,
+      //       label: key,
+      //       scope: &#x60;#/properties/${key}&#x60;,
+      //       options: {
+      //         required: jsonSchema.required &amp;&amp; jsonSchema.required.includes(key),
+      //       },
+      //     };
+      //   }),
+      // };
+
+      const jsonForm &#x3D; {
+        type: &#x27;Group&#x27;,
+        label: schema,
+        elements: Object.keys(jsonSchema.properties)
+          .reduce((acc, key, index) &#x3D;&gt; {
+            const groupIndex &#x3D; Math.floor(index / 3); // Determine the current group based on the index
+            if (!acc[groupIndex]) {
+              acc[groupIndex] &#x3D; {
+                // Initialize a new HorizontalLayout group if it doesn&#x27;t exist
+                type: &#x27;HorizontalLayout&#x27;,
+                elements: [],
+              };
+            }
+
+            acc[groupIndex].elements.push({
+              // Add the current element to its corresponding group
+              type: &#x27;Control&#x27;,
+              label: key,
+              scope: &#x60;#/properties/${key}&#x60;,
+              options: {
+                required: jsonSchema.required &amp;&amp; jsonSchema.required.includes(key),
+                showUnfocusedDescription: false,
+              },
+            });
+
+            return acc;
+          }, [])
+          .map((group) &#x3D;&gt; group), // Flatten the structure
+      };
+
+      writeFileSync(&#x60;./src/management/identities/jsonforms/_config/${schema}.ui.yml&#x60;, stringify(jsonForm));
+      return jsonForm;
+    }
   }
 
-  public async onModuleInit() {
-    this.config &#x3D; this.moduleRef.get&lt;ConfigService&gt;(ConfigService, { strict: false });
-    this.redis &#x3D; this.moduleRef.get&lt;Redis&gt;(getRedisConnectionToken(), { strict: false });
+  async generateAll(): Promise&lt;any&gt; {
+    const configPath &#x3D; &#x27;./src/management/identities/validations/_config&#x27;;
+    const files &#x3D; readdirSync(configPath);
+    for (const file of files) {
+      this.generate(file);
+    }
+    return files.length;
+  }
 
-    this._queue &#x3D; new Queue(this.config.get&lt;string&gt;(&#x27;application.nameQueue&#x27;), {
-      connection: this.redis,
-    });
-    this.queueEvents &#x3D; new QueueEvents(this.config.get&lt;string&gt;(&#x27;application.nameQueue&#x27;), {
-      connection: this.redis,
-    });
+  async findAll(): Promise&lt;any&gt; {
+    // eslint-disable-next-line prefer-rest-params
+    this.logger.debug([&#x27;findAll&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;));
+    const configPath &#x3D; &#x27;./src/management/identities/jsonforms/_config&#x27;;
+    const files &#x3D; readdirSync(configPath);
+    const result &#x3D; [];
+    for (const file of files) {
+      const filePath &#x3D; &#x60;${configPath}/${file}&#x60;;
+      const data &#x3D; parse(readFileSync(filePath, &#x27;utf-8&#x27;));
+      const key &#x3D; file.replace(&#x27;.ui.yml&#x27;, &#x27;&#x27;);
+      result.push({ [key]: data });
+    }
+    return [result, files.length];
+  }
 
-    this.queueEvents.on(&#x27;failed&#x27;, (errors) &#x3D;&gt; {
-      this.logger.warn(&#x27;Queue failed&#x27;, errors);
-    });
+  async findOne(schema): Promise&lt;any&gt; {
+    // eslint-disable-next-line prefer-rest-params
+    this.logger.debug([&#x27;findOne&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;));
+    const filePath &#x3D; &#x60;./src/management/identities/jsonforms/_config/${schema}.ui.yml&#x60;;
+    if (!existsSync(filePath)) {
+      const message &#x3D; &#x60;File not found: ${filePath}&#x60;;
+      throw new ValidationConfigException({ message });
+    }
+
+    return parse(readFileSync(filePath, &#x27;utf-8&#x27;));
   }
 }
 </code></pre>
     </div>
+
 </div>
+
+
+
+
 
 
 
@@ -692,8 +805,8 @@ export abstract class AbstractQueueProcessor extends AbstractService implements 
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'AbstractQueueProcessor.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'IdentitiesJsonformsService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -95,7 +95,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Controllers</li>
-  <li class="breadcrumb-item" >IdentitiesValidationController</li>
+  <li class="breadcrumb-item" >IdentitiesJsonFormsController</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -119,14 +119,14 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/management/identities/validations/identities.validation.controller.ts</code>
+            <code>src/management/identities/jsonforms/identities.jsonforms.controller.ts</code>
         </p>
 
             <p class="comment">
                 <h3>Prefix</h3>
             </p>
             <p class="comment">
-                <code>management/identities/validation</code>
+                <code>management/identities/jsonforms</code>
             </p>
 
 
@@ -155,18 +155,22 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
+                                <a href="#generate" >generate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#generateAll" >generateAll</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
                                 <a href="#search" >search</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#searchAll" >searchAll</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#validate" >validate</a>
                             </li>
                         </ul>
                     </td>
@@ -185,6 +189,178 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="generate"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>generate</b></span>
+                        <a href="#generate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>generate(res: Response, schema: string | null)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;generate&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:22</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>schema</td>
+                                            <td>
+                                                        <code>string | null</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>null</code>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="generateAll"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>generateAll</b></span>
+                        <a href="#generateAll"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>generateAll(res: Response)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;generateAll&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:13</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -215,8 +391,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="57"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.controller.ts:57</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -303,8 +479,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.controller.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -350,144 +526,37 @@
             </tr>
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="validate"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>validate</b></span>
-                        <a href="#validate"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validate(res: Response, body: <a href="../classes/AdditionalFieldsPart.html" target="_self">AdditionalFieldsPart</a>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Post()<br /></code>
-                </td>
-            </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.controller.ts:17</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>res</td>
-                                            <td>
-                                                        <code>Response</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>body</td>
-                                            <td>
-                                                            <code><a href="../classes/AdditionalFieldsPart.html" target="_self" >AdditionalFieldsPart</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;Response&lt;literal type, any&gt;&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, HttpStatus, Param, Post, Res } from &#x27;@nestjs/common&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
-import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { IdentitiesJsonformsService } from &#x27;./identities.jsonforms.service&#x27;;
 import { Response } from &#x27;express&#x27;;
-import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
-import { AdditionalFieldsPart } from &#x27;../_schemas/_parts/additionalFields.part.schema&#x27;;
-import { IdentitiesValidationService } from &#x27;./identities.validation.service&#x27;;
 
-@ApiTags(&#x27;management&#x27;)
-@Controller(&#x27;management/identities/validation&#x27;)
-export class IdentitiesValidationController extends AbstractController {
-  constructor(protected readonly _service: IdentitiesValidationService) {
+@Controller(&#x27;management/identities/jsonforms&#x27;)
+export class IdentitiesJsonFormsController extends AbstractController {
+  constructor(private readonly _service: IdentitiesJsonformsService) {
     super();
   }
 
-  @Post()
-  public async validate(
-    @Res()
-    res: Response,
-    @Body() body: AdditionalFieldsPart,
-  ): Promise&lt;
-    Response&lt;
-      {
-        statusCode: number;
-        data?: any;
-        message?: string;
-        validations?: MixedValue;
-      },
-      any
-    &gt;
-  &gt; {
-    try {
-      const data &#x3D; await this._service.validate(body);
-      return res.status(HttpStatus.CREATED).json({
-        statusCode: HttpStatus.CREATED,
-        data,
-      });
-    } catch (error) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: error.message,
-        validations: error.validations,
-      });
-    }
+  @Post(&#x27;generateAll&#x27;)
+  async generateAll(@Res() res: Response): Promise&lt;any&gt; {
+    const result &#x3D; await this._service.generateAll();
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: result,
+    });
+  }
+
+  @Post(&#x27;generate&#x27;)
+  async generate(@Res() res: Response, @Body(&#x27;schema&#x27;) schema: string | null &#x3D; null): Promise&lt;any&gt; {
+    const result &#x3D; await this._service.generate(schema);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: result,
+    });
   }
 
   @Get()
@@ -553,7 +622,7 @@ export class IdentitiesValidationController extends AbstractController {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
-            var COMPODOC_CURRENT_PAGE_URL = 'IdentitiesValidationController.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'IdentitiesJsonFormsController.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

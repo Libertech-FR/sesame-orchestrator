@@ -338,8 +338,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="148"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:148</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="151"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:151</a></div>
                         </td>
                     </tr>
 
@@ -430,8 +430,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="195"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:195</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="198"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:198</a></div>
                         </td>
                     </tr>
 
@@ -582,7 +582,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;Response&lt;literal type, any&gt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -625,8 +625,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="172"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:172</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="175"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:175</a></div>
                         </td>
                     </tr>
 
@@ -914,25 +914,28 @@ export class IdentitiesController extends AbstractController {
     @Res() res: Response,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
-  ): Promise&lt;Response&gt; {
-    try {
-      const [data, total] &#x3D; await this._service.findAndCount(
-        searchFilterSchema,
-        IdentitiesController.projection,
-        searchFilterOptions,
-      );
-      return res.status(HttpStatus.OK).json({
-        statusCode: HttpStatus.OK,
-        total,
-        data,
-      });
-    } catch (error) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: error.message,
-        validations: error.validations,
-      });
-    }
+  ): Promise&lt;
+    Response&lt;
+      {
+        statusCode: number;
+        data?: Document&lt;Identities, any, Identities&gt;;
+        total?: number;
+        message?: string;
+        validations?: MixedValue;
+      },
+      any
+    &gt;
+  &gt; {
+    const [data, total] &#x3D; await this._service.findAndCount(
+      searchFilterSchema,
+      IdentitiesController.projection,
+      searchFilterOptions,
+    );
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      total,
+      data,
+    });
   }
 
   @Get(&#x27;:_id([0-9a-fA-F]{24})&#x27;)

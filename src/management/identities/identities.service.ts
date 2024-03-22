@@ -92,9 +92,22 @@ export class IdentitiesService extends AbstractServiceSchema {
         throw error; // Rethrow the original error if it's not one of the handled types.
       }
     }
+    if (update.state === IdentityState.TO_COMPLETE) {
+      update = { ...update, state: IdentityState.TO_VALIDATE };
+    }
+    console.log(update);
     //update.state = IdentityState.TO_VALIDATE;
     const updated = await super.update(_id, update, options);
     //TODO: add backends service logic here (TO_SYNC)
+    return updated;
+  }
+
+  public async updateState<T extends AbstractSchema | Document>(
+    _id: Types.ObjectId | any,
+    state: IdentityState,
+    options?: QueryOptions<T> & { rawResult: true },
+  ): Promise<ModifyResult<Query<T, T, any, T>>> {
+    const updated = await super.update(_id, { state }, options);
     return updated;
   }
 

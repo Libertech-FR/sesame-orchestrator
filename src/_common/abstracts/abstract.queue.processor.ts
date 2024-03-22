@@ -1,6 +1,7 @@
 import { Queue, QueueEvents } from 'bullmq';
 import { AbstractService, AbstractServiceContext } from './abstract.service';
-import { Redis, getRedisConnectionToken } from '@nestjs-modules/ioredis';
+import { getRedisConnectionToken } from '@nestjs-modules/ioredis';
+import { Redis } from 'ioredis';
 import { OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 

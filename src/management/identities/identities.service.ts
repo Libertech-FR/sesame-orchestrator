@@ -86,14 +86,13 @@ export class IdentitiesService extends AbstractServiceSchema {
       if (error instanceof ValidationSchemaException) {
         this.logger.warn(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
         update.additionalFields.validations = error.getValidations();
-        this.logger.error(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
         throw new ValidationSchemaException(error.getPayload());
       } else {
         this.logger.error(`${logPrefix} Unhandled error: ${error.message}`);
         throw error; // Rethrow the original error if it's not one of the handled types.
       }
     }
-    console.log('update', update);
+    //update.state = IdentityState.TO_VALIDATE;
     const updated = await super.update(_id, update, options);
     //TODO: add backends service logic here (TO_SYNC)
     return updated;

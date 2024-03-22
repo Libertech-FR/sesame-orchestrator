@@ -1,9 +1,9 @@
-include .env
 APP_PORT = 4002
 IMG_NAME = "ghcr.io/libertech-fr/sesame-orchestrator"
 BASE_NAME = "sesame"
 APP_NAME = "sesame-orchestrator"
 PLATFORM = "linux/amd64"
+include .env
 
 .DEFAULT_GOAL := help
 help:
@@ -76,7 +76,7 @@ dbs: ## Start databases
 		--health-retries=3 \
 		--health-cmd="redis-cli ping || exit 1" \
 		redis || true
-	@docker exec -it $(BASE_NAME)-mongodb mongosh --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: '127.0.0.1:27017'}]})" || true
+	@docker exec -it $(BASE_NAME)-mongodb mongosh --eval "rs.initiate({_id: \"rs0\", members: [{_id: 0, host: \"$(BASE_NAME)-mongodb\"}]})" || true
 
 stop: ## Stop the container
 	@docker stop $(APP_NAME) || true

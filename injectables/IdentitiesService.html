@@ -205,6 +205,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#updateState" >updateState</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#upsert" >upsert</a>
                             </li>
                             <li>
@@ -435,7 +440,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:101</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:114</a></code>
 </div>
                         </td>
                     </tr>
@@ -524,8 +529,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="112"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:112</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="125"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:125</a></div>
                         </td>
                     </tr>
 
@@ -669,6 +674,107 @@
                                                 <td>update</td>
                                             <td>
                                                         <code>UpdateQuery&lt;T&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateState"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateState</b></span>
+                        <a href="#updateState"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateState(_id: Types.ObjectId | any, state: <a href="../undefineds/IdentityState.html" target="_self">IdentityState</a>, options?)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="105"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:105</a></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>_id</td>
+                                            <td>
+                                                        <code>Types.ObjectId | any</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>state</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#IdentityState" target="_self" >IdentityState</a></code>
                                             </td>
 
                                             <td>
@@ -1600,9 +1706,22 @@ export class IdentitiesService extends AbstractServiceSchema {
         throw error; // Rethrow the original error if it&#x27;s not one of the handled types.
       }
     }
+    if (update.state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
+      update &#x3D; { ...update, state: IdentityState.TO_VALIDATE };
+    }
+    console.log(update);
     //update.state &#x3D; IdentityState.TO_VALIDATE;
     const updated &#x3D; await super.update(_id, update, options);
     //TODO: add backends service logic here (TO_SYNC)
+    return updated;
+  }
+
+  public async updateState&lt;T extends AbstractSchema | Document&gt;(
+    _id: Types.ObjectId | any,
+    state: IdentityState,
+    options?: QueryOptions&lt;T&gt; &amp; { rawResult: true },
+  ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
+    const updated &#x3D; await super.update(_id, { state }, options);
     return updated;
   }
 

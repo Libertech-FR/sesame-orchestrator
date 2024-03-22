@@ -193,6 +193,14 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateState" >updateState</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#upsert" >upsert</a>
@@ -430,8 +438,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="198"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:198</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="212"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:212</a></div>
                         </td>
                     </tr>
 
@@ -627,6 +635,110 @@
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="175"
                                     class="link-to-prism">src/management/identities/identities.controller.ts:175</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>_id</td>
+                                            <td>
+                                                        <code>Types.ObjectId</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../classes/IdentitiesUpdateDto.html" target="_self" >IdentitiesUpdateDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateState"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateState</b></span>
+                        <a href="#updateState"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateState(_id: Types.ObjectId, body: <a href="../classes/IdentitiesUpdateDto.html" target="_self">IdentitiesUpdateDto</a>, res: Response)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Patch(&#x27;:_id([0-9a-fA-F]{24})/state&#x27;)<br />@ApiParam({name: &#x27;_id&#x27;, type: String})<br />@ApiUpdateDecorator(IdentitiesUpdateDto, IdentitiesDto)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="190"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:190</a></div>
                         </td>
                     </tr>
 
@@ -970,19 +1082,33 @@ export class IdentitiesController extends AbstractController {
     @Body() body: IdentitiesUpdateDto,
     @Res() res: Response,
   ): Promise&lt;Response&gt; {
-    try {
-      const data &#x3D; await this._service.update(_id, body);
-      return res.status(HttpStatus.OK).json({
-        statusCode: HttpStatus.OK,
-        data,
-      });
-    } catch (error) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: error.message,
-        validations: error.validations,
-      });
+    const data &#x3D; await this._service.update(_id, body);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
+  @Patch(&#x27;:_id([0-9a-fA-F]{24})/state&#x27;)
+  @ApiParam({ name: &#x27;_id&#x27;, type: String })
+  @ApiUpdateDecorator(IdentitiesUpdateDto, IdentitiesDto)
+  public async updateState(
+    @Param(&#x27;_id&#x27;, ObjectIdValidationPipe) _id: Types.ObjectId,
+    @Body() body: IdentitiesUpdateDto,
+    @Res() res: Response,
+  ): Promise&lt;Response&gt; {
+    const identity &#x3D; await this._service.findById(_id);
+    if (!identity) {
+      throw new BadRequestException(&#x27;Identity not found&#x27;);
     }
+    if (identity.state !&#x3D;&#x3D; IdentityState.TO_VALIDATE) {
+      throw new BadRequestException(&quot;La validation de l&#x27;identité est déjà complétée.&quot;);
+    }
+    const data &#x3D; await this._service.updateState(_id, body.state);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
   }
 
   @Delete(&#x27;:_id([0-9a-fA-F]{24})&#x27;)

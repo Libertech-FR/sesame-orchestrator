@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { parse } from 'yaml';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readFileSync, readdirSync } from 'fs';
 import { ConfigObjectSchemaDTO } from './_dto/config.dto';
 import { diff } from 'radash';
 import { AdditionalFieldsPart } from '../_schemas/_parts/additionalFields.part.schema';
@@ -112,5 +112,30 @@ export class IdentitiesValidationService {
         return acc;
       }, {});
     }
+  }
+
+  async findAll(): Promise<any> {
+    this.logger.debug(['findAll', JSON.stringify(Object.values(arguments))].join(' '));
+    const configPath = './src/management/identities/validations/_config';
+    const files = readdirSync(configPath);
+    const result = [];
+    for (const file of files) {
+      const filePath = `${configPath}/${file}`;
+      const data = parse(readFileSync(filePath, 'utf-8'));
+      const key = file.replace('.yml', '');
+      result.push({ [key]: data });
+    }
+    return [result, files.length];
+  }
+
+  async findOne(schema): Promise<any> {
+    this.logger.debug(['findOne', JSON.stringify(Object.values(arguments))].join(' '));
+    const filePath = `./src/management/identities/validations/_config/${schema}.yml`;
+    if (!existsSync(filePath)) {
+      const message = `File not found: ${filePath}`;
+      throw new ValidationConfigException({ message });
+    }
+
+    return parse(readFileSync(filePath, 'utf-8'));
   }
 }

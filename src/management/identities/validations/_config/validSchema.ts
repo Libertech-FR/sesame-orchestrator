@@ -19,7 +19,7 @@ const validSchema = {
           properties: {
             type: {
               type: 'string',
-              enum: ['string', 'number', 'boolean', 'array', 'object', 'date'],
+              enum: ['string', 'integer', 'number', 'boolean', 'array', 'object', 'date'],
               errorMessage: "Chaque propriété doit avoir un 'type' de 'string'.",
             },
             description: {

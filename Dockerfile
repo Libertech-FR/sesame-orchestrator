@@ -16,9 +16,6 @@ RUN yarn install \
   --non-interactive \
   --production=false
 
-RUN apt-get update -y \
-  && apt-get install -y python3
-
 RUN yarn run build
 
 FROM node:18-bookworm-slim AS production
@@ -51,7 +48,9 @@ RUN apt clean -y \
   git \
   jq \
   nano \
-  openssl
+  openssl \
+  python3 \
+  build-essential
 
 RUN yarn install \
   --prefer-offline \

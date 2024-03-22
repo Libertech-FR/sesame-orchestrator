@@ -4,6 +4,7 @@ import {
   FilterQuery,
   Model,
   ModifyResult,
+  MongooseBaseQueryOptions,
   ProjectionType,
   Query,
   QueryOptions,
@@ -15,6 +16,7 @@ import { EventEmitterSeparator } from '~/_common/constants/event-emitter.constan
 import { AbstractService, AbstractServiceContext } from './abstract.service';
 import { ServiceSchemaInterface } from './interfaces/service.schema.interface';
 import { AbstractSchema } from './schemas/abstract.schema';
+import mongodb from 'mongodb';
 
 @Injectable()
 export abstract class AbstractServiceSchema extends AbstractService implements ServiceSchemaInterface {
@@ -39,7 +41,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     return await this._model.find<Query<Array<T>, T, any, T>>(filter, projection, options).exec()
   }
 
-  public async count<T extends AbstractSchema | Document>(filter?: FilterQuery<T>, options?: QueryOptions<T>): Promise<number> {
+  public async count<T extends AbstractSchema | Document>(filter?: FilterQuery<T>, options?: (mongodb.CountOptions & MongooseBaseQueryOptions<T>) | null): Promise<number> {
     //TODO: add event emitter
     this.logger.debug(['count', JSON.stringify(Object.values(arguments))].join(' '))
     return await this._model.countDocuments(filter, options).exec()
@@ -243,7 +245,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       }
     }
     return updated
-  }    
+  }
 
   public async upsert<T extends AbstractSchema | Document>(
   filter: FilterQuery<T>,
@@ -299,7 +301,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
 
     return result;
   }
-  
+
 
   public async delete<T extends AbstractSchema | Document>(_id: Types.ObjectId | any, options?: QueryOptions<T> | null | undefined): Promise<Query<T, T, any, T>> {
     this.logger.debug(['delete', JSON.stringify(Object.values(arguments))].join(' '))

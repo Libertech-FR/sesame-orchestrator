@@ -22,6 +22,7 @@ export class AgentsController extends AbstractController {
     // entityId: 1,
     username: 1,
     displayName: 1,
+    email: 1,
     state: 1,
     hidden: 1,
   };

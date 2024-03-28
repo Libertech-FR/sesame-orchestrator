@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { LoggerSchema, Logger } from './schemas/logger.schema';
+import { LoggerSchema, Logger } from './_schemas/logger.schema';
 import { LoggerService } from './logger.service';
 import { LoggerController } from './logger.controller';
 

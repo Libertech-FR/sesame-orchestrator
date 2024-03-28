@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
-import { StatePart, StatePartSchema } from '~/core/agents/_schemas/parts/state.part.schema';
-import { SecurityPart, SecurityPartSchema } from '~/core/agents/_schemas/parts/security.part.schema';
+import { StatePart, StatePartSchema } from '~/core/agents/_schemas/_parts/state.part.schema';
+import { SecurityPart, SecurityPartSchema } from '~/core/agents/_schemas/_parts/security.part.schema';
 import { MixedValue } from '~/_common/types/mixed-value.type';
 
 const DEFAULT_THIRD_PARTY_AUTH = 'local';

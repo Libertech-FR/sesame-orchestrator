@@ -1037,7 +1037,6 @@ export class InternalLogger extends ConsoleLogger {
     },
     options: InternalLogOptions,
   ): void {
-    console.log(&#x27;logging&#x27;);
     const data &#x3D; payload.message instanceof Object ? payload.message : { message: payload.message };
     const metadata &#x3D; {
       createdAt: new Date(),
@@ -1054,8 +1053,8 @@ export class InternalLogger extends ConsoleLogger {
         metadata,
       });
     } catch (e) {
-      super.error(&#x27;Failed to log to the database&#x27;, e, this.constructor.name);
-      console.log(&#x27;Failed to log to the database&#x27;, e);
+      super.fatal(&#x27;Failed to log to the database&#x27;, e, this.constructor.name);
+      super[payload.level](payload.message, ...payload.context);
     }
   }
 }

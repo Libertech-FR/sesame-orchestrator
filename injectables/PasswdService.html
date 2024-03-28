@@ -86,16 +86,19 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content controller">
+               <div class="content injectable">
                    <div class="content-data">
 
 
 
 
 
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Controllers</li>
-  <li class="breadcrumb-item" >AgentsController</li>
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >PasswdService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -119,15 +122,8 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/core/agents/agents.controller.ts</code>
+            <code>src/management/passwd/passwd.service.ts</code>
         </p>
-
-            <p class="comment">
-                <h3>Prefix</h3>
-            </p>
-            <p class="comment">
-                <code>agents</code>
-            </p>
 
 
 
@@ -135,14 +131,44 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
+                            <code><a href="../injectables/AbstractService.html" target="_self" >AbstractService</a></code>
             </p>
-
 
 
             <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#_req" >_req</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#eventEmitter" >eventEmitter</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#logger" >logger</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#moduleRef" >moduleRef</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -153,42 +179,29 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#create" >create</a>
+                                <a href="#askToken" >askToken</a>
                             </li>
                             <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#read" >read</a>
+                                <a href="#change" >change</a>
                             </li>
                             <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#remove" >remove</a>
+                                <a href="#decryptToken" >decryptToken</a>
                             </li>
                             <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#search" >search</a>
+                                <a href="#reset" >reset</a>
                             </li>
                             <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#update" >update</a>
+                                <a href="#verifyToken" >verifyToken</a>
                             </li>
                         </ul>
                     </td>
@@ -202,6 +215,68 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                                <span class="modifier">Public</span>
+                        <code>constructor(backends: <a href="../injectables/BackendsService.html" target="_self">BackendsService</a>, redis: Redis)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/management/passwd/passwd.service.ts:14</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>backends</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BackendsService.html" target="_self" >BackendsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>redis</td>
+                                                  
+                                                        <td>
+                                                                    <code>Redis</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
             <section data-compodoc="block-methods">
     
     <h3 id="methods">
@@ -211,36 +286,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="create"></a>
+                    <a name="askToken"></a>
                     <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>create</b></span>
-                        <a href="#create"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>askToken</b></span>
+                        <a href="#askToken"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(res: Response, body: <a href="../classes/AgentsCreateDto.html" target="_self">AgentsCreateDto</a>)</code>
+                    <code>askToken(askToken: <a href="../classes/AskTokenDto.html" target="_self">AskTokenDto</a>)</code>
                 </td>
             </tr>
 
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Post()<br />@ApiCreateDecorator(AgentsCreateDto, AgentsDto)<br /></code>
-                </td>
-            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">src/core/agents/agents.controller.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -261,21 +327,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>res</td>
+                                                <td>askToken</td>
                                             <td>
-                                                        <code>Response</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>body</td>
-                                            <td>
-                                                            <code><a href="../classes/AgentsCreateDto.html" target="_self" >AgentsCreateDto</a></code>
+                                                            <code><a href="../classes/AskTokenDto.html" target="_self" >AskTokenDto</a></code>
                                             </td>
 
                                             <td>
@@ -288,7 +342,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -302,37 +356,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="read"></a>
+                    <a name="change"></a>
                     <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>read</b></span>
-                        <a href="#read"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>change</b></span>
+                        <a href="#change"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>read(_id: Types.ObjectId, res: Response)</code>
+                    <code>change(passwd: <a href="../classes/ChangePasswordDto.html" target="_self">ChangePasswordDto</a>)</code>
                 </td>
             </tr>
 
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Get(&#x27;:_id([0-9a-fA-F]{24})&#x27;)<br />@ApiParam({name: &#x27;_id&#x27;, type: String})<br />@ApiReadResponseDecorator(AgentsDto)<br /></code>
-                </td>
-            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">src/core/agents/agents.controller.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -353,21 +397,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>_id</td>
+                                                <td>passwd</td>
                                             <td>
-                                                        <code>Types.ObjectId</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>res</td>
-                                            <td>
-                                                        <code>Response</code>
+                                                            <code><a href="../classes/ChangePasswordDto.html" target="_self" >ChangePasswordDto</a></code>
                                             </td>
 
                                             <td>
@@ -380,7 +412,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -394,37 +426,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="remove"></a>
+                    <a name="decryptToken"></a>
                     <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>remove</b></span>
-                        <a href="#remove"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>decryptToken</b></span>
+                        <a href="#decryptToken"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>remove(_id: Types.ObjectId, res: Response)</code>
+                    <code>decryptToken(token: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Delete(&#x27;:_id([0-9a-fA-F]{24})&#x27;)<br />@ApiParam({name: &#x27;_id&#x27;, type: String})<br />@ApiDeletedResponseDecorator(AgentsDto)<br /></code>
-                </td>
-            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="98"
-                                    class="link-to-prism">src/core/agents/agents.controller.ts:98</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -445,21 +467,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>_id</td>
+                                                <td>token</td>
                                             <td>
-                                                        <code>Types.ObjectId</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>res</td>
-                                            <td>
-                                                        <code>Response</code>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
 
                                             <td>
@@ -472,7 +482,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -486,36 +496,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="search"></a>
+                    <a name="reset"></a>
                     <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>search</b></span>
-                        <a href="#search"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>reset</b></span>
+                        <a href="#reset"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>search(res: Response, searchFilterSchema: FilterSchema, searchFilterOptions: FilterOptions)</code>
+                    <code>reset(data: <a href="../classes/ResetPasswordDto.html" target="_self">ResetPasswordDto</a>)</code>
                 </td>
             </tr>
 
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Get()<br />@ApiPaginatedDecorator(undefined)<br /></code>
-                </td>
-            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">src/core/agents/agents.controller.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -536,33 +537,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>res</td>
+                                                <td>data</td>
                                             <td>
-                                                        <code>Response</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>searchFilterSchema</td>
-                                            <td>
-                                                        <code>FilterSchema</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>searchFilterOptions</td>
-                                            <td>
-                                                        <code>FilterOptions</code>
+                                                            <code><a href="../classes/ResetPasswordDto.html" target="_self" >ResetPasswordDto</a></code>
                                             </td>
 
                                             <td>
@@ -575,7 +552,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -589,37 +566,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="update"></a>
+                    <a name="verifyToken"></a>
                     <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>update</b></span>
-                        <a href="#update"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>verifyToken</b></span>
+                        <a href="#verifyToken"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>update(_id: Types.ObjectId, body: <a href="../classes/AgentsUpdateDto.html" target="_self">AgentsUpdateDto</a>, res: Response)</code>
+                    <code>verifyToken(token: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Patch(&#x27;:_id([0-9a-fA-F]{24})&#x27;)<br />@ApiParam({name: &#x27;_id&#x27;, type: String})<br />@ApiUpdateDecorator(AgentsUpdateDto, AgentsDto)<br /></code>
-                </td>
-            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">src/core/agents/agents.controller.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -640,33 +607,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>_id</td>
+                                                <td>token</td>
                                             <td>
-                                                        <code>Types.ObjectId</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>body</td>
-                                            <td>
-                                                            <code><a href="../classes/AgentsUpdateDto.html" target="_self" >AgentsUpdateDto</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>res</td>
-                                            <td>
-                                                        <code>Response</code>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
 
                                             <td>
@@ -679,7 +622,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -689,124 +632,227 @@
             </tr>
         </tbody>
     </table>
-</section>    </div>
+</section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_req"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>_req</b></span>
+                        <a href="#_req"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../injectables/AbstractService.html" target="_self" >AbstractService</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractService.html#source" target="_self" >AbstractService:19</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="eventEmitter"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>eventEmitter</b></span>
+                        <a href="#eventEmitter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter2</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../injectables/AbstractService.html" target="_self" >AbstractService</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractService.html#source" target="_self" >AbstractService:20</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logger"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>logger</b></span>
+                        <a href="#logger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/Logger.html" target="_self" >Logger</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../injectables/AbstractService.html" target="_self" >AbstractService</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractService.html#source" target="_self" >AbstractService:17</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="moduleRef"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>moduleRef</b></span>
+                        <a href="#moduleRef"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ModuleRef</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../injectables/AbstractService.html" target="_self" >AbstractService</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractService.html#source" target="_self" >AbstractService:18</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from &#x27;@nestjs/common&#x27;;
-import { AgentsService } from &#x27;./agents.service&#x27;;
-import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
-import { Types } from &#x27;mongoose&#x27;;
-import { ApiUpdateDecorator } from &#x27;~/_common/decorators/api-update.decorator&#x27;;
-import { ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { ApiDeletedResponseDecorator } from &#x27;~/_common/decorators/api-deleted-response.decorator&#x27;;
-import { ObjectIdValidationPipe } from &#x27;~/_common/pipes/object-id-validation.pipe&#x27;;
-import { AgentsCreateDto, AgentsDto, AgentsUpdateDto } from &#x27;~/core/agents/_dto/agents.dto&#x27;;
-import { Response } from &#x27;express&#x27;;
-import { ApiReadResponseDecorator } from &#x27;~/_common/decorators/api-read-response.decorator&#x27;;
-import { PickProjectionHelper } from &#x27;~/_common/helpers/pick-projection.helper&#x27;;
-import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from &#x27;@streamkits/nestjs_module_scrud&#x27;;
-import { ApiCreateDecorator } from &#x27;~/_common/decorators/api-create.decorator&#x27;;
-import { ApiPaginatedDecorator } from &#x27;~/_common/decorators/api-paginated.decorator&#x27;;
-import { PartialProjectionType } from &#x27;~/_common/types/partial-projection.type&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ChangePasswordDto } from &#x27;./dto/change-password.dto&#x27;;
+import { Job, Queue, QueueEvents } from &#x27;bullmq&#x27;;
+import * as crypto from &#x27;crypto&#x27;;
+import { AskTokenDto } from &#x27;./dto/ask-token.dto&#x27;;
+import Redis from &#x27;ioredis&#x27;;
+import { ResetPasswordDto } from &#x27;./dto/reset-password.dto&#x27;;
+import { ActionType } from &#x27;~/core/backends/_enum/action-type.enum&#x27;;
+import { AbstractService } from &#x27;~/_common/abstracts/abstract.service&#x27;;
+import { BackendsService } from &#x27;~/core/backends/backends.service&#x27;;
+import { InjectRedis } from &#x27;@nestjs-modules/ioredis&#x27;;
 
-@ApiTags(&#x27;core&#x27;)
-@Controller(&#x27;agents&#x27;)
-export class AgentsController extends AbstractController {
-  protected static readonly projection: PartialProjectionType&lt;AgentsDto&gt; &#x3D; {
-    // entityId: 1,
-    username: 1,
-    displayName: 1,
-    email: 1,
-    state: 1,
-    hidden: 1,
-  };
-
-  public constructor(private readonly _service: AgentsService) {
+@Injectable()
+export class PasswdService extends AbstractService {
+  public constructor(
+    protected backends: BackendsService,
+    @InjectRedis() private readonly redis: Redis,
+  ) {
     super();
   }
 
-  @Post()
-  @ApiCreateDecorator(AgentsCreateDto, AgentsDto)
-  public async create(@Res() res: Response, @Body() body: AgentsCreateDto): Promise&lt;Response&gt; {
-    const data &#x3D; await this._service.create(body);
-    return res.status(HttpStatus.CREATED).json({
-      statusCode: HttpStatus.CREATED,
-      data,
+  public async change(passwd: ChangePasswordDto): Promise&lt;[Job, any]&gt; {
+    return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, passwd, {
+      async: false,
     });
   }
 
-  @Get()
-  @ApiPaginatedDecorator(PickProjectionHelper(AgentsDto, AgentsController.projection))
-  public async search(
-    @Res() res: Response,
-    @SearchFilterSchema() searchFilterSchema: FilterSchema,
-    @SearchFilterOptions() searchFilterOptions: FilterOptions,
-  ): Promise&lt;Response&gt; {
-    //TODO: search tree by parentId
-    const [data, total] &#x3D; await this._service.findAndCount(
-      searchFilterSchema,
-      AgentsController.projection,
-      searchFilterOptions,
-    );
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      total,
-      data,
-    });
+  public async askToken(askToken: AskTokenDto): Promise&lt;string&gt; {
+    const iv &#x3D; crypto.randomBytes(12).toString(&#x27;base64&#x27;);
+    const key &#x3D; crypto.randomBytes(16).toString(&#x27;hex&#x27;);
+    const cipher &#x3D; crypto.createCipheriv(&#x27;aes-256-gcm&#x27;, key, iv);
+    const dataStruct &#x3D; { uid: askToken.uid, mail: askToken.mail };
+    let ciphertext &#x3D; cipher.update(JSON.stringify(dataStruct), &#x27;utf8&#x27;, &#x27;base64&#x27;);
+    ciphertext +&#x3D; cipher.final(&#x27;base64&#x27;);
+    const tag &#x3D; cipher.getAuthTag();
+    const tokenStruct &#x3D; JSON.stringify({ k: key, iv: iv, tag: tag });
+    await this.redis.set(ciphertext, tokenStruct);
+    await this.redis.expire(ciphertext, 3600);
+    return ciphertext;
   }
 
-  @Get(&#x27;:_id([0-9a-fA-F]{24})&#x27;)
-  @ApiParam({ name: &#x27;_id&#x27;, type: String })
-  @ApiReadResponseDecorator(AgentsDto)
-  public async read(
-    @Param(&#x27;_id&#x27;, ObjectIdValidationPipe) _id: Types.ObjectId,
-    @Res() res: Response,
-  ): Promise&lt;Response&gt; {
-    const data &#x3D; await this._service.findById(_id, {
-      password: 0,
-    });
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data,
-    });
+  public async verifyToken(token: string): Promise&lt;boolean&gt; {
+    const data &#x3D; await this.decryptToken(token);
+    return Object.keys(data).length &#x3D;&#x3D;&#x3D; 0;
   }
 
-  @Patch(&#x27;:_id([0-9a-fA-F]{24})&#x27;)
-  @ApiParam({ name: &#x27;_id&#x27;, type: String })
-  @ApiUpdateDecorator(AgentsUpdateDto, AgentsDto)
-  public async update(
-    @Param(&#x27;_id&#x27;, ObjectIdValidationPipe) _id: Types.ObjectId,
-    @Body() body: AgentsUpdateDto,
-    @Res() res: Response,
-  ): Promise&lt;Response&gt; {
-    const data &#x3D; await this._service.update(_id, body);
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data,
-    });
+  public async decryptToken(token: string): Promise&lt;any&gt; {
+    if (!(await this.redis.exists(token))) {
+      throw new Error(&#x27;Token not found&#x27;);
+    }
+
+    const result &#x3D; await this.redis.get(token);
+    const cypherData &#x3D; JSON.parse(result);
+    const decipher &#x3D; crypto.createDecipheriv(&#x27;aes-256-gcm&#x27;, cypherData.k, cypherData.iv);
+    decipher.setAuthTag(Buffer.from(cypherData.tag, &#x27;base64&#x27;));
+    const plaintext &#x3D; decipher.update(token, &#x27;base64&#x27;, &#x27;ascii&#x27;);
+
+    return JSON.parse(plaintext);
   }
 
-  @Delete(&#x27;:_id([0-9a-fA-F]{24})&#x27;)
-  @ApiParam({ name: &#x27;_id&#x27;, type: String })
-  @ApiDeletedResponseDecorator(AgentsDto)
-  public async remove(
-    @Param(&#x27;_id&#x27;, ObjectIdValidationPipe) _id: Types.ObjectId,
-    @Res() res: Response,
-  ): Promise&lt;Response&gt; {
-    const data &#x3D; await this._service.delete(_id);
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data,
+  public async reset(data: ResetPasswordDto): Promise&lt;[Job, any]&gt; {
+    const tokenData &#x3D; await this.decryptToken(data.token);
+    if (Object.keys(tokenData).length &#x3D;&#x3D;&#x3D; 0) {
+      throw new Error(&#x27;Invalid token&#x27;);
+    }
+
+    const backendData &#x3D; { uid: tokenData.uid, newPassword: data.newPassword };
+    return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_RESET, backendData, {
+      async: false,
     });
   }
 }
 </code></pre>
     </div>
+
 </div>
-
-
-
 
 
 
@@ -845,8 +891,8 @@ export class AgentsController extends AbstractController {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
-            var COMPODOC_CURRENT_PAGE_URL = 'AgentsController.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'PasswdService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

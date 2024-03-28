@@ -24,67 +24,67 @@
 <title>cluster_AuthModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 562,-195 562,-70 8,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_AuthModule_imports</title>
-<polygon fill="none" stroke="black" points="438,-78 438,-130 554,-130 554,-78 438,-78"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_AuthModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 430,-130 430,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="140,-78 140,-130 554,-130 554,-78 140,-78"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_AuthModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 132,-130 132,-78 16,-78"/>
 </g>
 <!-- AgentsModule -->
 <g id="node1" class="node">
 <title>AgentsModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="545.71,-122 542.71,-126 521.71,-126 518.71,-122 446.29,-122 446.29,-86 545.71,-86 545.71,-122"/>
-<text text-anchor="middle" x="496" y="-99.8" font-family="Times,serif" font-size="14.00">AgentsModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="123.71,-122 120.71,-126 99.71,-126 96.71,-122 24.29,-122 24.29,-86 123.71,-86 123.71,-122"/>
+<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">AgentsModule</text>
 </g>
 <!-- AuthModule -->
 <g id="node2" class="node">
 <title>AuthModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="339.55,-187 336.55,-191 315.55,-191 312.55,-187 252.45,-187 252.45,-151 339.55,-151 339.55,-187"/>
-<text text-anchor="middle" x="296" y="-164.8" font-family="Times,serif" font-size="14.00">AuthModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="326.55,-187 323.55,-191 302.55,-191 299.55,-187 239.45,-187 239.45,-151 326.55,-151 326.55,-187"/>
+<text text-anchor="middle" x="283" y="-164.8" font-family="Times,serif" font-size="14.00">AuthModule</text>
 </g>
 <!-- AgentsModule&#45;&gt;AuthModule -->
 <g id="edge1" class="edge">
 <title>AgentsModule&#45;&gt;AuthModule</title>
-<path fill="none" stroke="black" d="M496,-122.11C496,-141.34 496,-169 496,-169 496,-169 349.89,-169 349.89,-169"/>
-<polygon fill="black" stroke="black" points="349.89,-165.5 339.89,-169 349.89,-172.5 349.89,-165.5"/>
+<path fill="none" stroke="black" d="M74,-122.11C74,-141.34 74,-169 74,-169 74,-169 229.44,-169 229.44,-169"/>
+<polygon fill="black" stroke="black" points="229.44,-172.5 239.44,-169 229.44,-165.5 229.44,-172.5"/>
 </g>
 <!-- AuthService -->
 <g id="node3" class="node">
 <title>AuthService</title>
-<ellipse fill="#fdb462" stroke="black" cx="363" cy="-104" rx="59.11" ry="18"/>
-<text text-anchor="middle" x="363" y="-99.8" font-family="Times,serif" font-size="14.00">AuthService</text>
+<ellipse fill="#fdb462" stroke="black" cx="487" cy="-104" rx="59.11" ry="18"/>
+<text text-anchor="middle" x="487" y="-99.8" font-family="Times,serif" font-size="14.00">AuthService</text>
 </g>
 <!-- AuthService&#45;&gt;AuthModule -->
 <g id="edge2" class="edge">
 <title>AuthService&#45;&gt;AuthModule</title>
-<path fill="none" stroke="black" d="M321.73,-117.15C321.73,-117.15 321.73,-140.69 321.73,-140.69"/>
-<polygon fill="black" stroke="black" points="318.23,-140.69 321.73,-150.69 325.23,-140.69 318.23,-140.69"/>
+<path fill="none" stroke="black" d="M487,-122.11C487,-141.34 487,-169 487,-169 487,-169 336.76,-169 336.76,-169"/>
+<polygon fill="black" stroke="black" points="336.76,-165.5 326.76,-169 336.76,-172.5 336.76,-165.5"/>
 </g>
 <!-- JwtStrategy -->
 <g id="node4" class="node">
 <title>JwtStrategy</title>
-<ellipse fill="#fdb462" stroke="black" cx="229" cy="-104" rx="56.76" ry="18"/>
-<text text-anchor="middle" x="229" y="-99.8" font-family="Times,serif" font-size="14.00">JwtStrategy</text>
+<ellipse fill="#fdb462" stroke="black" cx="353" cy="-104" rx="56.76" ry="18"/>
+<text text-anchor="middle" x="353" y="-99.8" font-family="Times,serif" font-size="14.00">JwtStrategy</text>
 </g>
 <!-- JwtStrategy&#45;&gt;AuthModule -->
 <g id="edge3" class="edge">
 <title>JwtStrategy&#45;&gt;AuthModule</title>
-<path fill="none" stroke="black" d="M268.93,-116.84C268.93,-116.84 268.93,-140.52 268.93,-140.52"/>
-<polygon fill="black" stroke="black" points="265.43,-140.52 268.93,-150.52 272.43,-140.52 265.43,-140.52"/>
+<path fill="none" stroke="black" d="M311.57,-116.53C311.57,-116.53 311.57,-140.85 311.57,-140.85"/>
+<polygon fill="black" stroke="black" points="308.07,-140.85 311.57,-150.85 315.07,-140.85 308.07,-140.85"/>
 </g>
 <!-- LocalStrategy -->
 <g id="node5" class="node">
 <title>LocalStrategy</title>
-<ellipse fill="#fdb462" stroke="black" cx="89" cy="-104" rx="65.41" ry="18"/>
-<text text-anchor="middle" x="89" y="-99.8" font-family="Times,serif" font-size="14.00">LocalStrategy</text>
+<ellipse fill="#fdb462" stroke="black" cx="213" cy="-104" rx="65.41" ry="18"/>
+<text text-anchor="middle" x="213" y="-99.8" font-family="Times,serif" font-size="14.00">LocalStrategy</text>
 </g>
 <!-- LocalStrategy&#45;&gt;AuthModule -->
 <g id="edge4" class="edge">
 <title>LocalStrategy&#45;&gt;AuthModule</title>
-<path fill="none" stroke="black" d="M89,-122.11C89,-141.34 89,-169 89,-169 89,-169 242.35,-169 242.35,-169"/>
-<polygon fill="black" stroke="black" points="242.35,-172.5 252.35,-169 242.35,-165.5 242.35,-172.5"/>
+<path fill="none" stroke="black" d="M258.71,-116.84C258.71,-116.84 258.71,-140.52 258.71,-140.52"/>
+<polygon fill="black" stroke="black" points="255.21,-140.52 258.71,-150.52 262.21,-140.52 255.21,-140.52"/>
 </g>
 </g>
 </svg>

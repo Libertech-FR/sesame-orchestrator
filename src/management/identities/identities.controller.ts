@@ -177,19 +177,33 @@ export class IdentitiesController extends AbstractController {
     @Body() body: IdentitiesUpdateDto,
     @Res() res: Response,
   ): Promise<Response> {
-    try {
-      const data = await this._service.update(_id, body);
-      return res.status(HttpStatus.OK).json({
-        statusCode: HttpStatus.OK,
-        data,
-      });
-    } catch (error) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: error.message,
-        validations: error.validations,
-      });
+    const data = await this._service.update(_id, body);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
+  @Patch(':_id([0-9a-fA-F]{24})/state')
+  @ApiParam({ name: '_id', type: String })
+  @ApiUpdateDecorator(IdentitiesUpdateDto, IdentitiesDto)
+  public async updateState(
+    @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
+    @Body() body: IdentitiesUpdateDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const identity = await this._service.findById(_id);
+    if (!identity) {
+      throw new BadRequestException('Identity not found');
     }
+    if (identity.state !== IdentityState.TO_VALIDATE) {
+      throw new BadRequestException("La validation de l'identité est déjà complétée.");
+    }
+    const data = await this._service.updateState(_id, body.state);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
   }
 
   @Delete(':_id([0-9a-fA-F]{24})')

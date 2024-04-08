@@ -169,6 +169,19 @@ export class IdentitiesController extends AbstractController {
     }
   }
 
+  @Get('count')
+  public async count(
+    @Res() res: Response,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+  ): Promise<Response<number>> {
+    const total = await this._service.count(searchFilterSchema, searchFilterOptions);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: total,
+    });
+  }
+
   @Patch(':_id([0-9a-fA-F]{24})')
   @ApiParam({ name: '_id', type: String })
   @ApiUpdateDecorator(IdentitiesUpdateDto, IdentitiesDto)
@@ -192,7 +205,7 @@ export class IdentitiesController extends AbstractController {
     @Body() body: IdentitiesUpdateDto,
     @Res() res: Response,
   ): Promise<Response> {
-    const identity = await this._service.findById(_id);
+    const identity = await this._service.findById<Identities>(_id);
     if (!identity) {
       throw new BadRequestException('Identity not found');
     }

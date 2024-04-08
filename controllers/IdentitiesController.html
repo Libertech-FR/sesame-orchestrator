@@ -154,6 +154,12 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#count" >count</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
@@ -222,6 +228,108 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="count"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>count</b></span>
+                        <a href="#count"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>count(res: Response, searchFilterSchema: FilterSchema, searchFilterOptions: FilterOptions)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;count&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="173"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:173</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>searchFilterSchema</td>
+                                            <td>
+                                                        <code>FilterSchema</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>searchFilterOptions</td>
+                                            <td>
+                                                        <code>FilterOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&lt;number&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -438,8 +546,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="212"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:212</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="225"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:225</a></div>
                         </td>
                     </tr>
 
@@ -633,8 +741,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="175"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:175</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="188"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:188</a></div>
                         </td>
                     </tr>
 
@@ -737,8 +845,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="190"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:190</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="203"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:203</a></div>
                         </td>
                     </tr>
 
@@ -1074,6 +1182,19 @@ export class IdentitiesController extends AbstractController {
     }
   }
 
+  @Get(&#x27;count&#x27;)
+  public async count(
+    @Res() res: Response,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+  ): Promise&lt;Response&lt;number&gt;&gt; {
+    const total &#x3D; await this._service.count(searchFilterSchema, searchFilterOptions);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: total,
+    });
+  }
+
   @Patch(&#x27;:_id([0-9a-fA-F]{24})&#x27;)
   @ApiParam({ name: &#x27;_id&#x27;, type: String })
   @ApiUpdateDecorator(IdentitiesUpdateDto, IdentitiesDto)
@@ -1097,7 +1218,7 @@ export class IdentitiesController extends AbstractController {
     @Body() body: IdentitiesUpdateDto,
     @Res() res: Response,
   ): Promise&lt;Response&gt; {
-    const identity &#x3D; await this._service.findById(_id);
+    const identity &#x3D; await this._service.findById&lt;Identities&gt;(_id);
     if (!identity) {
       throw new BadRequestException(&#x27;Identity not found&#x27;);
     }

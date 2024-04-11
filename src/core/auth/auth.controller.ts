@@ -27,6 +27,7 @@ export class AuthController extends AbstractController {
     return res.status(HttpStatus.OK).json({
       ...tokens,
       user,
+      sseToken: 'hZcdVqHScVDsDFdHOdcjmufEKFJVKaS8', //TODO: change to real token
     });
   }
 
@@ -47,6 +48,7 @@ export class AuthController extends AbstractController {
     const tokens = await this.service.renewTokens(body.refresh_token);
     return res.status(HttpStatus.OK).json({
       ...tokens,
+      sseToken: 'hZcdVqHScVDsDFdHOdcjmufEKFJVKaS8', //TODO: change to real token
     });
   }
 

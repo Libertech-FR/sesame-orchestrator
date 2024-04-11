@@ -31,5 +31,6 @@ import { IdentitiesValidationFilter } from '~/_common/filters/identities-validat
     IdentitiesJsonformsService,
   ],
   controllers: [IdentitiesController],
+  exports: [IdentitiesService],
 })
 export class IdentitiesModule {}

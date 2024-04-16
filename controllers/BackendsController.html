@@ -160,6 +160,12 @@
                                     <span class="modifier">Async</span>
                                 <a href="#sse" >sse</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#syncIdentities" >syncIdentities</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -208,8 +214,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -335,8 +341,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:85</a></div>
                         </td>
                     </tr>
 
@@ -394,6 +400,108 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="syncIdentities"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>syncIdentities</b></span>
+                        <a href="#syncIdentities"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>syncIdentities(res: Response, body: <a href="../classes/SyncIdentitiesDto.html" target="_self">SyncIdentitiesDto</a>, asyncQuery: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;sync&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../classes/SyncIdentitiesDto.html" target="_self" >SyncIdentitiesDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>asyncQuery</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
@@ -418,6 +526,7 @@ import { Observable, Subscriber } from &#x27;rxjs&#x27;;
 import { Public } from &#x27;~/_common/decorators/public.decorator&#x27;;
 import { ExecuteJobDto } from &#x27;./_dto/execute-job.dto&#x27;;
 import { BackendsService } from &#x27;./backends.service&#x27;;
+import { SyncIdentitiesDto } from &#x27;./_dto/sync-identities.dto&#x27;;
 
 function fireMessage(observer: Subscriber&lt;MessageEvent&gt;, channel: string, message: any, loggername: string) {
   try {
@@ -440,17 +549,38 @@ export class BackendsController {
     @InjectRedis() protected readonly redis: Redis,
   ) {}
 
+  @Post(&#x27;sync&#x27;)
+  public async syncIdentities(
+    @Res() res: Response,
+    @Body() body: SyncIdentitiesDto,
+    @Query(&#x27;async&#x27;) asyncQuery: string,
+  ) {
+    const async &#x3D; /true|on|yes|1/i.test(asyncQuery);
+    const data &#x3D; await this.backendsService.syncIdentities(body.payload, {
+      async,
+    });
+
+    return res.status(HttpStatus.ACCEPTED).json({ async, data });
+  }
+
   @Post(&#x27;execute&#x27;)
   public async executeJob(
     @Res() res: Response,
     @Body() body: ExecuteJobDto,
     @Query(&#x27;async&#x27;) asyncQuery: string,
     @Query(&#x27;timeoutDiscard&#x27;) timeoutDiscardQuery: string,
-    @Query(&#x27;syncTimeout&#x27;, new ParseIntPipe({ optional: true, errorHttpStatusCode: 406 })) syncTimeout?: number,
+    @Query(
+      &#x27;syncTimeout&#x27;,
+      new ParseIntPipe({
+        optional: true,
+        errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE,
+      }),
+    )
+    syncTimeout?: number,
   ): Promise&lt;Response&gt; {
     const async &#x3D; /true|on|yes|1/i.test(asyncQuery);
     const timeoutDiscard &#x3D; /true|on|yes|1/i.test(timeoutDiscardQuery);
-    const [job, response] &#x3D; await this.backendsService.executeJob(body.action, body.payload, {
+    const [job, response] &#x3D; await this.backendsService.executeJob(body.action, body.id, body.payload, {
       async,
       syncTimeout,
       timeoutDiscard,

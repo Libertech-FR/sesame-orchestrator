@@ -124,13 +124,13 @@
 <title>cluster_PasswdModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="163,-70 163,-203 333,-203 333,-70 163,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_PasswdModule_providers</title>
-<polygon fill="none" stroke="black" points="171,-78 171,-130 325,-130 325,-78 171,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_PasswdModule_imports</title>
 <polygon fill="none" stroke="black" points="189,-143 189,-195 325,-195 325,-143 189,-143"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_PasswdModule_providers</title>
+<polygon fill="none" stroke="black" points="171,-78 171,-130 325,-130 325,-78 171,-78"/>
 </g>
 <!-- PasswdModule -->
 <g id="node1" class="node">
@@ -241,11 +241,9 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
 import { PasswdService } from &#x27;./passwd.service&#x27;;
 import { PasswdController } from &#x27;./passwd.controller&#x27;;
-import {ConfigModule} from &quot;@nestjs/config&quot;;
 
 @Module({
-  imports: [PasswdModule,ConfigModule
-  ],
+  imports: [PasswdModule],
   controllers: [PasswdController],
   providers: [PasswdService],
 })

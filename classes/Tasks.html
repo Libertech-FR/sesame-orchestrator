@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >ChangePasswordDto</li>
+  <li class="breadcrumb-item" >Tasks</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/management/passwd/dto/change-password.dto.ts</code>
+            <code>src/core/tasks/_schemas/tasks.schema.ts</code>
         </p>
 
 
@@ -148,21 +148,9 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
-                                <a href="#id" >id</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                <a href="#newPassword" >newPassword</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                <a href="#oldPassword" >oldPassword</a>
+                                    <span class="modifier">Optional</span>
+                                <a href="#jobs" >jobs</a>
                             </li>
                         </ul>
                     </td>
@@ -187,19 +175,19 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="id"></a>
+                    <a name="jobs"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
-                        <span ><b>id</b></span>
-                        <a href="#id"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Optional</span>
+                        <span ><b>jobs</b></span>
+                        <a href="#jobs"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <i>Type : </i>    <code>Types.ObjectId[]</code>
 
                     </td>
                 </tr>
@@ -208,89 +196,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsMongoId()<br />@ApiProperty({example: &#x27;paul.bismuth&#x27;, description: &#x27;User object id&#x27;, type: String})<br />
+                            @Prop({type: undefined})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">src/management/passwd/dto/change-password.dto.ts:7</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="newPassword"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                        <span ><b>newPassword</b></span>
-                        <a href="#newPassword"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @IsString()<br />@ApiProperty({example: &#x27;MyNewPassword&#x27;, description: &#x27;New password&#x27;, type: String})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/management/passwd/dto/change-password.dto.ts:15</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="oldPassword"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                        <span ><b>oldPassword</b></span>
-                        <a href="#oldPassword"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @IsString()<br />@ApiProperty({example: &#x27;MyOldPassword&#x27;, description: &#x27;Old password&#x27;, type: String})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/management/passwd/dto/change-password.dto.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/core/tasks/_schemas/tasks.schema.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -309,22 +221,19 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { IsMongoId, IsString } from &#x27;class-validator&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Prop, Schema, SchemaFactory } from &#x27;@nestjs/mongoose&#x27;;
+import { Document, Types } from &#x27;mongoose&#x27;;
+import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
 
-export class ChangePasswordDto {
-  @IsMongoId()
-  @ApiProperty({ example: &#x27;paul.bismuth&#x27;, description: &#x27;User object id&#x27;, type: String })
-  public id: string;
+export type TasksDocument &#x3D; Tasks &amp; Document;
 
-  @IsString()
-  @ApiProperty({ example: &#x27;MyOldPassword&#x27;, description: &#x27;Old password&#x27;, type: String })
-  public oldPassword: string;
-
-  @IsString()
-  @ApiProperty({ example: &#x27;MyNewPassword&#x27;, description: &#x27;New password&#x27;, type: String })
-  public newPassword: string;
+@Schema({ versionKey: false })
+export class Tasks extends AbstractSchema {
+  @Prop({ type: [Types.ObjectId] })
+  public jobs?: Types.ObjectId[];
 }
+
+export const TasksSchema &#x3D; SchemaFactory.createForClass(Tasks);
 </code></pre>
     </div>
 </div>
@@ -363,7 +272,7 @@ export class ChangePasswordDto {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'ChangePasswordDto.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'Tasks.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

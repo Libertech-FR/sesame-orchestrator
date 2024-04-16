@@ -227,7 +227,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/management/passwd/passwd.service.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/management/passwd/passwd.service.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -305,8 +305,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -375,8 +375,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -445,8 +445,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -515,8 +515,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -585,8 +585,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -777,17 +777,18 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ChangePasswordDto } from &#x27;./dto/change-password.dto&#x27;;
-import { Job, Queue, QueueEvents } from &#x27;bullmq&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { InjectRedis } from &#x27;@nestjs-modules/ioredis&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import * as crypto from &#x27;crypto&#x27;;
-import { AskTokenDto } from &#x27;./dto/ask-token.dto&#x27;;
 import Redis from &#x27;ioredis&#x27;;
-import { ResetPasswordDto } from &#x27;./dto/reset-password.dto&#x27;;
-import { ActionType } from &#x27;~/core/backends/_enum/action-type.enum&#x27;;
 import { AbstractService } from &#x27;~/_common/abstracts/abstract.service&#x27;;
+import { ActionType } from &#x27;~/core/backends/_enum/action-type.enum&#x27;;
 import { BackendsService } from &#x27;~/core/backends/backends.service&#x27;;
-import { InjectRedis } from &#x27;@nestjs-modules/ioredis&#x27;;
+import { Jobs } from &#x27;~/core/jobs/_schemas/jobs.schema&#x27;;
+import { AskTokenDto } from &#x27;./dto/ask-token.dto&#x27;;
+import { ChangePasswordDto } from &#x27;./dto/change-password.dto&#x27;;
+import { ResetPasswordDto } from &#x27;./dto/reset-password.dto&#x27;;
+import { Types } from &#x27;mongoose&#x27;;
 
 @Injectable()
 export class PasswdService extends AbstractService {
@@ -798,8 +799,8 @@ export class PasswdService extends AbstractService {
     super();
   }
 
-  public async change(passwd: ChangePasswordDto): Promise&lt;[Job, any]&gt; {
-    return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, passwd, {
+  public async change(passwd: ChangePasswordDto): Promise&lt;[Jobs, any]&gt; {
+    return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, new Types.ObjectId(passwd.id), passwd, {
       async: false,
     });
   }
@@ -837,16 +838,21 @@ export class PasswdService extends AbstractService {
     return JSON.parse(plaintext);
   }
 
-  public async reset(data: ResetPasswordDto): Promise&lt;[Job, any]&gt; {
+  public async reset(data: ResetPasswordDto): Promise&lt;[Jobs, any]&gt; {
     const tokenData &#x3D; await this.decryptToken(data.token);
     if (Object.keys(tokenData).length &#x3D;&#x3D;&#x3D; 0) {
       throw new Error(&#x27;Invalid token&#x27;);
     }
 
     const backendData &#x3D; { uid: tokenData.uid, newPassword: data.newPassword };
-    return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_RESET, backendData, {
-      async: false,
-    });
+    return await this.backends.executeJob(
+      ActionType.IDENTITY_PASSWORD_RESET,
+      new Types.ObjectId(&#x60;${tokenData.id}&#x60;),
+      backendData,
+      {
+        async: false,
+      },
+    );
   }
 }
 </code></pre>

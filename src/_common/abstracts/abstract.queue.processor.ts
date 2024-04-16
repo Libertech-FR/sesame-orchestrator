@@ -31,9 +31,5 @@ export abstract class AbstractQueueProcessor extends AbstractService implements 
     this.queueEvents = new QueueEvents(this.config.get<string>('application.nameQueue'), {
       connection: this.redis,
     });
-
-    this.queueEvents.on('failed', (errors) => {
-      this.logger.warn('Queue failed', errors);
-    });
   }
 }

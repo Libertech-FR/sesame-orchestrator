@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsObject, IsOptional } from 'class-validator';
+import { IsEnum, IsMongoId, IsNotEmpty, IsObject, IsOptional } from 'class-validator';
 import { ActionType } from '../_enum/action-type.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -7,6 +7,10 @@ export class ExecuteJobDto {
   @IsEnum(ActionType)
   @ApiProperty({ type: String })
   public action: ActionType;
+
+  @IsMongoId()
+  @ApiProperty({ example: 'paul.bismuth', description: 'User object id', type: String })
+  public id: string;
 
   @IsOptional()
   @IsObject()

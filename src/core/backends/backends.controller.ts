@@ -18,6 +18,7 @@ import { Observable, Subscriber } from 'rxjs';
 import { Public } from '~/_common/decorators/public.decorator';
 import { ExecuteJobDto } from './_dto/execute-job.dto';
 import { BackendsService } from './backends.service';
+import { SyncIdentitiesDto } from './_dto/sync-identities.dto';
 
 function fireMessage(observer: Subscriber<MessageEvent>, channel: string, message: any, loggername: string) {
   try {
@@ -40,17 +41,38 @@ export class BackendsController {
     @InjectRedis() protected readonly redis: Redis,
   ) {}
 
+  @Post('sync')
+  public async syncIdentities(
+    @Res() res: Response,
+    @Body() body: SyncIdentitiesDto,
+    @Query('async') asyncQuery: string,
+  ) {
+    const async = /true|on|yes|1/i.test(asyncQuery);
+    const data = await this.backendsService.syncIdentities(body.payload, {
+      async,
+    });
+
+    return res.status(HttpStatus.ACCEPTED).json({ async, data });
+  }
+
   @Post('execute')
   public async executeJob(
     @Res() res: Response,
     @Body() body: ExecuteJobDto,
     @Query('async') asyncQuery: string,
     @Query('timeoutDiscard') timeoutDiscardQuery: string,
-    @Query('syncTimeout', new ParseIntPipe({ optional: true, errorHttpStatusCode: 406 })) syncTimeout?: number,
+    @Query(
+      'syncTimeout',
+      new ParseIntPipe({
+        optional: true,
+        errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE,
+      }),
+    )
+    syncTimeout?: number,
   ): Promise<Response> {
     const async = /true|on|yes|1/i.test(asyncQuery);
     const timeoutDiscard = /true|on|yes|1/i.test(timeoutDiscardQuery);
-    const [job, response] = await this.backendsService.executeJob(body.action, body.payload, {
+    const [job, response] = await this.backendsService.executeJob(body.action, body.id, body.payload, {
       async,
       syncTimeout,
       timeoutDiscard,

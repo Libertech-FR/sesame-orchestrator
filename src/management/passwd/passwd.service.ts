@@ -1,14 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { Job, Queue, QueueEvents } from 'bullmq';
-import * as crypto from 'crypto';
-import { AskTokenDto } from './dto/ask-token.dto';
-import Redis from 'ioredis';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { ActionType } from '~/core/backends/_enum/action-type.enum';
-import { AbstractService } from '~/_common/abstracts/abstract.service';
-import { BackendsService } from '~/core/backends/backends.service';
 import { InjectRedis } from '@nestjs-modules/ioredis';
+import { Injectable } from '@nestjs/common';
+import * as crypto from 'crypto';
+import Redis from 'ioredis';
+import { AbstractService } from '~/_common/abstracts/abstract.service';
+import { ActionType } from '~/core/backends/_enum/action-type.enum';
+import { BackendsService } from '~/core/backends/backends.service';
+import { Jobs } from '~/core/jobs/_schemas/jobs.schema';
+import { AskTokenDto } from './dto/ask-token.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class PasswdService extends AbstractService {
@@ -19,8 +20,8 @@ export class PasswdService extends AbstractService {
     super();
   }
 
-  public async change(passwd: ChangePasswordDto): Promise<[Job, any]> {
-    return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, passwd, {
+  public async change(passwd: ChangePasswordDto): Promise<[Jobs, any]> {
+    return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, new Types.ObjectId(passwd.id), passwd, {
       async: false,
     });
   }
@@ -58,15 +59,20 @@ export class PasswdService extends AbstractService {
     return JSON.parse(plaintext);
   }
 
-  public async reset(data: ResetPasswordDto): Promise<[Job, any]> {
+  public async reset(data: ResetPasswordDto): Promise<[Jobs, any]> {
     const tokenData = await this.decryptToken(data.token);
     if (Object.keys(tokenData).length === 0) {
       throw new Error('Invalid token');
     }
 
     const backendData = { uid: tokenData.uid, newPassword: data.newPassword };
-    return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_RESET, backendData, {
-      async: false,
-    });
+    return await this.backends.executeJob(
+      ActionType.IDENTITY_PASSWORD_RESET,
+      new Types.ObjectId(`${tokenData.id}`),
+      backendData,
+      {
+        async: false,
+      },
+    );
   }
 }

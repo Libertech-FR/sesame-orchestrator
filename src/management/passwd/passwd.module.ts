@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
 import { PasswdService } from './passwd.service';
 import { PasswdController } from './passwd.controller';
-import {ConfigModule} from "@nestjs/config";
 
 @Module({
-  imports: [PasswdModule,ConfigModule
-  ],
+  imports: [PasswdModule],
   controllers: [PasswdController],
   providers: [PasswdService],
 })

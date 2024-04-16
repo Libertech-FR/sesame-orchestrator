@@ -1,10 +1,11 @@
-import { IsInt, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsMongoId, IsString } from 'class-validator';
+
 export class AskTokenDto {
-    @IsString()
-    @ApiProperty({ example: 'paul.bismuth',description: 'User  Uid' })
-    uid: string;
-    @ApiProperty({ example: 'monemail@mondomaine.com',description: 'secondary mail' })
-    @IsString()
-    mail: string
+  @IsMongoId()
+  @ApiProperty({ example: 'paul.bismuth', description: 'User id' })
+  id: string;
+  @ApiProperty({ example: 'monemail@mondomaine.com', description: 'secondary mail' })
+  @IsString()
+  mail: string;
 }

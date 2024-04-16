@@ -5,4 +5,5 @@ export interface ExecuteJobOptions {
   async?: boolean;
   syncTimeout?: number;
   timeoutDiscard?: boolean;
+  comment?: string;
 }

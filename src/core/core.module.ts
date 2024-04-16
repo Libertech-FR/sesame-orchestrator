@@ -1,15 +1,17 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
-import { AuthModule } from './auth/auth.module';
-import { CoreService } from './core.service';
-import { CoreController } from './core.controller';
-import { BackendsModule } from './backends/backends.module';
-import { LoggerModule } from './logger/logger.module';
-import { KeyringsModule } from './keyrings/keyrings.module';
 import { AgentsModule } from './agents/agents.module';
+import { AuthModule } from './auth/auth.module';
+import { BackendsModule } from './backends/backends.module';
+import { CoreController } from './core.controller';
+import { CoreService } from './core.service';
+import { JobsModule } from './jobs/jobs.module';
+import { KeyringsModule } from './keyrings/keyrings.module';
+import { LoggerModule } from './logger/logger.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
-  imports: [AuthModule, BackendsModule, LoggerModule, KeyringsModule, AgentsModule],
+  imports: [AuthModule, BackendsModule, LoggerModule, KeyringsModule, AgentsModule, JobsModule, TasksModule],
   providers: [CoreService],
   controllers: [CoreController],
 })

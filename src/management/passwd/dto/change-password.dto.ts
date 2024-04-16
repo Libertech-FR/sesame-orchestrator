@@ -1,13 +1,16 @@
-import { IsInt, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsMongoId, IsString } from 'class-validator';
+
 export class ChangePasswordDto {
-    @IsString()
-    @ApiProperty({ example: 'paul.bismuth',description: 'User  Uid' })
-    uid: string;
-    @ApiProperty({ example: 'MyOldPassword',description: 'Old Password' })
-    @IsString()
-    oldPassword:string;
-    @ApiProperty({ example: 'MyNewPassword',description: 'New Password' })
-    @IsString()
-    newPassword: string;
+  @IsMongoId()
+  @ApiProperty({ example: 'paul.bismuth', description: 'User object id', type: String })
+  public id: string;
+
+  @IsString()
+  @ApiProperty({ example: 'MyOldPassword', description: 'Old password', type: String })
+  public oldPassword: string;
+
+  @IsString()
+  @ApiProperty({ example: 'MyNewPassword', description: 'New password', type: String })
+  public newPassword: string;
 }

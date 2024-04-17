@@ -233,7 +233,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/core/backends/backends.service.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/core/backends/backends.service.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -335,8 +335,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="125"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:125</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="152"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:152</a></div>
                         </td>
                     </tr>
 
@@ -447,7 +447,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:28</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:29</a></code>
 </div>
                         </td>
                     </tr>
@@ -487,8 +487,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="96"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:96</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="111"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:111</a></div>
                         </td>
                     </tr>
 
@@ -840,6 +840,7 @@ import { JobsService } from &#x27;../jobs/jobs.service&#x27;;
 import { TasksService } from &#x27;../tasks/tasks.service&#x27;;
 import { ActionType } from &#x27;./_enum/action-type.enum&#x27;;
 import { ExecuteJobOptions } from &#x27;./_interfaces/execute-job-options.interface&#x27;;
+import { Tasks } from &#x27;../tasks/_schemas/tasks.schema&#x27;;
 
 const DEFAULT_SYNC_TIMEOUT &#x3D; 30_000;
 
@@ -857,7 +858,6 @@ export class BackendsService extends AbstractQueueProcessor {
   public async onModuleInit() {
     await super.onModuleInit();
 
-    //TODO: resync failed + completed
     const jobsCompleted &#x3D; await this._queue.getCompleted();
     for (const job of jobsCompleted) {
       const isSyncedJob &#x3D; await this.jobsService.model.findOneAndUpdate&lt;Jobs&gt;(
@@ -872,6 +872,11 @@ export class BackendsService extends AbstractQueueProcessor {
         { new: true },
       );
       if (isSyncedJob) {
+        await this.identitiesService.model.findByIdAndUpdate(isSyncedJob.concernedTo, {
+          $set: {
+            state: IdentityState.SYNCED,
+          },
+        });
         this.logger.warn(&#x60;Job already completed, syncing... [${job.id}::COMPLETED]&#x60;);
       }
     }
@@ -893,7 +898,7 @@ export class BackendsService extends AbstractQueueProcessor {
 
     this.queueEvents.on(&#x27;failed&#x27;, async (payload) &#x3D;&gt; {
       this.logger.debug(&#x60;Job failed ! [${payload.jobId}]&#x60;);
-      await this.jobsService.model.findOneAndUpdate&lt;Jobs&gt;(
+      const failedJob &#x3D; await this.jobsService.model.findOneAndUpdate&lt;Jobs&gt;(
         { jobId: payload.jobId, state: { $ne: JobState.COMPLETED } },
         {
           $set: {
@@ -904,10 +909,15 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { new: true },
       );
+      await this.identitiesService.model.findByIdAndUpdate(failedJob.concernedTo, {
+        $set: {
+          state: IdentityState.ON_ERROR,
+        },
+      });
     });
 
     this.queueEvents.on(&#x27;completed&#x27;, async (payload) &#x3D;&gt; {
-      await this.jobsService.model.findOneAndUpdate&lt;Jobs&gt;(
+      const completedJob &#x3D; await this.jobsService.model.findOneAndUpdate&lt;Jobs&gt;(
         { jobId: payload.jobId, state: { $ne: JobState.COMPLETED } },
         {
           $set: {
@@ -916,8 +926,13 @@ export class BackendsService extends AbstractQueueProcessor {
             result: payload.returnvalue,
           },
         },
-        { upsert: true },
+        { upsert: true, new: true },
       );
+      await this.identitiesService.model.findByIdAndUpdate(completedJob.concernedTo, {
+        $set: {
+          state: IdentityState.SYNCED,
+        },
+      });
       this.logger.log(&#x60;Job completed... Syncing [${payload.jobId}]&#x60;);
     });
   }
@@ -943,9 +958,21 @@ export class BackendsService extends AbstractQueueProcessor {
       });
     }
 
+    const task: Tasks &#x3D; await this.tasksService.create&lt;Tasks&gt;({
+      jobs: identities.map((identity) &#x3D;&gt; identity.identity._id),
+    });
+
     const result &#x3D; {};
     for (const identity of identities) {
-      const [executedJob] &#x3D; await this.executeJob(identity.action, identity.identity._id, { identity }, options);
+      const [executedJob] &#x3D; await this.executeJob(
+        identity.action,
+        identity.identity._id,
+        { identity },
+        {
+          ...options,
+          task: task._id,
+        },
+      );
       result[identity.identity._id] &#x3D; executedJob;
     }
     return result;
@@ -977,6 +1004,7 @@ export class BackendsService extends AbstractQueueProcessor {
       params: payload,
       concernedTo: concernedTo,
       comment: options?.comment,
+      task: options?.task,
       state: JobState.CREATED,
       ...optionals,
     });
@@ -992,6 +1020,11 @@ export class BackendsService extends AbstractQueueProcessor {
             result: response,
           },
         });
+        await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
+          $set: {
+            state: IdentityState.SYNCED,
+          },
+        });
         return [jobStoreUpdated as unknown as Jobs, response];
       } catch (err) {
         error &#x3D; err;
@@ -1001,6 +1034,11 @@ export class BackendsService extends AbstractQueueProcessor {
           state: JobState.FAILED,
           finishedAt: new Date(),
           result: error,
+        },
+      });
+      await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
+        $set: {
+          state: IdentityState.ON_ERROR,
         },
       });
       if (options?.timeoutDiscard !&#x3D;&#x3D; false) {

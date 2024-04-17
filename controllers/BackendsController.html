@@ -214,8 +214,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -341,8 +341,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="85"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:85</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -431,8 +431,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -527,6 +527,7 @@ import { Public } from &#x27;~/_common/decorators/public.decorator&#x27;;
 import { ExecuteJobDto } from &#x27;./_dto/execute-job.dto&#x27;;
 import { BackendsService } from &#x27;./backends.service&#x27;;
 import { SyncIdentitiesDto } from &#x27;./_dto/sync-identities.dto&#x27;;
+import { Types } from &#x27;mongoose&#x27;;
 
 function fireMessage(observer: Subscriber&lt;MessageEvent&gt;, channel: string, message: any, loggername: string) {
   try {
@@ -580,11 +581,16 @@ export class BackendsController {
   ): Promise&lt;Response&gt; {
     const async &#x3D; /true|on|yes|1/i.test(asyncQuery);
     const timeoutDiscard &#x3D; /true|on|yes|1/i.test(timeoutDiscardQuery);
-    const [job, response] &#x3D; await this.backendsService.executeJob(body.action, body.id, body.payload, {
-      async,
-      syncTimeout,
-      timeoutDiscard,
-    });
+    const [job, response] &#x3D; await this.backendsService.executeJob(
+      body.action,
+      new Types.ObjectId(body.id),
+      body.payload,
+      {
+        async,
+        syncTimeout,
+        timeoutDiscard,
+      },
+    );
     return res.status(HttpStatus.ACCEPTED).json({ async, job, response });
   }
 

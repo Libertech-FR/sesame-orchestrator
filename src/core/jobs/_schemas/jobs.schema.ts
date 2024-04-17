@@ -25,6 +25,9 @@ export class Jobs extends AbstractSchema {
   })
   public concernedTo?: Types.ObjectId;
 
+  @Prop({ type: Types.ObjectId })
+  public task?: Types.ObjectId;
+
   @Prop({ type: String })
   public comment?: string;
 

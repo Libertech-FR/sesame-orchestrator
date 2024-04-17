@@ -19,6 +19,7 @@ import { Public } from '~/_common/decorators/public.decorator';
 import { ExecuteJobDto } from './_dto/execute-job.dto';
 import { BackendsService } from './backends.service';
 import { SyncIdentitiesDto } from './_dto/sync-identities.dto';
+import { Types } from 'mongoose';
 
 function fireMessage(observer: Subscriber<MessageEvent>, channel: string, message: any, loggername: string) {
   try {
@@ -72,11 +73,16 @@ export class BackendsController {
   ): Promise<Response> {
     const async = /true|on|yes|1/i.test(asyncQuery);
     const timeoutDiscard = /true|on|yes|1/i.test(timeoutDiscardQuery);
-    const [job, response] = await this.backendsService.executeJob(body.action, body.id, body.payload, {
-      async,
-      syncTimeout,
-      timeoutDiscard,
-    });
+    const [job, response] = await this.backendsService.executeJob(
+      body.action,
+      new Types.ObjectId(body.id),
+      body.payload,
+      {
+        async,
+        syncTimeout,
+        timeoutDiscard,
+      },
+    );
     return res.status(HttpStatus.ACCEPTED).json({ async, job, response });
   }
 

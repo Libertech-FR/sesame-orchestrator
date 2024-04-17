@@ -11,6 +11,7 @@ import { JobsService } from '../jobs/jobs.service';
 import { TasksService } from '../tasks/tasks.service';
 import { ActionType } from './_enum/action-type.enum';
 import { ExecuteJobOptions } from './_interfaces/execute-job-options.interface';
+import { Tasks } from '../tasks/_schemas/tasks.schema';
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
 
@@ -28,7 +29,6 @@ export class BackendsService extends AbstractQueueProcessor {
   public async onModuleInit() {
     await super.onModuleInit();
 
-    //TODO: resync failed + completed
     const jobsCompleted = await this._queue.getCompleted();
     for (const job of jobsCompleted) {
       const isSyncedJob = await this.jobsService.model.findOneAndUpdate<Jobs>(
@@ -43,6 +43,11 @@ export class BackendsService extends AbstractQueueProcessor {
         { new: true },
       );
       if (isSyncedJob) {
+        await this.identitiesService.model.findByIdAndUpdate(isSyncedJob.concernedTo, {
+          $set: {
+            state: IdentityState.SYNCED,
+          },
+        });
         this.logger.warn(`Job already completed, syncing... [${job.id}::COMPLETED]`);
       }
     }
@@ -64,7 +69,7 @@ export class BackendsService extends AbstractQueueProcessor {
 
     this.queueEvents.on('failed', async (payload) => {
       this.logger.debug(`Job failed ! [${payload.jobId}]`);
-      await this.jobsService.model.findOneAndUpdate<Jobs>(
+      const failedJob = await this.jobsService.model.findOneAndUpdate<Jobs>(
         { jobId: payload.jobId, state: { $ne: JobState.COMPLETED } },
         {
           $set: {
@@ -75,10 +80,15 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { new: true },
       );
+      await this.identitiesService.model.findByIdAndUpdate(failedJob.concernedTo, {
+        $set: {
+          state: IdentityState.ON_ERROR,
+        },
+      });
     });
 
     this.queueEvents.on('completed', async (payload) => {
-      await this.jobsService.model.findOneAndUpdate<Jobs>(
+      const completedJob = await this.jobsService.model.findOneAndUpdate<Jobs>(
         { jobId: payload.jobId, state: { $ne: JobState.COMPLETED } },
         {
           $set: {
@@ -87,8 +97,13 @@ export class BackendsService extends AbstractQueueProcessor {
             result: payload.returnvalue,
           },
         },
-        { upsert: true },
+        { upsert: true, new: true },
       );
+      await this.identitiesService.model.findByIdAndUpdate(completedJob.concernedTo, {
+        $set: {
+          state: IdentityState.SYNCED,
+        },
+      });
       this.logger.log(`Job completed... Syncing [${payload.jobId}]`);
     });
   }
@@ -114,9 +129,21 @@ export class BackendsService extends AbstractQueueProcessor {
       });
     }
 
+    const task: Tasks = await this.tasksService.create<Tasks>({
+      jobs: identities.map((identity) => identity.identity._id),
+    });
+
     const result = {};
     for (const identity of identities) {
-      const [executedJob] = await this.executeJob(identity.action, identity.identity._id, { identity }, options);
+      const [executedJob] = await this.executeJob(
+        identity.action,
+        identity.identity._id,
+        { identity },
+        {
+          ...options,
+          task: task._id,
+        },
+      );
       result[identity.identity._id] = executedJob;
     }
     return result;
@@ -148,6 +175,7 @@ export class BackendsService extends AbstractQueueProcessor {
       params: payload,
       concernedTo: concernedTo,
       comment: options?.comment,
+      task: options?.task,
       state: JobState.CREATED,
       ...optionals,
     });
@@ -163,6 +191,11 @@ export class BackendsService extends AbstractQueueProcessor {
             result: response,
           },
         });
+        await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
+          $set: {
+            state: IdentityState.SYNCED,
+          },
+        });
         return [jobStoreUpdated as unknown as Jobs, response];
       } catch (err) {
         error = err;
@@ -172,6 +205,11 @@ export class BackendsService extends AbstractQueueProcessor {
           state: JobState.FAILED,
           finishedAt: new Date(),
           result: error,
+        },
+      });
+      await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
+        $set: {
+          state: IdentityState.ON_ERROR,
         },
       });
       if (options?.timeoutDiscard !== false) {

@@ -30,7 +30,7 @@ export class PasswdService extends AbstractService {
     const iv = crypto.randomBytes(12).toString('base64');
     const key = crypto.randomBytes(16).toString('hex');
     const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
-    const dataStruct = { uid: askToken.uid, mail: askToken.mail };
+    const dataStruct = { uid: askToken.id, mail: askToken.mail };
     let ciphertext = cipher.update(JSON.stringify(dataStruct), 'utf8', 'base64');
     ciphertext += cipher.final('base64');
     const tag = cipher.getAuthTag();

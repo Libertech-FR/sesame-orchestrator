@@ -108,11 +108,44 @@ export class BackendsService extends AbstractQueueProcessor {
     });
   }
 
+  public async syncAllIdentities(options?: ExecuteJobOptions): Promise<any> {
+    const syncAllIdentities = (await this.identitiesService.find<Identities>({
+      state: IdentityState.TO_SYNC,
+    })) as unknown as Identities[];
+    const identities = syncAllIdentities.map((identity: Identities) => {
+      return {
+        action: ActionType.IDENTITY_UPDATE,
+        identity,
+      };
+    });
+
+    const task: Tasks = await this.tasksService.create<Tasks>({
+      jobs: identities.map((identity) => identity.identity._id),
+    });
+
+    const result = {};
+    for (const identity of identities) {
+      const [executedJob] = await this.executeJob(
+        identity.action,
+        identity.identity._id,
+        { identity },
+        {
+          ...options,
+          task: task._id,
+        },
+      );
+      result[identity.identity._id] = executedJob;
+    }
+    return result;
+  }
+
   public async syncIdentities(payload: string[], options?: ExecuteJobOptions): Promise<any> {
     const identities: {
       action: ActionType;
       identity: Identities;
     }[] = [];
+
+    if (!payload.length) throw new BadRequestException('No identities to sync');
 
     for (const key of payload) {
       const identity = await this.identitiesService.findById<Identities>(key);

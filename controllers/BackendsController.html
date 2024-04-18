@@ -164,6 +164,12 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#syncAllIdentities" >syncAllIdentities</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#syncIdentities" >syncIdentities</a>
                             </li>
                         </ul>
@@ -214,8 +220,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -341,8 +347,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="91"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:91</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="106"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -404,6 +410,108 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="syncAllIdentities"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>syncAllIdentities</b></span>
+                        <a href="#syncAllIdentities"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>syncAllIdentities(res: Response, body: <a href="../classes/SyncIdentitiesDto.html" target="_self">SyncIdentitiesDto</a>, asyncQuery: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;syncall&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../classes/SyncIdentitiesDto.html" target="_self" >SyncIdentitiesDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>asyncQuery</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="syncIdentities"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -431,8 +539,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -528,6 +636,8 @@ import { ExecuteJobDto } from &#x27;./_dto/execute-job.dto&#x27;;
 import { BackendsService } from &#x27;./backends.service&#x27;;
 import { SyncIdentitiesDto } from &#x27;./_dto/sync-identities.dto&#x27;;
 import { Types } from &#x27;mongoose&#x27;;
+import { IdentityState } from &#x27;~/management/identities/_enums/states.enum&#x27;;
+import { Identities } from &#x27;~/management/identities/_schemas/identities.schema&#x27;;
 
 function fireMessage(observer: Subscriber&lt;MessageEvent&gt;, channel: string, message: any, loggername: string) {
   try {
@@ -561,6 +671,19 @@ export class BackendsController {
       async,
     });
 
+    return res.status(HttpStatus.ACCEPTED).json({ async, data });
+  }
+
+  @Post(&#x27;syncall&#x27;)
+  public async syncAllIdentities(
+    @Res() res: Response,
+    @Body() body: SyncIdentitiesDto,
+    @Query(&#x27;async&#x27;) asyncQuery: string,
+  ) {
+    const async &#x3D; /true|on|yes|1/i.test(asyncQuery);
+    const data &#x3D; await this.backendsService.syncAllIdentities({
+      async,
+    });
     return res.status(HttpStatus.ACCEPTED).json({ async, data });
   }
 

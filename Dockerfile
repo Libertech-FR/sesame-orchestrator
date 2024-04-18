@@ -1,4 +1,4 @@
-FROM node:18-bookworm-slim as builder
+FROM node:20-bookworm-slim as builder
 
 ENV TIMEZONE=Europe/Paris \
   LANGUAGE=fr_FR.UTF-8 \
@@ -18,7 +18,7 @@ RUN yarn install \
 
 RUN yarn run build
 
-FROM node:18-bookworm-slim AS production
+FROM node:20-bookworm-slim AS production
 
 ENV TIMEZONE=Europe/Paris \
   LANGUAGE=fr_FR.UTF-8 \

@@ -65,4 +65,4 @@ COPY --from=builder /data/dist ./dist
 
 EXPOSE 4000
 
-CMD ["yarn", "start:prod"]
+CMD ["yarn", "run", "start:prod"]

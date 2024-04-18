@@ -20,8 +20,6 @@ import { ExecuteJobDto } from './_dto/execute-job.dto';
 import { BackendsService } from './backends.service';
 import { SyncIdentitiesDto } from './_dto/sync-identities.dto';
 import { Types } from 'mongoose';
-import { IdentityState } from '~/management/identities/_enums/states.enum';
-import { Identities } from '~/management/identities/_schemas/identities.schema';
 
 function fireMessage(observer: Subscriber<MessageEvent>, channel: string, message: any, loggername: string) {
   try {

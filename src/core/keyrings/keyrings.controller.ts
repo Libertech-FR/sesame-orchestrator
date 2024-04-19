@@ -18,9 +18,9 @@ import { KeyringsCreateDto, KeyringsDto } from '~/core/keyrings/_dto/keyrings.dt
 @Controller('keyrings')
 export class KeyringsController extends AbstractController {
   protected static readonly projection: PartialProjectionType<KeyringsDto> = {
-    //secretKey: 0,
-    allowedNetworks: 1,
-    suspendedAt: 1,
+    token: 0,
+    // allowedNetworks: 1,
+    // suspendedAt: 1,
   };
 
   public constructor(private readonly _service: KeyringsService) {
@@ -65,7 +65,7 @@ export class KeyringsController extends AbstractController {
     @Res() res: Response,
   ): Promise<Response> {
     const data = await this._service.findById(_id, {
-      secretKey: 0,
+      token: 0,
     });
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

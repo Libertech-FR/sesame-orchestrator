@@ -220,8 +220,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -347,8 +347,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="104"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:104</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:100</a></div>
                         </td>
                     </tr>
 
@@ -423,7 +423,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>syncAllIdentities(res: Response, body: <a href="../classes/SyncIdentitiesDto.html" target="_self">SyncIdentitiesDto</a>, asyncQuery: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>syncAllIdentities(res: Response, asyncQuery: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -462,18 +462,6 @@
                                                 <td>res</td>
                                             <td>
                                                         <code>Response</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>body</td>
-                                            <td>
-                                                            <code><a href="../classes/SyncIdentitiesDto.html" target="_self" >SyncIdentitiesDto</a></code>
                                             </td>
 
                                             <td>
@@ -673,11 +661,7 @@ export class BackendsController {
   }
 
   @Post(&#x27;syncall&#x27;)
-  public async syncAllIdentities(
-    @Res() res: Response,
-    @Body() body: SyncIdentitiesDto,
-    @Query(&#x27;async&#x27;) asyncQuery: string,
-  ) {
+  public async syncAllIdentities(@Res() res: Response, @Query(&#x27;async&#x27;) asyncQuery: string) {
     const async &#x3D; /true|on|yes|1/i.test(asyncQuery);
     const data &#x3D; await this.backendsService.syncAllIdentities({
       async,

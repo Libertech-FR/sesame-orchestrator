@@ -6,6 +6,11 @@ export class KeyringsCreateDto extends CustomFieldsDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
+  public name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
   public token: string;
 
   @IsString({ each: true })

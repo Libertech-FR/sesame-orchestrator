@@ -219,6 +219,10 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         { _id },
         {
           ...update,
+          $setOnInsert: {
+            'metadata.createdBy': this.request?.user?.username || 'anonymous',
+            'metadata.createdAt': new Date(),
+          },
           $set: {
             ...(update?.$set || {}),
             'metadata.lastUpdatedBy': this.request?.user?.username || 'anonymous',
@@ -270,6 +274,10 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         filter,
         {
           ...update,
+          $setOnInsert: {
+            'metadata.createdBy': this.request?.user?.username || 'anonymous',
+            'metadata.createdAt': new Date(),
+          },
           $set: {
             ...(update?.$set || {}),
             'metadata.lastUpdatedBy': this.request?.user?.username || 'anonymous',

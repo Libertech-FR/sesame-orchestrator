@@ -10,10 +10,17 @@ export class Keyrings extends AbstractSchema {
     type: String,
     unique: true,
   })
+  public name: string;
+
+  @Prop({
+    type: String,
+    unique: true,
+  })
   public token: string;
 
   @Prop({
     type: [String],
+    default: ['0.0.0.0/0'],
   })
   public allowedNetworks?: string[];
 

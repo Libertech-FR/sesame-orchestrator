@@ -15,5 +15,6 @@ import { KeyringsController } from './keyrings.controller';
   ],
   providers: [KeyringsService],
   controllers: [KeyringsController],
+  exports: [KeyringsService],
 })
 export class KeyringsModule {}

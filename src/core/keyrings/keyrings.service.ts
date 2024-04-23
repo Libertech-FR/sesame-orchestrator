@@ -4,6 +4,7 @@ import { Keyrings } from '~/core/keyrings/_schemas/keyrings.schema';
 import { Model, SaveOptions, Document } from 'mongoose';
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { KeyringsCreateDto } from './_dto/keyrings.dto';
+import { randomBytes } from 'node:crypto';
 
 @Injectable()
 export class KeyringsService extends AbstractServiceSchema {
@@ -15,7 +16,7 @@ export class KeyringsService extends AbstractServiceSchema {
     data?: KeyringsCreateDto,
     options?: SaveOptions,
   ): Promise<Document<T, any, T>> {
-    const token = '1234567890';
+    const token = randomBytes(64).toString('hex');
     return await super.create(
       {
         ...data,

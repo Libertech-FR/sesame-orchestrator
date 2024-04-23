@@ -251,7 +251,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/core/keyrings/keyrings.service.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/core/keyrings/keyrings.service.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -323,7 +323,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:14</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:15</a></code>
 </div>
                         </td>
                     </tr>
@@ -515,7 +515,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:306</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:314</a></code>
 </div>
                         </td>
                     </tr>
@@ -1151,7 +1151,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:250</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:254</a></code>
 </div>
                         </td>
                     </tr>
@@ -1416,6 +1416,7 @@ import { Keyrings } from &#x27;~/core/keyrings/_schemas/keyrings.schema&#x27;;
 import { Model, SaveOptions, Document } from &#x27;mongoose&#x27;;
 import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
 import { KeyringsCreateDto } from &#x27;./_dto/keyrings.dto&#x27;;
+import { randomBytes } from &#x27;node:crypto&#x27;;
 
 @Injectable()
 export class KeyringsService extends AbstractServiceSchema {
@@ -1427,7 +1428,7 @@ export class KeyringsService extends AbstractServiceSchema {
     data?: KeyringsCreateDto,
     options?: SaveOptions,
   ): Promise&lt;Document&lt;T, any, T&gt;&gt; {
-    const token &#x3D; &#x27;1234567890&#x27;;
+    const token &#x3D; randomBytes(64).toString(&#x27;hex&#x27;);
     return await super.create(
       {
         ...data,

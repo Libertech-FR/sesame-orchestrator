@@ -167,6 +167,13 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                <a href="#name" >name</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Optional</span>
                                 <a href="#suspendedAt" >suspendedAt</a>
@@ -236,7 +243,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/core/keyrings/_dto/keyrings.dto.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/core/keyrings/_dto/keyrings.dto.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -281,7 +288,53 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/KeyringsCreateDto.html#source" target="_self" >KeyringsCreateDto:13</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/KeyringsCreateDto.html#source" target="_self" >KeyringsCreateDto:18</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="name"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                        <span ><b>name</b></span>
+                        <a href="#name"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsString()<br />@IsNotEmpty()<br />@ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/KeyringsCreateDto.html" target="_self" >KeyringsCreateDto</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/KeyringsCreateDto.html#source" target="_self" >KeyringsCreateDto:9</a></code>
 </div>
                         </td>
                     </tr>
@@ -326,7 +379,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/KeyringsCreateDto.html#source" target="_self" >KeyringsCreateDto:16</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/KeyringsCreateDto.html#source" target="_self" >KeyringsCreateDto:21</a></code>
 </div>
                         </td>
                     </tr>
@@ -372,7 +425,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/KeyringsCreateDto.html#source" target="_self" >KeyringsCreateDto:9</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/KeyringsCreateDto.html#source" target="_self" >KeyringsCreateDto:14</a></code>
 </div>
                         </td>
                     </tr>
@@ -444,6 +497,11 @@ import { IsDateString, IsIP, IsMongoId, IsNotEmpty, IsString } from &#x27;class-
 import { CustomFieldsDto } from &#x27;~/_common/abstracts/dto/custom-fields.dto&#x27;;
 
 export class KeyringsCreateDto extends CustomFieldsDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  public name: string;
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty()

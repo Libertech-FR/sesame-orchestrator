@@ -512,8 +512,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="306"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:306</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="314"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:314</a></div>
                         </td>
                     </tr>
 
@@ -1112,8 +1112,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="250"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:250</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="254"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:254</a></div>
                         </td>
                     </tr>
 
@@ -1612,6 +1612,10 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         { _id },
         {
           ...update,
+          $setOnInsert: {
+            &#x27;metadata.createdBy&#x27;: this.request?.user?.username || &#x27;anonymous&#x27;,
+            &#x27;metadata.createdAt&#x27;: new Date(),
+          },
           $set: {
             ...(update?.$set || {}),
             &#x27;metadata.lastUpdatedBy&#x27;: this.request?.user?.username || &#x27;anonymous&#x27;,
@@ -1663,6 +1667,10 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         filter,
         {
           ...update,
+          $setOnInsert: {
+            &#x27;metadata.createdBy&#x27;: this.request?.user?.username || &#x27;anonymous&#x27;,
+            &#x27;metadata.createdAt&#x27;: new Date(),
+          },
           $set: {
             ...(update?.$set || {}),
             &#x27;metadata.lastUpdatedBy&#x27;: this.request?.user?.username || &#x27;anonymous&#x27;,

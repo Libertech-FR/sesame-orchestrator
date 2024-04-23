@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >Keyrings</li>
+  <li class="breadcrumb-item" >AgentsCommand</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/core/keyrings/_schemas/keyrings.schema.ts</code>
+            <code>src/cli/agents.command.ts</code>
         </p>
 
 
@@ -138,35 +138,18 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+
                 <tr>
                     <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
+                        <h6><b>Methods</b></h6>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Optional</span>
-                                <a href="#allowedNetworks" >allowedNetworks</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                <a href="#name" >name</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Optional</span>
-                                <a href="#suspendedAt" >suspendedAt</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                <a href="#token" >token</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#run" >run</a>
                             </li>
                         </ul>
                     </td>
@@ -176,170 +159,148 @@
 
 
 
-
         </tbody>
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                                <span class="modifier">Public</span>
+                        <code>constructor(moduleRef: ModuleRef)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/cli/agents.command.ts:57</a></div>
+                            </td>
+                        </tr>
 
-            <section data-compodoc="block-properties">
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>moduleRef</td>
+                                                  
+                                                        <td>
+                                                                    <code>ModuleRef</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+            <section data-compodoc="block-methods">
     
-    <h3 id="inputs">
-        Properties
+    <h3 id="methods">
+        Methods
     </h3>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="allowedNetworks"></a>
+                    <a name="run"></a>
                     <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Optional</span>
-                        <span ><b>allowedNetworks</b></span>
-                        <a href="#allowedNetworks"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Async</span>
+                        <span ><b>run</b></span>
+                        <a href="#run"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>string[]</code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Prop({type: undefined, default: undefined})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/core/keyrings/_schemas/keyrings.schema.ts:25</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="name"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                        <span ><b>name</b></span>
-                        <a href="#name"><span class="icon ion-ios-link"></span></a>
-                    </span>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>run(inputs: string[], options: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Prop({type: String, unique: true})<br />
-                        </code>
-                    </td>
-                </tr>
+
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/core/keyrings/_schemas/keyrings.schema.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">src/cli/agents.command.ts:63</a></div>
                         </td>
                     </tr>
 
 
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="suspendedAt"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Optional</span>
-                        <span ><b>suspendedAt</b></span>
-                        <a href="#suspendedAt"><span class="icon ion-ios-link"></span></a>
-                    </span>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>inputs</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Prop({type: Date})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/core/keyrings/_schemas/keyrings.schema.ts:28</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="token"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                        <span ><b>token</b></span>
-                        <a href="#token"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Prop({type: String, unique: true})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/core/keyrings/_schemas/keyrings.schema.ts:19</a></div>
-                        </td>
-                    </tr>
-
-
         </tbody>
     </table>
 </section>
-
-
 
 
 
@@ -349,37 +310,70 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Prop, Schema, SchemaFactory } from &#x27;@nestjs/mongoose&#x27;;
-import { Document } from &#x27;mongoose&#x27;;
-import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ModuleRef } from &#x27;@nestjs/core&#x27;;
+import { Command, CommandRunner, InquirerService, Question, QuestionSet, SubCommand } from &#x27;nest-commander&#x27;;
+import { AgentsCreateDto } from &#x27;~/core/agents/_dto/agents.dto&#x27;;
+import { AgentsService } from &#x27;~/core/agents/agents.service&#x27;;
 
-export type KeyringsDocument &#x3D; Keyrings &amp; Document;
-
-@Schema({ versionKey: false })
-export class Keyrings extends AbstractSchema {
-  @Prop({
-    type: String,
-    unique: true,
+@QuestionSet({ name: &#x27;agent-create-questions&#x27; })
+export class AgentCreateQuestions {
+  @Question({
+    message: &#x27;Username ?&#x27;,
+    name: &#x27;username&#x27;,
   })
-  public name: string;
+  parseUsername(val: string) {
+    return val;
+  }
 
-  @Prop({
-    type: String,
-    unique: true,
+  @Question({
+    message: &#x27;Email ?&#x27;,
+    name: &#x27;email&#x27;,
   })
-  public token: string;
+  parseEmail(val: string) {
+    return val;
+  }
 
-  @Prop({
-    type: [String],
-    default: [&#x27;0.0.0.0/0&#x27;],
+  @Question({
+    message: &#x27;Password ?&#x27;,
+    name: &#x27;password&#x27;,
+    type: &#x27;password&#x27;,
   })
-  public allowedNetworks?: string[];
-
-  @Prop({ type: Date })
-  public suspendedAt?: Date;
+  parsePassword(val: string) {
+    return val;
+  }
 }
 
-export const KeyringsSchema &#x3D; SchemaFactory.createForClass(Keyrings);
+@SubCommand({ name: &#x27;create&#x27; })
+export class AgentsCreateCommand extends CommandRunner {
+  public constructor(
+    protected moduleRef: ModuleRef,
+    private readonly inquirer: InquirerService,
+    private readonly agentsService: AgentsService,
+  ) {
+    super();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async run(inputs: string[], options: any): Promise&lt;void&gt; {
+    const agent &#x3D; await this.inquirer.ask&lt;AgentsCreateDto&gt;(&#x27;agent-create-questions&#x27;, undefined);
+    try {
+      await this.agentsService.create(agent);
+      console.log(&#x27;Agent created successfully&#x27;);
+    } catch (error) {
+      console.error(&#x27;Error creating agent&#x27;, error);
+    }
+  }
+}
+
+@Command({ name: &#x27;agents&#x27;, arguments: &#x27;&lt;task&gt;&#x27;, subCommands: [AgentsCreateCommand] })
+export class AgentsCommand extends CommandRunner {
+  public constructor(protected moduleRef: ModuleRef) {
+    super();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async run(inputs: string[], options: any): Promise&lt;void&gt; {}
+}
 </code></pre>
     </div>
 </div>
@@ -418,7 +412,7 @@ export const KeyringsSchema &#x3D; SchemaFactory.createForClass(Keyrings);
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'Keyrings.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'AgentsCommand.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -175,7 +175,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/cli/keyrings.command.ts:40</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="63" class="link-to-prism">src/cli/keyrings.command.ts:63</a></div>
                             </td>
                         </tr>
 
@@ -241,8 +241,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">src/cli/keyrings.command.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">src/cli/keyrings.command.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -312,7 +312,10 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ModuleRef } from &#x27;@nestjs/core&#x27;;
 import { Command, CommandRunner, InquirerService, Question, QuestionSet, SubCommand } from &#x27;nest-commander&#x27;;
+import { ApiSession } from &#x27;~/_common/data/api-session&#x27;;
+import { AuthService } from &#x27;~/core/auth/auth.service&#x27;;
 import { KeyringsCreateDto } from &#x27;~/core/keyrings/_dto/keyrings.dto&#x27;;
+import { Keyrings } from &#x27;~/core/keyrings/_schemas/keyrings.schema&#x27;;
 import { KeyringsService } from &#x27;~/core/keyrings/keyrings.service&#x27;;
 
 @QuestionSet({ name: &#x27;keyrings-create-questions&#x27; })
@@ -332,6 +335,7 @@ export class KeyringsCreateCommand extends CommandRunner {
     protected moduleRef: ModuleRef,
     private readonly inquirer: InquirerService,
     private readonly keyringsService: KeyringsService,
+    private readonly authService: AuthService,
   ) {
     super();
   }
@@ -340,8 +344,27 @@ export class KeyringsCreateCommand extends CommandRunner {
   async run(inputs: string[], options: any): Promise&lt;void&gt; {
     const keyring &#x3D; await this.inquirer.ask&lt;KeyringsCreateDto&gt;(&#x27;keyrings-create-questions&#x27;, undefined);
     try {
-      const key &#x3D; await this.keyringsService.create(keyring);
+      const key &#x3D; (await this.keyringsService.create(keyring)) as Keyrings;
       console.log(&#x27;Keyring created successfully&#x27;, key.toJSON());
+      const options &#x3D; {
+        scopes: [&#x27;api&#x27;],
+      };
+      if (key.suspendedAt) {
+        options[&#x27;expiresIn&#x27;] &#x3D; key.suspendedAt.getTime() - Date.now();
+      } else {
+        options[&#x27;expiresIn&#x27;] &#x3D; &#x27;10y&#x27;;
+      }
+      const { access_token } &#x3D; await this.authService.createTokens(
+        new ApiSession({
+          _id: key._id.toString(),
+          username: key.name,
+          displayName: key.name,
+          token: key.token,
+        }),
+        false,
+        options,
+      );
+      console.log(&#x27;Keyring created successfully&#x27;, access_token);
     } catch (error) {
       console.error(&#x27;Error creating keyring&#x27;, error);
     }

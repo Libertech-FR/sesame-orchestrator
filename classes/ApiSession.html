@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >KeyringsCreateQuestions</li>
+  <li class="breadcrumb-item" >ApiSession</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/cli/keyrings.command.ts</code>
+            <code>src/_common/data/api-session.ts</code>
         </p>
 
 
@@ -138,18 +138,33 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-
                 <tr>
                     <td class="col-md-4">
-                        <h6><b>Methods</b></h6>
+                        <h6><b>Properties</b></h6>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier"></span>
-                                <a href="#parseName" >parseName</a>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#_id" >_id</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#displayName" >displayName</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#token" >token</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#username" >username</a>
                             </li>
                         </ul>
                     </td>
@@ -159,94 +174,181 @@
 
 
 
+
         </tbody>
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                                <span class="modifier">Public</span>
+                        <code>constructor(data: <a href="../classes/ApiSession.html" target="_self">Partial&lt;ApiSession&gt;</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">src/_common/data/api-session.ts:5</a></div>
+                            </td>
+                        </tr>
 
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>data</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/ApiSession.html" target="_self" >Partial&lt;ApiSession&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
-            <section data-compodoc="block-methods">
+            <section data-compodoc="block-properties">
     
-    <h3 id="methods">
-        Methods
+    <h3 id="inputs">
+        Properties
     </h3>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="parseName"></a>
+                    <a name="_id"></a>
                     <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>parseName</b></span>
-                        <a href="#parseName"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>_id</b></span>
+                        <a href="#_id"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>parseName(val: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Question({message: &#x27;Name ?&#x27;, name: &#x27;name&#x27;})<br /></code>
-                </td>
-            </tr>
-
+                    </td>
+                </tr>
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">src/cli/keyrings.command.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="2" class="link-to-prism">src/_common/data/api-session.ts:2</a></div>
                         </td>
                     </tr>
 
 
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
             <tr>
                 <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>val</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
+                    <a name="displayName"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>displayName</b></span>
+                        <a href="#displayName"><span class="icon ion-ios-link"></span></a>
+                    </span>
                 </td>
             </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">src/_common/data/api-session.ts:4</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="token"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>token</b></span>
+                        <a href="#token"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">src/_common/data/api-session.ts:5</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="username"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>username</b></span>
+                        <a href="#username"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="3" class="link-to-prism">src/_common/data/api-session.ts:3</a></div>
+                        </td>
+                    </tr>
+
+
         </tbody>
     </table>
 </section>
+
+
 
 
 
@@ -256,75 +358,17 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ModuleRef } from &#x27;@nestjs/core&#x27;;
-import { Command, CommandRunner, InquirerService, Question, QuestionSet, SubCommand } from &#x27;nest-commander&#x27;;
-import { ApiSession } from &#x27;~/_common/data/api-session&#x27;;
-import { AuthService } from &#x27;~/core/auth/auth.service&#x27;;
-import { KeyringsCreateDto } from &#x27;~/core/keyrings/_dto/keyrings.dto&#x27;;
-import { Keyrings } from &#x27;~/core/keyrings/_schemas/keyrings.schema&#x27;;
-import { KeyringsService } from &#x27;~/core/keyrings/keyrings.service&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export class ApiSession {
+  public readonly _id: string;
+  public readonly username: string;
+  public readonly displayName: string;
+  public readonly token: string;
 
-@QuestionSet({ name: &#x27;keyrings-create-questions&#x27; })
-export class KeyringsCreateQuestions {
-  @Question({
-    message: &#x27;Name ?&#x27;,
-    name: &#x27;name&#x27;,
-  })
-  parseName(val: string) {
-    return val;
-  }
-}
-
-@SubCommand({ name: &#x27;create&#x27; })
-export class KeyringsCreateCommand extends CommandRunner {
-  public constructor(
-    protected moduleRef: ModuleRef,
-    private readonly inquirer: InquirerService,
-    private readonly keyringsService: KeyringsService,
-    private readonly authService: AuthService,
-  ) {
-    super();
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async run(inputs: string[], options: any): Promise&lt;void&gt; {
-    const keyring &#x3D; await this.inquirer.ask&lt;KeyringsCreateDto&gt;(&#x27;keyrings-create-questions&#x27;, undefined);
-    try {
-      const key &#x3D; (await this.keyringsService.create(keyring)) as Keyrings;
-      console.log(&#x27;Keyring created successfully&#x27;, key.toJSON());
-      const options &#x3D; {
-        scopes: [&#x27;api&#x27;],
-      };
-      if (key.suspendedAt) {
-        options[&#x27;expiresIn&#x27;] &#x3D; key.suspendedAt.getTime() - Date.now();
-      } else {
-        options[&#x27;expiresIn&#x27;] &#x3D; &#x27;10y&#x27;;
-      }
-      const { access_token } &#x3D; await this.authService.createTokens(
-        new ApiSession({
-          _id: key._id.toString(),
-          username: key.name,
-          displayName: key.name,
-          token: key.token,
-        }),
-        false,
-        options,
-      );
-      console.log(&#x27;Keyring created successfully&#x27;, access_token);
-    } catch (error) {
-      console.error(&#x27;Error creating keyring&#x27;, error);
+  public constructor(data: Partial&lt;ApiSession&gt;) {
+    for (const key in data) {
+      this[key] &#x3D; data[key];
     }
   }
-}
-
-@Command({ name: &#x27;keyrings&#x27;, arguments: &#x27;&lt;task&gt;&#x27;, subCommands: [KeyringsCreateCommand] })
-export class KeyringsCommand extends CommandRunner {
-  public constructor(protected moduleRef: ModuleRef) {
-    super();
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async run(inputs: string[], options: any): Promise&lt;void&gt; {}
 }
 </code></pre>
     </div>
@@ -364,7 +408,7 @@ export class KeyringsCommand extends CommandRunner {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'KeyringsCreateQuestions.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ApiSession.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -181,6 +181,10 @@
                                 <a href="#findOne" >findOne</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#resolveConfigPath" >resolveConfigPath</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#validate" >validate</a>
                             </li>
@@ -247,8 +251,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="117"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:117</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="129"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:129</a></div>
                         </td>
                     </tr>
 
@@ -286,8 +290,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="131"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:131</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="158"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:158</a></div>
                         </td>
                     </tr>
 
@@ -333,6 +337,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="resolveConfigPath"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>resolveConfigPath</b></span>
+                        <a href="#resolveConfigPath"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>resolveConfigPath(key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>key</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string | null</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="validate"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -351,8 +424,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -431,8 +504,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="101"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:101</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -625,6 +698,18 @@ export class IdentitiesValidationService {
     this.logger &#x3D; new Logger();
   }
 
+  private resolveConfigPath(key: string): string | null {
+    const hardConfigPath &#x3D; &#x60;./src/management/identities/validations/_config/${key}.yml&#x60;;
+    const dynamicConfigPath &#x3D; &#x60;./configs/identities/validations/${key}.yml&#x60;;
+    if (existsSync(dynamicConfigPath)) {
+      return dynamicConfigPath;
+    }
+    if (existsSync(hardConfigPath)) {
+      return hardConfigPath;
+    }
+    return null;
+  }
+
   /**
    * Validates additional fields for identities.
    * @param data - The additional fields data to validate.
@@ -655,7 +740,7 @@ export class IdentitiesValidationService {
       }
 
       // Check for missing schema files
-      const path &#x3D; &#x60;./src/management/identities/validations/_config/${key}.yml&#x60;;
+      const path &#x3D; this.resolveConfigPath(key);
       if (!existsSync(path)) {
         validations[key] &#x3D; &#x60;Fichier de config &#x27;${key}.yml&#x27; introuvable&#x60;;
         reject &#x3D; true;
@@ -699,7 +784,7 @@ export class IdentitiesValidationService {
    * @returns A promise that resolves with an error message if validation fails, otherwise null.
    */
   public async validateAttribute(key: string, attribute: any): Promise&lt;string | null&gt; {
-    const path &#x3D; &#x60;./src/management/identities/validations/_config/${key}.yml&#x60;;
+    const path &#x3D; this.resolveConfigPath(key);
     const schema: ConfigObjectSchemaDTO &#x3D; parse(readFileSync(path, &#x27;utf8&#x27;));
 
     const yupSchema &#x3D; buildYup(schema, { noSortEdges: true });
@@ -716,21 +801,36 @@ export class IdentitiesValidationService {
 
   async findAll(): Promise&lt;any&gt; {
     this.logger.debug([&#x27;findAll&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;));
-    const configPath &#x3D; &#x27;./src/management/identities/validations/_config&#x27;;
-    const files &#x3D; readdirSync(configPath);
+    const hardConfigPath &#x3D; &#x27;./src/management/identities/validations/_config&#x27;;
+    const dynamicConfigPath &#x3D; &#x27;./configs/identities/validations&#x27;;
+    // Retrieve files from each directory and tag them with their source
+    const hardConfigFiles &#x3D; readdirSync(hardConfigPath).map((file) &#x3D;&gt; ({
+      file,
+      path: hardConfigPath,
+      source: &#x27;hardConfig&#x27;,
+    }));
+    const dynamicConfigFiles &#x3D; readdirSync(dynamicConfigPath).map((file) &#x3D;&gt; ({
+      file,
+      path: dynamicConfigPath,
+      source: &#x27;dynamicConfig&#x27;,
+    }));
+
+    // Combine the file arrays
+    const files &#x3D; [...hardConfigFiles, ...dynamicConfigFiles];
+
     const result &#x3D; [];
-    for (const file of files) {
-      const filePath &#x3D; &#x60;${configPath}/${file}&#x60;;
+    for (const fileObj of files) {
+      const filePath &#x3D; &#x60;${fileObj.path}/${fileObj.file}&#x60;;
       const data &#x3D; parse(readFileSync(filePath, &#x27;utf-8&#x27;));
-      const key &#x3D; file.replace(&#x27;.yml&#x27;, &#x27;&#x27;);
-      result.push({ [key]: data });
+      const key &#x3D; fileObj.file.replace(&#x27;.yml&#x27;, &#x27;&#x27;);
+      result.push({ [key]: data, source: fileObj.source });
     }
     return [result, files.length];
   }
 
   async findOne(schema): Promise&lt;any&gt; {
     this.logger.debug([&#x27;findOne&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;));
-    const filePath &#x3D; &#x60;./src/management/identities/validations/_config/${schema}.yml&#x60;;
+    const filePath &#x3D; this.resolveConfigPath(schema);
     if (!existsSync(filePath)) {
       const message &#x3D; &#x60;File not found: ${filePath}&#x60;;
       throw new ValidationConfigException({ message });

@@ -202,6 +202,10 @@
                                     <span class="modifier">Async</span>
                                 <a href="#generateAll" >generateAll</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#resolveJsonFormPath" >resolveJsonFormPath</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -260,8 +264,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:115</a></div>
                         </td>
                     </tr>
 
@@ -299,8 +303,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="104"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:104</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:132</a></div>
                         </td>
                     </tr>
 
@@ -357,15 +361,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>generate(schema: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>generate(undefined)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -380,16 +384,11 @@
                                     <thead>
                                         <tr>
                                             <td>Name</td>
-                                                <td>Type</td>
                                             <td>Optional</td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>schema</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
 
                                             <td>
                                                     No
@@ -433,8 +432,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -446,6 +445,75 @@
                             <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
 
                         </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="resolveJsonFormPath"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>resolveJsonFormPath</b></span>
+                        <a href="#resolveJsonFormPath"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>resolveJsonFormPath(schema: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>schema</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string | null</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -665,11 +733,25 @@ export class IdentitiesJsonformsService extends AbstractService {
     //this.validateSchema &#x3D; this.ajv.compile(validSchema);
   }
 
-  async generate(schema: string): Promise&lt;any&gt; {
+  private resolveJsonFormPath(schema: string): string | null {
+    if (!schema.endsWith(&#x27;.yml&#x27;)) schema +&#x3D; &#x27;.yml&#x27;;
+    const hardConfigPath &#x3D; &#x60;./src/management/identities/jsonforms/_config/${schema}&#x60;;
+    const dynamicConfigPath &#x3D; &#x60;./configs/identities/jsonforms/${schema}&#x60;;
+    if (existsSync(dynamicConfigPath)) {
+      return dynamicConfigPath;
+    }
+    if (existsSync(hardConfigPath)) {
+      return hardConfigPath;
+    }
+    return null;
+  }
+
+  async generate({ schema, path }): Promise&lt;any&gt; {
     if (schema) {
       console.log(&#x60;Generating jsonforms for schema: ${schema}&#x60;);
-      const filePath &#x3D; &#x60;./src/management/identities/validations/_config/${schema}.yml&#x60;;
-
+      if (!schema.endsWith(&#x27;.yml&#x27;)) schema +&#x3D; &#x27;.yml&#x27;;
+      const filePath &#x3D; &#x60;${path}/${schema}&#x60;;
+      console.log(&#x60;File path: ${filePath}&#x60;);
       if (!existsSync(filePath)) {
         console.log(&#x60;File not found: ${filePath}&#x60;);
         const message &#x3D; &#x60;File not found: ${filePath}&#x60;;
@@ -721,15 +803,27 @@ export class IdentitiesJsonformsService extends AbstractService {
           }, [])
           .map((group) &#x3D;&gt; group), // Flatten the structure
       };
-
-      writeFileSync(&#x60;./src/management/identities/jsonforms/_config/${schema}.ui.yml&#x60;, stringify(jsonForm));
+      if (!schema.endsWith(&#x27;.ui.yml&#x27;)) schema &#x3D; schema.replace(&#x27;.yml&#x27;, &#x27;.ui.yml&#x27;);
+      const jsonFormPath &#x3D; &#x60;${path.replace(&#x27;validations&#x27;, &#x27;jsonforms&#x27;)}/${schema}&#x60;;
+      console.log(&#x60;Writing jsonform to: ${jsonFormPath}&#x60;);
+      writeFileSync(&#x60;${jsonFormPath}&#x60;, stringify(jsonForm));
       return jsonForm;
     }
   }
 
   async generateAll(): Promise&lt;any&gt; {
-    const configPath &#x3D; &#x27;./src/management/identities/validations/_config&#x27;;
-    const files &#x3D; readdirSync(configPath);
+    const hardConfigPath &#x3D; &#x27;./src/management/identities/validations/_config&#x27;;
+    const dynamicConfigPath &#x3D; &#x27;./configs/identities/validations&#x27;;
+    const hardConfigFiles &#x3D; readdirSync(hardConfigPath).map((file) &#x3D;&gt; ({ schema: file, path: hardConfigPath }));
+    const dynamicConfigFiles &#x3D; readdirSync(dynamicConfigPath).map((file) &#x3D;&gt; ({
+      schema: file,
+      path: dynamicConfigPath,
+    }));
+
+    console.log(&#x27;Generating jsonforms for all schemas&#x27;);
+    console.log(&#x27;Hard config files:&#x27;, hardConfigFiles);
+    console.log(&#x27;Dynamic config files:&#x27;, dynamicConfigFiles);
+    const files &#x3D; [...hardConfigFiles, ...dynamicConfigFiles].filter((file) &#x3D;&gt; file.schema.endsWith(&#x27;.yml&#x27;));
     for (const file of files) {
       this.generate(file);
     }
@@ -737,29 +831,28 @@ export class IdentitiesJsonformsService extends AbstractService {
   }
 
   async findAll(): Promise&lt;any&gt; {
-    // eslint-disable-next-line prefer-rest-params
-    this.logger.debug([&#x27;findAll&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;));
-    const configPath &#x3D; &#x27;./src/management/identities/jsonforms/_config&#x27;;
-    const files &#x3D; readdirSync(configPath);
+    const hardConfigPath &#x3D; &#x27;./src/management/identities/jsonforms/_config&#x27;;
+    const dynamicConfigPath &#x3D; &#x27;./configs/identities/jsonforms&#x27;;
+    const hardConfigFiles &#x3D; readdirSync(hardConfigPath).map((file) &#x3D;&gt; ({ file, path: hardConfigPath }));
+    const dynamicConfigFiles &#x3D; readdirSync(dynamicConfigPath).map((file) &#x3D;&gt; ({ file, path: dynamicConfigPath }));
+
+    const files &#x3D; [...hardConfigFiles, ...dynamicConfigFiles];
     const result &#x3D; [];
-    for (const file of files) {
-      const filePath &#x3D; &#x60;${configPath}/${file}&#x60;;
+    for (const fileObj of files) {
+      const filePath &#x3D; &#x60;${fileObj.path}/${fileObj.file}&#x60;;
       const data &#x3D; parse(readFileSync(filePath, &#x27;utf-8&#x27;));
-      const key &#x3D; file.replace(&#x27;.ui.yml&#x27;, &#x27;&#x27;);
+      const key &#x3D; fileObj.file.replace(&#x27;.ui.yml&#x27;, &#x27;&#x27;);
       result.push({ [key]: data });
     }
     return [result, files.length];
   }
 
   async findOne(schema): Promise&lt;any&gt; {
-    // eslint-disable-next-line prefer-rest-params
-    this.logger.debug([&#x27;findOne&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;));
-    const filePath &#x3D; &#x60;./src/management/identities/jsonforms/_config/${schema}.ui.yml&#x60;;
-    if (!existsSync(filePath)) {
-      const message &#x3D; &#x60;File not found: ${filePath}&#x60;;
-      throw new ValidationConfigException({ message });
+    if (schema.endsWith(&#x27;.yml&#x27;)) schema &#x3D; schema.replace(&#x27;.yml&#x27;, &#x27;&#x27;);
+    const filePath &#x3D; this.resolveJsonFormPath(schema + &#x27;.ui&#x27;);
+    if (!filePath) {
+      throw new ValidationConfigException({ message: &#x60;File not found: ${schema}.ui.yml&#x60; });
     }
-
     return parse(readFileSync(filePath, &#x27;utf-8&#x27;));
   }
 }

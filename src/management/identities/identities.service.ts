@@ -95,7 +95,9 @@ export class IdentitiesService extends AbstractServiceSchema {
     if (update.state === IdentityState.TO_COMPLETE) {
       update = { ...update, state: IdentityState.TO_VALIDATE };
     }
-    console.log(update);
+    if (update.state === IdentityState.SYNCED) {
+      update = { ...update, state: IdentityState.TO_VALIDATE };
+    }
     //update.state = IdentityState.TO_VALIDATE;
     const updated = await super.update(_id, update, options);
     //TODO: add backends service logic here (TO_SYNC)

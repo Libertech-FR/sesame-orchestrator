@@ -25,6 +25,18 @@ export class IdentitiesValidationService {
     this.logger = new Logger();
   }
 
+  private resolveConfigPath(key: string): string | null {
+    const hardConfigPath = `./src/management/identities/validations/_config/${key}.yml`;
+    const dynamicConfigPath = `./configs/identities/validations/${key}.yml`;
+    if (existsSync(dynamicConfigPath)) {
+      return dynamicConfigPath;
+    }
+    if (existsSync(hardConfigPath)) {
+      return hardConfigPath;
+    }
+    return null;
+  }
+
   /**
    * Validates additional fields for identities.
    * @param data - The additional fields data to validate.
@@ -55,7 +67,7 @@ export class IdentitiesValidationService {
       }
 
       // Check for missing schema files
-      const path = `./src/management/identities/validations/_config/${key}.yml`;
+      const path = this.resolveConfigPath(key);
       if (!existsSync(path)) {
         validations[key] = `Fichier de config '${key}.yml' introuvable`;
         reject = true;
@@ -99,7 +111,7 @@ export class IdentitiesValidationService {
    * @returns A promise that resolves with an error message if validation fails, otherwise null.
    */
   public async validateAttribute(key: string, attribute: any): Promise<string | null> {
-    const path = `./src/management/identities/validations/_config/${key}.yml`;
+    const path = this.resolveConfigPath(key);
     const schema: ConfigObjectSchemaDTO = parse(readFileSync(path, 'utf8'));
 
     const yupSchema = buildYup(schema, { noSortEdges: true });
@@ -116,21 +128,36 @@ export class IdentitiesValidationService {
 
   async findAll(): Promise<any> {
     this.logger.debug(['findAll', JSON.stringify(Object.values(arguments))].join(' '));
-    const configPath = './src/management/identities/validations/_config';
-    const files = readdirSync(configPath);
+    const hardConfigPath = './src/management/identities/validations/_config';
+    const dynamicConfigPath = './configs/identities/validations';
+    // Retrieve files from each directory and tag them with their source
+    const hardConfigFiles = readdirSync(hardConfigPath).map((file) => ({
+      file,
+      path: hardConfigPath,
+      source: 'hardConfig',
+    }));
+    const dynamicConfigFiles = readdirSync(dynamicConfigPath).map((file) => ({
+      file,
+      path: dynamicConfigPath,
+      source: 'dynamicConfig',
+    }));
+
+    // Combine the file arrays
+    const files = [...hardConfigFiles, ...dynamicConfigFiles];
+
     const result = [];
-    for (const file of files) {
-      const filePath = `${configPath}/${file}`;
+    for (const fileObj of files) {
+      const filePath = `${fileObj.path}/${fileObj.file}`;
       const data = parse(readFileSync(filePath, 'utf-8'));
-      const key = file.replace('.yml', '');
-      result.push({ [key]: data });
+      const key = fileObj.file.replace('.yml', '');
+      result.push({ [key]: data, source: fileObj.source });
     }
     return [result, files.length];
   }
 
   async findOne(schema): Promise<any> {
     this.logger.debug(['findOne', JSON.stringify(Object.values(arguments))].join(' '));
-    const filePath = `./src/management/identities/validations/_config/${schema}.yml`;
+    const filePath = this.resolveConfigPath(schema);
     if (!existsSync(filePath)) {
       const message = `File not found: ${filePath}`;
       throw new ValidationConfigException({ message });

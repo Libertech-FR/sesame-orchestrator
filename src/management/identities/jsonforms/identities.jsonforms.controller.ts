@@ -20,7 +20,7 @@ export class IdentitiesJsonFormsController extends AbstractController {
 
   @Post('generate')
   async generate(@Res() res: Response, @Body('schema') schema: string | null = null): Promise<any> {
-    const result = await this._service.generate(schema);
+    const result = await this._service.generate({ schema, path: './configs/identities/jsonforms' });
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: result,

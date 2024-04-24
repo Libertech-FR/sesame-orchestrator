@@ -15,11 +15,25 @@ export class IdentitiesJsonformsService extends AbstractService {
     //this.validateSchema = this.ajv.compile(validSchema);
   }
 
-  async generate(schema: string): Promise<any> {
+  private resolveJsonFormPath(schema: string): string | null {
+    if (!schema.endsWith('.yml')) schema += '.yml';
+    const hardConfigPath = `./src/management/identities/jsonforms/_config/${schema}`;
+    const dynamicConfigPath = `./configs/identities/jsonforms/${schema}`;
+    if (existsSync(dynamicConfigPath)) {
+      return dynamicConfigPath;
+    }
+    if (existsSync(hardConfigPath)) {
+      return hardConfigPath;
+    }
+    return null;
+  }
+
+  async generate({ schema, path }): Promise<any> {
     if (schema) {
       console.log(`Generating jsonforms for schema: ${schema}`);
-      const filePath = `./src/management/identities/validations/_config/${schema}.yml`;
-
+      if (!schema.endsWith('.yml')) schema += '.yml';
+      const filePath = `${path}/${schema}`;
+      console.log(`File path: ${filePath}`);
       if (!existsSync(filePath)) {
         console.log(`File not found: ${filePath}`);
         const message = `File not found: ${filePath}`;
@@ -71,15 +85,27 @@ export class IdentitiesJsonformsService extends AbstractService {
           }, [])
           .map((group) => group), // Flatten the structure
       };
-
-      writeFileSync(`./src/management/identities/jsonforms/_config/${schema}.ui.yml`, stringify(jsonForm));
+      if (!schema.endsWith('.ui.yml')) schema = schema.replace('.yml', '.ui.yml');
+      const jsonFormPath = `${path.replace('validations', 'jsonforms')}/${schema}`;
+      console.log(`Writing jsonform to: ${jsonFormPath}`);
+      writeFileSync(`${jsonFormPath}`, stringify(jsonForm));
       return jsonForm;
     }
   }
 
   async generateAll(): Promise<any> {
-    const configPath = './src/management/identities/validations/_config';
-    const files = readdirSync(configPath);
+    const hardConfigPath = './src/management/identities/validations/_config';
+    const dynamicConfigPath = './configs/identities/validations';
+    const hardConfigFiles = readdirSync(hardConfigPath).map((file) => ({ schema: file, path: hardConfigPath }));
+    const dynamicConfigFiles = readdirSync(dynamicConfigPath).map((file) => ({
+      schema: file,
+      path: dynamicConfigPath,
+    }));
+
+    console.log('Generating jsonforms for all schemas');
+    console.log('Hard config files:', hardConfigFiles);
+    console.log('Dynamic config files:', dynamicConfigFiles);
+    const files = [...hardConfigFiles, ...dynamicConfigFiles].filter((file) => file.schema.endsWith('.yml'));
     for (const file of files) {
       this.generate(file);
     }
@@ -87,29 +113,28 @@ export class IdentitiesJsonformsService extends AbstractService {
   }
 
   async findAll(): Promise<any> {
-    // eslint-disable-next-line prefer-rest-params
-    this.logger.debug(['findAll', JSON.stringify(Object.values(arguments))].join(' '));
-    const configPath = './src/management/identities/jsonforms/_config';
-    const files = readdirSync(configPath);
+    const hardConfigPath = './src/management/identities/jsonforms/_config';
+    const dynamicConfigPath = './configs/identities/jsonforms';
+    const hardConfigFiles = readdirSync(hardConfigPath).map((file) => ({ file, path: hardConfigPath }));
+    const dynamicConfigFiles = readdirSync(dynamicConfigPath).map((file) => ({ file, path: dynamicConfigPath }));
+
+    const files = [...hardConfigFiles, ...dynamicConfigFiles];
     const result = [];
-    for (const file of files) {
-      const filePath = `${configPath}/${file}`;
+    for (const fileObj of files) {
+      const filePath = `${fileObj.path}/${fileObj.file}`;
       const data = parse(readFileSync(filePath, 'utf-8'));
-      const key = file.replace('.ui.yml', '');
+      const key = fileObj.file.replace('.ui.yml', '');
       result.push({ [key]: data });
     }
     return [result, files.length];
   }
 
   async findOne(schema): Promise<any> {
-    // eslint-disable-next-line prefer-rest-params
-    this.logger.debug(['findOne', JSON.stringify(Object.values(arguments))].join(' '));
-    const filePath = `./src/management/identities/jsonforms/_config/${schema}.ui.yml`;
-    if (!existsSync(filePath)) {
-      const message = `File not found: ${filePath}`;
-      throw new ValidationConfigException({ message });
+    if (schema.endsWith('.yml')) schema = schema.replace('.yml', '');
+    const filePath = this.resolveJsonFormPath(schema + '.ui');
+    if (!filePath) {
+      throw new ValidationConfigException({ message: `File not found: ${schema}.ui.yml` });
     }
-
     return parse(readFileSync(filePath, 'utf-8'));
   }
 }

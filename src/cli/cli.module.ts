@@ -12,6 +12,7 @@ import { KeyringsCommand, KeyringsCreateQuestions } from './keyrings.command';
 import { KeyringsModule } from '~/core/keyrings/keyrings.module';
 import { BackendsCommand } from './backends.command';
 import { BackendsModule } from '~/core/backends/backends.module';
+import { AuthModule } from '~/core/auth/auth.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { BackendsModule } from '~/core/backends/backends.module';
     AgentsModule,
     KeyringsModule,
     BackendsModule,
+    AuthModule,
   ],
   providers: [
     ...AgentsCommand.registerWithSubCommands(),

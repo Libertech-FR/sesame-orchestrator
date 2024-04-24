@@ -14,6 +14,7 @@ import { JwtService } from '@nestjs/jwt';
 import { resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { ConsoleSession } from '~/_common/data/console-session';
+import { KeyringsService } from '../keyrings/keyrings.service';
 
 @Injectable()
 export class AuthService extends AbstractService implements OnModuleInit {
@@ -29,6 +30,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
   public constructor(
     protected moduleRef: ModuleRef,
     protected readonly agentsService: AgentsService,
+    protected readonly keyringsService: KeyringsService,
     private readonly jwtService: JwtService,
     @InjectRedis() private readonly redis: Redis,
   ) {
@@ -52,6 +54,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
       }
       const { access_token } = await this.createTokens(new ConsoleSession(), false, {
         expiresIn: '1y',
+        scopes: ['offline', 'api'],
       });
       writeFileSync(
         devTokenPath,
@@ -78,17 +81,28 @@ export class AuthService extends AbstractService implements OnModuleInit {
   }
 
   // eslint-disable-next-line
-  public async verifyIdentity(payload: any & { identity: AgentType }): Promise<any> {
+  public async verifyIdentity(payload: any & { identity: AgentType & {token: string} }): Promise<any> {
+    if (payload.scopes.includes('offline')) {
+      return payload.identity;
+    }
+    if (payload.scopes.includes('api')) {
+      try {
+        const identity = await this.keyringsService.findOne({
+          _id: payload.identity._id,
+          token: payload.identity.token,
+        });
+        if (identity) {
+          return identity.toObject();
+        }
+      } catch (e) {}
+      return null;
+    }
     try {
-      if (payload.scopes.includes('offline')) {
-        return payload.identity;
-      }
       const identity = await this.redis.get([this.ACCESS_TOKEN_PREFIX, payload.jti].join(':'));
       if (identity) {
         return JSON.parse(identity);
       }
-    } finally {
-    }
+    } catch (e) {}
     return null;
   }
 
@@ -101,7 +115,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
     refresh_token?: string;
   }> {
     const scopes = ['sesame'];
-    if (refresh_token === false) scopes.push('offline');
+    if (options?.scopes) scopes.push(...options.scopes);
     const jwtid = `${identity._id}_${randomBytes(16).toString('hex')}`;
     const access_token = this.jwtService.sign(
       { identity, scopes },
@@ -109,7 +123,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
         expiresIn: this.ACCESS_TOKEN_EXPIRES_IN,
         jwtid,
         subject: `${identity._id}`,
-        ...options,
+        ...omit(options, ['scopes']),
       },
     );
     if (refresh_token === false) return { access_token };

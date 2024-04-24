@@ -9,5 +9,6 @@ import { TasksModule } from '../tasks/tasks.module';
   imports: [ConfigModule, IdentitiesModule, JobsModule, TasksModule],
   controllers: [BackendsController],
   providers: [BackendsService],
+  exports: [BackendsService],
 })
 export class BackendsModule {}

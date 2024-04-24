@@ -212,6 +212,11 @@ export class BackendsService extends AbstractQueueProcessor {
       state: JobState.CREATED,
       ...optionals,
     });
+    await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
+      $set: {
+        state: IdentityState.PROCESSING,
+      },
+    });
     if (!options?.async) {
       let error: Error;
       try {

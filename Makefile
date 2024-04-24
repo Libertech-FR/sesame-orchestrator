@@ -44,7 +44,7 @@ exec: ## Run a shell in the container
 		--platform $(PLATFORM) \
 		--network dev \
 		-v $(CURDIR):/data \
-		$(IMG_NAME) sh
+		$(IMG_NAME) bash
 
 dbs: ## Start databases
 	@docker volume create $(BASE_NAME)-mongodb

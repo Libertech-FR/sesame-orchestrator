@@ -10,6 +10,8 @@ import config, { MongoosePlugin } from '~/config';
 import { AgentsModule } from '~/core/agents/agents.module';
 import { KeyringsCommand, KeyringsCreateQuestions } from './keyrings.command';
 import { KeyringsModule } from '~/core/keyrings/keyrings.module';
+import { BackendsCommand } from './backends.command';
+import { BackendsModule } from '~/core/backends/backends.module';
 
 @Module({
   imports: [
@@ -54,10 +56,12 @@ import { KeyringsModule } from '~/core/keyrings/keyrings.module';
     }),
     AgentsModule,
     KeyringsModule,
+    BackendsModule,
   ],
   providers: [
     ...AgentsCommand.registerWithSubCommands(),
     ...KeyringsCommand.registerWithSubCommands(),
+    ...BackendsCommand.registerWithSubCommands(),
     AgentCreateQuestions,
     KeyringsCreateQuestions,
   ],

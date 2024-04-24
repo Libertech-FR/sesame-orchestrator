@@ -440,7 +440,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:114</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:116</a></code>
 </div>
                         </td>
                     </tr>
@@ -529,8 +529,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="125"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:125</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="127"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:127</a></div>
                         </td>
                     </tr>
 
@@ -730,8 +730,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="105"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:105</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="107"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:107</a></div>
                         </td>
                     </tr>
 
@@ -1709,7 +1709,9 @@ export class IdentitiesService extends AbstractServiceSchema {
     if (update.state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
       update &#x3D; { ...update, state: IdentityState.TO_VALIDATE };
     }
-    console.log(update);
+    if (update.state &#x3D;&#x3D;&#x3D; IdentityState.SYNCED) {
+      update &#x3D; { ...update, state: IdentityState.TO_VALIDATE };
+    }
     //update.state &#x3D; IdentityState.TO_VALIDATE;
     const updated &#x3D; await super.update(_id, update, options);
     //TODO: add backends service logic here (TO_SYNC)

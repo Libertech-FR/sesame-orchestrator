@@ -70,12 +70,4 @@ export class Agents extends AbstractSchema {
   public customFields?: { [key: string]: MixedValue };
 }
 
-export const AgentsSchema = SchemaFactory.createForClass(Agents).pre(
-  'save',
-  function (this: Agents, next: () => void): void {
-    if (this.isNew) {
-      this.displayName = this.displayName || this.username;
-    }
-    next();
-  },
-);
+export const AgentsSchema = SchemaFactory.createForClass(Agents);

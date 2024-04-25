@@ -29,7 +29,7 @@ export class SecurityPartDTO {
   @ApiProperty()
   public changePwdAtNextLogin: boolean;
 
-  @IsBoolean()
+  @IsString()
   @IsOptional()
   @ApiProperty()
   public secretKey?: string;

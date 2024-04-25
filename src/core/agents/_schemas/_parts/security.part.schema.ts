@@ -31,17 +31,9 @@ export class SecurityPart extends Document {
   public changePwdAtNextLogin: boolean;
 
   @Prop({
-    type: Boolean,
+    type: String,
   })
   public secretKey: string;
 }
 
-export const SecurityPartSchema = SchemaFactory.createForClass(SecurityPart).pre(
-  'save',
-  function (this: SecurityPart, next: () => void): void {
-    if (this.isNew) {
-      this.secretKey = Math.random().toString(36).slice(-8); //TODO: use crypto lib
-    }
-    next();
-  },
-);
+export const SecurityPartSchema = SchemaFactory.createForClass(SecurityPart);

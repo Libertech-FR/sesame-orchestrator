@@ -81,7 +81,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
   }
 
   // eslint-disable-next-line
-  public async verifyIdentity(payload: any & { identity: AgentType & {token: string} }): Promise<any> {
+  public async verifyIdentity(payload: any & { identity: AgentType & { token: string } }): Promise<any> {
     if (payload.scopes.includes('offline')) {
       return payload.identity;
     }
@@ -100,9 +100,17 @@ export class AuthService extends AbstractService implements OnModuleInit {
     try {
       const identity = await this.redis.get([this.ACCESS_TOKEN_PREFIX, payload.jti].join(':'));
       if (identity) {
-        return JSON.parse(identity);
+        const data = JSON.parse(identity);
+        const success = await this.agentsService.model.countDocuments({
+          _id: payload.identity._id,
+          'security.secretKey': data.identity?.security?.secretKey,
+        });
+
+        return success ? data : null;
       }
-    } catch (e) {}
+    } catch (e) {
+      this.logger.warn('Invalid jwt session', e);
+    }
     return null;
   }
 

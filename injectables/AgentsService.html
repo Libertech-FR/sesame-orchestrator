@@ -251,7 +251,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/core/agents/agents.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/core/agents/agents.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -323,7 +323,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:15</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:17</a></code>
 </div>
                         </td>
                     </tr>
@@ -419,7 +419,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:23</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:27</a></code>
 </div>
                         </td>
                     </tr>
@@ -1416,6 +1416,8 @@ import { Document, Model, ModifyResult, Query, QueryOptions, SaveOptions, Types,
 import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
 import { AgentsCreateDto } from &#x27;./_dto/agents.dto&#x27;;
 import { hash } from &#x27;argon2&#x27;;
+import { randomBytes } from &#x27;node:crypto&#x27;;
+import { SecurityPartDTO } from &#x27;./_dto/parts/security.part.dto&#x27;;
 
 @Injectable()
 export class AgentsService extends AbstractServiceSchema {
@@ -1428,6 +1430,8 @@ export class AgentsService extends AbstractServiceSchema {
     options?: SaveOptions,
   ): Promise&lt;Document&lt;T, any, T&gt;&gt; {
     data.password &#x3D; await hash(data.password);
+    data.security &#x3D; (data.security || {}) as SecurityPartDTO;
+    data.security.secretKey &#x3D; randomBytes(32).toString(&#x27;hex&#x27;);
     return await super.create(data, options);
   }
 

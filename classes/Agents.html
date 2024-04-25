@@ -629,15 +629,7 @@ export class Agents extends AbstractSchema {
   public customFields?: { [key: string]: MixedValue };
 }
 
-export const AgentsSchema &#x3D; SchemaFactory.createForClass(Agents).pre(
-  &#x27;save&#x27;,
-  function (this: Agents, next: () &#x3D;&gt; void): void {
-    if (this.isNew) {
-      this.displayName &#x3D; this.displayName || this.username;
-    }
-    next();
-  },
-);
+export const AgentsSchema &#x3D; SchemaFactory.createForClass(Agents);
 </code></pre>
     </div>
 </div>

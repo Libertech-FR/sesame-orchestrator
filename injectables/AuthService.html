@@ -461,8 +461,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="186"
-                                    class="link-to-prism">src/core/auth/auth.service.ts:186</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="194"
+                                    class="link-to-prism">src/core/auth/auth.service.ts:194</a></div>
                         </td>
                     </tr>
 
@@ -531,8 +531,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="109"
-                                    class="link-to-prism">src/core/auth/auth.service.ts:109</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">src/core/auth/auth.service.ts:117</a></div>
                         </td>
                     </tr>
 
@@ -625,8 +625,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="159"
-                                    class="link-to-prism">src/core/auth/auth.service.ts:159</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="167"
+                                    class="link-to-prism">src/core/auth/auth.service.ts:167</a></div>
                         </td>
                     </tr>
 
@@ -735,8 +735,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="174"
-                                    class="link-to-prism">src/core/auth/auth.service.ts:174</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="182"
+                                    class="link-to-prism">src/core/auth/auth.service.ts:182</a></div>
                         </td>
                     </tr>
 
@@ -1260,7 +1260,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
   }
 
   // eslint-disable-next-line
-  public async verifyIdentity(payload: any &amp; { identity: AgentType &amp; {token: string} }): Promise&lt;any&gt; {
+  public async verifyIdentity(payload: any &amp; { identity: AgentType &amp; { token: string } }): Promise&lt;any&gt; {
     if (payload.scopes.includes(&#x27;offline&#x27;)) {
       return payload.identity;
     }
@@ -1279,9 +1279,17 @@ export class AuthService extends AbstractService implements OnModuleInit {
     try {
       const identity &#x3D; await this.redis.get([this.ACCESS_TOKEN_PREFIX, payload.jti].join(&#x27;:&#x27;));
       if (identity) {
-        return JSON.parse(identity);
+        const data &#x3D; JSON.parse(identity);
+        const success &#x3D; await this.agentsService.model.countDocuments({
+          _id: payload.identity._id,
+          &#x27;security.secretKey&#x27;: data.identity?.security?.secretKey,
+        });
+
+        return success ? data : null;
       }
-    } catch (e) {}
+    } catch (e) {
+      this.logger.warn(&#x27;Invalid jwt session&#x27;, e);
+    }
     return null;
   }
 

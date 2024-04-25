@@ -362,6 +362,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, &#x27;jwt&#x27;) {
     Logger.debug(&#x60;Atempt to authenticate with JTI: &lt;${payload.jti}&gt;&#x60;, &#x27;JwtStrategy&#x27;);
     if (!payload?.identity) return done(new UnauthorizedException(), false);
     const user &#x3D; await this.auth.verifyIdentity(payload);
+
     if (!user) return done(new ForbiddenException(), false);
     return done(null, payload?.identity);
   }

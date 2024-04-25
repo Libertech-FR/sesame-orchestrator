@@ -374,7 +374,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop({type: Boolean})<br />
+                            @Prop({type: String})<br />
                         </code>
                     </td>
                 </tr>
@@ -470,20 +470,12 @@ export class SecurityPart extends Document {
   public changePwdAtNextLogin: boolean;
 
   @Prop({
-    type: Boolean,
+    type: String,
   })
   public secretKey: string;
 }
 
-export const SecurityPartSchema &#x3D; SchemaFactory.createForClass(SecurityPart).pre(
-  &#x27;save&#x27;,
-  function (this: SecurityPart, next: () &#x3D;&gt; void): void {
-    if (this.isNew) {
-      this.secretKey &#x3D; Math.random().toString(36).slice(-8); //TODO: use crypto lib
-    }
-    next();
-  },
-);
+export const SecurityPartSchema &#x3D; SchemaFactory.createForClass(SecurityPart);
 </code></pre>
     </div>
 </div>

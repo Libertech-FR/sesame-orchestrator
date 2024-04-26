@@ -381,7 +381,7 @@ export class KeyringsCreateCommand extends CommandRunner {
     const keyring &#x3D; await this.inquirer.ask&lt;KeyringsCreateDto&gt;(&#x27;keyrings-create-questions&#x27;, undefined);
     try {
       const key &#x3D; (await this.keyringsService.create(keyring)) as Keyrings;
-      console.log(&#x27;Keyring created successfully&#x27;, key.toJSON());
+      // console.log(&#x27;Keyring created successfully&#x27;, key.toJSON());
       const options &#x3D; {
         scopes: [&#x27;api&#x27;],
       };

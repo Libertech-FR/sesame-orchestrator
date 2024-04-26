@@ -33,7 +33,7 @@ export class KeyringsCreateCommand extends CommandRunner {
     const keyring = await this.inquirer.ask<KeyringsCreateDto>('keyrings-create-questions', undefined);
     try {
       const key = (await this.keyringsService.create(keyring)) as Keyrings;
-      console.log('Keyring created successfully', key.toJSON());
+      // console.log('Keyring created successfully', key.toJSON());
       const options = {
         scopes: ['api'],
       };

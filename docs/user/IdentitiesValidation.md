@@ -217,12 +217,12 @@ Chaque attribut peut avoir des options supplémentaires pour définir des règle
 - **email (format: 'email')**: Définit que la chaîne de caractères doit être un email.
   ```yaml
   type: string
-  email: true
+  format: email
   ```
 - **url (format: 'url')**: Définit que la chaîne de caractères doit être une URL.
   ```yaml
   type: string
-  url: true
+  format: url
   ```
 - **lowercase**: Convertit la chaîne de caractères en minuscule.
   ```yaml
@@ -241,7 +241,7 @@ Chaque attribut peut avoir des options supplémentaires pour définir des règle
   ```
 
 
-### JSON de Validation
+### Corps de la Requête
 
 Pour valider une entrée, un objet JSON doit être fourni avec les champs suivants :
 

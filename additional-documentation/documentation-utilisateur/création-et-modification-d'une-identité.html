@@ -134,7 +134,12 @@
 <li><a href="#r%C3%A9ponse-attendue">Réponse Attendue</a></li>
 </ul>
 </li>
-<li><a href="#modification-de-lidentit%C3%A9">Modification de l&#39;identité</a></li>
+<li><a href="#modification-de-lidentit%C3%A9">Modification de l&#39;identité</a><ul>
+<li><a href="#endpoint-pour-la-cr%C3%A9ation-didentit%C3%A9-1">Endpoint pour la Création d&#39;Identité</a></li>
+<li><a href="#corps-de-la-requ%C3%AAte-body-1">Corps de la Requête (Body)</a></li>
+<li><a href="#r%C3%A9ponse-attendue-1">Réponse Attendue</a></li>
+</ul>
+</li>
 </ul>
 <h2>Création d&#39;Identité</h2>
 <p>Pour créer une identité dans le système, suivez les instructions ci-dessous. Ces instructions sont destinées à des utilisateurs ayant une certaine connaissance technique, notamment en matière de requêtes HTTP.</p>
@@ -229,7 +234,50 @@
 <h2>Réponse Attendue</h2>
 <p>En cas de succès, le système renvoie un statut <code>201 Created</code> avec les détails de l&#39;identité créée. Si des informations supplémentaires sont requises, le statut peut être <code>202 Accepted</code> avec un message indiquant que des champs additionnels sont manquants ou invalides.</p>
 <h1>Modification de l&#39;identité</h1>
-<p>A venir.</p>
+<h3>Endpoint pour la Création d&#39;Identité</h3>
+<p>Même procédure pour la validation, mais ici nous avons : </p>
+<p><strong>URL:</strong> <code>/management/identities/upsert</code> : Adresse de l&#39;endpoint pour la création d&#39;identité.</p>
+<p><strong>Méthode:</strong> <code>POST</code> : Verbe HTTP utilisé pour créer une nouvelle ressource.</p>
+<p><strong>Header Requis</strong> : <code>Content-Type: application/json</code> : Indique que le corps de la requête est au format JSON.</p>
+<h3>Corps de la Requête (Body)</h3>
+<p>Lors de la création d&#39;une identité, le corps de la requête doit inclure au moins la données (<code>inetOrgPerson.uid</code>), ainsi que tout champ additionnel nécessaire selon l&#39;<code>objectClass</code> spécifique. Notez que l&#39;objet <code>inetOrgPerson</code> est validé en dur et non via un fichier YAML.</p>
+<p>De plus pour une modification, il specifier le state a <code>-1</code></p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-json">{
+  &quot;state&quot;: -1,
+  &quot;inetOrgPerson&quot;: {
+    &quot;uid&quot;: &quot;Identifiant Unique&quot;
+  },
+  &quot;additionalFields&quot;: {
+    &quot;objectClasses&quot;: [&quot;supann&quot;],
+    &quot;attributes&quot;: {
+      &quot;supann&quot;: {
+        &quot;supannEmpId&quot;: &quot;123456&quot;,
+        &quot;supannCivilite&quot;: &quot;M.&quot;,
+        &quot;supannBirthName&quot;: &quot;Dupont&quot;,
+        &quot;supannBirthDate&quot;: &quot;1980-12-15&quot;
+      }
+    }
+  }
+}</code></pre></div><b>Example :</b><div><pre class="line-numbers"><code class="language-bash">curl -X POST &quot;http://&lt;adresse-du-serveur&gt;/identities/upsert&quot; \
+     -H &quot;Content-Type: application/json&quot; \
+     -d &#39;{
+           &quot;state&quot;: -1,
+           &quot;inetOrgPerson&quot;: {
+             &quot;uid&quot;: &quot;Identifiant Unique&quot;
+           },
+           &quot;additionalFields&quot;: {
+             &quot;objectClasses&quot;: [&quot;supann&quot;],
+             &quot;attributes&quot;: {
+               &quot;supann&quot;: {
+                 &quot;supannEmpId&quot;: &quot;123456&quot;,
+                 &quot;supannCivilite&quot;: &quot;M.&quot;,
+                 &quot;supannBirthName&quot;: &quot;Dupont&quot;,
+                 &quot;supannBirthDate&quot;: &quot;1980-12-15&quot;
+               }
+             }
+           }
+         }&#39;</code></pre></div><h3>Réponse Attendue</h3>
+<p>En cas de succès, le système renvoie un statut <code>201 Created</code> avec les détails de l&#39;identité créée. Si des informations supplémentaires sont requises, le statut peut être <code>202 Accepted</code> avec un message indiquant que des champs additionnels sont manquants ou invalides.</p>
 
                    </div><div class="search-results">
     <div class="has-results">

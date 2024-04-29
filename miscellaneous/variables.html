@@ -2035,6 +2035,90 @@
               type: &#x27;object&#x27;,
               errorMessage: &quot;Le champ &#x27;required&#x27; doit être un booléen.&quot;,
             },
+            maxItems: {
+              type: &#x27;integer&#x27;,
+              errorMessage: &quot;Le nombre maximal d&#x27;éléments &#x27;maxItems&#x27; doit être un entier.&quot;,
+            },
+            minItems: {
+              type: &#x27;integer&#x27;,
+              errorMessage: &quot;Le nombre minimal d&#x27;éléments &#x27;minItems&#x27; doit être un entier.&quot;,
+            },
+            maxLength: {
+              type: &#x27;integer&#x27;,
+              errorMessage: &quot;La longueur maximale &#x27;maxLength&#x27; doit être un entier.&quot;,
+            },
+            minLength: {
+              type: &#x27;integer&#x27;,
+              errorMessage: &quot;La longueur minimale &#x27;minLength&#x27; doit être un entier.&quot;,
+            },
+            maxDate: {
+              type: &#x27;string&#x27;,
+              errorMessage: &quot;La date maximale &#x27;maxDate&#x27; doit être une date valide.&quot;,
+            },
+            minDate: {
+              type: &#x27;string&#x27;,
+              errorMessage: &quot;La date minimale &#x27;minDate&#x27; doit être une date valide.&quot;,
+            },
+            max: {
+              type: [&#x27;number&#x27;, &#x27;string&#x27;],
+              errorMessage: &quot;La valeur maximale &#x27;max&#x27; doit être un nombre ou une date.&quot;,
+            },
+            min: {
+              type: [&#x27;number&#x27;, &#x27;string&#x27;],
+              errorMessage: &quot;La valeur minimale &#x27;min&#x27; doit être un nombre ou une date.&quot;,
+            },
+            exclusiveMinimum: {
+              type: &#x27;number&#x27;,
+              errorMessage: &quot;La valeur doit être strictement supérieure à &#x27;exclusiveMinimum&#x27;.&quot;,
+            },
+            exclusiveMaximum: {
+              type: &#x27;number&#x27;,
+              errorMessage: &quot;La valeur doit être strictement inférieure à &#x27;exclusiveMaximum&#x27;.&quot;,
+            },
+            pattern: {
+              type: &#x27;string&#x27;,
+              errorMessage: &quot;Le motif &#x27;pattern&#x27; doit correspondre à une expression régulière valide.&quot;,
+            },
+            noUnknown: {
+              type: &#x27;boolean&#x27;,
+              errorMessage: &quot;L&#x27;option &#x27;noUnknown&#x27; doit être un booléen.&quot;,
+            },
+            trim: {
+              type: &#x27;boolean&#x27;,
+              errorMessage: &quot;L&#x27;option &#x27;trim&#x27; doit être un booléen.&quot;,
+            },
+            uppercase: {
+              type: &#x27;boolean&#x27;,
+              errorMessage: &quot;L&#x27;option &#x27;uppercase&#x27; doit être un booléen.&quot;,
+            },
+            lowercase: {
+              type: &#x27;boolean&#x27;,
+              errorMessage: &quot;L&#x27;option &#x27;lowercase&#x27; doit être un booléen.&quot;,
+            },
+            positive: {
+              type: &#x27;boolean&#x27;,
+              errorMessage: &quot;L&#x27;option &#x27;positive&#x27; doit être un booléen.&quot;,
+            },
+            negative: {
+              type: &#x27;boolean&#x27;,
+              errorMessage: &quot;L&#x27;option &#x27;negative&#x27; doit être un booléen.&quot;,
+            },
+            truncate: {
+              type: &#x27;boolean&#x27;,
+              errorMessage: &quot;L&#x27;option &#x27;truncate&#x27; doit être un booléen.&quot;,
+            },
+            round: {
+              type: &#x27;boolean&#x27;,
+              errorMessage: &quot;L&#x27;option &#x27;round&#x27; doit être un booléen.&quot;,
+            },
+            constantCase: {
+              type: &#x27;boolean&#x27;,
+              errorMessage: &quot;L&#x27;option &#x27;constantCase&#x27; doit être un booléen.&quot;,
+            },
+            camelCase: {
+              type: &#x27;boolean&#x27;,
+              errorMessage: &quot;L&#x27;option &#x27;camelCase&#x27; doit être un booléen.&quot;,
+            },
           },
           required: [&#x27;type&#x27;],
           additionalProperties: false,

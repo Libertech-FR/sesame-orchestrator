@@ -19,6 +19,9 @@
     - [Gestion Automatique du `lifecycle`](#gestion-automatique-du-lifecycle)
   - [Réponse Attendue](#réponse-attendue)
 - [Modification de l'identité](#modification-de-lidentité)
+    - [Endpoint pour la Création d'Identité](#endpoint-pour-la-création-didentité-1)
+    - [Corps de la Requête (Body)](#corps-de-la-requête-body-1)
+    - [Réponse Attendue](#réponse-attendue-1)
 
 
 ## Création d'Identité
@@ -145,4 +148,64 @@ En cas de succès, le système renvoie un statut `201 Created` avec les détails
 
 # Modification de l'identité
 
-A venir.
+### Endpoint pour la Création d'Identité
+
+Même procédure pour la validation, mais ici nous avons : 
+
+**URL:** `/management/identities/upsert` : Adresse de l'endpoint pour la création d'identité.
+
+**Méthode:** `POST` : Verbe HTTP utilisé pour créer une nouvelle ressource.
+
+**Header Requis** : `Content-Type: application/json` : Indique que le corps de la requête est au format JSON.
+
+### Corps de la Requête (Body)
+
+Lors de la création d'une identité, le corps de la requête doit inclure au moins la données (`inetOrgPerson.uid`), ainsi que tout champ additionnel nécessaire selon l'`objectClass` spécifique. Notez que l'objet `inetOrgPerson` est validé en dur et non via un fichier YAML.
+
+De plus pour une modification, il specifier le state a `-1`
+  
+  ```json
+  {
+    "state": -1,
+    "inetOrgPerson": {
+      "uid": "Identifiant Unique"
+    },
+    "additionalFields": {
+      "objectClasses": ["supann"],
+      "attributes": {
+        "supann": {
+          "supannEmpId": "123456",
+          "supannCivilite": "M.",
+          "supannBirthName": "Dupont",
+          "supannBirthDate": "1980-12-15"
+        }
+      }
+    }
+  }
+  ```
+  
+  ```bash
+  curl -X POST "http://<adresse-du-serveur>/identities/upsert" \
+       -H "Content-Type: application/json" \
+       -d '{
+             "state": -1,
+             "inetOrgPerson": {
+               "uid": "Identifiant Unique"
+             },
+             "additionalFields": {
+               "objectClasses": ["supann"],
+               "attributes": {
+                 "supann": {
+                   "supannEmpId": "123456",
+                   "supannCivilite": "M.",
+                   "supannBirthName": "Dupont",
+                   "supannBirthDate": "1980-12-15"
+                 }
+               }
+             }
+           }'
+  ```
+
+### Réponse Attendue
+
+En cas de succès, le système renvoie un statut `201 Created` avec les détails de l'identité créée. Si des informations supplémentaires sont requises, le statut peut être `202 Accepted` avec un message indiquant que des champs additionnels sont manquants ou invalides.

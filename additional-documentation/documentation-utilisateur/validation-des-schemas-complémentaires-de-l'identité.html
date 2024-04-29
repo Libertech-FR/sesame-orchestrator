@@ -245,9 +245,9 @@ maxLength: 20</code></pre></div></li>
 <li><strong>pattern (matches or regex)</strong>: Définit une expression régulière à respecter.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
 pattern: &#39;^[a-zA-Z]+$&#39;</code></pre></div></li>
 <li><strong>email (format: &#39;email&#39;)</strong>: Définit que la chaîne de caractères doit être un email.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
-email: true</code></pre></div></li>
+format: email</code></pre></div></li>
 <li><strong>url (format: &#39;url&#39;)</strong>: Définit que la chaîne de caractères doit être une URL.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
-url: true</code></pre></div></li>
+format: url</code></pre></div></li>
 <li><strong>lowercase</strong>: Convertit la chaîne de caractères en minuscule.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
 lowercase: true</code></pre></div></li>
 <li><strong>uppercase</strong>: Convertit la chaîne de caractères en majuscule.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
@@ -255,7 +255,7 @@ uppercase: true</code></pre></div></li>
 <li><strong>trim</strong>: Supprime les espaces en début et fin de chaîne de caractères.<b>Example :</b><div><pre class="line-numbers"><code class="language-yaml">type: string
 trim: true</code></pre></div></li>
 </ul>
-<h3>JSON de Validation</h3>
+<h3>Corps de la Requête</h3>
 <p>Pour valider une entrée, un objet JSON doit être fourni avec les champs suivants :</p>
 <ul>
 <li><code>state</code>: État de l&#39;entrée, -1 pour une création.</li>

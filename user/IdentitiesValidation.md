@@ -217,12 +217,12 @@ Chaque attribut peut avoir des options supplémentaires pour définir des règle
 - **email (format: 'email')**: Définit que la chaîne de caractères doit être un email.
   ```yaml
   type: string
-  format: email
+  format: 'email'
   ```
 - **url (format: 'url')**: Définit que la chaîne de caractères doit être une URL.
   ```yaml
   type: string
-  format: url
+  format: 'url'
   ```
 - **lowercase**: Convertit la chaîne de caractères en minuscule.
   ```yaml

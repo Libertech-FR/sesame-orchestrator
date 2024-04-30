@@ -58,7 +58,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.3.1",
     "@nestjs/swagger": "^7.1.16",
-    "@streamkits/nestjs_module_scrud": "^0.0.16",
+    "@streamkits/nestjs_module_scrud": "^0.0.17",
     "ajv": "^8.12.0",
     "ajv-errors": "^3.0.0",
     "argon2": "^0.40.1",

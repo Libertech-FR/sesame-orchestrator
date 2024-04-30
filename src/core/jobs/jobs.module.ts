@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { JobsSchema, Jobs } from './_schemas/jobs.schema';
+import { Jobs, JobsSchema } from './_schemas/jobs.schema';
+import { JobsController } from './jobs.controller';
 import { JobsService } from './jobs.service';
-import { TasksController } from './jobs.controller';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { TasksController } from './jobs.controller';
     ]),
   ],
   providers: [JobsService],
-  controllers: [TasksController],
+  controllers: [JobsController],
   exports: [JobsService],
 })
-export class JobsModule {}
+export class JobsModule { }

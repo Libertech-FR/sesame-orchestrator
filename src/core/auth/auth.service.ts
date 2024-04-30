@@ -82,6 +82,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
 
   // eslint-disable-next-line
   public async verifyIdentity(payload: any & { identity: AgentType & { token: string } }): Promise<any> {
+    this.logger.debug(`Atempt to authenticate with JTI: <${payload.jti}>`);
     if (payload.scopes.includes('offline')) {
       return payload.identity;
     }
@@ -94,7 +95,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
         if (identity) {
           return identity.toObject();
         }
-      } catch (e) {}
+      } catch (e) { }
       return null;
     }
     try {

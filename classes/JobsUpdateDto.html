@@ -86,16 +86,23 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content controller">
+               <div class="content class">
                    <div class="content-data">
 
 
 
 
 
+
+
+
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Controllers</li>
-  <li class="breadcrumb-item" >TasksController</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >JobsUpdateDto</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -119,15 +126,8 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/core/tasks/tasks.controller.ts</code>
+            <code>src/core/jobs/_dto/jobs.dto.ts</code>
         </p>
-
-            <p class="comment">
-                <h3>Prefix</h3>
-            </p>
-            <p class="comment">
-                <code>tasks</code>
-            </p>
 
 
 
@@ -135,7 +135,16 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
+                        <code>PartialType(JobsCreateDto)</code>
             </p>
+
+
+
+
+
+
+
+
 
 
 
@@ -144,26 +153,51 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller } from &#x27;@nestjs/common&#x27;;
-import { TasksService } from &#x27;./tasks.service&#x27;;
-import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;;
+import { IsMongoId, IsObject, IsString } from &#x27;class-validator&#x27;;
+import { Types } from &#x27;mongoose&#x27;;
+import { CustomFieldsDto } from &#x27;~/_common/abstracts/dto/custom-fields.dto&#x27;;
 
-@Controller(&#x27;tasks&#x27;)
-export class TasksController extends AbstractController {
-  constructor(private readonly _service: TasksService) {
-    super();
-  }
+export class JobsCreateDto extends CustomFieldsDto {
+  @IsString()
+  @ApiProperty()
+  public jobId: string;
+
+  @IsString()
+  @ApiProperty()
+  public action: string;
+
+  @IsMongoId()
+  @ApiProperty()
+  public concernedTo: Types.ObjectId;
+
+  @IsMongoId()
+  @ApiProperty()
+  public task: Types.ObjectId;
+
+  @IsString()
+  @ApiProperty()
+  public comment: string;
+
+  @IsObject()
+  @ApiProperty()
+  public params: object;
+
+  @IsObject()
+  @ApiProperty()
+  public result: object;
 }
+
+export class JobsDto extends JobsCreateDto {
+  @IsMongoId()
+  @ApiProperty({ type: String })
+  public _id: string;
+}
+
+export class JobsUpdateDto extends PartialType(JobsCreateDto) { }
 </code></pre>
     </div>
 </div>
-
-
-
-
-
-
-
 
 
 
@@ -198,8 +232,8 @@ export class TasksController extends AbstractController {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
-            var COMPODOC_CURRENT_PAGE_URL = 'TasksController-1.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'JobsUpdateDto.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

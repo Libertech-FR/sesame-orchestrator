@@ -414,27 +414,27 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/JobsModule.html" data-type="entity-link" >JobsModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-JobsModule-22053624ed9e5012bb02f281b3241c1fa2857f0cc715403440acf4a3fb6e8a8f11cf8fd9af067e2414e1159f781a123bc1b96268b488419eabf80eae958ee49e"' : 'data-bs-target="#xs-controllers-links-module-JobsModule-22053624ed9e5012bb02f281b3241c1fa2857f0cc715403440acf4a3fb6e8a8f11cf8fd9af067e2414e1159f781a123bc1b96268b488419eabf80eae958ee49e"' }>
+                                            'data-bs-target="#controllers-links-module-JobsModule-fdbb8c11f265cfa58298bb0e525649c379aceac32f54fafc26eb64acf530301a6055488810dded40f8398bc936ab8dfbc20ffd2f6151c4ae9321e01e0956f9b5"' : 'data-bs-target="#xs-controllers-links-module-JobsModule-fdbb8c11f265cfa58298bb0e525649c379aceac32f54fafc26eb64acf530301a6055488810dded40f8398bc936ab8dfbc20ffd2f6151c4ae9321e01e0956f9b5"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-JobsModule-22053624ed9e5012bb02f281b3241c1fa2857f0cc715403440acf4a3fb6e8a8f11cf8fd9af067e2414e1159f781a123bc1b96268b488419eabf80eae958ee49e"' :
-                                            'id="xs-controllers-links-module-JobsModule-22053624ed9e5012bb02f281b3241c1fa2857f0cc715403440acf4a3fb6e8a8f11cf8fd9af067e2414e1159f781a123bc1b96268b488419eabf80eae958ee49e"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-JobsModule-fdbb8c11f265cfa58298bb0e525649c379aceac32f54fafc26eb64acf530301a6055488810dded40f8398bc936ab8dfbc20ffd2f6151c4ae9321e01e0956f9b5"' :
+                                            'id="xs-controllers-links-module-JobsModule-fdbb8c11f265cfa58298bb0e525649c379aceac32f54fafc26eb64acf530301a6055488810dded40f8398bc936ab8dfbc20ffd2f6151c4ae9321e01e0956f9b5"' }>
                                             <li class="link">
-                                                <a href="controllers/TasksController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TasksController</a>
+                                                <a href="controllers/JobsController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >JobsController</a>
                                             </li>
                                         </ul>
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-JobsModule-22053624ed9e5012bb02f281b3241c1fa2857f0cc715403440acf4a3fb6e8a8f11cf8fd9af067e2414e1159f781a123bc1b96268b488419eabf80eae958ee49e"' : 'data-bs-target="#xs-injectables-links-module-JobsModule-22053624ed9e5012bb02f281b3241c1fa2857f0cc715403440acf4a3fb6e8a8f11cf8fd9af067e2414e1159f781a123bc1b96268b488419eabf80eae958ee49e"' }>
+                                        'data-bs-target="#injectables-links-module-JobsModule-fdbb8c11f265cfa58298bb0e525649c379aceac32f54fafc26eb64acf530301a6055488810dded40f8398bc936ab8dfbc20ffd2f6151c4ae9321e01e0956f9b5"' : 'data-bs-target="#xs-injectables-links-module-JobsModule-fdbb8c11f265cfa58298bb0e525649c379aceac32f54fafc26eb64acf530301a6055488810dded40f8398bc936ab8dfbc20ffd2f6151c4ae9321e01e0956f9b5"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-JobsModule-22053624ed9e5012bb02f281b3241c1fa2857f0cc715403440acf4a3fb6e8a8f11cf8fd9af067e2414e1159f781a123bc1b96268b488419eabf80eae958ee49e"' :
-                                        'id="xs-injectables-links-module-JobsModule-22053624ed9e5012bb02f281b3241c1fa2857f0cc715403440acf4a3fb6e8a8f11cf8fd9af067e2414e1159f781a123bc1b96268b488419eabf80eae958ee49e"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-JobsModule-fdbb8c11f265cfa58298bb0e525649c379aceac32f54fafc26eb64acf530301a6055488810dded40f8398bc936ab8dfbc20ffd2f6151c4ae9321e01e0956f9b5"' :
+                                        'id="xs-injectables-links-module-JobsModule-fdbb8c11f265cfa58298bb0e525649c379aceac32f54fafc26eb64acf530301a6055488810dded40f8398bc936ab8dfbc20ffd2f6151c4ae9321e01e0956f9b5"' }>
                                         <li class="link">
                                             <a href="injectables/JobsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >JobsService</a>
                                         </li>
@@ -737,6 +737,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/Jobs.html" data-type="entity-link" >Jobs</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/JobsCreateDto.html" data-type="entity-link" >JobsCreateDto</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/JobsDto.html" data-type="entity-link" >JobsDto</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/JobsUpdateDto.html" data-type="entity-link" >JobsUpdateDto</a>
                             </li>
                             <li class="link">
                                 <a href="classes/Keyrings.html" data-type="entity-link" >Keyrings</a>

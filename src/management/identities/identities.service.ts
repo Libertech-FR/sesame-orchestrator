@@ -1,3 +1,4 @@
+import { inetOrgPerson } from './_schemas/_parts/inetOrgPerson.part';
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Identities } from './_schemas/identities.schema';
@@ -32,6 +33,13 @@ export class IdentitiesService extends AbstractServiceSchema {
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
     Logger.log(`Upserting identity: ${JSON.stringify(data)}`);
     const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
+    console.log(options);
+    const identity = await this._model.findOne({ 'inetOrgPerson.uid': data.inetOrgPerson.uid });
+    console.log(identity);
+    if (!identity && options.errorOnNotFound) {
+      this.logger.error(`${logPrefix} Identity not found.`);
+      throw new HttpException('Identity not found.', 404);
+    }
     data.additionalFields.validations = {};
     try {
       this.logger.log(`${logPrefix} Starting additionalFields validation.`);
@@ -44,9 +52,13 @@ export class IdentitiesService extends AbstractServiceSchema {
     }
 
     //TODO: ameliorer la logique d'upsert
-    const identity = await this._model.findOne({ 'inetOrgPerson.uid': data.inetOrgPerson.uid });
+
     if (identity) {
       this.logger.log(`${logPrefix} Identity already exists. Updating.`);
+      data.inetOrgPerson = {
+        ...identity.inetOrgPerson,
+        ...data.inetOrgPerson,
+      };
       data.additionalFields.objectClasses = [
         ...new Set([...identity.additionalFields.objectClasses, ...data.additionalFields.objectClasses]),
       ];

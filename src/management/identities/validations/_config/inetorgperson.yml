@@ -64,5 +64,5 @@
       "description": "User password of the inetOrgPerson."
     }
   },
-  "required": ["cn", "sn", "uid"]
+  "required": ["uid"]
 }

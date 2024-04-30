@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
 } from '@nestjs/common';
 import { IdentitiesDto, IdentitiesCreateDto, IdentitiesUpdateDto } from './_dto/identities.dto';
@@ -87,6 +88,7 @@ export class IdentitiesController extends AbstractController {
     @Res()
     res: Response,
     @Body() body: IdentitiesCreateDto,
+    @Query('errorOnNotFound') errorOnNotFound: string = 'false',
   ): Promise<
     Response<
       {
@@ -100,7 +102,9 @@ export class IdentitiesController extends AbstractController {
   > {
     let statusCode = HttpStatus.CREATED;
     let message = null;
-    const data = await this._service.upsert<Identities>(body);
+    const data = await this._service.upsert<Identities>(body, {
+      errorOnNotFound: errorOnNotFound.toLowerCase() === 'true',
+    });
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
     // Else the state is TO_VALIDATE, we return a 201 status code
     if ((data as unknown as Identities).state === IdentityState.TO_COMPLETE) {

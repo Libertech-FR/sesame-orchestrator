@@ -259,8 +259,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="173"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:173</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="177"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:177</a></div>
                         </td>
                     </tr>
 
@@ -362,8 +362,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -454,8 +454,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="151"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:151</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="155"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:155</a></div>
                         </td>
                     </tr>
 
@@ -546,8 +546,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="225"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:225</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="229"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:229</a></div>
                         </td>
                     </tr>
 
@@ -637,8 +637,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="120"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:120</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="124"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:124</a></div>
                         </td>
                     </tr>
 
@@ -741,8 +741,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="188"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:188</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="192"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:192</a></div>
                         </td>
                     </tr>
 
@@ -845,8 +845,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="203"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:203</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="207"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:207</a></div>
                         </td>
                     </tr>
 
@@ -934,7 +934,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>upsert(res: Response, body: <a href="../classes/IdentitiesCreateDto.html" target="_self">IdentitiesCreateDto</a>)</code>
+                    <code>upsert(res: Response, body: <a href="../classes/IdentitiesCreateDto.html" target="_self">IdentitiesCreateDto</a>, errorOnNotFound: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -948,8 +948,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="86"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:86</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:87</a></div>
                         </td>
                     </tr>
 
@@ -966,6 +966,7 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Default value</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -979,6 +980,8 @@
                                                     No
                                             </td>
 
+                                            <td>
+                                            </td>
 
                                         </tr>
                                         <tr>
@@ -991,6 +994,23 @@
                                                     No
                                             </td>
 
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>errorOnNotFound</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>&#x27;false&#x27;</code>
+                                            </td>
 
                                         </tr>
                                     </tbody>
@@ -1021,6 +1041,7 @@
   Param,
   Patch,
   Post,
+  Query,
   Res,
 } from &#x27;@nestjs/common&#x27;;
 import { IdentitiesDto, IdentitiesCreateDto, IdentitiesUpdateDto } from &#x27;./_dto/identities.dto&#x27;;
@@ -1100,6 +1121,7 @@ export class IdentitiesController extends AbstractController {
     @Res()
     res: Response,
     @Body() body: IdentitiesCreateDto,
+    @Query(&#x27;errorOnNotFound&#x27;) errorOnNotFound: string &#x3D; &#x27;false&#x27;,
   ): Promise&lt;
     Response&lt;
       {
@@ -1113,7 +1135,9 @@ export class IdentitiesController extends AbstractController {
   &gt; {
     let statusCode &#x3D; HttpStatus.CREATED;
     let message &#x3D; null;
-    const data &#x3D; await this._service.upsert&lt;Identities&gt;(body);
+    const data &#x3D; await this._service.upsert&lt;Identities&gt;(body, {
+      errorOnNotFound: errorOnNotFound.toLowerCase() &#x3D;&#x3D;&#x3D; &#x27;true&#x27;,
+    });
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
     // Else the state is TO_VALIDATE, we return a 201 status code
     if ((data as unknown as Identities).state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {

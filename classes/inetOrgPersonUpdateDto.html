@@ -159,15 +159,17 @@ import { IsString, IsEmail, IsOptional } from &#x27;class-validator&#x27;;
 export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty()
-  cn: string;
-
-  @IsString()
-  @ApiProperty()
-  sn: string;
-
-  @IsString()
-  @ApiProperty()
   uid: string;
+
+  @IsString()
+  @ApiProperty()
+  @IsOptional()
+  cn?: string;
+
+  @IsString()
+  @ApiProperty()
+  @IsOptional()
+  sn?: string;
 
   @IsString()
   @ApiProperty({ required: false })

@@ -335,8 +335,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -429,8 +429,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -523,8 +523,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -601,7 +601,7 @@ import { ResetPasswordDto } from &#x27;./dto/reset-password.dto&#x27;;
 export class PasswdController {
   private readonly logger &#x3D; new Logger(PasswdController.name);
 
-  public constructor(private passwdService: PasswdService) {}
+  public constructor(private passwdService: PasswdService) { }
 
   @Post(&#x27;change&#x27;)
   @ApiOperation({ summary: &#x27;change password&#x27; })
@@ -612,6 +612,7 @@ export class PasswdController {
   public async change(@Body() cpwd: ChangePasswordDto, @Res() res: Response): Promise&lt;Response&gt; {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, data] &#x3D; await this.passwdService.change(cpwd);
+    //TODO: uid ou employeeNumber ?
     data.data.uid &#x3D; cpwd.id;
     this.logger.log(&#x60;call passwd change for : ${cpwd.id}&#x60;);
 

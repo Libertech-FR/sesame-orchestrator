@@ -13,6 +13,7 @@ Les champs de base de l'objet `inetOrgPerson` sont validés par défaut.
 - `cn`  
 - `sn`
 - `uid`
+- `employeeNumber`
 
 ### Champs facultatifs :
 - `displayName`

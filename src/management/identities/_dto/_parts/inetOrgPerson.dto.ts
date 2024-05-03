@@ -8,8 +8,7 @@ export class inetOrgPersonCreateDto {
 
   @IsString()
   @ApiProperty()
-  @IsOptional()
-  cn?: string;
+  employeeNumber: string;
 
   @IsString()
   @ApiProperty()
@@ -78,6 +77,6 @@ export class inetOrgPersonCreateDto {
   userPassword?: string;
 }
 
-export class inetOrgPersonDto extends inetOrgPersonCreateDto {}
+export class inetOrgPersonDto extends inetOrgPersonCreateDto { }
 
-export class inetOrgPersonUpdateDto extends PartialType(inetOrgPersonCreateDto) {}
+export class inetOrgPersonUpdateDto extends PartialType(inetOrgPersonCreateDto) { }

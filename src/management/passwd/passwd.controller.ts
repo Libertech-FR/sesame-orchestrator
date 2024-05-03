@@ -13,7 +13,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 export class PasswdController {
   private readonly logger = new Logger(PasswdController.name);
 
-  public constructor(private passwdService: PasswdService) {}
+  public constructor(private passwdService: PasswdService) { }
 
   @Post('change')
   @ApiOperation({ summary: 'change password' })
@@ -24,6 +24,7 @@ export class PasswdController {
   public async change(@Body() cpwd: ChangePasswordDto, @Res() res: Response): Promise<Response> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, data] = await this.passwdService.change(cpwd);
+    //TODO: uid ou employeeNumber ?
     data.data.uid = cpwd.id;
     this.logger.log(`call passwd change for : ${cpwd.id}`);
 

@@ -1,4 +1,3 @@
-import { inetOrgPerson } from './_schemas/_parts/inetOrgPerson.part';
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Identities } from './_schemas/identities.schema';
@@ -52,7 +51,6 @@ export class IdentitiesService extends AbstractServiceSchema {
     }
 
     //TODO: ameliorer la logique d'upsert
-
     if (identity) {
       this.logger.log(`${logPrefix} Identity already exists. Updating.`);
       data.inetOrgPerson = {
@@ -72,6 +70,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       };
     }
 
+    //TODO: rechercher par uid ou employeeNumber ?
     const upsert = await super.upsert({ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, data, options);
     return upsert;
     //TODO: add backends service logic here

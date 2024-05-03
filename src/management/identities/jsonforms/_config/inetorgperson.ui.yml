@@ -28,6 +28,14 @@
           "options": {
             "required": true
           }
+        },
+        {
+          "type": "Control",
+          "label": "EmployeeNumber",
+          "scope": "#/properties/employeeNumber",
+          "options": {
+            "required": true
+          }
         }
       ]
     },

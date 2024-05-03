@@ -42,12 +42,13 @@ Lors de la création d'une identité, le corps de la requête doit inclure les i
 
 #### Informations de Base (`inetOrgPerson`)
 
-Les informations de base de l'identité sont définies dans l'objet `inetOrgPerson`. Les champs requis sont `cn` (Nom Commun), `sn` (Nom de Famille), et `uid` (Identifiant Unique). Ces champs sont validés en dur.
+Les informations de base de l'identité sont définies dans l'objet `inetOrgPerson`. Les champs requis sont `cn` (Nom Commun), `sn` (Nom de Famille), `uid` (Identifiant Unique), et `employeeNumber` (Identifiant Identité). Ces champs sont validés en dur.
 
 ##### Champs obligatoires :
 - `cn`  
 - `sn`
 - `uid`
+- `employeeNumber`
 
 ##### Champs facultatifs :
 - `displayName`
@@ -92,7 +93,8 @@ Voici un exemple de corps de requête pour la création d'une identité avec les
   "inetOrgPerson": {
     "cn": "Nom Commun",
     "sn": "Nom de Famille",
-    "uid": "Identifiant Unique"
+    "uid": "Identifiant Unique",
+    "employeeNumber": "Identifiant Identité"
   },
   "additionalFields": {
     "objectClasses": ["supann"],
@@ -118,7 +120,8 @@ curl -X POST "http://<adresse-du-serveur>/identities" \
            "inetOrgPerson": {
              "cn": "Nom Commun",
              "sn": "Nom de Famille",
-             "uid": "Identifiant Unique"
+             "uid": "Identifiant Unique",
+             "employeeNumber": "Identifiant Identité"
            },
            "additionalFields": {
              "objectClasses": ["supann"],
@@ -160,7 +163,7 @@ Même procédure pour la validation, mais ici nous avons :
 
 ### Corps de la Requête (Body)
 
-Lors de la création d'une identité, le corps de la requête doit inclure au moins la données (`inetOrgPerson.uid`), ainsi que tout champ additionnel nécessaire selon l'`objectClass` spécifique. Notez que l'objet `inetOrgPerson` est validé en dur et non via un fichier YAML.
+Lors de la création d'une identité, le corps de la requête doit inclure au moins la données (`inetOrgPerson.uid`) et (`inetOrgPerson.employeeNumber`), ainsi que tout champ additionnel nécessaire selon l'`objectClass` spécifique. Notez que l'objet `inetOrgPerson` est validé en dur et non via un fichier YAML.
 
 De plus pour une modification, il specifier le state a `-1`
   
@@ -168,7 +171,8 @@ De plus pour une modification, il specifier le state a `-1`
   {
     "state": -1,
     "inetOrgPerson": {
-      "uid": "Identifiant Unique"
+      "uid": "Identifiant Unique",
+      "employeeNumber": "Identifiant Identite"
     },
     "additionalFields": {
       "objectClasses": ["supann"],
@@ -190,7 +194,8 @@ De plus pour une modification, il specifier le state a `-1`
        -d '{
              "state": -1,
              "inetOrgPerson": {
-               "uid": "Identifiant Unique"
+               "uid": "Identifiant Unique",
+               "employeeNumber": "Identifiant Identite"
              },
              "additionalFields": {
                "objectClasses": ["supann"],

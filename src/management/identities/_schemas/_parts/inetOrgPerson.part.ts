@@ -41,6 +41,9 @@ export class inetOrgPerson {
   @Prop({ required: true, unique: true })
   uid: string;
 
+  @Prop({ required: true, unique: true })
+  employeeNumber: string;
+
   @Prop()
   userCertificate?: string;
 

@@ -205,6 +205,7 @@ export class DtoValidationPipe extends ValidationPipe {
             return error;
           });
         }
+        console.log(&#x27;validations&#x27;, JSON.stringify(request.body));
         return new BadRequestException({
           statusCode: HttpStatus.BAD_REQUEST,
           message,

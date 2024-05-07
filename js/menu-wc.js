@@ -661,6 +661,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ChangePasswordDto.html" data-type="entity-link" >ChangePasswordDto</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ConcernedToPart.html" data-type="entity-link" >ConcernedToPart</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ConcernedToPartDTO.html" data-type="entity-link" >ConcernedToPartDTO</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ConfigObjectAttributeDTO.html" data-type="entity-link" >ConfigObjectAttributeDTO</a>
                             </li>
                             <li class="link">

@@ -328,8 +328,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">src/_common/pipes/dto-validation.pipe.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">src/_common/pipes/dto-validation.pipe.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -444,6 +444,7 @@ export class DtoValidationPipe extends ValidationPipe {
             return error;
           });
         }
+        console.log(&#x27;validations&#x27;, JSON.stringify(request.body));
         return new BadRequestException({
           statusCode: HttpStatus.BAD_REQUEST,
           message,

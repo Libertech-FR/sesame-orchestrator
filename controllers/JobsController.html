@@ -217,8 +217,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">src/core/jobs/jobs.controller.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">src/core/jobs/jobs.controller.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -308,8 +308,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">src/core/jobs/jobs.controller.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">src/core/jobs/jobs.controller.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -400,10 +400,11 @@ import { JobsService } from &#x27;./jobs.service&#x27;;
 @ApiTags(&#x27;core&#x27;)
 @Controller(&#x27;jobs&#x27;)
 export class JobsController extends AbstractController {
-  protected static readonly projection: PartialProjectionType&lt;JobsDto&gt; &#x3D; {
+  protected static readonly projection: PartialProjectionType&lt;JobsDto &amp; { metadata: any }&gt; &#x3D; {
     jobId: 1,
     action: 1,
     concernedTo: 1,
+    metadata: 1,
     params: 1,
     result: 1,
   };

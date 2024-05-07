@@ -947,7 +947,7 @@ export class BackendsService extends AbstractQueueProcessor {
         { new: true },
       );
       if (isSyncedJob) {
-        await this.identitiesService.model.findByIdAndUpdate(isSyncedJob.concernedTo, {
+        await this.identitiesService.model.findByIdAndUpdate(isSyncedJob.concernedTo.id, {
           $set: {
             state: IdentityState.SYNCED,
           },
@@ -984,7 +984,7 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { new: true },
       );
-      await this.identitiesService.model.findByIdAndUpdate(failedJob.concernedTo, {
+      await this.identitiesService.model.findByIdAndUpdate(failedJob.concernedTo.id, {
         $set: {
           state: IdentityState.ON_ERROR,
         },
@@ -1003,7 +1003,7 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { upsert: true, new: true },
       );
-      await this.identitiesService.model.findByIdAndUpdate(completedJob.concernedTo, {
+      await this.identitiesService.model.findByIdAndUpdate(completedJob.concernedTo.id, {
         $set: {
           state: IdentityState.SYNCED,
         },
@@ -1106,11 +1106,16 @@ export class BackendsService extends AbstractQueueProcessor {
       optionals[&#x27;processedAt&#x27;] &#x3D; new Date();
       optionals[&#x27;state&#x27;] &#x3D; JobState.IN_PROGRESS;
     }
+    const identity &#x3D; await this.identitiesService.findById&lt;Identities&gt;(concernedTo);
     const jobStore &#x3D; await this.jobsService.create&lt;Jobs&gt;({
       jobId: job.id,
       action: actionType,
       params: payload,
-      concernedTo: concernedTo,
+      concernedTo: {
+        $ref: &#x27;identities&#x27;,
+        id: concernedTo,
+        name: [identity.inetOrgPerson?.cn, identity.inetOrgPerson?.givenName].join(&#x27; &#x27;),
+      },
       comment: options?.comment,
       task: options?.task,
       state: JobState.CREATED,

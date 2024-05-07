@@ -15,10 +15,11 @@ import { JobsService } from './jobs.service';
 @ApiTags('core')
 @Controller('jobs')
 export class JobsController extends AbstractController {
-  protected static readonly projection: PartialProjectionType<JobsDto> = {
+  protected static readonly projection: PartialProjectionType<JobsDto & { metadata: any }> = {
     jobId: 1,
     action: 1,
     concernedTo: 1,
+    metadata: 1,
     params: 1,
     result: 1,
   };

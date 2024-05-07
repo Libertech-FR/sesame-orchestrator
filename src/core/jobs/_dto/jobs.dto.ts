@@ -1,7 +1,9 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsMongoId, IsObject, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsMongoId, IsNotEmpty, IsObject, IsString, ValidateNested } from 'class-validator';
 import { Types } from 'mongoose';
 import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto';
+import { ConcernedToPartDTO } from './_parts/concerned-to.part.dto';
 
 export class JobsCreateDto extends CustomFieldsDto {
   @IsString()
@@ -12,9 +14,11 @@ export class JobsCreateDto extends CustomFieldsDto {
   @ApiProperty()
   public action: string;
 
-  @IsMongoId()
-  @ApiProperty()
-  public concernedTo: Types.ObjectId;
+  @ValidateNested()
+  @Type(() => ConcernedToPartDTO)
+  @IsNotEmpty()
+  @ApiProperty({ type: ConcernedToPartDTO })
+  public concernedTo: ConcernedToPartDTO;
 
   @IsMongoId()
   @ApiProperty()

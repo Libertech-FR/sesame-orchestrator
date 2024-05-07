@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
 import { JobState } from '../_enums/state.enum';
+import { ConcernedToPart, ConcernedToPartSchema } from './_parts/concerned-to.parts.schema';
 
 export type JobsDocument = Jobs & Document;
 
@@ -20,10 +21,10 @@ export class Jobs extends AbstractSchema {
   public action: string;
 
   @Prop({
-    type: Types.ObjectId,
+    type: ConcernedToPartSchema,
     required: true,
   })
-  public concernedTo?: Types.ObjectId;
+  public concernedTo?: ConcernedToPart;
 
   @Prop({ type: Types.ObjectId })
   public task?: Types.ObjectId;

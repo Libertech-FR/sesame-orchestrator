@@ -36,6 +36,14 @@
           "options": {
             "required": true
           }
+        },
+        {
+          "type": "Control",
+          "label": "EmployeeType",
+          "scope": "#/properties/employeeType",
+          "options": {
+            "required": true
+          }
         }
       ]
     },

@@ -18,6 +18,10 @@
       "type": "string",
       "description": "EmployeeNumber of the inetOrgPerson."
     },
+    "employeeType": {
+      "type": "string",
+      "description": "EmployeeType of the inetOrgPerson."
+    },
     "displayName": {
       "type": "string",
       "description": "Display name of the inetOrgPerson."
@@ -68,5 +72,5 @@
       "description": "User password of the inetOrgPerson."
     }
   },
-  "required": ["uid", "employeeNumber"]
+  "required": ["uid", "employeeNumber", "employeeType"]
 }

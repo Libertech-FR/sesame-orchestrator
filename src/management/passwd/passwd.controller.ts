@@ -24,7 +24,7 @@ export class PasswdController {
   public async change(@Body() cpwd: ChangePasswordDto, @Res() res: Response): Promise<Response> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, data] = await this.passwdService.change(cpwd);
-    //TODO: uid ou employeeNumber ?
+    //TODO: uid ou employeeNumber + employeeType ?
     data.data.uid = cpwd.id;
     this.logger.log(`call passwd change for : ${cpwd.id}`);
 

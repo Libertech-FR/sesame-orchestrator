@@ -70,7 +70,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       };
     }
 
-    //TODO: rechercher par uid ou employeeNumber ?
+    //TODO: rechercher par uid ou employeeNumber + employeeType ?
     const upsert = await super.upsert({ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, data, options);
     return upsert;
     //TODO: add backends service logic here

@@ -16,6 +16,10 @@ export class inetOrgPersonCreateDto {
 
   @IsString()
   @ApiProperty()
+  employeeType: string;
+
+  @IsString()
+  @ApiProperty()
   @IsOptional()
   sn?: string;
 

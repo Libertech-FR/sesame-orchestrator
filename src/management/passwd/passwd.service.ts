@@ -30,7 +30,7 @@ export class PasswdService extends AbstractService {
     const iv = crypto.randomBytes(12).toString('base64');
     const key = crypto.randomBytes(16).toString('hex');
     const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
-    //TODO: uid ou employeeNumber ?
+    //TODO: uid ou employeeNumber + employeeType ?
     const dataStruct = { uid: askToken.id, mail: askToken.mail };
     let ciphertext = cipher.update(JSON.stringify(dataStruct), 'utf8', 'base64');
     ciphertext += cipher.final('base64');
@@ -66,7 +66,7 @@ export class PasswdService extends AbstractService {
       throw new Error('Invalid token');
     }
 
-    //TODO: uid ou employeeNumber ?
+    //TODO: uid ou employeeNumber + employeeType ?
     const backendData = { uid: tokenData.uid, newPassword: data.newPassword };
     return await this.backends.executeJob(
       ActionType.IDENTITY_PASSWORD_RESET,

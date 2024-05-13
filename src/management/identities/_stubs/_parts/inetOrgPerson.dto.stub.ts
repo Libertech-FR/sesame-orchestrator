@@ -6,6 +6,7 @@ export const inetOrgPersonDtoStub = (): inetOrgPersonDto => {
     sn: 'sn',
     uid: 'uid',
     employeeNumber: 'employeeNumber',
+    employeeType: 'employeeType',
     displayName: 'displayName',
     facsimileTelephoneNumber: 'facsimileTelephoneNumber',
     givenName: 'givenName',

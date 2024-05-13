@@ -41,8 +41,11 @@ export class inetOrgPerson {
   @Prop({ required: true, unique: true })
   uid: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   employeeNumber: string;
+
+  @Prop({ required: true })
+  employeeType: string;
 
   @Prop()
   userCertificate?: string;
@@ -51,4 +54,7 @@ export class inetOrgPerson {
   userPassword?: string;
 }
 
-export const inetOrgPersonSchema = SchemaFactory.createForClass(inetOrgPerson);
+export const inetOrgPersonSchema = SchemaFactory.createForClass(inetOrgPerson).index(
+  { employeeNumber: 1, employeeType: 1 },
+  { unique: true },
+);

@@ -32,12 +32,12 @@ export class IdentitiesService extends AbstractServiceSchema {
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
     Logger.log(`Upserting identity: ${JSON.stringify(data)}`);
     const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
-    console.log(options);
+    // console.log(options);
     const identity = await this._model.findOne({
       'inetOrgPerson.employeeNumber': data.inetOrgPerson.employeeNumber,
       'inetOrgPerson.employeeType': data.inetOrgPerson.employeeType,
     });
-    console.log(identity);
+    // console.log(identity);
     if (!identity && options.errorOnNotFound) {
       this.logger.error(`${logPrefix} Identity not found.`);
       throw new HttpException('Identity not found.', 404);

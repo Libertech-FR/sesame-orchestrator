@@ -1646,12 +1646,12 @@ export class IdentitiesService extends AbstractServiceSchema {
   ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
     Logger.log(&#x60;Upserting identity: ${JSON.stringify(data)}&#x60;);
     const logPrefix &#x3D; &#x60;Validation [${data.inetOrgPerson.cn}]:&#x60;;
-    console.log(options);
+    // console.log(options);
     const identity &#x3D; await this._model.findOne({
       &#x27;inetOrgPerson.employeeNumber&#x27;: data.inetOrgPerson.employeeNumber,
       &#x27;inetOrgPerson.employeeType&#x27;: data.inetOrgPerson.employeeType,
     });
-    console.log(identity);
+    // console.log(identity);
     if (!identity &amp;&amp; options.errorOnNotFound) {
       this.logger.error(&#x60;${logPrefix} Identity not found.&#x60;);
       throw new HttpException(&#x27;Identity not found.&#x27;, 404);

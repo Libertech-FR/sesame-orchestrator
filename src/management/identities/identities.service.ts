@@ -33,7 +33,10 @@ export class IdentitiesService extends AbstractServiceSchema {
     Logger.log(`Upserting identity: ${JSON.stringify(data)}`);
     const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
     console.log(options);
-    const identity = await this._model.findOne({ 'inetOrgPerson.uid': data.inetOrgPerson.uid });
+    const identity = await this._model.findOne({
+      'inetOrgPerson.employeeNumber': data.inetOrgPerson.employeeNumber,
+      'inetOrgPerson.employeeType': data.inetOrgPerson.employeeType,
+    });
     console.log(identity);
     if (!identity && options.errorOnNotFound) {
       this.logger.error(`${logPrefix} Identity not found.`);

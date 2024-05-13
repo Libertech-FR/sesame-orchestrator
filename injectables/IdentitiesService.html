@@ -1684,7 +1684,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       };
     }
 
-    //TODO: rechercher par uid ou employeeNumber ?
+    //TODO: rechercher par uid ou employeeNumber + employeeType ?
     const upsert &#x3D; await super.upsert({ &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid }, data, options);
     return upsert;
     //TODO: add backends service logic here

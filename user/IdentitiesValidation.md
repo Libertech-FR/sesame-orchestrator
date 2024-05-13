@@ -14,6 +14,7 @@ Les champs de base de l'objet `inetOrgPerson` sont validés par défaut.
 - `sn`
 - `uid`
 - `employeeNumber`
+- `employeeType`
 
 ### Champs facultatifs :
 - `displayName`

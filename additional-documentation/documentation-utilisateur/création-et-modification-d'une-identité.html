@@ -150,13 +150,14 @@
 <h3>Corps de la Requête (Body)</h3>
 <p>Lors de la création d&#39;une identité, le corps de la requête doit inclure les informations de base de l&#39;identité (<code>inetOrgPerson</code>), ainsi que tout champ additionnel nécessaire selon l&#39;<code>objectClass</code> spécifique. Notez que l&#39;objet <code>inetOrgPerson</code> est validé en dur et non via un fichier YAML.</p>
 <h4>Informations de Base (<code>inetOrgPerson</code>)</h4>
-<p>Les informations de base de l&#39;identité sont définies dans l&#39;objet <code>inetOrgPerson</code>. Les champs requis sont <code>cn</code> (Nom Commun), <code>sn</code> (Nom de Famille), <code>uid</code> (Identifiant Unique), et <code>employeeNumber</code> (Identifiant Identité). Ces champs sont validés en dur.</p>
+<p>Les informations de base de l&#39;identité sont définies dans l&#39;objet <code>inetOrgPerson</code>. Les champs requis sont <code>cn</code> (Nom Commun), <code>sn</code> (Nom de Famille), <code>uid</code> (Identifiant Unique), et <code>employeeNumber</code> + <code>employeeType</code> (Identifiant Identité). Ces champs sont validés en dur.</p>
 <h5>Champs obligatoires :</h5>
 <ul>
 <li><code>cn</code>  </li>
 <li><code>sn</code></li>
 <li><code>uid</code></li>
 <li><code>employeeNumber</code></li>
+<li><code>employeeType</code></li>
 </ul>
 <h5>Champs facultatifs :</h5>
 <ul>
@@ -196,6 +197,7 @@
     &quot;sn&quot;: &quot;Nom de Famille&quot;,
     &quot;uid&quot;: &quot;Identifiant Unique&quot;,
     &quot;employeeNumber&quot;: &quot;Identifiant Identité&quot;
+    &quot;employeeType&quot;: &quot;Type Identité&quot;
   },
   &quot;additionalFields&quot;: {
     &quot;objectClasses&quot;: [&quot;supann&quot;],
@@ -217,7 +219,8 @@
              &quot;cn&quot;: &quot;Nom Commun&quot;,
              &quot;sn&quot;: &quot;Nom de Famille&quot;,
              &quot;uid&quot;: &quot;Identifiant Unique&quot;,
-             &quot;employeeNumber&quot;: &quot;Identifiant Identité&quot;
+             &quot;employeeNumber&quot;: &quot;Identifiant Identité&quot;,
+             &quot;employeeType&quot;: &quot;Type Identité&quot;
            },
            &quot;additionalFields&quot;: {
              &quot;objectClasses&quot;: [&quot;supann&quot;],
@@ -243,13 +246,14 @@
 <p><strong>Méthode:</strong> <code>POST</code> : Verbe HTTP utilisé pour créer une nouvelle ressource.</p>
 <p><strong>Header Requis</strong> : <code>Content-Type: application/json</code> : Indique que le corps de la requête est au format JSON.</p>
 <h3>Corps de la Requête (Body)</h3>
-<p>Lors de la création d&#39;une identité, le corps de la requête doit inclure au moins la données (<code>inetOrgPerson.uid</code>) et (<code>inetOrgPerson.employeeNumber</code>), ainsi que tout champ additionnel nécessaire selon l&#39;<code>objectClass</code> spécifique. Notez que l&#39;objet <code>inetOrgPerson</code> est validé en dur et non via un fichier YAML.</p>
+<p>Lors de la création d&#39;une identité, le corps de la requête doit inclure au moins la données (<code>inetOrgPerson.uid</code>) et (<code>inetOrgPerson.employeeNumber</code> + <code>inetOrgPerson.employeeType</code>), ainsi que tout champ additionnel nécessaire selon l&#39;<code>objectClass</code> spécifique. Notez que l&#39;objet <code>inetOrgPerson</code> est validé en dur et non via un fichier YAML.</p>
 <p>De plus pour une modification, il specifier le state a <code>-1</code></p>
 <b>Example :</b><div><pre class="line-numbers"><code class="language-json">{
   &quot;state&quot;: -1,
   &quot;inetOrgPerson&quot;: {
     &quot;uid&quot;: &quot;Identifiant Unique&quot;,
-    &quot;employeeNumber&quot;: &quot;Identifiant Identite&quot;
+    &quot;employeeNumber&quot;: &quot;Identifiant Identite&quot;,
+    &quot;employeeType&quot;: &quot;Type Identite&quot;
   },
   &quot;additionalFields&quot;: {
     &quot;objectClasses&quot;: [&quot;supann&quot;],
@@ -268,7 +272,8 @@
            &quot;state&quot;: -1,
            &quot;inetOrgPerson&quot;: {
              &quot;uid&quot;: &quot;Identifiant Unique&quot;,
-             &quot;employeeNumber&quot;: &quot;Identifiant Identite&quot;
+             &quot;employeeNumber&quot;: &quot;Identifiant Identite&quot;,
+             &quot;employeeType&quot;: &quot;Type Identite&quot;
            },
            &quot;additionalFields&quot;: {
              &quot;objectClasses&quot;: [&quot;supann&quot;],

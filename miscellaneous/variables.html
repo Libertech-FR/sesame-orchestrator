@@ -1427,6 +1427,7 @@
     sn: &#x27;sn&#x27;,
     uid: &#x27;uid&#x27;,
     employeeNumber: &#x27;employeeNumber&#x27;,
+    employeeType: &#x27;employeeType&#x27;,
     displayName: &#x27;displayName&#x27;,
     facsimileTelephoneNumber: &#x27;facsimileTelephoneNumber&#x27;,
     givenName: &#x27;givenName&#x27;,
@@ -1463,7 +1464,10 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>SchemaFactory.createForClass(inetOrgPerson)</code>
+                        <i>Default value : </i><code>SchemaFactory.createForClass(inetOrgPerson).index(
+  { employeeNumber: 1, employeeType: 1 },
+  { unique: true },
+)</code>
                     </td>
                 </tr>
 

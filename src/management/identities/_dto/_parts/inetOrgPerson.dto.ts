@@ -8,6 +8,10 @@ export class inetOrgPersonCreateDto {
 
   @IsString()
   @ApiProperty()
+  cn: string;
+
+  @IsString()
+  @ApiProperty()
   employeeNumber: string;
 
   @IsString()

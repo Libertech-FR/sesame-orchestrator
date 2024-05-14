@@ -2047,10 +2047,10 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
-"@streamkits/nestjs_module_scrud@^0.0.17":
-  version "0.0.17"
-  resolved "https://registry.yarnpkg.com/@streamkits/nestjs_module_scrud/-/nestjs_module_scrud-0.0.17.tgz#4a6b5ab082081ef6123dea2b683f38d78d421684"
-  integrity sha512-KgXH76YEqQ8gsAPePA4dnzY3E0enGNZR1LjibETZzEE0DwnN1Td8/m0xiM3IbdcAqSebNuyU+WzIxWXwSO6X7g==
+"@streamkits/nestjs_module_scrud@^0.0.18":
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/@streamkits/nestjs_module_scrud/-/nestjs_module_scrud-0.0.18.tgz#bfc877f16791db9d9932ea509367fcb09c000580"
+  integrity sha512-32b7MJ8lYsldi5ucN+DXhBqsq+P6AqBUEl+Ncf8KasP0USVkaf1VnFc+wYPYHBBcXp/WlpTDcWmdAOOHi/ufLg==
   dependencies:
     class-transformer "^0.5.1"
     class-validator "^0.14.0"

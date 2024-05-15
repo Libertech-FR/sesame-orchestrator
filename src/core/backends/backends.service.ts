@@ -174,15 +174,10 @@ export class BackendsService extends AbstractQueueProcessor {
 
     const result = {};
     for (const identity of identities) {
-      const [executedJob] = await this.executeJob(
-        identity.action,
-        identity.identity._id,
-        { identity },
-        {
-          ...options,
-          task: task._id,
-        },
-      );
+      const [executedJob] = await this.executeJob(identity.action, identity.identity._id, identity.identity, {
+        ...options,
+        task: task._id,
+      });
       result[identity.identity._id] = executedJob;
     }
     return result;
@@ -198,8 +193,8 @@ export class BackendsService extends AbstractQueueProcessor {
     const job = await this.queue.add(
       actionType,
       {
-        ...payload,
         concernedTo,
+        payload,
       },
       options?.job,
     );

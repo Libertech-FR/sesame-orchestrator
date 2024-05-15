@@ -1102,8 +1102,8 @@ export class BackendsService extends AbstractQueueProcessor {
     const job &#x3D; await this.queue.add(
       actionType,
       {
+        ...payload,
         concernedTo,
-        payload,
       },
       options?.job,
     );

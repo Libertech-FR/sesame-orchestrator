@@ -198,8 +198,8 @@ export class BackendsService extends AbstractQueueProcessor {
     const job = await this.queue.add(
       actionType,
       {
+        ...payload,
         concernedTo,
-        payload,
       },
       options?.job,
     );

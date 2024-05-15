@@ -11,6 +11,7 @@ import { InternalLogger } from './core/logger/internal.logger';
       logLevel: getLogLevel(cfg?.application?.logLevel),
       mongoose: cfg?.mongoose,
     });
+    logger.log(`Starting CLI with log level <${cfg?.application?.logLevel || 'info'}>`);
     const app = await CommandFactory.runWithoutClosing(CliModule, {
       logger,
       errorHandler: (err) => {

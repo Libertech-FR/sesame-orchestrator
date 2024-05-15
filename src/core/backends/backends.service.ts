@@ -29,6 +29,12 @@ export class BackendsService extends AbstractQueueProcessor {
   public async onModuleInit() {
     await super.onModuleInit();
 
+    if (process.env['npm_lifecycle_event'] === 'console') {
+      this.logger.debug('QUEUE CHECKER IGNORED, cli mode detected !');
+      return;
+    }
+    this.logger.warn('ENABLE QUEUE CHECKER !');
+
     const jobsCompleted = await this._queue.getCompleted();
     for (const job of jobsCompleted) {
       const isSyncedJob = await this.jobsService.model.findOneAndUpdate<Jobs>(

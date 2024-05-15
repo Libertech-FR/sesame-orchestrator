@@ -42,8 +42,8 @@ import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe';
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({
         config: {
-          ...config.get<RedisOptions>('ioredis.options'),
           url: config.get<string>('ioredis.uri'),
+          options: config.get<RedisOptions>('ioredis.options'),
         },
       }),
     }),
@@ -82,4 +82,4 @@ import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

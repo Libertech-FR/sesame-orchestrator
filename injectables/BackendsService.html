@@ -340,8 +340,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="191"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:191</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="186"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:186</a></div>
                         </td>
                     </tr>
 
@@ -1078,15 +1078,10 @@ export class BackendsService extends AbstractQueueProcessor {
 
     const result &#x3D; {};
     for (const identity of identities) {
-      const [executedJob] &#x3D; await this.executeJob(
-        identity.action,
-        identity.identity._id,
-        { identity },
-        {
-          ...options,
-          task: task._id,
-        },
-      );
+      const [executedJob] &#x3D; await this.executeJob(identity.action, identity.identity._id, identity.identity, {
+        ...options,
+        task: task._id,
+      });
       result[identity.identity._id] &#x3D; executedJob;
     }
     return result;
@@ -1102,8 +1097,8 @@ export class BackendsService extends AbstractQueueProcessor {
     const job &#x3D; await this.queue.add(
       actionType,
       {
-        ...payload,
         concernedTo,
+        payload,
       },
       options?.job,
     );

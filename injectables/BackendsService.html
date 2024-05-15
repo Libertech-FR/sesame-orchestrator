@@ -340,8 +340,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="185"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:185</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="191"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:191</a></div>
                         </td>
                     </tr>
 
@@ -492,8 +492,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="111"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:111</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:117</a></div>
                         </td>
                     </tr>
 
@@ -562,8 +562,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="142"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:142</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="148"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:148</a></div>
                         </td>
                     </tr>
 
@@ -932,6 +932,12 @@ export class BackendsService extends AbstractQueueProcessor {
 
   public async onModuleInit() {
     await super.onModuleInit();
+
+    if (process.env[&#x27;npm_lifecycle_event&#x27;] &#x3D;&#x3D;&#x3D; &#x27;console&#x27;) {
+      this.logger.debug(&#x27;QUEUE CHECKER IGNORED, cli mode detected !&#x27;);
+      return;
+    }
+    this.logger.warn(&#x27;ENABLE QUEUE CHECKER !&#x27;);
 
     const jobsCompleted &#x3D; await this._queue.getCompleted();
     for (const job of jobsCompleted) {

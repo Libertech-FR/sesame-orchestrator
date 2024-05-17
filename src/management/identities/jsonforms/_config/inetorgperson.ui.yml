@@ -29,6 +29,17 @@ elements:
 - type: HorizontalLayout
   elements:
   - type: Control
+    label: Employee Number
+    scope: "#/properties/employeeNumber"
+  - type: Control
+    label: Employee Type
+    scope: "#/properties/employeeType"
+    options:
+      suggestion:
+        - TAIGA
+- type: HorizontalLayout
+  elements:
+  - type: Control
     label: Email
     scope: "#/properties/mail"
     options:

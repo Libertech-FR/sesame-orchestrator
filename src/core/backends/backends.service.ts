@@ -1,4 +1,10 @@
-import { BadRequestException, HttpStatus, Injectable, RequestTimeoutException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  RequestTimeoutException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { Types } from 'mongoose';
 import { AbstractQueueProcessor } from '~/_common/abstracts/abstract.queue.processor';
@@ -81,7 +87,11 @@ export class BackendsService extends AbstractQueueProcessor {
           $set: {
             state: JobState.FAILED,
             finishedAt: new Date(),
-            result: payload.failedReason,
+            result: {
+              error: {
+                message: payload.failedReason,
+              },
+            },
           },
         },
         { new: true },
@@ -105,6 +115,7 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { upsert: true, new: true },
       );
+      console.log('completedJob', completedJob);
       await this.identitiesService.model.findByIdAndUpdate(completedJob.concernedTo.id, {
         $set: {
           state: IdentityState.SYNCED,
@@ -248,7 +259,11 @@ export class BackendsService extends AbstractQueueProcessor {
         $set: {
           state: JobState.FAILED,
           finishedAt: new Date(),
-          result: error,
+          result: {
+            error: {
+              message: error.message,
+            },
+          },
         },
       });
       await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
@@ -265,8 +280,8 @@ export class BackendsService extends AbstractQueueProcessor {
           job: jobFailed as unknown as Jobs,
         });
       }
-      throw new RequestTimeoutException({
-        status: HttpStatus.REQUEST_TIMEOUT,
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
         message: `Job now continue to run in background ${job.id}, timeout wait until finish reached`,
         error,
         job: jobFailed as unknown as Jobs,

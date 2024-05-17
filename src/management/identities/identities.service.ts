@@ -79,6 +79,59 @@ export class IdentitiesService extends AbstractServiceSchema {
     //TODO: add backends service logic here
   }
 
+  // public async upsert<T extends AbstractSchema | Document>(
+  //   data?: any,
+  //   options?: QueryOptions<T>,
+  // ): Promise<ModifyResult<Query<T, T, any, T>>> {
+  //   Logger.log(`Upserting identity: ${JSON.stringify(data)}`);
+  //   const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
+  //   // console.log(options);
+  //   const identity = await this._model.findOne({
+  //     'inetOrgPerson.employeeNumber': data.inetOrgPerson.employeeNumber,
+  //     'inetOrgPerson.employeeType': data.inetOrgPerson.employeeType,
+  //   });
+  //   // console.log(identity);
+  //   if (!identity && options.errorOnNotFound) {
+  //     this.logger.error(`${logPrefix} Identity not found.`);
+  //     throw new HttpException('Identity not found.', 404);
+  //   }
+  //   data.additionalFields.validations = {};
+  //   try {
+  //     this.logger.log(`${logPrefix} Starting additionalFields validation.`);
+  //     const validations = await this._validation.validate(data.additionalFields);
+  //     this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
+  //     this.logger.log(`Validations : ${validations}`);
+  //     data.state = IdentityState.TO_VALIDATE;
+  //   } catch (error) {
+  //     data = this.handleValidationError(error, data, logPrefix);
+  //   }
+
+  //   //TODO: ameliorer la logique d'upsert
+  //   if (identity) {
+  //     this.logger.log(`${logPrefix} Identity already exists. Updating.`);
+  //     data.inetOrgPerson = {
+  //       ...identity.inetOrgPerson,
+  //       ...data.inetOrgPerson,
+  //     };
+  //     data.additionalFields.objectClasses = [
+  //       ...new Set([...identity.additionalFields.objectClasses, ...data.additionalFields.objectClasses]),
+  //     ];
+  //     data.additionalFields.attributes = {
+  //       ...identity.additionalFields.attributes,
+  //       ...data.additionalFields.attributes,
+  //     };
+  //     data.additionalFields.validations = {
+  //       ...identity.additionalFields.validations,
+  //       ...data.additionalFields.validations,
+  //     };
+  //   }
+
+  //   //TODO: rechercher par uid ou employeeNumber + employeeType ?
+  //   const upsert = await super.upsert({ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, data, options);
+  //   return upsert;
+  //   //TODO: add backends service logic here
+  // }
+
   public async update<T extends AbstractSchema | Document>(
     _id: Types.ObjectId | any,
     update: UpdateQuery<T>,

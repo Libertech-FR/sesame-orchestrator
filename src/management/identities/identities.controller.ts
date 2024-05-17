@@ -10,8 +10,9 @@ import {
   Post,
   Query,
   Res,
+  Version,
 } from '@nestjs/common';
-import { IdentitiesDto, IdentitiesCreateDto, IdentitiesUpdateDto } from './_dto/identities.dto';
+import { IdentitiesDto, IdentitiesCreateDto, IdentitiesUpdateDto, IdentitiesUpsertDto } from './_dto/identities.dto';
 import { IdentitiesService } from './identities.service';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
@@ -83,41 +84,57 @@ export class IdentitiesController extends AbstractController {
   }
 
   @Post('upsert')
-  @ApiCreateDecorator(IdentitiesCreateDto, IdentitiesDto)
+  @ApiCreateDecorator(IdentitiesUpsertDto, IdentitiesDto)
   public async upsert(
     @Res()
     res: Response,
-    @Body() body: IdentitiesCreateDto,
+    @Body() body: IdentitiesUpsertDto,
     @Query('errorOnNotFound') errorOnNotFound: string = 'false',
-  ): Promise<
-    Response<
-      {
-        statusCode: number;
-        data?: Document<Identities, any, Identities>;
-        message?: string;
-        validations?: MixedValue;
-      },
-      any
-    >
-  > {
-    let statusCode = HttpStatus.CREATED;
-    let message = null;
+  ): Promise<Response<any>> {
     const data = await this._service.upsert<Identities>(body, {
-      errorOnNotFound: errorOnNotFound.toLowerCase() === 'true',
+      errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),
     });
-    // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
-    // Else the state is TO_VALIDATE, we return a 201 status code
-    if ((data as unknown as Identities).state === IdentityState.TO_COMPLETE) {
-      statusCode = HttpStatus.ACCEPTED;
-      message = 'Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.';
-    }
-
-    return res.status(statusCode).json({
-      statusCode,
+    return res.status(200).json({
       data,
-      message,
     });
   }
+
+  // @Post('upsert')
+  // @ApiCreateDecorator(IdentitiesCreateDto, IdentitiesDto)
+  // public async upsertV1(
+  //   @Res()
+  //   res: Response,
+  //   @Body() body: IdentitiesCreateDto,
+  //   @Query('errorOnNotFound') errorOnNotFound: string = 'false',
+  // ): Promise<
+  //   Response<
+  //     {
+  //       statusCode: number;
+  //       data?: Document<Identities, any, Identities>;
+  //       message?: string;
+  //       validations?: MixedValue;
+  //     },
+  //     any
+  //   >
+  // > {
+  //   let statusCode = HttpStatus.CREATED;
+  //   let message = null;
+  //   const data = await this._service.upsert<Identities>(body, {
+  //     errorOnNotFound: errorOnNotFound.toLowerCase() === 'true',
+  //   });
+  //   // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
+  //   // Else the state is TO_VALIDATE, we return a 201 status code
+  //   if ((data as unknown as Identities).state === IdentityState.TO_COMPLETE) {
+  //     statusCode = HttpStatus.ACCEPTED;
+  //     message = 'Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.';
+  //   }
+
+  //   return res.status(statusCode).json({
+  //     statusCode,
+  //     data,
+  //     message,
+  //   });
+  // }
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(IdentitiesDto, IdentitiesController.projection))

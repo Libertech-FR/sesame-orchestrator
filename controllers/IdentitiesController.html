@@ -259,8 +259,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="177"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:177</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="194"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:194</a></div>
                         </td>
                     </tr>
 
@@ -362,8 +362,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -454,8 +454,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="155"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:155</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="172"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:172</a></div>
                         </td>
                     </tr>
 
@@ -546,8 +546,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="229"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:229</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="246"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:246</a></div>
                         </td>
                     </tr>
 
@@ -637,8 +637,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="124"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:124</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="141"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:141</a></div>
                         </td>
                     </tr>
 
@@ -741,8 +741,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="192"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:192</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="209"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:209</a></div>
                         </td>
                     </tr>
 
@@ -845,8 +845,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="207"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:207</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="224"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:224</a></div>
                         </td>
                     </tr>
 
@@ -934,7 +934,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>upsert(res: Response, body: <a href="../classes/IdentitiesCreateDto.html" target="_self">IdentitiesCreateDto</a>, errorOnNotFound: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>upsert(res: Response, body: <a href="../classes/IdentitiesUpsertDto.html" target="_self">IdentitiesUpsertDto</a>, errorOnNotFound: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -942,14 +942,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;upsert&#x27;)<br />@ApiCreateDecorator(IdentitiesCreateDto, IdentitiesDto)<br /></code>
+                    <code>@Post(&#x27;upsert&#x27;)<br />@ApiCreateDecorator(IdentitiesUpsertDto, IdentitiesDto)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="87"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:87</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -987,7 +987,7 @@
                                         <tr>
                                                 <td>body</td>
                                             <td>
-                                                            <code><a href="../classes/IdentitiesCreateDto.html" target="_self" >IdentitiesCreateDto</a></code>
+                                                            <code><a href="../classes/IdentitiesUpsertDto.html" target="_self" >IdentitiesUpsertDto</a></code>
                                             </td>
 
                                             <td>
@@ -1017,7 +1017,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;Response&lt;literal type, any&gt;&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;Response&lt;any&gt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1043,8 +1043,9 @@
   Post,
   Query,
   Res,
+  Version,
 } from &#x27;@nestjs/common&#x27;;
-import { IdentitiesDto, IdentitiesCreateDto, IdentitiesUpdateDto } from &#x27;./_dto/identities.dto&#x27;;
+import { IdentitiesDto, IdentitiesCreateDto, IdentitiesUpdateDto, IdentitiesUpsertDto } from &#x27;./_dto/identities.dto&#x27;;
 import { IdentitiesService } from &#x27;./identities.service&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;;
@@ -1116,41 +1117,57 @@ export class IdentitiesController extends AbstractController {
   }
 
   @Post(&#x27;upsert&#x27;)
-  @ApiCreateDecorator(IdentitiesCreateDto, IdentitiesDto)
+  @ApiCreateDecorator(IdentitiesUpsertDto, IdentitiesDto)
   public async upsert(
     @Res()
     res: Response,
-    @Body() body: IdentitiesCreateDto,
+    @Body() body: IdentitiesUpsertDto,
     @Query(&#x27;errorOnNotFound&#x27;) errorOnNotFound: string &#x3D; &#x27;false&#x27;,
-  ): Promise&lt;
-    Response&lt;
-      {
-        statusCode: number;
-        data?: Document&lt;Identities, any, Identities&gt;;
-        message?: string;
-        validations?: MixedValue;
-      },
-      any
-    &gt;
-  &gt; {
-    let statusCode &#x3D; HttpStatus.CREATED;
-    let message &#x3D; null;
+  ): Promise&lt;Response&lt;any&gt;&gt; {
     const data &#x3D; await this._service.upsert&lt;Identities&gt;(body, {
-      errorOnNotFound: errorOnNotFound.toLowerCase() &#x3D;&#x3D;&#x3D; &#x27;true&#x27;,
+      errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),
     });
-    // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
-    // Else the state is TO_VALIDATE, we return a 201 status code
-    if ((data as unknown as Identities).state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
-      statusCode &#x3D; HttpStatus.ACCEPTED;
-      message &#x3D; &#x27;Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.&#x27;;
-    }
-
-    return res.status(statusCode).json({
-      statusCode,
+    return res.status(200).json({
       data,
-      message,
     });
   }
+
+  // @Post(&#x27;upsert&#x27;)
+  // @ApiCreateDecorator(IdentitiesCreateDto, IdentitiesDto)
+  // public async upsertV1(
+  //   @Res()
+  //   res: Response,
+  //   @Body() body: IdentitiesCreateDto,
+  //   @Query(&#x27;errorOnNotFound&#x27;) errorOnNotFound: string &#x3D; &#x27;false&#x27;,
+  // ): Promise&lt;
+  //   Response&lt;
+  //     {
+  //       statusCode: number;
+  //       data?: Document&lt;Identities, any, Identities&gt;;
+  //       message?: string;
+  //       validations?: MixedValue;
+  //     },
+  //     any
+  //   &gt;
+  // &gt; {
+  //   let statusCode &#x3D; HttpStatus.CREATED;
+  //   let message &#x3D; null;
+  //   const data &#x3D; await this._service.upsert&lt;Identities&gt;(body, {
+  //     errorOnNotFound: errorOnNotFound.toLowerCase() &#x3D;&#x3D;&#x3D; &#x27;true&#x27;,
+  //   });
+  //   // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
+  //   // Else the state is TO_VALIDATE, we return a 201 status code
+  //   if ((data as unknown as Identities).state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
+  //     statusCode &#x3D; HttpStatus.ACCEPTED;
+  //     message &#x3D; &#x27;Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.&#x27;;
+  //   }
+
+  //   return res.status(statusCode).json({
+  //     statusCode,
+  //     data,
+  //     message,
+  //   });
+  // }
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(IdentitiesDto, IdentitiesController.projection))

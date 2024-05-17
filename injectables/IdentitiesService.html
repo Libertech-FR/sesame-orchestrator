@@ -440,7 +440,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:130</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:183</a></code>
 </div>
                         </td>
                     </tr>
@@ -529,8 +529,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="141"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:141</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="194"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:194</a></div>
                         </td>
                     </tr>
 
@@ -629,7 +629,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:82</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:135</a></code>
 </div>
                         </td>
                     </tr>
@@ -730,8 +730,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="121"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:121</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="174"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:174</a></div>
                         </td>
                     </tr>
 
@@ -1692,6 +1692,59 @@ export class IdentitiesService extends AbstractServiceSchema {
     return upsert;
     //TODO: add backends service logic here
   }
+
+  // public async upsert&lt;T extends AbstractSchema | Document&gt;(
+  //   data?: any,
+  //   options?: QueryOptions&lt;T&gt;,
+  // ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
+  //   Logger.log(&#x60;Upserting identity: ${JSON.stringify(data)}&#x60;);
+  //   const logPrefix &#x3D; &#x60;Validation [${data.inetOrgPerson.cn}]:&#x60;;
+  //   // console.log(options);
+  //   const identity &#x3D; await this._model.findOne({
+  //     &#x27;inetOrgPerson.employeeNumber&#x27;: data.inetOrgPerson.employeeNumber,
+  //     &#x27;inetOrgPerson.employeeType&#x27;: data.inetOrgPerson.employeeType,
+  //   });
+  //   // console.log(identity);
+  //   if (!identity &amp;&amp; options.errorOnNotFound) {
+  //     this.logger.error(&#x60;${logPrefix} Identity not found.&#x60;);
+  //     throw new HttpException(&#x27;Identity not found.&#x27;, 404);
+  //   }
+  //   data.additionalFields.validations &#x3D; {};
+  //   try {
+  //     this.logger.log(&#x60;${logPrefix} Starting additionalFields validation.&#x60;);
+  //     const validations &#x3D; await this._validation.validate(data.additionalFields);
+  //     this.logger.log(&#x60;${logPrefix} AdditionalFields validation successful.&#x60;);
+  //     this.logger.log(&#x60;Validations : ${validations}&#x60;);
+  //     data.state &#x3D; IdentityState.TO_VALIDATE;
+  //   } catch (error) {
+  //     data &#x3D; this.handleValidationError(error, data, logPrefix);
+  //   }
+
+  //   //TODO: ameliorer la logique d&#x27;upsert
+  //   if (identity) {
+  //     this.logger.log(&#x60;${logPrefix} Identity already exists. Updating.&#x60;);
+  //     data.inetOrgPerson &#x3D; {
+  //       ...identity.inetOrgPerson,
+  //       ...data.inetOrgPerson,
+  //     };
+  //     data.additionalFields.objectClasses &#x3D; [
+  //       ...new Set([...identity.additionalFields.objectClasses, ...data.additionalFields.objectClasses]),
+  //     ];
+  //     data.additionalFields.attributes &#x3D; {
+  //       ...identity.additionalFields.attributes,
+  //       ...data.additionalFields.attributes,
+  //     };
+  //     data.additionalFields.validations &#x3D; {
+  //       ...identity.additionalFields.validations,
+  //       ...data.additionalFields.validations,
+  //     };
+  //   }
+
+  //   //TODO: rechercher par uid ou employeeNumber + employeeType ?
+  //   const upsert &#x3D; await super.upsert({ &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid }, data, options);
+  //   return upsert;
+  //   //TODO: add backends service logic here
+  // }
 
   public async update&lt;T extends AbstractSchema | Document&gt;(
     _id: Types.ObjectId | any,

@@ -238,7 +238,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/core/backends/backends.service.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/core/backends/backends.service.ts:25</a></div>
                             </td>
                         </tr>
 
@@ -340,8 +340,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="186"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:186</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="197"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:197</a></div>
                         </td>
                     </tr>
 
@@ -452,7 +452,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:29</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:35</a></code>
 </div>
                         </td>
                     </tr>
@@ -492,8 +492,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="117"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:117</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="128"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:128</a></div>
                         </td>
                     </tr>
 
@@ -562,8 +562,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="148"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:148</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="159"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:159</a></div>
                         </td>
                     </tr>
 
@@ -902,7 +902,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, HttpStatus, Injectable, RequestTimeoutException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  RequestTimeoutException,
+  UnprocessableEntityException,
+} from &#x27;@nestjs/common&#x27;;
 import { ModuleRef } from &#x27;@nestjs/core&#x27;;
 import { Types } from &#x27;mongoose&#x27;;
 import { AbstractQueueProcessor } from &#x27;~/_common/abstracts/abstract.queue.processor&#x27;;
@@ -985,7 +991,11 @@ export class BackendsService extends AbstractQueueProcessor {
           $set: {
             state: JobState.FAILED,
             finishedAt: new Date(),
-            result: payload.failedReason,
+            result: {
+              error: {
+                message: payload.failedReason,
+              },
+            },
           },
         },
         { new: true },
@@ -1009,6 +1019,7 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { upsert: true, new: true },
       );
+      console.log(&#x27;completedJob&#x27;, completedJob);
       await this.identitiesService.model.findByIdAndUpdate(completedJob.concernedTo.id, {
         $set: {
           state: IdentityState.SYNCED,
@@ -1152,7 +1163,11 @@ export class BackendsService extends AbstractQueueProcessor {
         $set: {
           state: JobState.FAILED,
           finishedAt: new Date(),
-          result: error,
+          result: {
+            error: {
+              message: error.message,
+            },
+          },
         },
       });
       await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
@@ -1169,8 +1184,8 @@ export class BackendsService extends AbstractQueueProcessor {
           job: jobFailed as unknown as Jobs,
         });
       }
-      throw new RequestTimeoutException({
-        status: HttpStatus.REQUEST_TIMEOUT,
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
         message: &#x60;Job now continue to run in background ${job.id}, timeout wait until finish reached&#x60;,
         error,
         job: jobFailed as unknown as Jobs,

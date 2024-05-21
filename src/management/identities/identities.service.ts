@@ -44,8 +44,12 @@ export class IdentitiesService extends AbstractServiceSchema {
     options?: QueryOptions<T>,
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
     this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
+
+    const objectClasses = data.additionalFields.objectClasses;
+    delete data.additionalFields.objectClasses;
     const crushedUpdate = crush(JSON.parse(JSON.stringify(omit(data || {}, ['$setOnInsert']))));
     const crushedSetOnInsert = crush(JSON.parse(JSON.stringify(data.$setOnInsert || {})));
+    crushedUpdate['additionalFields.objectClasses'] = objectClasses;
 
     data = construct({
       ...crushedUpdate,

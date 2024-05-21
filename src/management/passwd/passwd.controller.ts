@@ -1,9 +1,8 @@
-import { Controller, Post, Body, Res, UseGuards, Logger } from '@nestjs/common';
+import { Controller, Post, Body, Res, Logger } from '@nestjs/common';
 import { PasswdService } from './passwd.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { AskTokenDto } from './dto/ask-token.dto';
 import { VerifyTokenDto } from './dto/verify-token.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -20,7 +19,6 @@ export class PasswdController {
   @ApiResponse({ status: 200, description: 'Password has been successfully changed.' })
   @ApiResponse({ status: 403, description: 'Old password wrong' })
   @ApiResponse({ status: 500, description: 'Backend error' })
-  @UseGuards(AuthGuard('api-key'))
   public async change(@Body() cpwd: ChangePasswordDto, @Res() res: Response): Promise<Response> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, data] = await this.passwdService.change(cpwd);
@@ -42,7 +40,6 @@ export class PasswdController {
   @ApiOperation({ summary: 'ask token for reseting password' })
   @ApiResponse({ status: 200, description: 'Token', content: {} })
   @ApiResponse({ status: 500, description: 'Backend error' })
-  @UseGuards(AuthGuard('api-key'))
   public async gettoken(@Body() asktoken: AskTokenDto, @Res() res: Response): Promise<Response> {
     this.logger.log('GetToken for : ' + asktoken.id);
     const data = await this.passwdService.askToken(asktoken);
@@ -53,7 +50,6 @@ export class PasswdController {
   @ApiOperation({ summary: 'ask token for reseting password' })
   @ApiResponse({ status: 201, description: 'Token OK' })
   @ApiResponse({ status: 500, description: 'Token KO' })
-  @UseGuards(AuthGuard('api-key'))
   public async verifyToken(@Body() token: VerifyTokenDto, @Res() res: Response): Promise<Response> {
     this.logger.log('Verify token : ' + token.token);
     if (await this.passwdService.verifyToken(token.token)) {
@@ -66,7 +62,6 @@ export class PasswdController {
   @ApiOperation({ summary: 'reset password' })
   @ApiResponse({ status: 200, description: 'Reset OK' })
   @ApiResponse({ status: 500, description: 'Reset KO' })
-  @UseGuards(AuthGuard('api-key'))
   public async reset(@Body() data: ResetPasswordDto, @Res() res: Response): Promise<Response> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, resetData] = await this.passwdService.reset(data);

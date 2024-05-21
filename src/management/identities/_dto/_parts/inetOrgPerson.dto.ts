@@ -21,6 +21,11 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty()
   @IsOptional()
+  departmentNumber: string;
+
+  @IsString()
+  @ApiProperty()
+  @IsOptional()
   sn?: string;
 
   @IsString()

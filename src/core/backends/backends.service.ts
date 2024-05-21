@@ -115,7 +115,7 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { upsert: true, new: true },
       );
-      console.log('completedJob', completedJob);
+      // console.log('completedJob', completedJob);
       await this.identitiesService.model.findByIdAndUpdate(completedJob.concernedTo.id, {
         $set: {
           state: IdentityState.SYNCED,

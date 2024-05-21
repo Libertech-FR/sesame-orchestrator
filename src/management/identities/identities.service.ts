@@ -1,12 +1,24 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Identities } from './_schemas/identities.schema';
-import { Document, Model, ModifyResult, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose';
+import {
+  Document,
+  FilterQuery,
+  Model,
+  ModifyResult,
+  Query,
+  QueryOptions,
+  SaveOptions,
+  Types,
+  UpdateQuery,
+} from 'mongoose';
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
 import { IdentityState } from './_enums/states.enum';
+import { construct, crush, omit } from 'radash';
+import { IdentitiesUpsertDto } from './_dto/identities.dto';
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -27,56 +39,41 @@ export class IdentitiesService extends AbstractServiceSchema {
   }
 
   public async upsert<T extends AbstractSchema | Document>(
-    data?: any,
+    filters: FilterQuery<T>,
+    data?: IdentitiesUpsertDto,
     options?: QueryOptions<T>,
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
-    Logger.log(`Upserting identity: ${JSON.stringify(data)}`);
-    const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
-    // console.log(options);
-    const identity = await this._model.findOne({
-      'inetOrgPerson.employeeNumber': data.inetOrgPerson.employeeNumber,
-      'inetOrgPerson.employeeType': data.inetOrgPerson.employeeType,
+    this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
+    const crushedUpdate = crush(JSON.parse(JSON.stringify(omit(data || {}, ['$setOnInsert']))));
+    const crushedSetOnInsert = crush(JSON.parse(JSON.stringify(data.$setOnInsert || {})));
+
+    data = construct({
+      ...crushedUpdate,
+      ...crushedSetOnInsert,
     });
-    // console.log(identity);
-    if (!identity && options.errorOnNotFound) {
-      this.logger.error(`${logPrefix} Identity not found.`);
-      throw new HttpException('Identity not found.', 404);
-    }
     data.additionalFields.validations = {};
+    const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
+
     try {
       this.logger.log(`${logPrefix} Starting additionalFields validation.`);
       const validations = await this._validation.validate(data.additionalFields);
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
-      this.logger.log(`Validations : ${validations}`);
-      data.state = IdentityState.TO_VALIDATE;
+      this.logger.log(`Validations : ${JSON.stringify(validations)}`);
+      crushedUpdate['state'] = IdentityState.TO_VALIDATE;
     } catch (error) {
       data = this.handleValidationError(error, data, logPrefix);
+      crushedUpdate['state'] = data.state;
+      crushedUpdate['additionalFields.validations'] = data.additionalFields.validations;
     }
 
-    //TODO: ameliorer la logique d'upsert
-    if (identity) {
-      this.logger.log(`${logPrefix} Identity already exists. Updating.`);
-      data.inetOrgPerson = {
-        ...identity.inetOrgPerson,
-        ...data.inetOrgPerson,
-      };
-      data.additionalFields.objectClasses = [
-        ...new Set([...identity.additionalFields.objectClasses, ...data.additionalFields.objectClasses]),
-      ];
-      data.additionalFields.attributes = {
-        ...identity.additionalFields.attributes,
-        ...data.additionalFields.attributes,
-      };
-      data.additionalFields.validations = {
-        ...identity.additionalFields.validations,
-        ...data.additionalFields.validations,
-      };
-    }
-
-    //TODO: rechercher par uid ou employeeNumber + employeeType ?
-    const upsert = await super.upsert({ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, data, options);
-    return upsert;
-    //TODO: add backends service logic here
+    return await super.upsert(
+      filters,
+      {
+        $set: crushedUpdate,
+        $setOnInsert: crushedSetOnInsert,
+      },
+      options,
+    );
   }
 
   // public async upsert<T extends AbstractSchema | Document>(
@@ -191,7 +188,11 @@ export class IdentitiesService extends AbstractServiceSchema {
     return deleted;
   }
 
-  private handleValidationError(error: Error | HttpException, identity: Identities, logPrefix: string) {
+  private handleValidationError(
+    error: Error | HttpException,
+    identity: Identities | IdentitiesUpsertDto,
+    logPrefix: string,
+  ): any {
     if (error instanceof ValidationConfigException) {
       this.logger.error(`${logPrefix} Validation config error. ${JSON.stringify(error.getValidations())}`);
       throw new ValidationConfigException(error.getPayload());
@@ -199,7 +200,7 @@ export class IdentitiesService extends AbstractServiceSchema {
 
     if (error instanceof ValidationSchemaException) {
       this.logger.warn(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
-      identity.additionalFields.validations = error.getValidations();
+      identity.additionalFields.validations = error.getValidations() as any;
       if (identity.state === IdentityState.TO_CREATE) {
         this.logger.warn(`${logPrefix} State set to TO_COMPLETE.`);
         identity.state = IdentityState.TO_COMPLETE;

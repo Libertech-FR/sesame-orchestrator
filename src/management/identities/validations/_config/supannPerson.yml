@@ -52,6 +52,9 @@ properties:
   supannEmpDateFin:
     type: string
     description: Field corresponding to supannEmpDateFin
+  supannEtablissement:
+    type: string
+    description: etablissement
 required:
 - supanncivilite
 - supannAutreMail
@@ -61,7 +64,7 @@ required:
 # - supannCodeINSEEVilleDeNaissance
 # - supannMailPerso
 # - supannEntiteAffectationPrincipale
-- supannCodeINSEEPaysDeNaissance
+#- supannCodeINSEEPaysDeNaissance
 - supannRefId
 - supannPrenomsEtatCivil
 # - mailForwardingAddress

@@ -9,6 +9,7 @@ import { buildYup } from 'schema-to-yup';
 import ajvErrors from 'ajv-errors';
 import validSchema from './_config/validSchema';
 import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
+import { additionalFieldsPartDto } from '../_dto/_parts/additionalFields.dto';
 
 /**
  * Service responsible for validating identities.
@@ -42,7 +43,7 @@ export class IdentitiesValidationService {
    * @param data - The additional fields data to validate.
    * @returns A promise that resolves if validation succeeds, or rejects with validation errors.
    */
-  async validate(data: AdditionalFieldsPart): Promise<object> {
+  async validate(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise<object> {
     const objectClasses = data.objectClasses;
     const attributes = data.attributes;
     const attributesKeys = Object.keys(attributes);

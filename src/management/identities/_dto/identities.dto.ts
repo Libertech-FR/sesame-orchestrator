@@ -49,5 +49,5 @@ export class IdentitiesDto extends IdentitiesCreateDto { }
 export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) { }
 
 export class IdentitiesUpsertDto extends PartialType(IdentitiesUpdateDto) {
-  $addToSet?: Partial<IdentitiesUpdateDto>;
+  $setOnInsert?: Partial<IdentitiesUpdateDto>;
 }

@@ -1,5 +1,5 @@
 type: Group
-label: supann
+label: supannPerson
 elements:
   - type: HorizontalLayout
     elements:

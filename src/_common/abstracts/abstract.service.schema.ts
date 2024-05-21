@@ -110,7 +110,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     }
     if (!data) {
       this.logger.debug(['findById', JSON.stringify(Object.values(arguments))].join(' '))
-      throw new NotFoundException()}
+      throw new NotFoundException()
+    }
     return data
   }
 
@@ -135,7 +136,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     let data = await this._model.findOne<Query<T | null, T, any, T>>(filter, projection, options).exec()
     if (!data) {
       this.logger.debug(['findById', JSON.stringify(Object.values(arguments))].join(' '))
-      throw new NotFoundException()}
+      throw new NotFoundException()
+    }
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterFindOne'].join(EventEmitterSeparator),
@@ -238,7 +240,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       .exec()
     if (!updated) {
       this.logger.debug(['findById', JSON.stringify(Object.values(arguments))].join(' '))
-      throw new NotFoundException()}
+      throw new NotFoundException()
+    }
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterFindAndCount'].join(EventEmitterSeparator),
@@ -252,9 +255,9 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
   }
 
   public async upsert<T extends AbstractSchema | Document>(
-  filter: FilterQuery<T>,
-  update: UpdateQuery<T>,
-  options?: QueryOptions<T>
+    filter: FilterQuery<T>,
+    update: UpdateQuery<T>,
+    options?: QueryOptions<T>
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
     this.logger.debug(['upsert', JSON.stringify(Object.values(arguments))].join(' '));
     if (this.eventEmitter) {
@@ -275,6 +278,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         {
           ...update,
           $setOnInsert: {
+            ...(update?.$setOnInsert || {}),
             'metadata.createdBy': this.request?.user?.username || 'anonymous',
             'metadata.createdAt': new Date(),
           },
@@ -326,7 +330,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     let deleted = await this._model.findByIdAndDelete<Query<T | null, T, any, T>>({ _id }, options).exec()
     if (!deleted) {
       this.logger.debug(['findById', JSON.stringify(Object.values(arguments))].join(' '))
-      throw new NotFoundException()}
+      throw new NotFoundException()
+    }
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterFindAndCount'].join(EventEmitterSeparator),

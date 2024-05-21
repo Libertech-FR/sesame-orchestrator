@@ -260,7 +260,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/management/identities/identities.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/management/identities/identities.service.ts:24</a></div>
                             </td>
                         </tr>
 
@@ -344,7 +344,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:20</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:32</a></code>
 </div>
                         </td>
                     </tr>
@@ -440,7 +440,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:183</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:180</a></code>
 </div>
                         </td>
                     </tr>
@@ -522,15 +522,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>handleValidationError(error: Error | HttpException, identity: <a href="../classes/Identities.html" target="_self">Identities</a>, logPrefix: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>handleValidationError(error: Error | HttpException, identity: Identities | IdentitiesUpsertDto, logPrefix: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="194"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:194</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="191"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:191</a></div>
                         </td>
                     </tr>
 
@@ -565,7 +565,7 @@
                                         <tr>
                                                 <td>identity</td>
                                             <td>
-                                                            <code><a href="../classes/Identities.html" target="_self" >Identities</a></code>
+                                                        <code>Identities | IdentitiesUpsertDto</code>
                                             </td>
 
                                             <td>
@@ -590,7 +590,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Identities.html" target="_self" >Identities</a></code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -629,7 +629,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:135</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:132</a></code>
 </div>
                         </td>
                     </tr>
@@ -730,8 +730,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="174"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:174</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:171</a></div>
                         </td>
                     </tr>
 
@@ -824,7 +824,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>upsert(data?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>, options?: QueryOptions<T>)</code>
+                    <code>upsert(filters: FilterQuery<T>, data?: <a href="../classes/IdentitiesUpsertDto.html" target="_self">IdentitiesUpsertDto</a>, options?: QueryOptions<T>)</code>
                 </td>
             </tr>
 
@@ -837,7 +837,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:29</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:41</a></code>
 </div>
                         </td>
                     </tr>
@@ -867,9 +867,21 @@
                                     </thead>
                                     <tbody>
                                         <tr>
+                                                <td>filters</td>
+                                            <td>
+                                                        <code>FilterQuery&lt;T&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
                                                 <td>data</td>
                                             <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                            <code><a href="../classes/IdentitiesUpsertDto.html" target="_self" >IdentitiesUpsertDto</a></code>
                                             </td>
 
                                             <td>
@@ -1353,7 +1365,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:117</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:118</a></code>
 </div>
                         </td>
                     </tr>
@@ -1615,12 +1627,24 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpException, Injectable, Logger } from &#x27;@nestjs/common&#x27;;
 import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
 import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
-import { Document, Model, ModifyResult, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from &#x27;mongoose&#x27;;
+import {
+  Document,
+  FilterQuery,
+  Model,
+  ModifyResult,
+  Query,
+  QueryOptions,
+  SaveOptions,
+  Types,
+  UpdateQuery,
+} from &#x27;mongoose&#x27;;
 import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
 import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
 import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
 import { ValidationConfigException, ValidationSchemaException } from &#x27;~/_common/errors/ValidationException&#x27;;
 import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
+import { construct, crush, omit } from &#x27;radash&#x27;;
+import { IdentitiesUpsertDto } from &#x27;./_dto/identities.dto&#x27;;
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -1641,56 +1665,41 @@ export class IdentitiesService extends AbstractServiceSchema {
   }
 
   public async upsert&lt;T extends AbstractSchema | Document&gt;(
-    data?: any,
+    filters: FilterQuery&lt;T&gt;,
+    data?: IdentitiesUpsertDto,
     options?: QueryOptions&lt;T&gt;,
   ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
-    Logger.log(&#x60;Upserting identity: ${JSON.stringify(data)}&#x60;);
-    const logPrefix &#x3D; &#x60;Validation [${data.inetOrgPerson.cn}]:&#x60;;
-    // console.log(options);
-    const identity &#x3D; await this._model.findOne({
-      &#x27;inetOrgPerson.employeeNumber&#x27;: data.inetOrgPerson.employeeNumber,
-      &#x27;inetOrgPerson.employeeType&#x27;: data.inetOrgPerson.employeeType,
+    this.logger.log(&#x60;Upserting identity with filters ${JSON.stringify(filters)}&#x60;);
+    const crushedUpdate &#x3D; crush(JSON.parse(JSON.stringify(omit(data || {}, [&#x27;$setOnInsert&#x27;]))));
+    const crushedSetOnInsert &#x3D; crush(JSON.parse(JSON.stringify(data.$setOnInsert || {})));
+
+    data &#x3D; construct({
+      ...crushedUpdate,
+      ...crushedSetOnInsert,
     });
-    // console.log(identity);
-    if (!identity &amp;&amp; options.errorOnNotFound) {
-      this.logger.error(&#x60;${logPrefix} Identity not found.&#x60;);
-      throw new HttpException(&#x27;Identity not found.&#x27;, 404);
-    }
     data.additionalFields.validations &#x3D; {};
+    const logPrefix &#x3D; &#x60;Validation [${data.inetOrgPerson.cn}]:&#x60;;
+
     try {
       this.logger.log(&#x60;${logPrefix} Starting additionalFields validation.&#x60;);
       const validations &#x3D; await this._validation.validate(data.additionalFields);
       this.logger.log(&#x60;${logPrefix} AdditionalFields validation successful.&#x60;);
-      this.logger.log(&#x60;Validations : ${validations}&#x60;);
-      data.state &#x3D; IdentityState.TO_VALIDATE;
+      this.logger.log(&#x60;Validations : ${JSON.stringify(validations)}&#x60;);
+      crushedUpdate[&#x27;state&#x27;] &#x3D; IdentityState.TO_VALIDATE;
     } catch (error) {
       data &#x3D; this.handleValidationError(error, data, logPrefix);
+      crushedUpdate[&#x27;state&#x27;] &#x3D; data.state;
+      crushedUpdate[&#x27;additionalFields.validations&#x27;] &#x3D; data.additionalFields.validations;
     }
 
-    //TODO: ameliorer la logique d&#x27;upsert
-    if (identity) {
-      this.logger.log(&#x60;${logPrefix} Identity already exists. Updating.&#x60;);
-      data.inetOrgPerson &#x3D; {
-        ...identity.inetOrgPerson,
-        ...data.inetOrgPerson,
-      };
-      data.additionalFields.objectClasses &#x3D; [
-        ...new Set([...identity.additionalFields.objectClasses, ...data.additionalFields.objectClasses]),
-      ];
-      data.additionalFields.attributes &#x3D; {
-        ...identity.additionalFields.attributes,
-        ...data.additionalFields.attributes,
-      };
-      data.additionalFields.validations &#x3D; {
-        ...identity.additionalFields.validations,
-        ...data.additionalFields.validations,
-      };
-    }
-
-    //TODO: rechercher par uid ou employeeNumber + employeeType ?
-    const upsert &#x3D; await super.upsert({ &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid }, data, options);
-    return upsert;
-    //TODO: add backends service logic here
+    return await super.upsert(
+      filters,
+      {
+        $set: crushedUpdate,
+        $setOnInsert: crushedSetOnInsert,
+      },
+      options,
+    );
   }
 
   // public async upsert&lt;T extends AbstractSchema | Document&gt;(
@@ -1805,7 +1814,11 @@ export class IdentitiesService extends AbstractServiceSchema {
     return deleted;
   }
 
-  private handleValidationError(error: Error | HttpException, identity: Identities, logPrefix: string) {
+  private handleValidationError(
+    error: Error | HttpException,
+    identity: Identities | IdentitiesUpsertDto,
+    logPrefix: string,
+  ): any {
     if (error instanceof ValidationConfigException) {
       this.logger.error(&#x60;${logPrefix} Validation config error. ${JSON.stringify(error.getValidations())}&#x60;);
       throw new ValidationConfigException(error.getPayload());
@@ -1813,7 +1826,7 @@ export class IdentitiesService extends AbstractServiceSchema {
 
     if (error instanceof ValidationSchemaException) {
       this.logger.warn(&#x60;${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}&#x60;);
-      identity.additionalFields.validations &#x3D; error.getValidations();
+      identity.additionalFields.validations &#x3D; error.getValidations() as any;
       if (identity.state &#x3D;&#x3D;&#x3D; IdentityState.TO_CREATE) {
         this.logger.warn(&#x60;${logPrefix} State set to TO_COMPLETE.&#x60;);
         identity.state &#x3D; IdentityState.TO_COMPLETE;

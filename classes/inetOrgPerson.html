@@ -152,6 +152,10 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                <a href="#departmentNumber" >departmentNumber</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#displayName" >displayName</a>
                             </li>
@@ -275,6 +279,42 @@
                     <tr>
                         <td class="col-md-4">
                                 <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:6</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="departmentNumber"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>departmentNumber</b></span>
+                        <a href="#departmentNumber"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Prop()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -782,7 +822,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop({required: true, unique: true})<br />
+                            @Prop({required: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -825,7 +865,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:51</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -862,7 +902,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:54</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -921,7 +961,7 @@ export class inetOrgPerson {
   @Prop()
   title?: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   uid: string;
 
   @Prop({ required: true })
@@ -929,6 +969,9 @@ export class inetOrgPerson {
 
   @Prop({ required: true })
   employeeType: string;
+
+  @Prop()
+  departmentNumber: string;
 
   @Prop()
   userCertificate?: string;

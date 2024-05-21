@@ -259,8 +259,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="194"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:194</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="189"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:189</a></div>
                         </td>
                     </tr>
 
@@ -454,8 +454,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="172"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:172</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="167"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:167</a></div>
                         </td>
                     </tr>
 
@@ -546,8 +546,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="246"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:246</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="241"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:241</a></div>
                         </td>
                     </tr>
 
@@ -637,8 +637,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="141"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:141</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -741,8 +741,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="209"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:209</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="204"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:204</a></div>
                         </td>
                     </tr>
 
@@ -845,8 +845,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="224"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:224</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="219"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:219</a></div>
                         </td>
                     </tr>
 
@@ -934,7 +934,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>upsert(res: Response, body: <a href="../classes/IdentitiesUpsertDto.html" target="_self">IdentitiesUpsertDto</a>, errorOnNotFound: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>upsert(res: Response, body: <a href="../classes/IdentitiesUpsertDto.html" target="_self">IdentitiesUpsertDto</a>, filtersQuery: literal type[], errorOnNotFound: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -999,6 +999,21 @@
 
                                         </tr>
                                         <tr>
+                                                <td>filtersQuery</td>
+                                            <td>
+                                                        <code>literal type[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>[]</code>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
                                                 <td>errorOnNotFound</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
@@ -1017,7 +1032,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;Response&lt;any&gt;&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;Response&lt;literal type&gt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1062,7 +1077,7 @@ import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } 
 import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
 import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
 import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
-import { Types, Document } from &#x27;mongoose&#x27;;
+import { Types, Document, isValidObjectId } from &#x27;mongoose&#x27;;
 import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
 // import { IdentitiesValidationFilter } from &#x27;~/_common/filters/identities-validation.filter&#x27;;
 
@@ -1122,52 +1137,47 @@ export class IdentitiesController extends AbstractController {
     @Res()
     res: Response,
     @Body() body: IdentitiesUpsertDto,
+    @Query(&#x27;filters&#x27;)
+    filtersQuery: {
+      [key: string]: string;
+    }[] &#x3D; [],
     @Query(&#x27;errorOnNotFound&#x27;) errorOnNotFound: string &#x3D; &#x27;false&#x27;,
-  ): Promise&lt;Response&lt;any&gt;&gt; {
-    const data &#x3D; await this._service.upsert&lt;Identities&gt;(body, {
+  ): Promise&lt;
+    Response&lt;{
+      statusCode: number;
+      data?: Document&lt;Identities, any, Identities&gt;;
+      message?: string;
+      validations?: MixedValue;
+    }&gt;
+  &gt; {
+    const filters &#x3D; {};
+    if (filtersQuery.length &#x3D;&#x3D;&#x3D; 0) {
+      throw new BadRequestException(&#x27;Missing filters array&#x27;);
+    }
+    for (const [key, filter] of Object.entries(filtersQuery)) {
+      filters[key] &#x3D; isValidObjectId(filter) ? new Types.ObjectId(&#x60;${filter}&#x60;) : filter;
+    }
+
+    const data &#x3D; await this._service.upsert&lt;Identities&gt;(filters, body, {
       errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),
     });
-    return res.status(200).json({
+
+    // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
+    // Else the state is TO_VALIDATE, we return a 201 status code
+    if ((data as unknown as Identities).state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
+      return res.status(HttpStatus.ACCEPTED).json({
+        statusCode: HttpStatus.ACCEPTED,
+        message: &#x27;Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.&#x27;,
+        data,
+      });
+    }
+
+    return res.status(HttpStatus.CREATED).json({
+      statusCode: HttpStatus.CREATED,
+      message: &#x27;Identitée créée avec succès.&#x27;,
       data,
     });
   }
-
-  // @Post(&#x27;upsert&#x27;)
-  // @ApiCreateDecorator(IdentitiesCreateDto, IdentitiesDto)
-  // public async upsertV1(
-  //   @Res()
-  //   res: Response,
-  //   @Body() body: IdentitiesCreateDto,
-  //   @Query(&#x27;errorOnNotFound&#x27;) errorOnNotFound: string &#x3D; &#x27;false&#x27;,
-  // ): Promise&lt;
-  //   Response&lt;
-  //     {
-  //       statusCode: number;
-  //       data?: Document&lt;Identities, any, Identities&gt;;
-  //       message?: string;
-  //       validations?: MixedValue;
-  //     },
-  //     any
-  //   &gt;
-  // &gt; {
-  //   let statusCode &#x3D; HttpStatus.CREATED;
-  //   let message &#x3D; null;
-  //   const data &#x3D; await this._service.upsert&lt;Identities&gt;(body, {
-  //     errorOnNotFound: errorOnNotFound.toLowerCase() &#x3D;&#x3D;&#x3D; &#x27;true&#x27;,
-  //   });
-  //   // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
-  //   // Else the state is TO_VALIDATE, we return a 201 status code
-  //   if ((data as unknown as Identities).state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
-  //     statusCode &#x3D; HttpStatus.ACCEPTED;
-  //     message &#x3D; &#x27;Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.&#x27;;
-  //   }
-
-  //   return res.status(statusCode).json({
-  //     statusCode,
-  //     data,
-  //     message,
-  //   });
-  // }
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(IdentitiesDto, IdentitiesController.projection))

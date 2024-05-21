@@ -422,8 +422,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="151"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:151</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="153"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:153</a></div>
                         </td>
                     </tr>
 
@@ -512,8 +512,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="314"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:314</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="318"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:318</a></div>
                         </td>
                     </tr>
 
@@ -908,8 +908,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="117"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:117</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:118</a></div>
                         </td>
                     </tr>
 
@@ -1010,8 +1010,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="193"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:193</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="195"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:195</a></div>
                         </td>
                     </tr>
 
@@ -1112,8 +1112,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="254"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:254</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="257"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:257</a></div>
                         </td>
                     </tr>
 
@@ -1503,7 +1503,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     }
     if (!data) {
       this.logger.debug([&#x27;findById&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;))
-      throw new NotFoundException()}
+      throw new NotFoundException()
+    }
     return data
   }
 
@@ -1528,7 +1529,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     let data &#x3D; await this._model.findOne&lt;Query&lt;T | null, T, any, T&gt;&gt;(filter, projection, options).exec()
     if (!data) {
       this.logger.debug([&#x27;findById&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;))
-      throw new NotFoundException()}
+      throw new NotFoundException()
+    }
     if (this.eventEmitter) {
       const afterEvents &#x3D; await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;afterFindOne&#x27;].join(EventEmitterSeparator),
@@ -1631,7 +1633,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       .exec()
     if (!updated) {
       this.logger.debug([&#x27;findById&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;))
-      throw new NotFoundException()}
+      throw new NotFoundException()
+    }
     if (this.eventEmitter) {
       const afterEvents &#x3D; await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;afterFindAndCount&#x27;].join(EventEmitterSeparator),
@@ -1645,9 +1648,9 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
   }
 
   public async upsert&lt;T extends AbstractSchema | Document&gt;(
-  filter: FilterQuery&lt;T&gt;,
-  update: UpdateQuery&lt;T&gt;,
-  options?: QueryOptions&lt;T&gt;
+    filter: FilterQuery&lt;T&gt;,
+    update: UpdateQuery&lt;T&gt;,
+    options?: QueryOptions&lt;T&gt;
   ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
     this.logger.debug([&#x27;upsert&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;));
     if (this.eventEmitter) {
@@ -1668,6 +1671,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         {
           ...update,
           $setOnInsert: {
+            ...(update?.$setOnInsert || {}),
             &#x27;metadata.createdBy&#x27;: this.request?.user?.username || &#x27;anonymous&#x27;,
             &#x27;metadata.createdAt&#x27;: new Date(),
           },
@@ -1719,7 +1723,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     let deleted &#x3D; await this._model.findByIdAndDelete&lt;Query&lt;T | null, T, any, T&gt;&gt;({ _id }, options).exec()
     if (!deleted) {
       this.logger.debug([&#x27;findById&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;))
-      throw new NotFoundException()}
+      throw new NotFoundException()
+    }
     if (this.eventEmitter) {
       const afterEvents &#x3D; await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;afterFindAndCount&#x27;].join(EventEmitterSeparator),

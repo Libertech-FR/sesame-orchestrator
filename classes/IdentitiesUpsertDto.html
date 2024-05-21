@@ -154,7 +154,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Optional</span>
-                                <a href="#$addToSet" >$addToSet</a>
+                                <a href="#$setOnInsert" >$setOnInsert</a>
                             </li>
                         </ul>
                     </td>
@@ -179,11 +179,11 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="$addToSet"></a>
+                    <a name="$setOnInsert"></a>
                     <span class="name">
                             <span class="modifier">Optional</span>
-                        <span ><b>$addToSet</b></span>
-                        <a href="#$addToSet"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>$setOnInsert</b></span>
+                        <a href="#$setOnInsert"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -265,7 +265,7 @@ export class IdentitiesDto extends IdentitiesCreateDto { }
 export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) { }
 
 export class IdentitiesUpsertDto extends PartialType(IdentitiesUpdateDto) {
-  $addToSet?: Partial&lt;IdentitiesUpdateDto&gt;;
+  $setOnInsert?: Partial&lt;IdentitiesUpdateDto&gt;;
 }
 </code></pre>
     </div>

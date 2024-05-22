@@ -50,7 +50,6 @@ export class inetOrgPersonCreateDto {
 
   @IsEmail()
   @ApiProperty({ required: false })
-  @IsOptional()
   mail?: string;
 
   @IsOptional()

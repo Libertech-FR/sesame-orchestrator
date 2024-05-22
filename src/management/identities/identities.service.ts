@@ -1,6 +1,5 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Identities } from './_schemas/identities.schema';
 import {
   Document,
   FilterQuery,
@@ -12,13 +11,15 @@ import {
   Types,
   UpdateQuery,
 } from 'mongoose';
+import { construct, omit } from 'radash';
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
-import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
-import { IdentityState } from './_enums/states.enum';
-import { construct, crush, omit } from 'radash';
+import { toPlainAndCrush } from '~/_common/functions/to-plain-and-crush';
 import { IdentitiesUpsertDto } from './_dto/identities.dto';
+import { IdentityState } from './_enums/states.enum';
+import { Identities } from './_schemas/identities.schema';
+import { IdentitiesValidationService } from './validations/identities.validation.service';
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -45,11 +46,14 @@ export class IdentitiesService extends AbstractServiceSchema {
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
     this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
 
-    const objectClasses = data.additionalFields.objectClasses;
-    delete data.additionalFields.objectClasses;
-    const crushedUpdate = crush(JSON.parse(JSON.stringify(omit(data || {}, ['$setOnInsert']))));
-    const crushedSetOnInsert = crush(JSON.parse(JSON.stringify(data.$setOnInsert || {})));
-    crushedUpdate['additionalFields.objectClasses'] = objectClasses;
+    // const objectClasses = data.additionalFields.objectClasses;
+    // delete data.additionalFields.objectClasses;
+    const crushedUpdate = toPlainAndCrush(omit(data || {}, ['$setOnInsert']));
+    const crushedSetOnInsert = toPlainAndCrush(data.$setOnInsert || {});
+    // crushedUpdate['additionalFields.objectClasses'] = objectClasses;
+
+    // console.log('crushedUpdate', crushedUpdate);
+    // console.log('crushedSetOnInsert', crushedSetOnInsert);
 
     data = construct({
       ...crushedUpdate,
@@ -160,12 +164,12 @@ export class IdentitiesService extends AbstractServiceSchema {
         throw error; // Rethrow the original error if it's not one of the handled types.
       }
     }
-    if (update.state === IdentityState.TO_COMPLETE) {
-      update = { ...update, state: IdentityState.TO_VALIDATE };
-    }
-    if (update.state === IdentityState.SYNCED) {
-      update = { ...update, state: IdentityState.TO_VALIDATE };
-    }
+    // if (update.state === IdentityState.TO_COMPLETE) {
+    update = { ...update, state: IdentityState.TO_VALIDATE };
+    // }
+    // if (update.state === IdentityState.SYNCED) {
+    //   update = { ...update, state: IdentityState.TO_VALIDATE };
+    // }
     //update.state = IdentityState.TO_VALIDATE;
     const updated = await super.update(_id, update, options);
     //TODO: add backends service logic here (TO_SYNC)

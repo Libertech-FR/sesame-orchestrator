@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class ChangePasswordDto {
-  @IsMongoId()
+  @IsString()
   @ApiProperty({ example: 'paul.bismuth', description: 'User object id', type: String })
-  public id: string;
+  public uid: string;
 
   @IsString()
   @ApiProperty({ example: 'MyOldPassword', description: 'Old password', type: String })

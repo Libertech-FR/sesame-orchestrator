@@ -8,6 +8,7 @@ export class ResetPasswordDto {
     description: 'Token',
   })
   token: string;
+
   @ApiProperty({ example: 'MyNewPassword', description: 'New Password' })
   @IsString()
   newPassword: string;

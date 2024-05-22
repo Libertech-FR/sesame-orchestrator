@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, Logger } from '@nestjs/common';
+import { Controller, Post, Body, Res, Logger, HttpStatus } from '@nestjs/common';
 import { PasswdService } from './passwd.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -15,59 +15,46 @@ export class PasswdController {
   public constructor(private passwdService: PasswdService) { }
 
   @Post('change')
-  @ApiOperation({ summary: 'change password' })
-  @ApiResponse({ status: 200, description: 'Password has been successfully changed.' })
-  @ApiResponse({ status: 403, description: 'Old password wrong' })
-  @ApiResponse({ status: 500, description: 'Backend error' })
-  public async change(@Body() cpwd: ChangePasswordDto, @Res() res: Response): Promise<Response> {
+  @ApiOperation({ summary: 'Change password' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Password has been successfully changed.' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Old password wrong' })
+  public async change(@Body() body: ChangePasswordDto, @Res() res: Response): Promise<Response> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, data] = await this.passwdService.change(cpwd);
-    //TODO: uid ou employeeNumber + employeeType ?
-    data.data.uid = cpwd.id;
-    this.logger.log(`call passwd change for : ${cpwd.id}`);
+    const [_, data] = await this.passwdService.change(body);
+    this.logger.log(`Call passwd change for : ${body.uid}`);
 
-    if (data.data.status === 0) {
-      return res.status(200).json(data);
-    } else {
-      if (data.data.status === 1) {
-        return res.status(403).json(data);
-      }
-      return res.status(200).json(data);
-    }
+    return res.status(HttpStatus.OK).json(data);
   }
 
   @Post('gettoken')
-  @ApiOperation({ summary: 'ask token for reseting password' })
-  @ApiResponse({ status: 200, description: 'Token', content: {} })
-  @ApiResponse({ status: 500, description: 'Backend error' })
+  @ApiOperation({ summary: 'Ask token for reseting password' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Token' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST })
   public async gettoken(@Body() asktoken: AskTokenDto, @Res() res: Response): Promise<Response> {
-    this.logger.log('GetToken for : ' + asktoken.id);
-    const data = await this.passwdService.askToken(asktoken);
-    return res.status(200).json({ token: data });
+    this.logger.log('GetToken for : ' + asktoken.uid);
+    const token = await this.passwdService.askToken(asktoken);
+
+    return res.status(HttpStatus.OK).json({ token });
   }
 
   @Post('verifytoken')
-  @ApiOperation({ summary: 'ask token for reseting password' })
-  @ApiResponse({ status: 201, description: 'Token OK' })
-  @ApiResponse({ status: 500, description: 'Token KO' })
-  public async verifyToken(@Body() token: VerifyTokenDto, @Res() res: Response): Promise<Response> {
-    this.logger.log('Verify token : ' + token.token);
-    if (await this.passwdService.verifyToken(token.token)) {
-      return res.status(200).json({ status: 0 });
-    }
-    return res.status(200).json({ status: 1 });
+  @ApiOperation({ summary: 'Ask token for reseting password' })
+  @ApiResponse({ status: HttpStatus.OK })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST })
+  public async verifyToken(@Body() body: VerifyTokenDto, @Res() res: Response): Promise<Response> {
+    this.logger.log('Verify token : ' + body.token);
+    const data = await this.passwdService.decryptToken(body.token);
+
+    return res.status(HttpStatus.OK).json(data);
   }
 
   @Post('reset')
-  @ApiOperation({ summary: 'reset password' })
-  @ApiResponse({ status: 200, description: 'Reset OK' })
-  @ApiResponse({ status: 500, description: 'Reset KO' })
-  public async reset(@Body() data: ResetPasswordDto, @Res() res: Response): Promise<Response> {
+  @ApiOperation({ summary: 'Reset password' })
+  @ApiResponse({ status: HttpStatus.OK })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST })
+  public async reset(@Body() body: ResetPasswordDto, @Res() res: Response): Promise<Response> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, resetData] = await this.passwdService.reset(data);
-    if (resetData.status === 0) {
-      return res.status(200).json(resetData);
-    }
-    return res.status(200).json({ status: 1, error: 'invalid token' });
+    const [_, data] = await this.passwdService.reset(body);
+    return res.status(HttpStatus.OK).json(data);
   }
 }

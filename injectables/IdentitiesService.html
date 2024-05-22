@@ -260,7 +260,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/management/identities/identities.service.ts:24</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/management/identities/identities.service.ts:25</a></div>
                             </td>
                         </tr>
 
@@ -344,7 +344,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:32</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:33</a></code>
 </div>
                         </td>
                     </tr>
@@ -440,7 +440,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:184</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:188</a></code>
 </div>
                         </td>
                     </tr>
@@ -529,8 +529,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="195"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:195</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="199"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:199</a></div>
                         </td>
                     </tr>
 
@@ -629,7 +629,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:136</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:140</a></code>
 </div>
                         </td>
                     </tr>
@@ -730,8 +730,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="175"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:175</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="179"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:179</a></div>
                         </td>
                     </tr>
 
@@ -837,7 +837,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:41</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:42</a></code>
 </div>
                         </td>
                     </tr>
@@ -1624,9 +1624,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpException, Injectable, Logger } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpException, Injectable } from &#x27;@nestjs/common&#x27;;
 import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
-import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
 import {
   Document,
   FilterQuery,
@@ -1638,13 +1637,15 @@ import {
   Types,
   UpdateQuery,
 } from &#x27;mongoose&#x27;;
+import { construct, omit } from &#x27;radash&#x27;;
 import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
 import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
-import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
 import { ValidationConfigException, ValidationSchemaException } from &#x27;~/_common/errors/ValidationException&#x27;;
-import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
-import { construct, crush, omit } from &#x27;radash&#x27;;
+import { toPlainAndCrush } from &#x27;~/_common/functions/to-plain-and-crush&#x27;;
 import { IdentitiesUpsertDto } from &#x27;./_dto/identities.dto&#x27;;
+import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
+import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
+import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -1671,11 +1672,14 @@ export class IdentitiesService extends AbstractServiceSchema {
   ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
     this.logger.log(&#x60;Upserting identity with filters ${JSON.stringify(filters)}&#x60;);
 
-    const objectClasses &#x3D; data.additionalFields.objectClasses;
-    delete data.additionalFields.objectClasses;
-    const crushedUpdate &#x3D; crush(JSON.parse(JSON.stringify(omit(data || {}, [&#x27;$setOnInsert&#x27;]))));
-    const crushedSetOnInsert &#x3D; crush(JSON.parse(JSON.stringify(data.$setOnInsert || {})));
-    crushedUpdate[&#x27;additionalFields.objectClasses&#x27;] &#x3D; objectClasses;
+    // const objectClasses &#x3D; data.additionalFields.objectClasses;
+    // delete data.additionalFields.objectClasses;
+    const crushedUpdate &#x3D; toPlainAndCrush(omit(data || {}, [&#x27;$setOnInsert&#x27;]));
+    const crushedSetOnInsert &#x3D; toPlainAndCrush(data.$setOnInsert || {});
+    // crushedUpdate[&#x27;additionalFields.objectClasses&#x27;] &#x3D; objectClasses;
+
+    // console.log(&#x27;crushedUpdate&#x27;, crushedUpdate);
+    // console.log(&#x27;crushedSetOnInsert&#x27;, crushedSetOnInsert);
 
     data &#x3D; construct({
       ...crushedUpdate,
@@ -1786,12 +1790,12 @@ export class IdentitiesService extends AbstractServiceSchema {
         throw error; // Rethrow the original error if it&#x27;s not one of the handled types.
       }
     }
-    if (update.state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
-      update &#x3D; { ...update, state: IdentityState.TO_VALIDATE };
-    }
-    if (update.state &#x3D;&#x3D;&#x3D; IdentityState.SYNCED) {
-      update &#x3D; { ...update, state: IdentityState.TO_VALIDATE };
-    }
+    // if (update.state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
+    update &#x3D; { ...update, state: IdentityState.TO_VALIDATE };
+    // }
+    // if (update.state &#x3D;&#x3D;&#x3D; IdentityState.SYNCED) {
+    //   update &#x3D; { ...update, state: IdentityState.TO_VALIDATE };
+    // }
     //update.state &#x3D; IdentityState.TO_VALIDATE;
     const updated &#x3D; await super.update(_id, update, options);
     //TODO: add backends service logic here (TO_SYNC)

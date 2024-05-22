@@ -245,6 +245,9 @@
                             <a href="#KeyringsSchema" title="src/core/keyrings/_schemas/keyrings.schema.ts" ><b>KeyringsSchema</b>&nbsp;&nbsp;&nbsp;(src/.../keyrings.schema.ts)</a>
                         </li>
                         <li>
+                            <a href="#keys" title="src/_common/functions/to-plain-and-crush.ts" ><b>keys</b>&nbsp;&nbsp;&nbsp;(src/.../to-plain-and-crush.ts)</a>
+                        </li>
+                        <li>
                             <a href="#LoggerSchema" title="src/core/logger/_schemas/logger.schema.ts" ><b>LoggerSchema</b>&nbsp;&nbsp;&nbsp;(src/.../logger.schema.ts)</a>
                         </li>
                         <li>
@@ -282,6 +285,9 @@
                         </li>
                         <li>
                             <a href="#TasksSchema" title="src/core/tasks/_schemas/tasks.schema.ts" ><b>TasksSchema</b>&nbsp;&nbsp;&nbsp;(src/.../tasks.schema.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#toPlainAndCrush" title="src/_common/functions/to-plain-and-crush.ts" ><b>toPlainAndCrush</b>&nbsp;&nbsp;&nbsp;(src/.../to-plain-and-crush.ts)</a>
                         </li>
                         <li>
                             <a href="#validAdditionalFieldsStub" title="src/management/identities/validations/_stubs/identities.validation.stub.ts" ><b>validAdditionalFieldsStub</b>&nbsp;&nbsp;&nbsp;(src/.../identities.validation.stub.ts)</a>
@@ -1732,6 +1738,70 @@
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>SchemaFactory.createForClass(Keyrings)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/_common/functions/to-plain-and-crush.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="keys"></a>
+                    <span class="name">
+                        <span ><b>keys</b></span>
+                        <a href="#keys"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&lt;TValue extends object&gt;(value: TValue): string[] &#x3D;&gt; {
+  if (!value) return [];
+  const getKeys &#x3D; (nested: any, paths: string[]): string[] &#x3D;&gt; {
+    if (isObject(nested)) {
+      return Object.entries(nested).flatMap(([k, v]) &#x3D;&gt; getKeys(v, [...paths, k]));
+    }
+    if (isArray(nested)) {
+      if (nested.length &gt; 0 &amp;&amp; [&#x27;string&#x27;, &#x27;number&#x27;, &#x27;boolean&#x27;].includes(typeof nested[0])) {
+        return nested.flatMap((item) &#x3D;&gt; getKeys(item, paths));
+      }
+      return nested.flatMap((item, i) &#x3D;&gt; getKeys(item, [...paths, &#x60;${i}&#x60;]));
+    }
+    return [paths.join(&#x27;.&#x27;)];
+  };
+  return getKeys(value, []);
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="toPlainAndCrush"></a>
+                    <span class="name">
+                        <span ><b>toPlainAndCrush</b></span>
+                        <a href="#toPlainAndCrush"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&lt;TValue extends object&gt;(value: TValue, options?: ClassTransformOptions): object &#x3D;&gt; {
+  return objectify(
+    keys(instanceToPlain(value, options)),
+    (k) &#x3D;&gt; k,
+    (k) &#x3D;&gt; get(value, k),
+  );
+}</code>
                     </td>
                 </tr>
 

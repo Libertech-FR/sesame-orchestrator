@@ -210,6 +210,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#updateStateMany" >updateStateMany</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#upsert" >upsert</a>
                             </li>
                             <li>
@@ -440,7 +445,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:188</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:211</a></code>
 </div>
                         </td>
                     </tr>
@@ -529,8 +534,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="199"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:199</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="222"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:222</a></div>
                         </td>
                     </tr>
 
@@ -799,6 +804,84 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateStateMany"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateStateMany</b></span>
+                        <a href="#updateStateMany"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateStateMany(body: literal type)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="188"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:188</a></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ModifyResult[]&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1808,6 +1891,29 @@ export class IdentitiesService extends AbstractServiceSchema {
     options?: QueryOptions&lt;T&gt; &amp; { rawResult: true },
   ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
     const updated &#x3D; await super.update(_id, { state }, options);
+    return updated;
+  }
+
+  public async updateStateMany&lt;T extends AbstractSchema | Document&gt;(body: {
+    ids: Types.ObjectId[];
+    targetState: IdentityState;
+    originState: IdentityState;
+  }): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;[]&gt; {
+    const identities &#x3D; await this._model.find({ _id: { $in: body.ids } }).exec();
+    if (identities.some((identity) &#x3D;&gt; identity.state !&#x3D;&#x3D; body.originState)) {
+      throw new HttpException(&quot;Toutes les identités ne sont pas dans l&#x27;état attendu.&quot;, 400);
+    }
+
+    if (identities.length &#x3D;&#x3D;&#x3D; 0) {
+      throw new HttpException(&#x27;Aucune identité trouvée.&#x27;, 404);
+    }
+
+    const updated &#x3D; await Promise.all(
+      identities.map((identity) &#x3D;&gt; {
+        return this.updateState(identity._id, body.targetState, { rawResult: true });
+      }),
+    );
+
     return updated;
   }
 

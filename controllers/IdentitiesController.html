@@ -206,6 +206,12 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateStateMany" >updateStateMany</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
@@ -546,8 +552,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="241"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:241</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="258"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:258</a></div>
                         </td>
                     </tr>
 
@@ -894,6 +900,96 @@
                                                 <td>res</td>
                                             <td>
                                                         <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateStateMany"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateStateMany</b></span>
+                        <a href="#updateStateMany"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateStateMany(res: Response, body: literal type)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Patch(&#x27;state&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="239"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:239</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                        <code>literal type</code>
                                             </td>
 
                                             <td>
@@ -1277,6 +1373,23 @@ export class IdentitiesController extends AbstractController {
       throw new BadRequestException(&quot;La validation de l&#x27;identité est déjà complétée.&quot;);
     }
     const data &#x3D; await this._service.updateState(_id, body.state);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
+  @Patch(&#x27;state&#x27;)
+  public async updateStateMany(
+    @Res() res: Response,
+    @Body()
+    body: {
+      originState: IdentityState;
+      targetState: IdentityState;
+      ids: Types.ObjectId[];
+    },
+  ): Promise&lt;Response&gt; {
+    const data &#x3D; await this._service.updateStateMany(body);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,

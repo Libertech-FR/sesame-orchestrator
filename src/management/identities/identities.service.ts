@@ -190,7 +190,6 @@ export class IdentitiesService extends AbstractServiceSchema {
     targetState: IdentityState;
     originState: IdentityState;
   }): Promise<ModifyResult<Query<T, T, any, T>>[]> {
-    console.log(body);
     const identities = await this._model.find({ _id: { $in: body.ids } }).exec();
     if (identities.some((identity) => identity.state !== body.originState)) {
       throw new HttpException("Toutes les identités ne sont pas dans l'état attendu.", 400);

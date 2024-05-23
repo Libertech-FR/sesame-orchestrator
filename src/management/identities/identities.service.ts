@@ -205,7 +205,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       }),
     );
 
-    return updated;
+    return updated as any;
   }
 
   public async delete<T extends AbstractSchema | Document>(

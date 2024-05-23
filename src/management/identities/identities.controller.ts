@@ -235,6 +235,23 @@ export class IdentitiesController extends AbstractController {
     });
   }
 
+  @Patch('state')
+  public async updateStateMany(
+    @Res() res: Response,
+    @Body()
+    body: {
+      originState: IdentityState;
+      targetState: IdentityState;
+      ids: Types.ObjectId[];
+    },
+  ): Promise<Response> {
+    const data = await this._service.updateStateMany(body);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
   @Delete(':_id([0-9a-fA-F]{24})')
   @ApiParam({ name: '_id', type: String })
   @ApiDeletedResponseDecorator(IdentitiesDto)

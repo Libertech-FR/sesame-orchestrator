@@ -185,6 +185,30 @@ export class IdentitiesService extends AbstractServiceSchema {
     return updated;
   }
 
+  public async updateStateMany<T extends AbstractSchema | Document>(body: {
+    ids: Types.ObjectId[];
+    targetState: IdentityState;
+    originState: IdentityState;
+  }): Promise<ModifyResult<Query<T, T, any, T>>[]> {
+    console.log(body);
+    const identities = await this._model.find({ _id: { $in: body.ids } }).exec();
+    if (identities.some((identity) => identity.state !== body.originState)) {
+      throw new HttpException("Toutes les identités ne sont pas dans l'état attendu.", 400);
+    }
+
+    if (identities.length === 0) {
+      throw new HttpException('Aucune identité trouvée.', 404);
+    }
+
+    const updated = await Promise.all(
+      identities.map((identity) => {
+        return this.updateState(identity._id, body.targetState, { rawResult: true });
+      }),
+    );
+
+    return updated;
+  }
+
   public async delete<T extends AbstractSchema | Document>(
     _id: Types.ObjectId | any,
     options?: QueryOptions<T> | null | undefined,

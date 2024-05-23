@@ -1914,7 +1914,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       }),
     );
 
-    return updated;
+    return updated as any;
   }
 
   public async delete&lt;T extends AbstractSchema | Document&gt;(

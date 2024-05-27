@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  HttpException,
   HttpStatus,
   Injectable,
   RequestTimeoutException,
@@ -55,7 +56,7 @@ export class BackendsService extends AbstractQueueProcessor {
         { new: true },
       );
       if (isSyncedJob) {
-        await this.identitiesService.model.findByIdAndUpdate(isSyncedJob.concernedTo.id, {
+        await this.identitiesService.model.findByIdAndUpdate(isSyncedJob?.concernedTo?.id, {
           $set: {
             state: IdentityState.SYNCED,
           },
@@ -96,7 +97,7 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { new: true },
       );
-      await this.identitiesService.model.findByIdAndUpdate(failedJob.concernedTo.id, {
+      await this.identitiesService.model.findByIdAndUpdate(failedJob?.concernedTo?.id, {
         $set: {
           state: IdentityState.ON_ERROR,
         },
@@ -115,8 +116,8 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { upsert: true, new: true },
       );
-      // console.log('completedJob', completedJob);
-      await this.identitiesService.model.findByIdAndUpdate(completedJob.concernedTo.id, {
+      console.log('completedJob', completedJob);
+      await this.identitiesService.model.findByIdAndUpdate(completedJob?.concernedTo?.id, {
         $set: {
           state: IdentityState.SYNCED,
         },
@@ -142,17 +143,26 @@ export class BackendsService extends AbstractQueueProcessor {
 
     const result = {};
     for (const identity of identities) {
-      const [executedJob] = await this.executeJob(
-        identity.action,
-        identity.identity._id,
-        { identity },
-        {
-          ...options,
-          task: task._id,
-        },
-      );
-      result[identity.identity._id] = executedJob;
+      try {
+        this.logger.debug(`Syncing identity ${identity.identity._id}`);
+        const [executedJob] = await this.executeJob(
+          identity.action,
+          identity.identity._id,
+          { identity },
+          {
+            ...options,
+            task: task._id,
+          },
+        );
+        result[identity.identity._id] = executedJob;
+      } catch (err: HttpException) {
+        this.logger.error(`Error while syncing identity ${identity.identity._id}`, err);
+        result[identity.identity._id] = {
+          ...err.response,
+        };
+      }
     }
+
     return result;
   }
 

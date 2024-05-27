@@ -27,7 +27,6 @@ export class AuthController extends AbstractController {
     return res.status(HttpStatus.OK).json({
       ...tokens,
       user,
-      sseToken: 'hZcdVqHScVDsDFdHOdcjmufEKFJVKaS8', //TODO: change to real token
     });
   }
 
@@ -38,6 +37,7 @@ export class AuthController extends AbstractController {
     return res.status(HttpStatus.OK).json({
       user: {
         ...user,
+        sseToken: 'hZcdVqHScVDsDFdHOdcjmufEKFJVKaS8', //TODO: change to real token
       },
     });
   }

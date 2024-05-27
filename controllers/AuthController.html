@@ -498,8 +498,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">src/core/auth/auth.controller.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">src/core/auth/auth.controller.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -590,7 +590,6 @@ export class AuthController extends AbstractController {
     return res.status(HttpStatus.OK).json({
       ...tokens,
       user,
-      sseToken: &#x27;hZcdVqHScVDsDFdHOdcjmufEKFJVKaS8&#x27;, //TODO: change to real token
     });
   }
 
@@ -601,6 +600,7 @@ export class AuthController extends AbstractController {
     return res.status(HttpStatus.OK).json({
       user: {
         ...user,
+        sseToken: &#x27;hZcdVqHScVDsDFdHOdcjmufEKFJVKaS8&#x27;, //TODO: change to real token
       },
     });
   }

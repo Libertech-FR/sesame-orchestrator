@@ -238,7 +238,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/core/backends/backends.service.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/core/backends/backends.service.ts:26</a></div>
                             </td>
                         </tr>
 
@@ -340,8 +340,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="197"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:197</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="207"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:207</a></div>
                         </td>
                     </tr>
 
@@ -452,7 +452,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:35</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:36</a></code>
 </div>
                         </td>
                     </tr>
@@ -492,8 +492,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="128"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:128</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="129"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:129</a></div>
                         </td>
                     </tr>
 
@@ -562,8 +562,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="159"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:159</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="169"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:169</a></div>
                         </td>
                     </tr>
 
@@ -904,6 +904,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
   BadRequestException,
+  HttpException,
   HttpStatus,
   Injectable,
   RequestTimeoutException,
@@ -959,7 +960,7 @@ export class BackendsService extends AbstractQueueProcessor {
         { new: true },
       );
       if (isSyncedJob) {
-        await this.identitiesService.model.findByIdAndUpdate(isSyncedJob.concernedTo.id, {
+        await this.identitiesService.model.findByIdAndUpdate(isSyncedJob?.concernedTo?.id, {
           $set: {
             state: IdentityState.SYNCED,
           },
@@ -1000,7 +1001,7 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { new: true },
       );
-      await this.identitiesService.model.findByIdAndUpdate(failedJob.concernedTo.id, {
+      await this.identitiesService.model.findByIdAndUpdate(failedJob?.concernedTo?.id, {
         $set: {
           state: IdentityState.ON_ERROR,
         },
@@ -1019,8 +1020,8 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { upsert: true, new: true },
       );
-      // console.log(&#x27;completedJob&#x27;, completedJob);
-      await this.identitiesService.model.findByIdAndUpdate(completedJob.concernedTo.id, {
+      console.log(&#x27;completedJob&#x27;, completedJob);
+      await this.identitiesService.model.findByIdAndUpdate(completedJob?.concernedTo?.id, {
         $set: {
           state: IdentityState.SYNCED,
         },
@@ -1046,17 +1047,26 @@ export class BackendsService extends AbstractQueueProcessor {
 
     const result &#x3D; {};
     for (const identity of identities) {
-      const [executedJob] &#x3D; await this.executeJob(
-        identity.action,
-        identity.identity._id,
-        { identity },
-        {
-          ...options,
-          task: task._id,
-        },
-      );
-      result[identity.identity._id] &#x3D; executedJob;
+      try {
+        this.logger.debug(&#x60;Syncing identity ${identity.identity._id}&#x60;);
+        const [executedJob] &#x3D; await this.executeJob(
+          identity.action,
+          identity.identity._id,
+          { identity },
+          {
+            ...options,
+            task: task._id,
+          },
+        );
+        result[identity.identity._id] &#x3D; executedJob;
+      } catch (err: HttpException) {
+        this.logger.error(&#x60;Error while syncing identity ${identity.identity._id}&#x60;, err);
+        result[identity.identity._id] &#x3D; {
+          ...err.response,
+        };
+      }
     }
+
     return result;
   }
 

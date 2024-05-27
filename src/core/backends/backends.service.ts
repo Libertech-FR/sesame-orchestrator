@@ -3,7 +3,6 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  RequestTimeoutException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
@@ -155,7 +154,7 @@ export class BackendsService extends AbstractQueueProcessor {
           },
         );
         result[identity.identity._id] = executedJob;
-      } catch (err: HttpException) {
+      } catch (err: any & HttpException) {
         this.logger.error(`Error while syncing identity ${identity.identity._id}`, err);
         result[identity.identity._id] = {
           ...err.response,

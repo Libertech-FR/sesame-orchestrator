@@ -238,7 +238,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/core/backends/backends.service.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/core/backends/backends.service.ts:25</a></div>
                             </td>
                         </tr>
 
@@ -340,8 +340,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="207"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:207</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="206"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:206</a></div>
                         </td>
                     </tr>
 
@@ -452,7 +452,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:36</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:35</a></code>
 </div>
                         </td>
                     </tr>
@@ -492,8 +492,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="129"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:129</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="128"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:128</a></div>
                         </td>
                     </tr>
 
@@ -562,8 +562,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="169"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:169</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="168"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:168</a></div>
                         </td>
                     </tr>
 
@@ -907,7 +907,6 @@
   HttpException,
   HttpStatus,
   Injectable,
-  RequestTimeoutException,
   UnprocessableEntityException,
 } from &#x27;@nestjs/common&#x27;;
 import { ModuleRef } from &#x27;@nestjs/core&#x27;;
@@ -1059,7 +1058,7 @@ export class BackendsService extends AbstractQueueProcessor {
           },
         );
         result[identity.identity._id] &#x3D; executedJob;
-      } catch (err: HttpException) {
+      } catch (err: any &amp; HttpException) {
         this.logger.error(&#x60;Error while syncing identity ${identity.identity._id}&#x60;, err);
         result[identity.identity._id] &#x3D; {
           ...err.response,

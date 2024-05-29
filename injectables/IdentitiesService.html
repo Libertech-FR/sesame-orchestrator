@@ -186,6 +186,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#checkFingerprint" >checkFingerprint</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#create" >create</a>
                             </li>
                             <li>
@@ -195,7 +200,17 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#generateFingerprint" >generateFingerprint</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#handleValidationError" >handleValidationError</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#previewFingerprint" >previewFingerprint</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -265,7 +280,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/management/identities/identities.service.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/management/identities/identities.service.ts:27</a></div>
                             </td>
                         </tr>
 
@@ -324,6 +339,96 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkFingerprint"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkFingerprint</b></span>
+                        <a href="#checkFingerprint"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkFingerprint(filters: FilterQuery<T>, fingerprint: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="178"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:178</a></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>filters</td>
+                                            <td>
+                                                        <code>FilterQuery&lt;T&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>fingerprint</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="create"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -349,7 +454,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:33</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:35</a></code>
 </div>
                         </td>
                     </tr>
@@ -445,7 +550,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:211</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:167</a></code>
 </div>
                         </td>
                     </tr>
@@ -516,6 +621,96 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="generateFingerprint"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>generateFingerprint</b></span>
+                        <a href="#generateFingerprint"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>generateFingerprint(identity: <a href="../classes/Identities.html" target="_self">Identities</a>, fingerprint?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="196"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:196</a></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>identity</td>
+                                            <td>
+                                                            <code><a href="../classes/Identities.html" target="_self" >Identities</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>fingerprint</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="handleValidationError"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -534,8 +729,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="222"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:222</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="243"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:243</a></div>
                         </td>
                     </tr>
 
@@ -609,6 +804,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="previewFingerprint"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>previewFingerprint</b></span>
+                        <a href="#previewFingerprint"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>previewFingerprint(identity: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="221"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:221</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>identity</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="update"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -634,7 +899,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:140</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:94</a></code>
 </div>
                         </td>
                     </tr>
@@ -735,8 +1000,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="179"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:179</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="135"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:135</a></div>
                         </td>
                     </tr>
 
@@ -836,8 +1101,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="188"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:188</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="144"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:144</a></div>
                         </td>
                     </tr>
 
@@ -920,7 +1185,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:42</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:44</a></code>
 </div>
                         </td>
                     </tr>
@@ -1707,7 +1972,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpException, Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpCode, HttpException, HttpStatus, Injectable } from &#x27;@nestjs/common&#x27;;
 import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
 import {
   Document,
@@ -1729,6 +1994,8 @@ import { IdentitiesUpsertDto } from &#x27;./_dto/identities.dto&#x27;;
 import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
 import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
 import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
+import { createHash } from &#x27;node:crypto&#x27;;
+import { cp } from &#x27;node:fs&#x27;;
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -1755,22 +2022,15 @@ export class IdentitiesService extends AbstractServiceSchema {
   ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
     this.logger.log(&#x60;Upserting identity with filters ${JSON.stringify(filters)}&#x60;);
 
-    // const objectClasses &#x3D; data.additionalFields.objectClasses;
-    // delete data.additionalFields.objectClasses;
     const crushedUpdate &#x3D; toPlainAndCrush(omit(data || {}, [&#x27;$setOnInsert&#x27;]));
     const crushedSetOnInsert &#x3D; toPlainAndCrush(data.$setOnInsert || {});
-    // crushedUpdate[&#x27;additionalFields.objectClasses&#x27;] &#x3D; objectClasses;
-
-    // console.log(&#x27;crushedUpdate&#x27;, crushedUpdate);
-    // console.log(&#x27;crushedSetOnInsert&#x27;, crushedSetOnInsert);
-
     data &#x3D; construct({
       ...crushedUpdate,
       ...crushedSetOnInsert,
     });
     data.additionalFields.validations &#x3D; {};
-    const logPrefix &#x3D; &#x60;Validation [${data.inetOrgPerson.cn}]:&#x60;;
 
+    const logPrefix &#x3D; &#x60;Validation [${data.inetOrgPerson.cn}]:&#x60;;
     try {
       this.logger.log(&#x60;${logPrefix} Starting additionalFields validation.&#x60;);
       const validations &#x3D; await this._validation.validate(data.additionalFields);
@@ -1783,7 +2043,16 @@ export class IdentitiesService extends AbstractServiceSchema {
       crushedUpdate[&#x27;additionalFields.validations&#x27;] &#x3D; data.additionalFields.validations;
     }
 
-    return await super.upsert(
+    const identity &#x3D; await this.model.findOne(filters).exec();
+    const fingerprint &#x3D; await this.previewFingerprint(
+      construct({
+        ...toPlainAndCrush(identity?.toJSON()),
+        ...crushedUpdate,
+      }),
+    );
+    await this.checkFingerprint(filters, fingerprint);
+
+    const upserted &#x3D; await super.upsert(
       filters,
       {
         $set: crushedUpdate,
@@ -1791,60 +2060,10 @@ export class IdentitiesService extends AbstractServiceSchema {
       },
       options,
     );
+
+    const identityUpserted &#x3D; await this._model.findOne({ _id: (upserted as any)._id }).exec();
+    return await this.generateFingerprint(identityUpserted as unknown as Identities, fingerprint);
   }
-
-  // public async upsert&lt;T extends AbstractSchema | Document&gt;(
-  //   data?: any,
-  //   options?: QueryOptions&lt;T&gt;,
-  // ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
-  //   Logger.log(&#x60;Upserting identity: ${JSON.stringify(data)}&#x60;);
-  //   const logPrefix &#x3D; &#x60;Validation [${data.inetOrgPerson.cn}]:&#x60;;
-  //   // console.log(options);
-  //   const identity &#x3D; await this._model.findOne({
-  //     &#x27;inetOrgPerson.employeeNumber&#x27;: data.inetOrgPerson.employeeNumber,
-  //     &#x27;inetOrgPerson.employeeType&#x27;: data.inetOrgPerson.employeeType,
-  //   });
-  //   // console.log(identity);
-  //   if (!identity &amp;&amp; options.errorOnNotFound) {
-  //     this.logger.error(&#x60;${logPrefix} Identity not found.&#x60;);
-  //     throw new HttpException(&#x27;Identity not found.&#x27;, 404);
-  //   }
-  //   data.additionalFields.validations &#x3D; {};
-  //   try {
-  //     this.logger.log(&#x60;${logPrefix} Starting additionalFields validation.&#x60;);
-  //     const validations &#x3D; await this._validation.validate(data.additionalFields);
-  //     this.logger.log(&#x60;${logPrefix} AdditionalFields validation successful.&#x60;);
-  //     this.logger.log(&#x60;Validations : ${validations}&#x60;);
-  //     data.state &#x3D; IdentityState.TO_VALIDATE;
-  //   } catch (error) {
-  //     data &#x3D; this.handleValidationError(error, data, logPrefix);
-  //   }
-
-  //   //TODO: ameliorer la logique d&#x27;upsert
-  //   if (identity) {
-  //     this.logger.log(&#x60;${logPrefix} Identity already exists. Updating.&#x60;);
-  //     data.inetOrgPerson &#x3D; {
-  //       ...identity.inetOrgPerson,
-  //       ...data.inetOrgPerson,
-  //     };
-  //     data.additionalFields.objectClasses &#x3D; [
-  //       ...new Set([...identity.additionalFields.objectClasses, ...data.additionalFields.objectClasses]),
-  //     ];
-  //     data.additionalFields.attributes &#x3D; {
-  //       ...identity.additionalFields.attributes,
-  //       ...data.additionalFields.attributes,
-  //     };
-  //     data.additionalFields.validations &#x3D; {
-  //       ...identity.additionalFields.validations,
-  //       ...data.additionalFields.validations,
-  //     };
-  //   }
-
-  //   //TODO: rechercher par uid ou employeeNumber + employeeType ?
-  //   const upsert &#x3D; await super.upsert({ &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid }, data, options);
-  //   return upsert;
-  //   //TODO: add backends service logic here
-  // }
 
   public async update&lt;T extends AbstractSchema | Document&gt;(
     _id: Types.ObjectId | any,
@@ -1873,8 +2092,10 @@ export class IdentitiesService extends AbstractServiceSchema {
         throw error; // Rethrow the original error if it&#x27;s not one of the handled types.
       }
     }
+
     // if (update.state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
     update &#x3D; { ...update, state: IdentityState.TO_VALIDATE };
+
     // }
     // if (update.state &#x3D;&#x3D;&#x3D; IdentityState.SYNCED) {
     //   update &#x3D; { ...update, state: IdentityState.TO_VALIDATE };
@@ -1882,7 +2103,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     //update.state &#x3D; IdentityState.TO_VALIDATE;
     const updated &#x3D; await super.update(_id, update, options);
     //TODO: add backends service logic here (TO_SYNC)
-    return updated;
+    return await this.generateFingerprint(updated as unknown as Identities);
   }
 
   public async updateState&lt;T extends AbstractSchema | Document&gt;(
@@ -1926,6 +2147,71 @@ export class IdentitiesService extends AbstractServiceSchema {
     const deleted &#x3D; await super.delete(_id, options);
     //TODO: add backends service logic here (TO_SYNC)
     return deleted;
+  }
+
+  public async checkFingerprint&lt;T extends AbstractSchema | Document&gt;(
+    filters: FilterQuery&lt;T&gt;,
+    fingerprint: string,
+  ): Promise&lt;void&gt; {
+    const identity &#x3D; await this.model
+      .findOne(
+        { ...filters, fingerprint },
+        {
+          _id: 1,
+        },
+      )
+      .exec();
+    if (identity) {
+      this.logger.debug(&#x60;Fingerprint matched for &lt;${identity._id}&gt; (${fingerprint}).&#x60;);
+      throw new HttpException(&#x27;Fingerprint matched.&#x27;, HttpStatus.NOT_MODIFIED);
+    }
+  }
+
+  private async generateFingerprint&lt;T extends AbstractSchema | Document&gt;(
+    identity: Identities,
+    fingerprint?: string,
+  ): Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt; {
+    if (!fingerprint) {
+      fingerprint &#x3D; await this.previewFingerprint(identity.toJSON());
+    }
+
+    const updated &#x3D; await this.model.findOneAndUpdate(
+      { _id: identity._id, fingerprint: { $ne: fingerprint } },
+      { fingerprint },
+      {
+        new: true,
+      },
+    );
+
+    if (!updated) {
+      this.logger.verbose(&#x60;Fingerprint already up to date for &lt;${identity._id}&gt;.&#x60;);
+      return identity as unknown as ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;;
+    }
+
+    this.logger.debug(&#x60;Fingerprint updated for &lt;${identity._id}&gt;: ${fingerprint}&#x60;);
+    return updated as unknown as ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;;
+  }
+
+  private async previewFingerprint(identity: any): Promise&lt;string&gt; {
+    const additionalFields &#x3D; omit(identity.additionalFields, [&#x27;validations&#x27;]);
+    const data &#x3D; JSON.stringify(
+      construct(
+        omit(
+          toPlainAndCrush({
+            inetOrgPerson: identity.inetOrgPerson,
+            additionalFields,
+          }) as any,
+          [
+            //TODO: add configurable fields to exclude
+            /* &#x27;additionalFields.attributes.supannPerson.supannOIDCGenre&#x27; */
+          ],
+        ),
+      ),
+    );
+
+    const hash &#x3D; createHash(&#x27;sha256&#x27;);
+    hash.update(data);
+    return hash.digest(&#x27;hex&#x27;).toString();
   }
 
   private handleValidationError(

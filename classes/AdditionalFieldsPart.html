@@ -207,7 +207,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/management/identities/_schemas/_parts/additionalFields.part.schema.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/management/identities/_schemas/_parts/additionalFields.part.schema.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -243,7 +243,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">src/management/identities/_schemas/_parts/additionalFields.part.schema.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">src/management/identities/_schemas/_parts/additionalFields.part.schema.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -280,7 +280,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/management/identities/_schemas/_parts/additionalFields.part.schema.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/management/identities/_schemas/_parts/additionalFields.part.schema.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -300,10 +300,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Prop, Schema, SchemaFactory } from &#x27;@nestjs/mongoose&#x27;;
+import { Document } from &#x27;mongoose&#x27;;
 import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
 
 @Schema({ _id: false })
-export class AdditionalFieldsPart {
+export class AdditionalFieldsPart extends Document {
   @Prop({ type: Array, of: String, required: true, default: [&#x27;inetOrgPerson&#x27;] })
   objectClasses: string[];
 

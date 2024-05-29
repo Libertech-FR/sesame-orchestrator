@@ -21,6 +21,9 @@ export class Identities extends AbstractSchema {
 
   @Prop({ type: AdditionalFieldsPartSchema, required: false, default: {} })
   additionalFields: AdditionalFieldsPart;
+
+  @Prop({ type: String })
+  fingerprint: string;
 }
 
 export const IdentitiesSchema = SchemaFactory.createForClass(Identities);

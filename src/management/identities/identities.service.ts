@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   Document,
@@ -20,6 +20,8 @@ import { IdentitiesUpsertDto } from './_dto/identities.dto';
 import { IdentityState } from './_enums/states.enum';
 import { Identities } from './_schemas/identities.schema';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
+import { createHash } from 'node:crypto';
+import { cp } from 'node:fs';
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -46,22 +48,15 @@ export class IdentitiesService extends AbstractServiceSchema {
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
     this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
 
-    // const objectClasses = data.additionalFields.objectClasses;
-    // delete data.additionalFields.objectClasses;
     const crushedUpdate = toPlainAndCrush(omit(data || {}, ['$setOnInsert']));
     const crushedSetOnInsert = toPlainAndCrush(data.$setOnInsert || {});
-    // crushedUpdate['additionalFields.objectClasses'] = objectClasses;
-
-    // console.log('crushedUpdate', crushedUpdate);
-    // console.log('crushedSetOnInsert', crushedSetOnInsert);
-
     data = construct({
       ...crushedUpdate,
       ...crushedSetOnInsert,
     });
     data.additionalFields.validations = {};
-    const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
 
+    const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
     try {
       this.logger.log(`${logPrefix} Starting additionalFields validation.`);
       const validations = await this._validation.validate(data.additionalFields);
@@ -74,7 +69,16 @@ export class IdentitiesService extends AbstractServiceSchema {
       crushedUpdate['additionalFields.validations'] = data.additionalFields.validations;
     }
 
-    return await super.upsert(
+    const identity = await this.model.findOne(filters).exec();
+    const fingerprint = await this.previewFingerprint(
+      construct({
+        ...toPlainAndCrush(identity?.toJSON()),
+        ...crushedUpdate,
+      }),
+    );
+    await this.checkFingerprint(filters, fingerprint);
+
+    const upserted = await super.upsert(
       filters,
       {
         $set: crushedUpdate,
@@ -82,60 +86,10 @@ export class IdentitiesService extends AbstractServiceSchema {
       },
       options,
     );
+
+    const identityUpserted = await this._model.findOne({ _id: (upserted as any)._id }).exec();
+    return await this.generateFingerprint(identityUpserted as unknown as Identities, fingerprint);
   }
-
-  // public async upsert<T extends AbstractSchema | Document>(
-  //   data?: any,
-  //   options?: QueryOptions<T>,
-  // ): Promise<ModifyResult<Query<T, T, any, T>>> {
-  //   Logger.log(`Upserting identity: ${JSON.stringify(data)}`);
-  //   const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
-  //   // console.log(options);
-  //   const identity = await this._model.findOne({
-  //     'inetOrgPerson.employeeNumber': data.inetOrgPerson.employeeNumber,
-  //     'inetOrgPerson.employeeType': data.inetOrgPerson.employeeType,
-  //   });
-  //   // console.log(identity);
-  //   if (!identity && options.errorOnNotFound) {
-  //     this.logger.error(`${logPrefix} Identity not found.`);
-  //     throw new HttpException('Identity not found.', 404);
-  //   }
-  //   data.additionalFields.validations = {};
-  //   try {
-  //     this.logger.log(`${logPrefix} Starting additionalFields validation.`);
-  //     const validations = await this._validation.validate(data.additionalFields);
-  //     this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
-  //     this.logger.log(`Validations : ${validations}`);
-  //     data.state = IdentityState.TO_VALIDATE;
-  //   } catch (error) {
-  //     data = this.handleValidationError(error, data, logPrefix);
-  //   }
-
-  //   //TODO: ameliorer la logique d'upsert
-  //   if (identity) {
-  //     this.logger.log(`${logPrefix} Identity already exists. Updating.`);
-  //     data.inetOrgPerson = {
-  //       ...identity.inetOrgPerson,
-  //       ...data.inetOrgPerson,
-  //     };
-  //     data.additionalFields.objectClasses = [
-  //       ...new Set([...identity.additionalFields.objectClasses, ...data.additionalFields.objectClasses]),
-  //     ];
-  //     data.additionalFields.attributes = {
-  //       ...identity.additionalFields.attributes,
-  //       ...data.additionalFields.attributes,
-  //     };
-  //     data.additionalFields.validations = {
-  //       ...identity.additionalFields.validations,
-  //       ...data.additionalFields.validations,
-  //     };
-  //   }
-
-  //   //TODO: rechercher par uid ou employeeNumber + employeeType ?
-  //   const upsert = await super.upsert({ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, data, options);
-  //   return upsert;
-  //   //TODO: add backends service logic here
-  // }
 
   public async update<T extends AbstractSchema | Document>(
     _id: Types.ObjectId | any,
@@ -164,8 +118,10 @@ export class IdentitiesService extends AbstractServiceSchema {
         throw error; // Rethrow the original error if it's not one of the handled types.
       }
     }
+
     // if (update.state === IdentityState.TO_COMPLETE) {
     update = { ...update, state: IdentityState.TO_VALIDATE };
+
     // }
     // if (update.state === IdentityState.SYNCED) {
     //   update = { ...update, state: IdentityState.TO_VALIDATE };
@@ -173,7 +129,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     //update.state = IdentityState.TO_VALIDATE;
     const updated = await super.update(_id, update, options);
     //TODO: add backends service logic here (TO_SYNC)
-    return updated;
+    return await this.generateFingerprint(updated as unknown as Identities);
   }
 
   public async updateState<T extends AbstractSchema | Document>(
@@ -217,6 +173,71 @@ export class IdentitiesService extends AbstractServiceSchema {
     const deleted = await super.delete(_id, options);
     //TODO: add backends service logic here (TO_SYNC)
     return deleted;
+  }
+
+  public async checkFingerprint<T extends AbstractSchema | Document>(
+    filters: FilterQuery<T>,
+    fingerprint: string,
+  ): Promise<void> {
+    const identity = await this.model
+      .findOne(
+        { ...filters, fingerprint },
+        {
+          _id: 1,
+        },
+      )
+      .exec();
+    if (identity) {
+      this.logger.debug(`Fingerprint matched for <${identity._id}> (${fingerprint}).`);
+      throw new HttpException('Fingerprint matched.', HttpStatus.NOT_MODIFIED);
+    }
+  }
+
+  private async generateFingerprint<T extends AbstractSchema | Document>(
+    identity: Identities,
+    fingerprint?: string,
+  ): Promise<ModifyResult<Query<T, T, any, T>>> {
+    if (!fingerprint) {
+      fingerprint = await this.previewFingerprint(identity.toJSON());
+    }
+
+    const updated = await this.model.findOneAndUpdate(
+      { _id: identity._id, fingerprint: { $ne: fingerprint } },
+      { fingerprint },
+      {
+        new: true,
+      },
+    );
+
+    if (!updated) {
+      this.logger.verbose(`Fingerprint already up to date for <${identity._id}>.`);
+      return identity as unknown as ModifyResult<Query<T, T, any, T>>;
+    }
+
+    this.logger.debug(`Fingerprint updated for <${identity._id}>: ${fingerprint}`);
+    return updated as unknown as ModifyResult<Query<T, T, any, T>>;
+  }
+
+  private async previewFingerprint(identity: any): Promise<string> {
+    const additionalFields = omit(identity.additionalFields, ['validations']);
+    const data = JSON.stringify(
+      construct(
+        omit(
+          toPlainAndCrush({
+            inetOrgPerson: identity.inetOrgPerson,
+            additionalFields,
+          }) as any,
+          [
+            //TODO: add configurable fields to exclude
+            /* 'additionalFields.attributes.supannPerson.supannOIDCGenre' */
+          ],
+        ),
+      ),
+    );
+
+    const hash = createHash('sha256');
+    hash.update(data);
+    return hash.digest('hex').toString();
   }
 
   private handleValidationError(

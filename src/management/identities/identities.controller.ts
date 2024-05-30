@@ -94,6 +94,7 @@ export class IdentitiesController extends AbstractController {
       [key: string]: string;
     }[] = [],
     @Query('errorOnNotFound') errorOnNotFound: string = 'false',
+    @Query('upsert') upsert: string = 'true',
   ): Promise<
     Response<{
       statusCode: number;
@@ -112,6 +113,7 @@ export class IdentitiesController extends AbstractController {
 
     const data = await this._service.upsert<Identities>(filters, body, {
       errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),
+      upsert: /true|on|yes|1/i.test(upsert),
     });
 
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid

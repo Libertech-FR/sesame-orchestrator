@@ -265,8 +265,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="189"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:189</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="191"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:191</a></div>
                         </td>
                     </tr>
 
@@ -460,8 +460,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="167"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:167</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="169"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:169</a></div>
                         </td>
                     </tr>
 
@@ -552,8 +552,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="258"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:258</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="260"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:260</a></div>
                         </td>
                     </tr>
 
@@ -643,8 +643,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="136"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:136</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="138"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:138</a></div>
                         </td>
                     </tr>
 
@@ -747,8 +747,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="204"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:204</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="206"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:206</a></div>
                         </td>
                     </tr>
 
@@ -851,8 +851,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="219"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:219</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="221"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:221</a></div>
                         </td>
                     </tr>
 
@@ -953,8 +953,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="239"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:239</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="241"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:241</a></div>
                         </td>
                     </tr>
 
@@ -1030,7 +1030,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>upsert(res: Response, body: <a href="../classes/IdentitiesUpsertDto.html" target="_self">IdentitiesUpsertDto</a>, filtersQuery: literal type[], errorOnNotFound: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>upsert(res: Response, body: <a href="../classes/IdentitiesUpsertDto.html" target="_self">IdentitiesUpsertDto</a>, filtersQuery: literal type[], errorOnNotFound: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, upsert: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -1121,6 +1121,21 @@
 
                                             <td>
                                                     <code>&#x27;false&#x27;</code>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>upsert</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>&#x27;true&#x27;</code>
                                             </td>
 
                                         </tr>
@@ -1238,6 +1253,7 @@ export class IdentitiesController extends AbstractController {
       [key: string]: string;
     }[] &#x3D; [],
     @Query(&#x27;errorOnNotFound&#x27;) errorOnNotFound: string &#x3D; &#x27;false&#x27;,
+    @Query(&#x27;upsert&#x27;) upsert: string &#x3D; &#x27;true&#x27;,
   ): Promise&lt;
     Response&lt;{
       statusCode: number;
@@ -1256,6 +1272,7 @@ export class IdentitiesController extends AbstractController {
 
     const data &#x3D; await this._service.upsert&lt;Identities&gt;(filters, body, {
       errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),
+      upsert: /true|on|yes|1/i.test(upsert),
     });
 
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid

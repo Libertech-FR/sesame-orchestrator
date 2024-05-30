@@ -265,8 +265,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="191"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:191</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="193"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:193</a></div>
                         </td>
                     </tr>
 
@@ -460,8 +460,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="169"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:169</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:171</a></div>
                         </td>
                     </tr>
 
@@ -552,8 +552,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="260"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:260</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="262"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:262</a></div>
                         </td>
                     </tr>
 
@@ -643,8 +643,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="138"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:138</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="140"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:140</a></div>
                         </td>
                     </tr>
 
@@ -747,8 +747,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="206"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:206</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="208"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:208</a></div>
                         </td>
                     </tr>
 
@@ -851,8 +851,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="221"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:221</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="223"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:223</a></div>
                         </td>
                     </tr>
 
@@ -953,8 +953,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="241"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:241</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="243"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:243</a></div>
                         </td>
                     </tr>
 
@@ -1269,6 +1269,8 @@ export class IdentitiesController extends AbstractController {
     for (const [key, filter] of Object.entries(filtersQuery)) {
       filters[key] &#x3D; isValidObjectId(filter) ? new Types.ObjectId(&#x60;${filter}&#x60;) : filter;
     }
+
+    //TODO: check if the filters are valid and if the body is equal to filters
 
     const data &#x3D; await this._service.upsert&lt;Identities&gt;(filters, body, {
       errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),

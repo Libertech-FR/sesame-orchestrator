@@ -111,6 +111,8 @@ export class IdentitiesController extends AbstractController {
       filters[key] = isValidObjectId(filter) ? new Types.ObjectId(`${filter}`) : filter;
     }
 
+    //TODO: check if the filters are valid and if the body is equal to filters
+
     const data = await this._service.upsert<Identities>(filters, body, {
       errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),
       upsert: /true|on|yes|1/i.test(upsert),

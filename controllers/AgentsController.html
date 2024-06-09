@@ -423,8 +423,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="98"
-                                    class="link-to-prism">src/core/agents/agents.controller.ts:98</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="99"
+                                    class="link-to-prism">src/core/agents/agents.controller.ts:99</a></div>
                         </td>
                     </tr>
 
@@ -618,8 +618,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">src/core/agents/agents.controller.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">src/core/agents/agents.controller.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -765,6 +765,7 @@ export class AgentsController extends AbstractController {
   ): Promise&lt;Response&gt; {
     const data &#x3D; await this._service.findById(_id, {
       password: 0,
+      security: 0,
     });
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

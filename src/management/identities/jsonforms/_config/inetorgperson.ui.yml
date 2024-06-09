@@ -57,11 +57,11 @@ elements:
     scope: "#/properties/preferredLanguage"
     options:
       required: false
-      suggestion:
-        - FR
-        - EN
-        - DE
-        - IT
+      # suggestion:
+      #   - FR
+      #   - EN
+      #   - DE
+      #   - IT
   - type: Control
     label: Téléphone
     scope: "#/properties/telephoneNumber"

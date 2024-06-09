@@ -70,6 +70,7 @@ export class AgentsController extends AbstractController {
   ): Promise<Response> {
     const data = await this._service.findById(_id, {
       password: 0,
+      security: 0,
     });
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

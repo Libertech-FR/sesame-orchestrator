@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
 export class additionalFieldsPartDto {
   @ApiProperty({
@@ -13,6 +14,7 @@ export class additionalFieldsPartDto {
     type: 'object',
     name: 'attributes',
   })
+  @IsOptional()
   attributes: { [key: string]: any };
 
   @ApiProperty({

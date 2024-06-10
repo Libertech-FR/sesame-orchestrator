@@ -54,6 +54,12 @@ export class IdentitiesService extends AbstractServiceSchema {
       ...crushedUpdate,
       ...crushedSetOnInsert,
     });
+    if (!data.additionalFields) {
+      data.additionalFields = {
+        objectClasses: [],
+        attributes: {},
+      };
+    }
     data.additionalFields.validations = {};
 
     const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;

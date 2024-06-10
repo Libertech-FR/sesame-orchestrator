@@ -358,8 +358,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="178"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:178</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="184"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:184</a></div>
                         </td>
                     </tr>
 
@@ -550,7 +550,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:167</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:173</a></code>
 </div>
                         </td>
                     </tr>
@@ -640,8 +640,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="196"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:196</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="202"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:202</a></div>
                         </td>
                     </tr>
 
@@ -729,8 +729,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="243"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:243</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="249"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:249</a></div>
                         </td>
                     </tr>
 
@@ -823,8 +823,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="221"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:221</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="227"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:227</a></div>
                         </td>
                     </tr>
 
@@ -899,7 +899,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:94</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:100</a></code>
 </div>
                         </td>
                     </tr>
@@ -1000,8 +1000,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="135"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:135</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="141"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:141</a></div>
                         </td>
                     </tr>
 
@@ -1101,8 +1101,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="144"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:144</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="150"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:150</a></div>
                         </td>
                     </tr>
 
@@ -2028,6 +2028,12 @@ export class IdentitiesService extends AbstractServiceSchema {
       ...crushedUpdate,
       ...crushedSetOnInsert,
     });
+    if (!data.additionalFields) {
+      data.additionalFields &#x3D; {
+        objectClasses: [],
+        attributes: {},
+      };
+    }
     data.additionalFields.validations &#x3D; {};
 
     const logPrefix &#x3D; &#x60;Validation [${data.inetOrgPerson.cn}]:&#x60;;

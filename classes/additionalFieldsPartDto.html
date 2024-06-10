@@ -148,6 +148,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#attributes" >attributes</a>
                             </li>
                             <li>
@@ -185,6 +186,7 @@
                     <a name="attributes"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>attributes</b></span>
                         <a href="#attributes"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -201,13 +203,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({type: &#x27;object&#x27;, name: &#x27;attributes&#x27;})<br />
+                            @ApiProperty({type: &#x27;object&#x27;, name: &#x27;attributes&#x27;})<br />@IsOptional()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/management/identities/_dto/_parts/additionalFields.dto.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/management/identities/_dto/_parts/additionalFields.dto.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -243,7 +245,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/management/identities/_dto/_parts/additionalFields.dto.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/management/identities/_dto/_parts/additionalFields.dto.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -280,7 +282,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/management/identities/_dto/_parts/additionalFields.dto.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/management/identities/_dto/_parts/additionalFields.dto.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -300,6 +302,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+import { IsOptional } from &#x27;class-validator&#x27;;
 
 export class additionalFieldsPartDto {
   @ApiProperty({
@@ -314,6 +317,7 @@ export class additionalFieldsPartDto {
     type: &#x27;object&#x27;,
     name: &#x27;attributes&#x27;,
   })
+  @IsOptional()
   attributes: { [key: string]: any };
 
   @ApiProperty({

@@ -201,7 +201,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop({type: Object, required: true})<br />
+                            @Prop({type: Object, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -308,7 +308,7 @@ export class AdditionalFieldsPart extends Document {
   @Prop({ type: Array, of: String, required: true, default: [&#x27;inetOrgPerson&#x27;] })
   objectClasses: string[];
 
-  @Prop({ type: Object, required: true })
+  @Prop({ type: Object, default: {} })
   attributes: Record&lt;string, MixedValue&gt;;
 
   @Prop({ type: Object, required: false })

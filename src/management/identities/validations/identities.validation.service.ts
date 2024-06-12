@@ -44,8 +44,8 @@ export class IdentitiesValidationService {
    * @returns A promise that resolves if validation succeeds, or rejects with validation errors.
    */
   async validate(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise<object> {
-    const objectClasses = data.objectClasses;
-    const attributes = data.attributes;
+    const objectClasses = data.objectClasses || [];
+    const attributes = data.attributes || {};
     const attributesKeys = Object.keys(attributes);
     const validations = {};
     let reject = false;

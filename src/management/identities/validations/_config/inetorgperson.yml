@@ -52,11 +52,8 @@
       "description": "Postal address of the inetOrgPerson."
     },
     "preferredLanguage": {
-      "type": "array",
-      "description": "Preferred language of the inetOrgPerson.",
-      "items": {
-        "type": "string"
-      }
+      "type": "string",
+      "description": "Preferred language of the inetOrgPerson."
     },
     "telephoneNumber": {
       "type": "string",

@@ -62,7 +62,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     }
     data.additionalFields.validations = {};
 
-    const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
+    const logPrefix = `Validation [${Object.values(filters).join('|')}]:`;
     try {
       this.logger.log(`${logPrefix} Starting additionalFields validation.`);
       const validations = await this._validation.validate(data.additionalFields);

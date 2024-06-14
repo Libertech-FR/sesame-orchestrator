@@ -251,8 +251,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="130"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:130</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="138"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:138</a></div>
                         </td>
                     </tr>
 
@@ -290,8 +290,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="159"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:159</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="167"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:167</a></div>
                         </td>
                     </tr>
 
@@ -504,8 +504,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="122"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:122</a></div>
                         </td>
                     </tr>
 
@@ -717,8 +717,16 @@ export class IdentitiesValidationService {
    * @returns A promise that resolves if validation succeeds, or rejects with validation errors.
    */
   async validate(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise&lt;object&gt; {
-    const objectClasses &#x3D; data.objectClasses;
-    const attributes &#x3D; data.attributes;
+    if (!data.objectClasses) {
+      data.objectClasses &#x3D; [];
+    }
+    if (!data.attributes) {
+      data.attributes &#x3D; {};
+    }
+    data.validations &#x3D; {};
+
+    const objectClasses &#x3D; data.objectClasses || [];
+    const attributes &#x3D; data.attributes || {};
     const attributesKeys &#x3D; Object.keys(attributes);
     const validations &#x3D; {};
     let reject &#x3D; false;

@@ -305,7 +305,7 @@ import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
 
 @Schema({ _id: false })
 export class AdditionalFieldsPart extends Document {
-  @Prop({ type: Array, of: String, required: true, default: [&#x27;inetOrgPerson&#x27;] })
+  @Prop({ type: Array, of: String, required: true, default: [] })
   objectClasses: string[];
 
   @Prop({ type: Object, default: {} })

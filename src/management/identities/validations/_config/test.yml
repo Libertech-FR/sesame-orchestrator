@@ -3,10 +3,10 @@ type: object
 properties:
   test1:
     type: string
-    description: Field corresponding to supanncivilite
+    description: Field corresponding to test1
   test2:
     type: string
-    description: Field corresponding to supannNomdeNaissance
+    description: Field corresponding to test1
 required:
 - test1
 - test2

@@ -113,7 +113,7 @@ export class IdentitiesController extends AbstractController {
 
     //TODO: check if the filters are valid and if the body is equal to filters
 
-    const data = await this._service.upsert<Identities>(filters, body, {
+    const [code, data] = await this._service.upsertWithFingerprint<Identities>(filters, body, {
       errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),
       upsert: /true|on|yes|1/i.test(upsert),
     });
@@ -128,9 +128,9 @@ export class IdentitiesController extends AbstractController {
       });
     }
 
-    return res.status(HttpStatus.CREATED).json({
-      statusCode: HttpStatus.CREATED,
-      message: 'Identitée créée avec succès.',
+    return res.status(code).json({
+      statusCode: code,
+      message: code === HttpStatus.OK ? 'Identitée mise à jour avec succès.' : 'Identitée créée avec succès.',
       data,
     });
   }

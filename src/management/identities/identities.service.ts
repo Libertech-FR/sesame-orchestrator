@@ -1,4 +1,4 @@
-import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   Document,
@@ -11,7 +11,8 @@ import {
   Types,
   UpdateQuery,
 } from 'mongoose';
-import { construct, omit } from 'radash';
+import { createHash } from 'node:crypto';
+import { construct, omit, unique } from 'radash';
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
 import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
@@ -20,8 +21,6 @@ import { IdentitiesUpsertDto } from './_dto/identities.dto';
 import { IdentityState } from './_enums/states.enum';
 import { Identities } from './_schemas/identities.schema';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
-import { createHash } from 'node:crypto';
-import { cp } from 'node:fs';
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -41,28 +40,33 @@ export class IdentitiesService extends AbstractServiceSchema {
     //TODO: add backends service logic here
   }
 
-  public async upsert<T extends AbstractSchema | Document>(
+  public async upsertWithFingerprint<T extends AbstractSchema | Document>(
     filters: FilterQuery<T>,
     data?: IdentitiesUpsertDto,
     options?: QueryOptions<T>,
-  ): Promise<ModifyResult<Query<T, T, any, T>>> {
+  ): Promise<[(HttpStatus.OK | HttpStatus.CREATED), ModifyResult<Query<T, T, any, T>>]> {
+    const identity = await this.model.findOne(filters).exec();
     this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
 
     const crushedUpdate = toPlainAndCrush(omit(data || {}, ['$setOnInsert']));
     const crushedSetOnInsert = toPlainAndCrush(data.$setOnInsert || {});
     data = construct({
-      ...crushedUpdate,
       ...crushedSetOnInsert,
+      ...toPlainAndCrush(identity?.toJSON() || {}, {
+        excludePrefixes: ['_id', 'fingerprint'],
+      }),
+      ...crushedUpdate,
+      'additionalFields.objectClasses': unique([
+        ...data.additionalFields?.objectClasses || [],
+        ...(identity as any)?.additionalFields?.objectClasses || [],
+      ]),
     });
-    if (!data.additionalFields) {
-      data.additionalFields = {
-        objectClasses: [],
-        attributes: {},
-      };
-    }
-    data.additionalFields.validations = {};
 
-    const logPrefix = `Validation [${Object.values(filters).join('|')}]:`;
+    if (!data?.inetOrgPerson?.employeeNumber || !data?.inetOrgPerson?.employeeType) {
+      throw new BadRequestException('inetOrgPerson.employeeNumber and inetOrgPerson.employeeType are required for create identity.');
+    }
+
+    const logPrefix = `Validation [${data?.inetOrgPerson?.employeeType}:${data?.inetOrgPerson?.employeeNumber}]:`;
     try {
       this.logger.log(`${logPrefix} Starting additionalFields validation.`);
       const validations = await this._validation.validate(data.additionalFields);
@@ -75,7 +79,6 @@ export class IdentitiesService extends AbstractServiceSchema {
       crushedUpdate['additionalFields.validations'] = data.additionalFields.validations;
     }
 
-    const identity = await this.model.findOne(filters).exec();
     const fingerprint = await this.previewFingerprint(
       construct({
         ...toPlainAndCrush(identity?.toJSON()),
@@ -87,14 +90,22 @@ export class IdentitiesService extends AbstractServiceSchema {
     const upserted = await super.upsert(
       filters,
       {
-        $set: crushedUpdate,
-        $setOnInsert: crushedSetOnInsert,
+        $setOnInsert: {
+          ...crushedSetOnInsert,
+          // 'state': IdentityState.TO_CREATE,
+        },
+        $set: {
+          ...crushedUpdate,
+          'additionalFields.objectClasses': data.additionalFields.objectClasses,
+        },
       },
       options,
     );
 
-    const identityUpserted = await this._model.findOne({ _id: (upserted as any)._id }).exec();
-    return await this.generateFingerprint(identityUpserted as unknown as Identities, fingerprint);
+    return [
+      identity ? HttpStatus.OK : HttpStatus.CREATED,
+      await this.generateFingerprint(upserted as unknown as Identities, fingerprint),
+    ];
   }
 
   public async update<T extends AbstractSchema | Document>(
@@ -259,6 +270,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     if (error instanceof ValidationSchemaException) {
       this.logger.warn(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
       identity.additionalFields.validations = error.getValidations() as any;
+      console.log('identity.state', identity.state)
       if (identity.state === IdentityState.TO_CREATE) {
         this.logger.warn(`${logPrefix} State set to TO_COMPLETE.`);
         identity.state = IdentityState.TO_COMPLETE;

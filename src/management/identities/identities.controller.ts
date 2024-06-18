@@ -9,13 +9,13 @@ import {
   Patch,
   Post,
   Query,
-  Res,
-  Version,
+  Res
 } from '@nestjs/common';
-import { IdentitiesDto, IdentitiesCreateDto, IdentitiesUpdateDto, IdentitiesUpsertDto } from './_dto/identities.dto';
-import { IdentitiesService } from './identities.service';
-import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud';
+import { Response } from 'express';
+import { Document, Types, isValidObjectId } from 'mongoose';
+import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator';
 import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-response.decorator';
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
@@ -23,18 +23,17 @@ import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response
 import { ApiUpdateDecorator } from '~/_common/decorators/api-update.decorator';
 import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper';
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
-import { PartialProjectionType } from '~/_common/types/partial-projection.type';
-import { Response } from 'express';
-import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud';
-import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { MixedValue } from '~/_common/types/mixed-value.type';
-import { Identities } from './_schemas/identities.schema';
-import { Types, Document, isValidObjectId } from 'mongoose';
+import { PartialProjectionType } from '~/_common/types/partial-projection.type';
+import { IdentitiesCreateDto, IdentitiesDto, IdentitiesUpdateDto, IdentitiesUpsertDto } from './_dto/identities.dto';
 import { IdentityState } from './_enums/states.enum';
+import { Identities } from './_schemas/identities.schema';
+import { IdentitiesService } from './identities.service';
+import { IdentitiesValidationService } from './validations/identities.validation.service';
 // import { IdentitiesValidationFilter } from '~/_common/filters/identities-validation.filter';
 
 // @UseFilters(new IdentitiesValidationFilter())
-@ApiTags('management')
+@ApiTags('management/identities')
 @Controller('identities')
 export class IdentitiesController extends AbstractController {
   constructor(

@@ -10,7 +10,7 @@ import { ReqIdentity } from '~/_common/decorators/params/req-identity.decorator'
 import { AgentType } from '~/_common/types/agent.type';
 
 @Public()
-@ApiTags('core')
+@ApiTags('core/auth')
 @Controller('auth')
 export class AuthController extends AbstractController {
   constructor(

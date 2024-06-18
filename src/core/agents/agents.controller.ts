@@ -15,7 +15,7 @@ import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator';
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
 import { PartialProjectionType } from '~/_common/types/partial-projection.type';
 
-@ApiTags('core')
+@ApiTags('core/agents')
 @Controller('agents')
 export class AgentsController extends AbstractController {
   protected static readonly projection: PartialProjectionType<AgentsDto> = {

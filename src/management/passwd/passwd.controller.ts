@@ -8,7 +8,7 @@ import { VerifyTokenDto } from './dto/verify-token.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('passwd')
-@ApiTags('passwd')
+@ApiTags('management/passwd')
 export class PasswdController {
   private readonly logger = new Logger(PasswdController.name);
 

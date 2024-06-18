@@ -2,7 +2,9 @@ import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/com
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { IdentitiesJsonformsService } from './identities.jsonforms.service';
 import { Response } from 'express';
+import { ApiTags } from '@nestjs/swagger'
 
+@ApiTags('management/identities/jsonforms')
 @Controller('management/identities/jsonforms')
 export class IdentitiesJsonFormsController extends AbstractController {
   constructor(private readonly _service: IdentitiesJsonformsService) {

@@ -31,7 +31,7 @@ declare const module: any;
   app.use(rawBodyBuffer(cfg?.application?.bodyParser));
   app.use(cookieParser());
   if (process.env.production !== 'production') {
-    (await import('./swagger')).default(app);
+    await (await import('./swagger')).default(app);
   }
 
   await app.listen(4000, async (): Promise<void> => {

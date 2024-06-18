@@ -32,15 +32,15 @@ function fireMessage(observer: Subscriber<MessageEvent>, channel: string, messag
   }
 }
 
+@ApiTags('core/backends')
 @Controller('backends')
-@ApiTags('core')
 export class BackendsController {
   private readonly logger = new Logger(BackendsController.name);
 
   constructor(
     private backendsService: BackendsService,
     @InjectRedis() protected readonly redis: Redis,
-  ) {}
+  ) { }
 
   @Post('sync')
   public async syncIdentities(

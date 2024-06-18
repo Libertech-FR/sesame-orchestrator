@@ -6,7 +6,7 @@ import { MixedValue } from '~/_common/types/mixed-value.type';
 import { AdditionalFieldsPart } from '../_schemas/_parts/additionalFields.part.schema';
 import { IdentitiesValidationService } from './identities.validation.service';
 
-@ApiTags('management')
+@ApiTags('management/identities/validation')
 @Controller('management/identities/validation')
 export class IdentitiesValidationController extends AbstractController {
   constructor(protected readonly _service: IdentitiesValidationService) {

@@ -198,8 +198,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">src/app.controller.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">src/app.controller.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -259,6 +259,7 @@ import { ApiBasicAuth, ApiBearerAuth } from &#x27;@nestjs/swagger&#x27;;
 @Public()
 @Controller()
 @ApiBearerAuth(null)
+// @see https://stackoverflow.com/questions/67314808/how-to-disable-security-for-a-specific-controller-method-in-nestjs-swagger
 export class AppController extends AbstractController {
   constructor(private readonly appService: AppService) {
     super();

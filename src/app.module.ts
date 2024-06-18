@@ -66,7 +66,7 @@ import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe';
     AppService,
     {
       provide: APP_GUARD,
-      useClass: AuthGuard,
+      useClass: AuthGuard('jwt'),
     },
     // {
     //   provide: APP_FILTER,

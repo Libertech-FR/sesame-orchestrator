@@ -3,9 +3,11 @@ import { AppService } from './app.service';
 import { Response } from 'express';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { Public } from './_common/decorators/public.decorator';
+import { ApiBasicAuth, ApiBearerAuth } from '@nestjs/swagger';
 
 @Public()
 @Controller()
+@ApiBearerAuth(null)
 export class AppController extends AbstractController {
   constructor(private readonly appService: AppService) {
     super();

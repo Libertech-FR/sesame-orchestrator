@@ -198,8 +198,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">src/app.controller.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">src/app.controller.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -254,9 +254,11 @@ import { AppService } from &#x27;./app.service&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { Public } from &#x27;./_common/decorators/public.decorator&#x27;;
+import { ApiBasicAuth, ApiBearerAuth } from &#x27;@nestjs/swagger&#x27;;
 
 @Public()
 @Controller()
+@ApiBearerAuth(null)
 export class AppController extends AbstractController {
   constructor(private readonly appService: AppService) {
     super();

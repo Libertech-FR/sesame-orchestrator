@@ -265,8 +265,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="193"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:193</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="192"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:192</a></div>
                         </td>
                     </tr>
 
@@ -368,8 +368,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:54</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -460,8 +460,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="171"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:171</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="170"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:170</a></div>
                         </td>
                     </tr>
 
@@ -552,8 +552,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="262"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:262</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="261"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:261</a></div>
                         </td>
                     </tr>
 
@@ -643,8 +643,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="140"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:140</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="139"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:139</a></div>
                         </td>
                     </tr>
 
@@ -747,8 +747,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="208"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:208</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="207"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:207</a></div>
                         </td>
                     </tr>
 
@@ -851,8 +851,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="223"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:223</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="222"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:222</a></div>
                         </td>
                     </tr>
 
@@ -953,8 +953,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="243"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:243</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="242"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:242</a></div>
                         </td>
                     </tr>
 
@@ -1044,8 +1044,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="88"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:88</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:87</a></div>
                         </td>
                     </tr>
 
@@ -1168,13 +1168,13 @@
   Patch,
   Post,
   Query,
-  Res,
-  Version,
+  Res
 } from &#x27;@nestjs/common&#x27;;
-import { IdentitiesDto, IdentitiesCreateDto, IdentitiesUpdateDto, IdentitiesUpsertDto } from &#x27;./_dto/identities.dto&#x27;;
-import { IdentitiesService } from &#x27;./identities.service&#x27;;
-import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from &#x27;@streamkits/nestjs_module_scrud&#x27;;
+import { Response } from &#x27;express&#x27;;
+import { Document, Types, isValidObjectId } from &#x27;mongoose&#x27;;
+import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { ApiCreateDecorator } from &#x27;~/_common/decorators/api-create.decorator&#x27;;
 import { ApiDeletedResponseDecorator } from &#x27;~/_common/decorators/api-deleted-response.decorator&#x27;;
 import { ApiPaginatedDecorator } from &#x27;~/_common/decorators/api-paginated.decorator&#x27;;
@@ -1182,18 +1182,17 @@ import { ApiReadResponseDecorator } from &#x27;~/_common/decorators/api-read-res
 import { ApiUpdateDecorator } from &#x27;~/_common/decorators/api-update.decorator&#x27;;
 import { PickProjectionHelper } from &#x27;~/_common/helpers/pick-projection.helper&#x27;;
 import { ObjectIdValidationPipe } from &#x27;~/_common/pipes/object-id-validation.pipe&#x27;;
-import { PartialProjectionType } from &#x27;~/_common/types/partial-projection.type&#x27;;
-import { Response } from &#x27;express&#x27;;
-import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from &#x27;@streamkits/nestjs_module_scrud&#x27;;
-import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
 import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
-import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
-import { Types, Document, isValidObjectId } from &#x27;mongoose&#x27;;
+import { PartialProjectionType } from &#x27;~/_common/types/partial-projection.type&#x27;;
+import { IdentitiesCreateDto, IdentitiesDto, IdentitiesUpdateDto, IdentitiesUpsertDto } from &#x27;./_dto/identities.dto&#x27;;
 import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
+import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
+import { IdentitiesService } from &#x27;./identities.service&#x27;;
+import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
 // import { IdentitiesValidationFilter } from &#x27;~/_common/filters/identities-validation.filter&#x27;;
 
 // @UseFilters(new IdentitiesValidationFilter())
-@ApiTags(&#x27;management&#x27;)
+@ApiTags(&#x27;management/identities&#x27;)
 @Controller(&#x27;identities&#x27;)
 export class IdentitiesController extends AbstractController {
   constructor(

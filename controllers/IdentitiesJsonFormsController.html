@@ -219,8 +219,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -314,8 +314,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -391,8 +391,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -479,8 +479,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -534,7 +534,9 @@
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { IdentitiesJsonformsService } from &#x27;./identities.jsonforms.service&#x27;;
 import { Response } from &#x27;express&#x27;;
+import { ApiTags } from &#x27;@nestjs/swagger&#x27;
 
+@ApiTags(&#x27;management/identities/jsonforms&#x27;)
 @Controller(&#x27;management/identities/jsonforms&#x27;)
 export class IdentitiesJsonFormsController extends AbstractController {
   constructor(private readonly _service: IdentitiesJsonformsService) {

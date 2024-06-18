@@ -636,15 +636,15 @@ function fireMessage(observer: Subscriber&lt;MessageEvent&gt;, channel: string, 
   }
 }
 
+@ApiTags(&#x27;core/backends&#x27;)
 @Controller(&#x27;backends&#x27;)
-@ApiTags(&#x27;core&#x27;)
 export class BackendsController {
   private readonly logger &#x3D; new Logger(BackendsController.name);
 
   constructor(
     private backendsService: BackendsService,
     @InjectRedis() protected readonly redis: Redis,
-  ) {}
+  ) { }
 
   @Post(&#x27;sync&#x27;)
   public async syncIdentities(

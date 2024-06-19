@@ -1,7 +1,7 @@
-import { Controller, Get, HttpStatus, Param, Res } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Req, Res } from '@nestjs/common';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
@@ -12,7 +12,7 @@ import { PartialProjectionType } from '~/_common/types/partial-projection.type';
 import { JobsDto } from './_dto/jobs.dto';
 import { JobsService } from './jobs.service';
 
-@ApiTags('core')
+@ApiTags('core/jobs')
 @Controller('jobs')
 export class JobsController extends AbstractController {
   protected static readonly projection: PartialProjectionType<JobsDto & { metadata: any }> = {
@@ -32,9 +32,12 @@ export class JobsController extends AbstractController {
   @ApiPaginatedDecorator(PickProjectionHelper(JobsDto, JobsController.projection))
   public async search(
     @Res() res: Response,
+    @Req() req: Request,
     @SearchFilterSchema({ unsafe: true }) searchFilterSchema: FilterSchema,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
   ): Promise<Response> {
+    console.log('req', req.query)
+
     //TODO: search tree by parentId
     const [data, total] = await this._service.findAndCount(
       searchFilterSchema,

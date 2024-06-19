@@ -9,8 +9,9 @@ export class ExecuteJobDto {
   public action: ActionType;
 
   @IsMongoId()
+  @IsOptional()
   @ApiProperty({ example: 'paul.bismuth', description: 'User object id', type: String })
-  public id: string;
+  public id?: string;
 
   @IsOptional()
   @IsObject()

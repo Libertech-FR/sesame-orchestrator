@@ -22,7 +22,6 @@ export class Jobs extends AbstractSchema {
 
   @Prop({
     type: ConcernedToPartSchema,
-    required: true,
   })
   public concernedTo?: ConcernedToPart;
 

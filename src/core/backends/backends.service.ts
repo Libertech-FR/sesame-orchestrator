@@ -3,10 +3,11 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { Types } from 'mongoose';
+import { Document, ModifyResult, Query, Types } from 'mongoose';
 import { AbstractQueueProcessor } from '~/_common/abstracts/abstract.queue.processor';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
@@ -14,10 +15,10 @@ import { IdentitiesService } from '~/management/identities/identities.service';
 import { JobState } from '../jobs/_enums/state.enum';
 import { Jobs } from '../jobs/_schemas/jobs.schema';
 import { JobsService } from '../jobs/jobs.service';
+import { Tasks } from '../tasks/_schemas/tasks.schema';
 import { TasksService } from '../tasks/tasks.service';
 import { ActionType } from './_enum/action-type.enum';
 import { ExecuteJobOptions } from './_interfaces/execute-job-options.interface';
-import { Tasks } from '../tasks/_schemas/tasks.schema';
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
 
@@ -115,7 +116,7 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { upsert: true, new: true },
       );
-      console.log('completedJob', completedJob);
+
       await this.identitiesService.model.findByIdAndUpdate(completedJob?.concernedTo?.id, {
         $set: {
           state: IdentityState.SYNCED,
@@ -205,7 +206,7 @@ export class BackendsService extends AbstractQueueProcessor {
 
   public async executeJob(
     actionType: ActionType,
-    concernedTo: Types.ObjectId,
+    concernedTo?: Types.ObjectId,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     payload?: Record<string | number, any>,
     options?: ExecuteJobOptions,
@@ -223,63 +224,82 @@ export class BackendsService extends AbstractQueueProcessor {
       optionals['processedAt'] = new Date();
       optionals['state'] = JobState.IN_PROGRESS;
     }
-    const identity = await this.identitiesService.findById<Identities>(concernedTo);
-    const jobStore = await this.jobsService.create<Jobs>({
-      jobId: job.id,
-      action: actionType,
-      params: payload,
-      concernedTo: {
-        $ref: 'identities',
-        id: concernedTo,
-        name: [identity.inetOrgPerson?.cn, identity.inetOrgPerson?.givenName].join(' '),
-      },
-      comment: options?.comment,
-      task: options?.task,
-      state: JobState.CREATED,
-      ...optionals,
-    });
-    await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
-      $set: {
-        state: IdentityState.PROCESSING,
-      },
-    });
+
+    let jobStore: Document<Jobs> = null;
+    if (!options?.disableLogs) {
+      const identity = concernedTo ? await this.identitiesService.findById<Identities>(concernedTo) : null;
+      jobStore = await this.jobsService.create<Jobs>({
+        jobId: job.id,
+        action: actionType,
+        params: payload,
+        concernedTo: identity ? {
+          $ref: 'identities',
+          id: concernedTo,
+          name: [identity?.inetOrgPerson?.cn, identity?.inetOrgPerson?.givenName].join(' '),
+        } : null,
+        comment: options?.comment,
+        task: options?.task,
+        state: JobState.CREATED,
+        ...optionals,
+      });
+    }
+
+    if (concernedTo) {
+      await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
+        $set: {
+          state: IdentityState.PROCESSING,
+        },
+      });
+    }
+
     if (!options?.async) {
       let error: Error;
       try {
         const response = await job.waitUntilFinished(this.queueEvents, options.syncTimeout || DEFAULT_SYNC_TIMEOUT);
-        const jobStoreUpdated = await this.jobsService.update<Jobs>(jobStore._id, {
-          $set: {
-            state: JobState.COMPLETED,
-            processedAt: new Date(),
-            finishedAt: new Date(),
-            result: response,
-          },
-        });
-        await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
-          $set: {
-            state: IdentityState.SYNCED,
-          },
-        });
+        let jobStoreUpdated: ModifyResult<Query<Jobs, Jobs>> = null;
+        if (!options?.disableLogs) {
+          jobStoreUpdated = await this.jobsService.update<Jobs>(jobStore._id, {
+            $set: {
+              state: JobState.COMPLETED,
+              processedAt: new Date(),
+              finishedAt: new Date(),
+              result: response,
+            },
+          });
+        }
+        if (concernedTo) {
+          await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
+            $set: {
+              state: IdentityState.SYNCED,
+            },
+          });
+        }
         return [jobStoreUpdated as unknown as Jobs, response];
       } catch (err) {
         error = err;
       }
-      const jobFailed = await this.jobsService.update<Jobs>(jobStore._id, {
-        $set: {
-          state: JobState.FAILED,
-          finishedAt: new Date(),
-          result: {
-            error: {
-              message: error.message,
+
+      let jobFailed: ModifyResult<Query<Jobs, Jobs>> = null;
+      if (!options?.disableLogs) {
+        jobFailed = await this.jobsService.update<Jobs>(jobStore._id, {
+          $set: {
+            state: JobState.FAILED,
+            finishedAt: new Date(),
+            result: {
+              error: {
+                message: error.message,
+              },
             },
           },
-        },
-      });
-      await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
-        $set: {
-          state: IdentityState.ON_ERROR,
-        },
-      });
+        });
+      }
+      if (concernedTo) {
+        await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
+          $set: {
+            state: IdentityState.ON_ERROR,
+          },
+        });
+      }
       if (options?.timeoutDiscard !== false) {
         job.discard();
         throw new BadRequestException({
@@ -296,6 +316,6 @@ export class BackendsService extends AbstractQueueProcessor {
         job: jobFailed as unknown as Jobs,
       });
     }
-    return [jobStore.toObject(), null];
+    return [jobStore?.toObject() || null, null];
   }
 }

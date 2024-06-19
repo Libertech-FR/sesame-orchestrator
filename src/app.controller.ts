@@ -7,7 +7,7 @@ import { ApiBasicAuth, ApiBearerAuth } from '@nestjs/swagger';
 
 @Public()
 @Controller()
-@ApiBearerAuth(null)
+@ApiBearerAuth()
 // @see https://stackoverflow.com/questions/67314808/how-to-disable-security-for-a-specific-controller-method-in-nestjs-swagger
 export class AppController extends AbstractController {
   constructor(private readonly appService: AppService) {

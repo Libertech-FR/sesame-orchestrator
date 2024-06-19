@@ -14,7 +14,7 @@ import { PartialProjectionType } from '~/_common/types/partial-projection.type';
 import { KeyringsService } from '~/core/keyrings/keyrings.service';
 import { KeyringsCreateDto, KeyringsDto } from '~/core/keyrings/_dto/keyrings.dto';
 
-@ApiTags('core')
+@ApiTags('core/keyrings')
 @Controller('keyrings')
 export class KeyringsController extends AbstractController {
   protected static readonly projection: PartialProjectionType<KeyringsDto> = {

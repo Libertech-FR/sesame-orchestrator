@@ -206,7 +206,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>executeJob(res: Response, body: <a href="../classes/ExecuteJobDto.html" target="_self">ExecuteJobDto</a>, asyncQuery: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, timeoutDiscardQuery: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, syncTimeout?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>executeJob(res: Response, body: <a href="../classes/ExecuteJobDto.html" target="_self">ExecuteJobDto</a>, asyncQuery: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, timeoutDiscardQuery: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, disableLogsQuery: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, syncTimeout?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -290,6 +290,18 @@
 
                                         </tr>
                                         <tr>
+                                                <td>disableLogsQuery</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
                                                 <td>syncTimeout</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
@@ -347,8 +359,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="100"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:100</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="103"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:103</a></div>
                         </td>
                     </tr>
 
@@ -675,6 +687,7 @@ export class BackendsController {
     @Body() body: ExecuteJobDto,
     @Query(&#x27;async&#x27;) asyncQuery: string,
     @Query(&#x27;timeoutDiscard&#x27;) timeoutDiscardQuery: string,
+    @Query(&#x27;disableLogs&#x27;) disableLogsQuery: string,
     @Query(
       &#x27;syncTimeout&#x27;,
       new ParseIntPipe({
@@ -686,14 +699,16 @@ export class BackendsController {
   ): Promise&lt;Response&gt; {
     const async &#x3D; /true|on|yes|1/i.test(asyncQuery);
     const timeoutDiscard &#x3D; /true|on|yes|1/i.test(timeoutDiscardQuery);
+    const disableLogs &#x3D; /true|on|yes|1/i.test(disableLogsQuery);
     const [job, response] &#x3D; await this.backendsService.executeJob(
       body.action,
-      new Types.ObjectId(body.id),
+      body.id ? new Types.ObjectId(body.id) : null,
       body.payload,
       {
         async,
         syncTimeout,
         timeoutDiscard,
+        disableLogs,
       },
     );
     return res.status(HttpStatus.ACCEPTED).json({ async, job, response });

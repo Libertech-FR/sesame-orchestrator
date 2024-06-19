@@ -217,8 +217,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">src/core/jobs/jobs.controller.ts:54</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">src/core/jobs/jobs.controller.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -294,7 +294,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>search(res: Response, searchFilterSchema: FilterSchema, searchFilterOptions: FilterOptions)</code>
+                    <code>search(res: Response, req: Request, searchFilterSchema: FilterSchema, searchFilterOptions: FilterOptions)</code>
                 </td>
             </tr>
 
@@ -333,6 +333,18 @@
                                                 <td>res</td>
                                             <td>
                                                         <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                                        <code>Request</code>
                                             </td>
 
                                             <td>
@@ -383,10 +395,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, HttpStatus, Param, Res } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, HttpStatus, Param, Req, Res } from &#x27;@nestjs/common&#x27;;
 import { ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from &#x27;@streamkits/nestjs_module_scrud&#x27;;
-import { Response } from &#x27;express&#x27;;
+import { Request, Response } from &#x27;express&#x27;;
 import { Types } from &#x27;mongoose&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { ApiPaginatedDecorator } from &#x27;~/_common/decorators/api-paginated.decorator&#x27;;
@@ -397,7 +409,7 @@ import { PartialProjectionType } from &#x27;~/_common/types/partial-projection.t
 import { JobsDto } from &#x27;./_dto/jobs.dto&#x27;;
 import { JobsService } from &#x27;./jobs.service&#x27;;
 
-@ApiTags(&#x27;core&#x27;)
+@ApiTags(&#x27;core/jobs&#x27;)
 @Controller(&#x27;jobs&#x27;)
 export class JobsController extends AbstractController {
   protected static readonly projection: PartialProjectionType&lt;JobsDto &amp; { metadata: any }&gt; &#x3D; {
@@ -417,9 +429,12 @@ export class JobsController extends AbstractController {
   @ApiPaginatedDecorator(PickProjectionHelper(JobsDto, JobsController.projection))
   public async search(
     @Res() res: Response,
+    @Req() req: Request,
     @SearchFilterSchema({ unsafe: true }) searchFilterSchema: FilterSchema,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
   ): Promise&lt;Response&gt; {
+    console.log(&#x27;req&#x27;, req.query)
+
     //TODO: search tree by parentId
     const [data, total] &#x3D; await this._service.findAndCount(
       searchFilterSchema,

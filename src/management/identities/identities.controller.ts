@@ -11,7 +11,7 @@ import {
   Query,
   Res
 } from '@nestjs/common';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud';
 import { Response } from 'express';
 import { Document, Types, isValidObjectId } from 'mongoose';
@@ -83,7 +83,11 @@ export class IdentitiesController extends AbstractController {
   }
 
   @Post('upsert')
-  @ApiCreateDecorator(IdentitiesUpsertDto, IdentitiesDto)
+  @ApiCreateDecorator(IdentitiesUpsertDto, IdentitiesDto, {
+    operationOptions: {
+      summary: 'Importe ou met à jour une <Identitée> en fonction des filtres fournis',
+    },
+  })
   public async upsert(
     @Res()
     res: Response,
@@ -189,6 +193,7 @@ export class IdentitiesController extends AbstractController {
   }
 
   @Get('count')
+  @ApiOperation({ summary: 'Compte le nombre d\'identitées en fonctions des filtres fournis' })
   public async count(
     @Res() res: Response,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
@@ -239,6 +244,7 @@ export class IdentitiesController extends AbstractController {
   }
 
   @Patch('state')
+  @ApiOperation({ summary: 'Met à jour l\'état d\'une ou plusieurs <Identitées> en masse' })
   public async updateStateMany(
     @Res() res: Response,
     @Body()

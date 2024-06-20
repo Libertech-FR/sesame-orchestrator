@@ -15,11 +15,9 @@ export class PasswdController {
   public constructor(private passwdService: PasswdService) { }
 
   @Post('change')
-  @ApiOperation({ summary: 'Change password' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Password has been successfully changed.' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Old password wrong' })
+  @ApiOperation({ summary: 'Execute un job de changement de mot de passe sur le/les backends' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Mot de passe synchronisé sur le/les backends' })
   public async change(@Body() body: ChangePasswordDto, @Res() res: Response): Promise<Response> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, data] = await this.passwdService.change(body);
     this.logger.log(`Call passwd change for : ${body.uid}`);
 
@@ -27,9 +25,8 @@ export class PasswdController {
   }
 
   @Post('gettoken')
-  @ApiOperation({ summary: 'Ask token for reseting password' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Token' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST })
+  @ApiOperation({ summary: 'Récupère un jeton de réinitialisation de mot de passe' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Retourne un jeton de réinitialisation de mot de passe' })
   public async gettoken(@Body() asktoken: AskTokenDto, @Res() res: Response): Promise<Response> {
     this.logger.log('GetToken for : ' + asktoken.uid);
     const token = await this.passwdService.askToken(asktoken);
@@ -38,9 +35,8 @@ export class PasswdController {
   }
 
   @Post('verifytoken')
-  @ApiOperation({ summary: 'Ask token for reseting password' })
+  @ApiOperation({ summary: 'Vérifie un jeton de réinitilisation de mot de passe' })
   @ApiResponse({ status: HttpStatus.OK })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST })
   public async verifyToken(@Body() body: VerifyTokenDto, @Res() res: Response): Promise<Response> {
     this.logger.log('Verify token : ' + body.token);
     const data = await this.passwdService.decryptToken(body.token);
@@ -49,9 +45,8 @@ export class PasswdController {
   }
 
   @Post('reset')
-  @ApiOperation({ summary: 'Reset password' })
+  @ApiOperation({ summary: 'Execute un job de réinitialisation de mot de passe sur le/les backends' })
   @ApiResponse({ status: HttpStatus.OK })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST })
   public async reset(@Body() body: ResetPasswordDto, @Res() res: Response): Promise<Response> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, data] = await this.passwdService.reset(body);

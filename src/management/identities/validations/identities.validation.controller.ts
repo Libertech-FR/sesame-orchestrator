@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { MixedValue } from '~/_common/types/mixed-value.type';
 import { AdditionalFieldsPart } from '../_schemas/_parts/additionalFields.part.schema';
@@ -14,6 +14,7 @@ export class IdentitiesValidationController extends AbstractController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Effectue la validation des schémas personnalisés d\'identités' })
   public async validate(
     @Res()
     res: Response,
@@ -45,6 +46,7 @@ export class IdentitiesValidationController extends AbstractController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Liste les schémas personnalisés d\'identités' })
   async searchAll(@Res() res: Response): Promise<any> {
     const result = await this._service.findAll();
     return res.status(HttpStatus.OK).json({
@@ -54,6 +56,7 @@ export class IdentitiesValidationController extends AbstractController {
   }
 
   @Get(':schema')
+  @ApiOperation({ summary: 'Récupère un schéma personnalisé d\'identités' })
   async search(@Res() res: Response, @Param('schema') schema): Promise<any> {
     const result = await this._service.findOne(schema);
     return res.status(HttpStatus.OK).json({

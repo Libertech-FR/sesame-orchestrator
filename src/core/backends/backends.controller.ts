@@ -11,7 +11,7 @@ import {
   Sse,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import Redis from 'ioredis';
 import { Observable, Subscriber } from 'rxjs';
@@ -43,6 +43,7 @@ export class BackendsController {
   ) { }
 
   @Post('sync')
+  @ApiOperation({ summary: 'Synchronise une liste d\'identitées' })
   public async syncIdentities(
     @Res() res: Response,
     @Body() body: SyncIdentitiesDto,
@@ -57,6 +58,7 @@ export class BackendsController {
   }
 
   @Post('syncall')
+  @ApiOperation({ summary: 'Synchronise toutes les identitées à synchroniser' })
   public async syncAllIdentities(@Res() res: Response, @Query('async') asyncQuery: string) {
     const async = /true|on|yes|1/i.test(asyncQuery);
     const data = await this.backendsService.syncAllIdentities({
@@ -66,6 +68,7 @@ export class BackendsController {
   }
 
   @Post('execute')
+  @ApiOperation({ summary: 'Execute un backend manuellement' })
   public async executeJob(
     @Res() res: Response,
     @Body() body: ExecuteJobDto,
@@ -100,6 +103,7 @@ export class BackendsController {
 
   @Public()
   @Sse('sse')
+  @ApiOperation({ summary: 'Server Sent Event - Récupère en temps réel les Jobs et affiche leurs état' })
   public async sse(@Res() res: Response, @Query('key') key: string): Promise<Observable<MessageEvent>> {
     if (key !== 'hZcdVqHScVDsDFdHOdcjmufEKFJVKaS8') throw new UnauthorizedException();
 

@@ -11,8 +11,24 @@ export const ApiPaginatedDecorator = <TModel extends Type<NonNullable<unknown>>>
   },
 ) => {
   return applyDecorators(
-    ApiQuery({ name: 'limit', type: Number, required: false }),
-    ApiQuery({ name: 'skip', type: Number, required: false }),
+    ApiQuery({
+      name: 'limit',
+      type: Number,
+      required: false,
+      description: 'Limite le nombre d\'éléments retournés',
+    }),
+    ApiQuery({
+      name: 'skip',
+      type: Number,
+      required: false,
+      description: 'Skip les N premiers éléments',
+    }),
+    ApiQuery({
+      name: 'page',
+      type: Number,
+      required: false,
+      description: 'Skip les N premiers éléments en fonction de la limite et de la page (incompatible avec skip)',
+    }),
     ApiExtraModels(PaginatedFilterDto),
     ApiQuery({
       required: false,
@@ -23,6 +39,7 @@ export const ApiPaginatedDecorator = <TModel extends Type<NonNullable<unknown>>>
       schema: {
         $ref: getSchemaPath(PaginatedFilterDto),
       },
+      description: 'Filtres de recherche, voir la documentation de chaque endpoint pour plus de détails',
     }),
     ApiPaginatedResponseDecorator(model, { responseOptions: options?.responseOptions }),
   );

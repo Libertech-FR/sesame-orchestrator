@@ -26,10 +26,11 @@ export const ApiDeletedResponseDecorator = <TModel extends Type<NonNullable<unkn
           },
         },
       },
+      description: 'L\'enregistrement a été supprimé avec succès',
       ...options?.responseOptions,
     }),
     ApiNotFoundResponse({
-      description: 'Item not found',
+      description: 'Impossible de trouver l\'entrée ciblée',
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },

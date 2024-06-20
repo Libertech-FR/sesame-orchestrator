@@ -25,10 +25,11 @@ export const ApiCreatedResponseDecorator = <TModel extends Type<NonNullable<unkn
           },
         },
       },
+      description: 'L\'enregistrement a été créé avec succès',
       ...options?.responseOptions,
     }),
     ApiBadRequestResponse({
-      description: 'Schema validation failed',
+      description: 'Validation du schéma failed',
       schema: {
         $ref: getSchemaPath(ErrorSchemaDto),
       },

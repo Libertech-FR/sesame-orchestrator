@@ -29,17 +29,18 @@ export const ApiUpdatedResponseDecorator = <TModel extends Type<NonNullable<unkn
           },
         },
       },
+      description: 'L\'enregistrement a été mis à jour avec succès',
       ...options?.responseOptions,
     }),
     ApiBadRequestResponse({
-      description: 'Schema validation failed',
+      description: 'Validation du schéma failed',
       schema: {
         $ref: getSchemaPath(ErrorSchemaDto),
       },
       ...options?.badRequestOptions,
     }),
     ApiNotFoundResponse({
-      description: 'Item not found',
+      description: 'Impossible de trouver l\'entrée ciblée',
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },

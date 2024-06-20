@@ -31,6 +31,7 @@ export const ApiPaginatedResponseDecorator = <TModel extends Type<any>>(
           },
         ],
       },
+      description: `Liste les entrées <${model.name.replace(/Dto$/, '')}> avec pagination et filtres`,
       ...options?.responseOptions,
     }),
     ApiOperation({ summary: `Liste les entrées <${model.name.replace(/Dto$/, '')}> avec pagination et filtres`, ...options?.operationOptions }),

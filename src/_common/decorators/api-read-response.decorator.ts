@@ -26,10 +26,11 @@ export const ApiReadResponseDecorator = <TModel extends Type<NonNullable<unknown
           },
         },
       },
+      description: 'L\'enregistrement a été récupéré avec succès',
       ...options?.responseOptions,
     }),
     ApiNotFoundResponse({
-      description: 'Item not found',
+      description: 'Impossible de trouver l\'entrée ciblée',
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },

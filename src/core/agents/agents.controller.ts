@@ -1,19 +1,19 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common';
-import { AgentsService } from './agents.service';
-import { AbstractController } from '~/_common/abstracts/abstract.controller';
-import { Types } from 'mongoose';
-import { ApiUpdateDecorator } from '~/_common/decorators/api-update.decorator';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
-import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-response.decorator';
-import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
-import { AgentsCreateDto, AgentsDto, AgentsUpdateDto } from '~/core/agents/_dto/agents.dto';
-import { Response } from 'express';
-import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator';
-import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper';
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud';
+import { Response } from 'express';
+import { Types } from 'mongoose';
+import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator';
+import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-response.decorator';
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
+import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator';
+import { ApiUpdateDecorator } from '~/_common/decorators/api-update.decorator';
+import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper';
+import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
 import { PartialProjectionType } from '~/_common/types/partial-projection.type';
+import { AgentsCreateDto, AgentsDto, AgentsUpdateDto } from '~/core/agents/_dto/agents.dto';
+import { AgentsService } from './agents.service';
 
 @ApiTags('core/agents')
 @Controller('agents')

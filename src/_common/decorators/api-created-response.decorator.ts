@@ -1,11 +1,14 @@
 import { applyDecorators, HttpStatus, Type } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiCreatedResponse, ApiExtraModels, getSchemaPath } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiCreatedResponse, ApiExtraModels, ApiOperation, ApiOperationOptions, getSchemaPath } from '@nestjs/swagger';
 import { ApiResponseOptions } from '@nestjs/swagger/dist/decorators/api-response.decorator';
 import { ErrorSchemaDto } from '~/_common/dto/error-schema.dto';
 
 export const ApiCreatedResponseDecorator = <TModel extends Type<NonNullable<unknown>>>(
   model: TModel,
-  options?: ApiResponseOptions | null | undefined,
+  options?: {
+    responseOptions?: ApiResponseOptions | null | undefined,
+    operationOptions?: ApiOperationOptions | null | undefined,
+  }
 ) => {
   return applyDecorators(
     ApiExtraModels(model),
@@ -22,7 +25,7 @@ export const ApiCreatedResponseDecorator = <TModel extends Type<NonNullable<unkn
           },
         },
       },
-      ...options,
+      ...options?.responseOptions,
     }),
     ApiBadRequestResponse({
       description: 'Schema validation failed',
@@ -30,5 +33,6 @@ export const ApiCreatedResponseDecorator = <TModel extends Type<NonNullable<unkn
         $ref: getSchemaPath(ErrorSchemaDto),
       },
     }),
+    ApiOperation({ summary: `Création d'une nouvelle entrée <${model.name.replace(/Dto$/, '')}>`, ...options?.operationOptions }),
   );
 };

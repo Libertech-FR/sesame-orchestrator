@@ -1,14 +1,17 @@
 import { applyDecorators, HttpStatus, Type } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiExtraModels, ApiNotFoundResponse, getSchemaPath } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiExtraModels, ApiNotFoundResponse, ApiOperation, ApiOperationOptions, getSchemaPath } from '@nestjs/swagger';
 import { ApiOkResponse, ApiResponseOptions } from '@nestjs/swagger/dist/decorators/api-response.decorator';
 import { ErrorSchemaDto } from '~/_common/dto/error-schema.dto';
 import { NotFoundDto } from '~/_common/dto/not-found.dto';
 
 export const ApiUpdatedResponseDecorator = <TModel extends Type<NonNullable<unknown>>>(
   model: TModel,
-  responseOptions?: ApiResponseOptions | null | undefined,
-  badRequestOptions?: ApiResponseOptions | null | undefined,
-  notFoundOptions?: ApiResponseOptions | null | undefined,
+  options?: {
+    responseOptions?: ApiResponseOptions | null | undefined,
+    badRequestOptions?: ApiResponseOptions | null | undefined,
+    notFoundOptions?: ApiResponseOptions | null | undefined,
+    operationOptions?: ApiOperationOptions | null | undefined,
+  },
 ) => {
   return applyDecorators(
     ApiExtraModels(model),
@@ -26,21 +29,22 @@ export const ApiUpdatedResponseDecorator = <TModel extends Type<NonNullable<unkn
           },
         },
       },
-      ...responseOptions,
+      ...options?.responseOptions,
     }),
     ApiBadRequestResponse({
       description: 'Schema validation failed',
       schema: {
         $ref: getSchemaPath(ErrorSchemaDto),
       },
-      ...badRequestOptions,
+      ...options?.badRequestOptions,
     }),
     ApiNotFoundResponse({
       description: 'Item not found',
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },
-      ...notFoundOptions,
+      ...options?.notFoundOptions,
     }),
+    ApiOperation({ summary: `Mise à jour d'une entrée <${model.name.replace(/Dto$/, '')}>`, ...options?.operationOptions }),
   );
 };

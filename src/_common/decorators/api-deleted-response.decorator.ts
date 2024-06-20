@@ -1,12 +1,15 @@
 import { applyDecorators, HttpStatus, Type } from '@nestjs/common';
-import { ApiExtraModels, ApiNotFoundResponse, getSchemaPath } from '@nestjs/swagger';
+import { ApiExtraModels, ApiNotFoundResponse, ApiOperation, ApiOperationOptions, getSchemaPath } from '@nestjs/swagger';
 import { ApiOkResponse, ApiResponseOptions } from '@nestjs/swagger/dist/decorators/api-response.decorator';
 import { NotFoundDto } from '~/_common/dto/not-found.dto';
 
 export const ApiDeletedResponseDecorator = <TModel extends Type<NonNullable<unknown>>>(
   model: TModel,
-  responseOptions?: ApiResponseOptions | null | undefined,
-  notFoundOptions?: ApiResponseOptions | null | undefined,
+  options?: {
+    responseOptions?: ApiResponseOptions | null | undefined,
+    notFoundOptions?: ApiResponseOptions | null | undefined,
+    operationOptions?: ApiOperationOptions | null | undefined,
+  },
 ) => {
   return applyDecorators(
     ApiExtraModels(model),
@@ -23,14 +26,15 @@ export const ApiDeletedResponseDecorator = <TModel extends Type<NonNullable<unkn
           },
         },
       },
-      ...responseOptions,
+      ...options?.responseOptions,
     }),
     ApiNotFoundResponse({
       description: 'Item not found',
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },
-      ...notFoundOptions,
+      ...options?.notFoundOptions,
     }),
+    ApiOperation({ summary: `Suppression d'une entrée <${model.name.replace(/Dto$/, '')}>`, ...options?.operationOptions }),
   );
 };

@@ -149,11 +149,13 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#executeJob" >executeJob</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
@@ -162,11 +164,13 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#syncAllIdentities" >syncAllIdentities</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
@@ -196,6 +200,7 @@
                     <a name="executeJob"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>executeJob</b></span>
@@ -214,14 +219,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;execute&#x27;)<br /></code>
+                    <code>@Post(&#x27;execute&#x27;)<br />@ApiOperation({summary: &#x27;Execute un backend manuellement&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -335,6 +340,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>sse</b></span>
@@ -353,14 +359,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Public()<br />@Sse(&#x27;sse&#x27;)<br /></code>
+                    <code>@Public()<br />@Sse(&#x27;sse&#x27;)<br />@ApiOperation({summary: &#x27;Server Sent Event - Récupère en temps réel les Jobs et affiche leurs état&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="103"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:103</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="107"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:107</a></div>
                         </td>
                     </tr>
 
@@ -425,6 +431,7 @@
                     <a name="syncAllIdentities"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>syncAllIdentities</b></span>
@@ -443,14 +450,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;syncall&#x27;)<br /></code>
+                    <code>@Post(&#x27;syncall&#x27;)<br />@ApiOperation({summary: &#x27;Synchronise toutes les identitées à synchroniser&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -515,6 +522,7 @@
                     <a name="syncIdentities"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>syncIdentities</b></span>
@@ -533,14 +541,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;sync&#x27;)<br /></code>
+                    <code>@Post(&#x27;sync&#x27;)<br />@ApiOperation({summary: &#x27;Synchronise une liste d&#x27;identitées&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -627,7 +635,7 @@ import {
   Sse,
   UnauthorizedException,
 } from &#x27;@nestjs/common&#x27;;
-import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ApiOperation, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { Response } from &#x27;express&#x27;;
 import Redis from &#x27;ioredis&#x27;;
 import { Observable, Subscriber } from &#x27;rxjs&#x27;;
@@ -659,6 +667,7 @@ export class BackendsController {
   ) { }
 
   @Post(&#x27;sync&#x27;)
+  @ApiOperation({ summary: &#x27;Synchronise une liste d\&#x27;identitées&#x27; })
   public async syncIdentities(
     @Res() res: Response,
     @Body() body: SyncIdentitiesDto,
@@ -673,6 +682,7 @@ export class BackendsController {
   }
 
   @Post(&#x27;syncall&#x27;)
+  @ApiOperation({ summary: &#x27;Synchronise toutes les identitées à synchroniser&#x27; })
   public async syncAllIdentities(@Res() res: Response, @Query(&#x27;async&#x27;) asyncQuery: string) {
     const async &#x3D; /true|on|yes|1/i.test(asyncQuery);
     const data &#x3D; await this.backendsService.syncAllIdentities({
@@ -682,6 +692,7 @@ export class BackendsController {
   }
 
   @Post(&#x27;execute&#x27;)
+  @ApiOperation({ summary: &#x27;Execute un backend manuellement&#x27; })
   public async executeJob(
     @Res() res: Response,
     @Body() body: ExecuteJobDto,
@@ -716,6 +727,7 @@ export class BackendsController {
 
   @Public()
   @Sse(&#x27;sse&#x27;)
+  @ApiOperation({ summary: &#x27;Server Sent Event - Récupère en temps réel les Jobs et affiche leurs état&#x27; })
   public async sse(@Res() res: Response, @Query(&#x27;key&#x27;) key: string): Promise&lt;Observable&lt;MessageEvent&gt;&gt; {
     if (key !&#x3D;&#x3D; &#x27;hZcdVqHScVDsDFdHOdcjmufEKFJVKaS8&#x27;) throw new UnauthorizedException();
 

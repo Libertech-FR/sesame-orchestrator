@@ -501,11 +501,15 @@
   options?: {
     bodyOptions?: ApiBodyOptions | null | undefined,
     responseOptions?: ApiResponseOptions | null | undefined,
+    operationOptions?: ApiOperationOptions | null | undefined,
   },
 ) &#x3D;&gt; {
   return applyDecorators(
     ApiBodyDecorator(bodyModel, options?.bodyOptions),
-    ApiCreatedResponseDecorator(responseModel, { responseOptions: options?.responseOptions }),
+    ApiCreatedResponseDecorator(responseModel, {
+      responseOptions: options?.responseOptions,
+      operationOptions: options?.operationOptions,
+    }),
   );
 }</code>
                     </td>

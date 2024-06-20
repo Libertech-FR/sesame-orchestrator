@@ -154,20 +154,24 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#generate" >generate</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#generateAll" >generateAll</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#search" >search</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#searchAll" >searchAll</a>
@@ -196,6 +200,7 @@
                     <a name="generate"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>generate</b></span>
                         <a href="#generate"><span class="icon ion-ios-link"></span></a>
@@ -213,14 +218,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;generate&#x27;)<br /></code>
+                    <code>@Post(&#x27;generate&#x27;)<br />@ApiOperation({summary: &#x27;Génère un JSON Forms d&#x27;un schéma personnalisé&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -291,6 +296,7 @@
                     <a name="generateAll"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>generateAll</b></span>
                         <a href="#generateAll"><span class="icon ion-ios-link"></span></a>
@@ -308,14 +314,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;generateAll&#x27;)<br /></code>
+                    <code>@Post(&#x27;generateAll&#x27;)<br />@ApiOperation({summary: &#x27;Génère tous les JSON Forms liés aux schémas personnalisés&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -368,6 +374,7 @@
                     <a name="search"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>search</b></span>
                         <a href="#search"><span class="icon ion-ios-link"></span></a>
@@ -385,14 +392,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;:schema&#x27;)<br /></code>
+                    <code>@Get(&#x27;:schema&#x27;)<br />@ApiOperation({summary: &#x27;Récupère un JSON Forms d&#x27;un schéma personnalisé&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -456,6 +463,7 @@
                     <a name="searchAll"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>searchAll</b></span>
                         <a href="#searchAll"><span class="icon ion-ios-link"></span></a>
@@ -473,14 +481,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get()<br /></code>
+                    <code>@Get()<br />@ApiOperation({summary: &#x27;Liste les JSON Forms de schémas personnalisés&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -534,7 +542,7 @@
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { IdentitiesJsonformsService } from &#x27;./identities.jsonforms.service&#x27;;
 import { Response } from &#x27;express&#x27;;
-import { ApiTags } from &#x27;@nestjs/swagger&#x27;
+import { ApiOperation, ApiTags } from &#x27;@nestjs/swagger&#x27;
 
 @ApiTags(&#x27;management/identities/jsonforms&#x27;)
 @Controller(&#x27;management/identities/jsonforms&#x27;)
@@ -544,6 +552,7 @@ export class IdentitiesJsonFormsController extends AbstractController {
   }
 
   @Post(&#x27;generateAll&#x27;)
+  @ApiOperation({ summary: &#x27;Génère tous les JSON Forms liés aux schémas personnalisés&#x27; })
   async generateAll(@Res() res: Response): Promise&lt;any&gt; {
     const result &#x3D; await this._service.generateAll();
     return res.status(HttpStatus.OK).json({
@@ -553,6 +562,7 @@ export class IdentitiesJsonFormsController extends AbstractController {
   }
 
   @Post(&#x27;generate&#x27;)
+  @ApiOperation({ summary: &#x27;Génère un JSON Forms d\&#x27;un schéma personnalisé&#x27; })
   async generate(@Res() res: Response, @Body(&#x27;schema&#x27;) schema: string | null &#x3D; null): Promise&lt;any&gt; {
     const result &#x3D; await this._service.generate({ schema, path: &#x27;./configs/identities/jsonforms&#x27; });
     return res.status(HttpStatus.OK).json({
@@ -562,6 +572,7 @@ export class IdentitiesJsonFormsController extends AbstractController {
   }
 
   @Get()
+  @ApiOperation({ summary: &#x27;Liste les JSON Forms de schémas personnalisés&#x27; })
   async searchAll(@Res() res: Response): Promise&lt;any&gt; {
     const result &#x3D; await this._service.findAll();
     return res.status(HttpStatus.OK).json({
@@ -571,6 +582,7 @@ export class IdentitiesJsonFormsController extends AbstractController {
   }
 
   @Get(&#x27;:schema&#x27;)
+  @ApiOperation({ summary: &#x27;Récupère un JSON Forms d\&#x27;un schéma personnalisé&#x27; })
   async search(@Res() res: Response, @Param(&#x27;schema&#x27;) schema): Promise&lt;any&gt; {
     const result &#x3D; await this._service.findOne(schema);
     return res.status(HttpStatus.OK).json({

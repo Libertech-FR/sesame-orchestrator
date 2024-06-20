@@ -154,6 +154,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#count" >count</a>
@@ -206,6 +207,7 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#updateStateMany" >updateStateMany</a>
@@ -241,6 +243,7 @@
                     <a name="count"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>count</b></span>
@@ -259,14 +262,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;count&#x27;)<br /></code>
+                    <code>@Get(&#x27;count&#x27;)<br />@ApiOperation({summary: &#x27;Compte le nombre d&#x27;identitées en fonctions des filtres fournis&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="192"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:192</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="197"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:197</a></div>
                         </td>
                     </tr>
 
@@ -460,8 +463,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="170"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:170</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="174"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:174</a></div>
                         </td>
                     </tr>
 
@@ -552,8 +555,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="261"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:261</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="267"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:267</a></div>
                         </td>
                     </tr>
 
@@ -643,8 +646,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="139"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:139</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="143"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:143</a></div>
                         </td>
                     </tr>
 
@@ -747,8 +750,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="207"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:207</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="212"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:212</a></div>
                         </td>
                     </tr>
 
@@ -851,8 +854,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="222"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:222</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="227"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:227</a></div>
                         </td>
                     </tr>
 
@@ -929,6 +932,7 @@
                     <a name="updateStateMany"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>updateStateMany</b></span>
@@ -947,14 +951,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Patch(&#x27;state&#x27;)<br /></code>
+                    <code>@Patch(&#x27;state&#x27;)<br />@ApiOperation({summary: &#x27;Met à jour l&#x27;état d&#x27;une ou plusieurs &lt;Identitées&gt; en masse&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="242"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:242</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="248"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:248</a></div>
                         </td>
                     </tr>
 
@@ -1038,14 +1042,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;upsert&#x27;)<br />@ApiCreateDecorator(IdentitiesUpsertDto, IdentitiesDto)<br /></code>
+                    <code>@Post(&#x27;upsert&#x27;)<br />@ApiCreateDecorator(IdentitiesUpsertDto, IdentitiesDto, {operationOptions: undefined})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="87"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:87</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -1170,7 +1174,7 @@
   Query,
   Res
 } from &#x27;@nestjs/common&#x27;;
-import { ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ApiOperation, ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from &#x27;@streamkits/nestjs_module_scrud&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { Document, Types, isValidObjectId } from &#x27;mongoose&#x27;;
@@ -1242,7 +1246,11 @@ export class IdentitiesController extends AbstractController {
   }
 
   @Post(&#x27;upsert&#x27;)
-  @ApiCreateDecorator(IdentitiesUpsertDto, IdentitiesDto)
+  @ApiCreateDecorator(IdentitiesUpsertDto, IdentitiesDto, {
+    operationOptions: {
+      summary: &#x27;Importe ou met à jour une &lt;Identitée&gt; en fonction des filtres fournis&#x27;,
+    },
+  })
   public async upsert(
     @Res()
     res: Response,
@@ -1348,6 +1356,7 @@ export class IdentitiesController extends AbstractController {
   }
 
   @Get(&#x27;count&#x27;)
+  @ApiOperation({ summary: &#x27;Compte le nombre d\&#x27;identitées en fonctions des filtres fournis&#x27; })
   public async count(
     @Res() res: Response,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
@@ -1398,6 +1407,7 @@ export class IdentitiesController extends AbstractController {
   }
 
   @Patch(&#x27;state&#x27;)
+  @ApiOperation({ summary: &#x27;Met à jour l\&#x27;état d\&#x27;une ou plusieurs &lt;Identitées&gt; en masse&#x27; })
   public async updateStateMany(
     @Res() res: Response,
     @Body()

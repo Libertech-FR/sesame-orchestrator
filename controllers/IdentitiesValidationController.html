@@ -154,15 +154,18 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#search" >search</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#searchAll" >searchAll</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
@@ -192,6 +195,7 @@
                     <a name="search"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>search</b></span>
                         <a href="#search"><span class="icon ion-ios-link"></span></a>
@@ -209,14 +213,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;:schema&#x27;)<br /></code>
+                    <code>@Get(&#x27;:schema&#x27;)<br />@ApiOperation({summary: &#x27;Récupère un schéma personnalisé d&#x27;identités&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="57"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.controller.ts:57</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.controller.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -280,6 +284,7 @@
                     <a name="searchAll"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>searchAll</b></span>
                         <a href="#searchAll"><span class="icon ion-ios-link"></span></a>
@@ -297,14 +302,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get()<br /></code>
+                    <code>@Get()<br />@ApiOperation({summary: &#x27;Liste les schémas personnalisés d&#x27;identités&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.controller.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.controller.ts:50</a></div>
                         </td>
                     </tr>
 
@@ -357,6 +362,7 @@
                     <a name="validate"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>validate</b></span>
@@ -375,14 +381,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post()<br /></code>
+                    <code>@Post()<br />@ApiOperation({summary: &#x27;Effectue la validation des schémas personnalisés d&#x27;identités&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.controller.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.controller.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -446,7 +452,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, HttpStatus, Param, Post, Res } from &#x27;@nestjs/common&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
-import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ApiOperation, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
 import { AdditionalFieldsPart } from &#x27;../_schemas/_parts/additionalFields.part.schema&#x27;;
@@ -460,6 +466,7 @@ export class IdentitiesValidationController extends AbstractController {
   }
 
   @Post()
+  @ApiOperation({ summary: &#x27;Effectue la validation des schémas personnalisés d\&#x27;identités&#x27; })
   public async validate(
     @Res()
     res: Response,
@@ -491,6 +498,7 @@ export class IdentitiesValidationController extends AbstractController {
   }
 
   @Get()
+  @ApiOperation({ summary: &#x27;Liste les schémas personnalisés d\&#x27;identités&#x27; })
   async searchAll(@Res() res: Response): Promise&lt;any&gt; {
     const result &#x3D; await this._service.findAll();
     return res.status(HttpStatus.OK).json({
@@ -500,6 +508,7 @@ export class IdentitiesValidationController extends AbstractController {
   }
 
   @Get(&#x27;:schema&#x27;)
+  @ApiOperation({ summary: &#x27;Récupère un schéma personnalisé d\&#x27;identités&#x27; })
   async search(@Res() res: Response, @Param(&#x27;schema&#x27;) schema): Promise&lt;any&gt; {
     const result &#x3D; await this._service.findOne(schema);
     return res.status(HttpStatus.OK).json({

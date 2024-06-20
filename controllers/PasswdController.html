@@ -151,13 +151,11 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#change" >change</a>
                             </li>
                             <li>
-                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -169,13 +167,11 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#reset" >reset</a>
                             </li>
                             <li>
-                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -209,7 +205,6 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
-                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>change</b></span>
@@ -228,14 +223,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;change&#x27;)<br />@ApiOperation({summary: &#x27;Change password&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Password has been successfully changed.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Old password wrong&#x27;})<br /></code>
+                    <code>@Post(&#x27;change&#x27;)<br />@ApiOperation({summary: &#x27;Execute un job de changement de mot de passe sur le/les backends&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Mot de passe synchronisé sur le/les backends&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -302,7 +297,6 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
-                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>gettoken</b></span>
@@ -321,14 +315,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;gettoken&#x27;)<br />@ApiOperation({summary: &#x27;Ask token for reseting password&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Token&#x27;})<br />@ApiResponse({status: undefined})<br /></code>
+                    <code>@Post(&#x27;gettoken&#x27;)<br />@ApiOperation({summary: &#x27;Récupère un jeton de réinitialisation de mot de passe&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Retourne un jeton de réinitialisation de mot de passe&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -395,7 +389,6 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
-                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>reset</b></span>
@@ -414,14 +407,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;reset&#x27;)<br />@ApiOperation({summary: &#x27;Reset password&#x27;})<br />@ApiResponse({status: undefined})<br />@ApiResponse({status: undefined})<br /></code>
+                    <code>@Post(&#x27;reset&#x27;)<br />@ApiOperation({summary: &#x27;Execute un job de réinitialisation de mot de passe sur le/les backends&#x27;})<br />@ApiResponse({status: undefined})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:50</a></div>
                         </td>
                     </tr>
 
@@ -488,7 +481,6 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
-                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>verifyToken</b></span>
@@ -507,14 +499,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;verifytoken&#x27;)<br />@ApiOperation({summary: &#x27;Ask token for reseting password&#x27;})<br />@ApiResponse({status: undefined})<br />@ApiResponse({status: undefined})<br /></code>
+                    <code>@Post(&#x27;verifytoken&#x27;)<br />@ApiOperation({summary: &#x27;Vérifie un jeton de réinitilisation de mot de passe&#x27;})<br />@ApiResponse({status: undefined})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -593,11 +585,9 @@ export class PasswdController {
   public constructor(private passwdService: PasswdService) { }
 
   @Post(&#x27;change&#x27;)
-  @ApiOperation({ summary: &#x27;Change password&#x27; })
-  @ApiResponse({ status: HttpStatus.OK, description: &#x27;Password has been successfully changed.&#x27; })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: &#x27;Old password wrong&#x27; })
+  @ApiOperation({ summary: &#x27;Execute un job de changement de mot de passe sur le/les backends&#x27; })
+  @ApiResponse({ status: HttpStatus.OK, description: &#x27;Mot de passe synchronisé sur le/les backends&#x27; })
   public async change(@Body() body: ChangePasswordDto, @Res() res: Response): Promise&lt;Response&gt; {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, data] &#x3D; await this.passwdService.change(body);
     this.logger.log(&#x60;Call passwd change for : ${body.uid}&#x60;);
 
@@ -605,9 +595,8 @@ export class PasswdController {
   }
 
   @Post(&#x27;gettoken&#x27;)
-  @ApiOperation({ summary: &#x27;Ask token for reseting password&#x27; })
-  @ApiResponse({ status: HttpStatus.OK, description: &#x27;Token&#x27; })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST })
+  @ApiOperation({ summary: &#x27;Récupère un jeton de réinitialisation de mot de passe&#x27; })
+  @ApiResponse({ status: HttpStatus.OK, description: &#x27;Retourne un jeton de réinitialisation de mot de passe&#x27; })
   public async gettoken(@Body() asktoken: AskTokenDto, @Res() res: Response): Promise&lt;Response&gt; {
     this.logger.log(&#x27;GetToken for : &#x27; + asktoken.uid);
     const token &#x3D; await this.passwdService.askToken(asktoken);
@@ -616,9 +605,8 @@ export class PasswdController {
   }
 
   @Post(&#x27;verifytoken&#x27;)
-  @ApiOperation({ summary: &#x27;Ask token for reseting password&#x27; })
+  @ApiOperation({ summary: &#x27;Vérifie un jeton de réinitilisation de mot de passe&#x27; })
   @ApiResponse({ status: HttpStatus.OK })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST })
   public async verifyToken(@Body() body: VerifyTokenDto, @Res() res: Response): Promise&lt;Response&gt; {
     this.logger.log(&#x27;Verify token : &#x27; + body.token);
     const data &#x3D; await this.passwdService.decryptToken(body.token);
@@ -627,9 +615,8 @@ export class PasswdController {
   }
 
   @Post(&#x27;reset&#x27;)
-  @ApiOperation({ summary: &#x27;Reset password&#x27; })
+  @ApiOperation({ summary: &#x27;Execute un job de réinitialisation de mot de passe sur le/les backends&#x27; })
   @ApiResponse({ status: HttpStatus.OK })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST })
   public async reset(@Body() body: ResetPasswordDto, @Res() res: Response): Promise&lt;Response&gt; {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, data] &#x3D; await this.passwdService.reset(body);

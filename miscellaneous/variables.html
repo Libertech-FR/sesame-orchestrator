@@ -469,6 +469,7 @@
       schema: {
         $ref: getSchemaPath(model),
       },
+      description: &#x27;Corps de création de l\&#x27;enregistrement&#x27;,
       ...options,
     }),
   );
@@ -556,10 +557,11 @@
           },
         },
       },
+      description: &#x27;L\&#x27;enregistrement a été créé avec succès&#x27;,
       ...options?.responseOptions,
     }),
     ApiBadRequestResponse({
-      description: &#x27;Schema validation failed&#x27;,
+      description: &#x27;Validation du schéma failed&#x27;,
       schema: {
         $ref: getSchemaPath(ErrorSchemaDto),
       },
@@ -612,10 +614,11 @@
           },
         },
       },
+      description: &#x27;L\&#x27;enregistrement a été supprimé avec succès&#x27;,
       ...options?.responseOptions,
     }),
     ApiNotFoundResponse({
-      description: &#x27;Item not found&#x27;,
+      description: &#x27;Impossible de trouver l\&#x27;entrée ciblée&#x27;,
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },
@@ -653,8 +656,24 @@
   },
 ) &#x3D;&gt; {
   return applyDecorators(
-    ApiQuery({ name: &#x27;limit&#x27;, type: Number, required: false }),
-    ApiQuery({ name: &#x27;skip&#x27;, type: Number, required: false }),
+    ApiQuery({
+      name: &#x27;limit&#x27;,
+      type: Number,
+      required: false,
+      description: &#x27;Limite le nombre d\&#x27;éléments retournés&#x27;,
+    }),
+    ApiQuery({
+      name: &#x27;skip&#x27;,
+      type: Number,
+      required: false,
+      description: &#x27;Skip les N premiers éléments&#x27;,
+    }),
+    ApiQuery({
+      name: &#x27;page&#x27;,
+      type: Number,
+      required: false,
+      description: &#x27;Skip les N premiers éléments en fonction de la limite et de la page (incompatible avec skip)&#x27;,
+    }),
     ApiExtraModels(PaginatedFilterDto),
     ApiQuery({
       required: false,
@@ -665,6 +684,7 @@
       schema: {
         $ref: getSchemaPath(PaginatedFilterDto),
       },
+      description: &#x27;Filtres de recherche, voir la documentation de chaque endpoint pour plus de détails&#x27;,
     }),
     ApiPaginatedResponseDecorator(model, { responseOptions: options?.responseOptions }),
   );
@@ -718,6 +738,7 @@
           },
         ],
       },
+      description: &#x60;Liste les entrées &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt; avec pagination et filtres&#x60;,
       ...options?.responseOptions,
     }),
     ApiOperation({ summary: &#x60;Liste les entrées &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt; avec pagination et filtres&#x60;, ...options?.operationOptions }),
@@ -768,10 +789,11 @@
           },
         },
       },
+      description: &#x27;L\&#x27;enregistrement a été récupéré avec succès&#x27;,
       ...options?.responseOptions,
     }),
     ApiNotFoundResponse({
-      description: &#x27;Item not found&#x27;,
+      description: &#x27;Impossible de trouver l\&#x27;entrée ciblée&#x27;,
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },
@@ -862,17 +884,18 @@
           },
         },
       },
+      description: &#x27;L\&#x27;enregistrement a été mis à jour avec succès&#x27;,
       ...options?.responseOptions,
     }),
     ApiBadRequestResponse({
-      description: &#x27;Schema validation failed&#x27;,
+      description: &#x27;Validation du schéma failed&#x27;,
       schema: {
         $ref: getSchemaPath(ErrorSchemaDto),
       },
       ...options?.badRequestOptions,
     }),
     ApiNotFoundResponse({
-      description: &#x27;Item not found&#x27;,
+      description: &#x27;Impossible de trouver l\&#x27;entrée ciblée&#x27;,
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },

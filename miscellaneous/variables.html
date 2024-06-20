@@ -498,12 +498,14 @@
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   bodyModel: TModel,
   responseModel: TModel,
-  bodyOptions?: ApiBodyOptions | null | undefined,
-  responseOptions?: ApiResponseOptions | null | undefined,
+  options?: {
+    bodyOptions?: ApiBodyOptions | null | undefined,
+    responseOptions?: ApiResponseOptions | null | undefined,
+  },
 ) &#x3D;&gt; {
   return applyDecorators(
-    ApiBodyDecorator(bodyModel, bodyOptions),
-    ApiCreatedResponseDecorator(responseModel, responseOptions),
+    ApiBodyDecorator(bodyModel, options?.bodyOptions),
+    ApiCreatedResponseDecorator(responseModel, { responseOptions: options?.responseOptions }),
   );
 }</code>
                     </td>
@@ -530,7 +532,10 @@
                     <td class="col-md-4">
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   model: TModel,
-  options?: ApiResponseOptions | null | undefined,
+  options?: {
+    responseOptions?: ApiResponseOptions | null | undefined,
+    operationOptions?: ApiOperationOptions | null | undefined,
+  }
 ) &#x3D;&gt; {
   return applyDecorators(
     ApiExtraModels(model),
@@ -547,7 +552,7 @@
           },
         },
       },
-      ...options,
+      ...options?.responseOptions,
     }),
     ApiBadRequestResponse({
       description: &#x27;Schema validation failed&#x27;,
@@ -555,6 +560,7 @@
         $ref: getSchemaPath(ErrorSchemaDto),
       },
     }),
+    ApiOperation({ summary: &#x60;Création d&#x27;une nouvelle entrée &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt;&#x60;, ...options?.operationOptions }),
   );
 }</code>
                     </td>
@@ -581,8 +587,11 @@
                     <td class="col-md-4">
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   model: TModel,
-  responseOptions?: ApiResponseOptions | null | undefined,
-  notFoundOptions?: ApiResponseOptions | null | undefined,
+  options?: {
+    responseOptions?: ApiResponseOptions | null | undefined,
+    notFoundOptions?: ApiResponseOptions | null | undefined,
+    operationOptions?: ApiOperationOptions | null | undefined,
+  },
 ) &#x3D;&gt; {
   return applyDecorators(
     ApiExtraModels(model),
@@ -599,15 +608,16 @@
           },
         },
       },
-      ...responseOptions,
+      ...options?.responseOptions,
     }),
     ApiNotFoundResponse({
       description: &#x27;Item not found&#x27;,
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },
-      ...notFoundOptions,
+      ...options?.notFoundOptions,
     }),
+    ApiOperation({ summary: &#x60;Suppression d&#x27;une entrée &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt;&#x60;, ...options?.operationOptions }),
   );
 }</code>
                     </td>
@@ -634,7 +644,9 @@
                     <td class="col-md-4">
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   model: TModel,
-  options?: ApiResponseOptions | null | undefined,
+  options?: {
+    responseOptions?: ApiResponseOptions | null | undefined,
+  },
 ) &#x3D;&gt; {
   return applyDecorators(
     ApiQuery({ name: &#x27;limit&#x27;, type: Number, required: false }),
@@ -650,7 +662,7 @@
         $ref: getSchemaPath(PaginatedFilterDto),
       },
     }),
-    ApiPaginatedResponseDecorator(model, options),
+    ApiPaginatedResponseDecorator(model, { responseOptions: options?.responseOptions }),
   );
 }</code>
                     </td>
@@ -677,7 +689,10 @@
                     <td class="col-md-4">
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;any&gt;&gt;(
   model: TModel,
-  options?: ApiResponseOptions | null | undefined,
+  options?: {
+    responseOptions?: ApiResponseOptions | null | undefined,
+    operationOptions?: ApiOperationOptions | null | undefined,
+  },
 ) &#x3D;&gt; {
   return applyDecorators(
     ApiExtraModels(model),
@@ -699,8 +714,9 @@
           },
         ],
       },
-      ...options,
+      ...options?.responseOptions,
     }),
+    ApiOperation({ summary: &#x60;Liste les entrées &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt; avec pagination et filtres&#x60;, ...options?.operationOptions }),
   );
 }</code>
                     </td>
@@ -727,8 +743,11 @@
                     <td class="col-md-4">
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   model: TModel,
-  responseOptions?: ApiResponseOptions | null | undefined,
-  notFoundOptions?: ApiResponseOptions | null | undefined,
+  options?: {
+    responseOptions?: ApiResponseOptions | null | undefined,
+    notFoundOptions?: ApiResponseOptions | null | undefined,
+    operationOptions?: ApiOperationOptions | null | undefined,
+  },
 ) &#x3D;&gt; {
   return applyDecorators(
     ApiExtraModels(model),
@@ -745,15 +764,16 @@
           },
         },
       },
-      ...responseOptions,
+      ...options?.responseOptions,
     }),
     ApiNotFoundResponse({
       description: &#x27;Item not found&#x27;,
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },
-      ...notFoundOptions,
+      ...options?.notFoundOptions,
     }),
+    ApiOperation({ summary: &#x60;Récupère l&#x27;entrée &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt; ciblée&#x60;, ...options?.operationOptions }),
   );
 }</code>
                     </td>
@@ -781,12 +801,14 @@
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   bodyModel: TModel,
   responseModel: TModel,
-  bodyOptions?: ApiBodyOptions | null | undefined,
-  responseOptions?: ApiResponseOptions | null | undefined,
+  options?: {
+    bodyOptions?: ApiBodyOptions | null | undefined,
+    responseOptions?: ApiResponseOptions | null | undefined,
+  },
 ) &#x3D;&gt; {
   return applyDecorators(
-    ApiBodyDecorator(bodyModel, bodyOptions),
-    ApiUpdatedResponseDecorator(responseModel, responseOptions),
+    ApiBodyDecorator(bodyModel, options?.bodyOptions),
+    ApiUpdatedResponseDecorator(responseModel, { responseOptions: options?.responseOptions }),
   );
 }</code>
                     </td>
@@ -813,9 +835,12 @@
                     <td class="col-md-4">
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   model: TModel,
-  responseOptions?: ApiResponseOptions | null | undefined,
-  badRequestOptions?: ApiResponseOptions | null | undefined,
-  notFoundOptions?: ApiResponseOptions | null | undefined,
+  options?: {
+    responseOptions?: ApiResponseOptions | null | undefined,
+    badRequestOptions?: ApiResponseOptions | null | undefined,
+    notFoundOptions?: ApiResponseOptions | null | undefined,
+    operationOptions?: ApiOperationOptions | null | undefined,
+  },
 ) &#x3D;&gt; {
   return applyDecorators(
     ApiExtraModels(model),
@@ -833,22 +858,23 @@
           },
         },
       },
-      ...responseOptions,
+      ...options?.responseOptions,
     }),
     ApiBadRequestResponse({
       description: &#x27;Schema validation failed&#x27;,
       schema: {
         $ref: getSchemaPath(ErrorSchemaDto),
       },
-      ...badRequestOptions,
+      ...options?.badRequestOptions,
     }),
     ApiNotFoundResponse({
       description: &#x27;Item not found&#x27;,
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },
-      ...notFoundOptions,
+      ...options?.notFoundOptions,
     }),
+    ApiOperation({ summary: &#x60;Mise à jour d&#x27;une entrée &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt;&#x60;, ...options?.operationOptions }),
   );
 }</code>
                     </td>

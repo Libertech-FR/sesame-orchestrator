@@ -694,21 +694,21 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from &#x27;@nestjs/common&#x27;;
-import { AgentsService } from &#x27;./agents.service&#x27;;
-import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
-import { Types } from &#x27;mongoose&#x27;;
-import { ApiUpdateDecorator } from &#x27;~/_common/decorators/api-update.decorator&#x27;;
 import { ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { ApiDeletedResponseDecorator } from &#x27;~/_common/decorators/api-deleted-response.decorator&#x27;;
-import { ObjectIdValidationPipe } from &#x27;~/_common/pipes/object-id-validation.pipe&#x27;;
-import { AgentsCreateDto, AgentsDto, AgentsUpdateDto } from &#x27;~/core/agents/_dto/agents.dto&#x27;;
-import { Response } from &#x27;express&#x27;;
-import { ApiReadResponseDecorator } from &#x27;~/_common/decorators/api-read-response.decorator&#x27;;
-import { PickProjectionHelper } from &#x27;~/_common/helpers/pick-projection.helper&#x27;;
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from &#x27;@streamkits/nestjs_module_scrud&#x27;;
+import { Response } from &#x27;express&#x27;;
+import { Types } from &#x27;mongoose&#x27;;
+import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { ApiCreateDecorator } from &#x27;~/_common/decorators/api-create.decorator&#x27;;
+import { ApiDeletedResponseDecorator } from &#x27;~/_common/decorators/api-deleted-response.decorator&#x27;;
 import { ApiPaginatedDecorator } from &#x27;~/_common/decorators/api-paginated.decorator&#x27;;
+import { ApiReadResponseDecorator } from &#x27;~/_common/decorators/api-read-response.decorator&#x27;;
+import { ApiUpdateDecorator } from &#x27;~/_common/decorators/api-update.decorator&#x27;;
+import { PickProjectionHelper } from &#x27;~/_common/helpers/pick-projection.helper&#x27;;
+import { ObjectIdValidationPipe } from &#x27;~/_common/pipes/object-id-validation.pipe&#x27;;
 import { PartialProjectionType } from &#x27;~/_common/types/partial-projection.type&#x27;;
+import { AgentsCreateDto, AgentsDto, AgentsUpdateDto } from &#x27;~/core/agents/_dto/agents.dto&#x27;;
+import { AgentsService } from &#x27;./agents.service&#x27;;
 
 @ApiTags(&#x27;core/agents&#x27;)
 @Controller(&#x27;agents&#x27;)

@@ -148,6 +148,8 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                 <a href="#getInfo" >getInfo</a>
                             </li>
@@ -175,6 +177,8 @@
                     <a name="getInfo"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                         <span ><b>getInfo</b></span>
                         <a href="#getInfo"><span class="icon ion-ios-link"></span></a>
@@ -192,14 +196,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get()<br /></code>
+                    <code>@Get()<br />@ApiOperation({summary: &#x27;Get API infos&#x27;})<br />@ApiResponse({status: 200, description: &#x27;Return API infos&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">src/app.controller.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">src/app.controller.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -254,7 +258,7 @@ import { AppService } from &#x27;./app.service&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { Public } from &#x27;./_common/decorators/public.decorator&#x27;;
-import { ApiBasicAuth, ApiBearerAuth } from &#x27;@nestjs/swagger&#x27;;
+import { ApiBasicAuth, ApiBearerAuth, ApiOperation, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
 
 @Public()
 @Controller()
@@ -266,6 +270,8 @@ export class AppController extends AbstractController {
   }
 
   @Get()
+  @ApiOperation({ summary: &#x27;Get API infos&#x27; })
+  @ApiResponse({ status: 200, description: &#x27;Return API infos&#x27; })
   public getInfo(@Res() res: Response): Response {
     return res.json({
       ...this.appService.getInfo(),

@@ -288,10 +288,9 @@ import { AuthModule } from &#x27;~/core/auth/auth.module&#x27;;
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) &#x3D;&gt; ({
-        config: {
-          ...config.get&lt;RedisOptions&gt;(&#x27;ioredis.options&#x27;),
-          url: config.get&lt;string&gt;(&#x27;ioredis.uri&#x27;),
-        },
+        type: &#x27;single&#x27;,
+        url: config.get&lt;string&gt;(&#x27;ioredis.uri&#x27;),
+        options: config.get&lt;RedisOptions&gt;(&#x27;ioredis.options&#x27;),
       }),
     }),
     BullModule.forRootAsync({
@@ -317,7 +316,7 @@ import { AuthModule } from &#x27;~/core/auth/auth.module&#x27;;
     KeyringsCreateQuestions,
   ],
 })
-export class CliModule {}
+export class CliModule { }
 </code></pre>
     </div>
 </div>

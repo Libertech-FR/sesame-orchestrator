@@ -1556,7 +1556,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options &#x3D; { ...options, ...beforeEvent.options }
       }
     }
-    const document: Document&lt;T, any, T&gt; &#x3D; new this._model({
+    const document &#x3D; new this._model&lt;T&gt;({
       metadata: {
         createdBy: this.request?.user?.username || &#x27;anonymous&#x27;,
         createdAt: new Date(),
@@ -1575,7 +1575,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (afterEvent?.created) created &#x3D; { ...created, ...afterEvent.created }
       }
     }
-    return created
+    return created as unknown as Document&lt;T, any, T&gt;
   }
 
   public async update&lt;T extends AbstractSchema | Document&gt;(

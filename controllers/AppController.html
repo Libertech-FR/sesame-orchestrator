@@ -153,6 +153,12 @@
                                     <span class="modifier">Public</span>
                                 <a href="#getInfo" >getInfo</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#update" >update</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -202,8 +208,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">src/app.controller.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">src/app.controller.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -249,16 +255,129 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="update"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>update</b></span>
+                        <a href="#update"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>update(res: Response, project: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, current: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;/get-update/:project(sesame-orchestrator|sesame-daemon|sesame-app-manager)&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">src/app.controller.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>project</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>current</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Res } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, Controller, Get, Param, Query, Res } from &#x27;@nestjs/common&#x27;;
 import { AppService } from &#x27;./app.service&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { Public } from &#x27;./_common/decorators/public.decorator&#x27;;
-import { ApiBasicAuth, ApiBearerAuth, ApiOperation, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
+import { ApiBearerAuth, ApiOperation, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
+
+interface GithubUpdate {
+  name?: string;
+  commit?: {
+    sha?: string;
+    url?: string;
+  };
+  zipball_url?: string;
+  tarball_url?: string;
+  node_id?: string;
+}
 
 @Public()
 @Controller()
@@ -275,6 +394,36 @@ export class AppController extends AbstractController {
   public getInfo(@Res() res: Response): Response {
     return res.json({
       ...this.appService.getInfo(),
+    });
+  }
+
+  @Get(&#x27;/get-update/:project(sesame-orchestrator|sesame-daemon|sesame-app-manager)&#x27;)
+  public async update(
+    @Res() res: Response,
+    @Param(&#x27;project&#x27;) project: string,
+    @Query(&#x27;current&#x27;) current: string,
+  ): Promise&lt;Response&gt; {
+    const update &#x3D; await fetch(&#x60;https://api.github.com/repos/Libertech-FR/${project}/tags&#x60;)
+    const data: GithubUpdate &#x3D; await update.json()
+    const lastVersion &#x3D; data[0].name.replace(/^v/, &#x27;&#x27;)
+    const pkgInfo &#x3D; this.appService.getInfo()
+    const currentVersion &#x3D; current || pkgInfo.version
+
+    if (project !&#x3D;&#x3D; pkgInfo.name) {
+      if (!/[0-9]+\.[0-9]+\.[0-9]+/.test(current)) {
+        throw new BadRequestException(&#x27;Invalid version for current parameter&#x27;)
+      }
+    }
+
+    const [currentMajor, currentMinor, currentPatch] &#x3D; lastVersion.split(&#x27;.&#x27;).map(Number)
+    const [lastMajor, lastMinor, lastPatch] &#x3D; currentVersion.split(&#x27;.&#x27;).map(Number)
+    const updateAvailable &#x3D; currentMajor &gt; lastMajor || currentMinor &gt; lastMinor || currentPatch &gt; lastPatch
+
+    return res.json({
+      project,
+      updateAvailable,
+      currentVersion,
+      lastVersion,
     });
   }
 }

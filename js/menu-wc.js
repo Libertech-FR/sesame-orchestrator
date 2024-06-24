@@ -903,6 +903,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ExecuteJobOptions.html" data-type="entity-link" >ExecuteJobOptions</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/GithubUpdate.html" data-type="entity-link" >GithubUpdate</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/InternalLoggerOptions.html" data-type="entity-link" >InternalLoggerOptions</a>
                             </li>
                             <li class="link">

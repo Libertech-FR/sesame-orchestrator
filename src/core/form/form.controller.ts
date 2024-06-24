@@ -9,7 +9,7 @@ import {
   SearchFilterOptions,
   FilterOptions,
   ObjectIdValidationPipe,
-} from '@streamkits/nestjs_module_scrud';
+} from '@the-software-compagny/nestjs_module_restools';
 import { Types } from 'mongoose';
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator';
 import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-response.decorator';

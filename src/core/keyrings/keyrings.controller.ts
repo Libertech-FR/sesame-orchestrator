@@ -7,7 +7,7 @@ import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pip
 import { Response } from 'express';
 import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator';
 import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper';
-import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud';
+import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@the-software-compagny/nestjs_module_restools';
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator';
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
 import { PartialProjectionType } from '~/_common/types/partial-projection.type';

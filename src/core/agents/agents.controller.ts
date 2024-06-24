@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
-import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@streamkits/nestjs_module_scrud';
+import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@the-software-compagny/nestjs_module_restools';
 import { Response } from 'express';
 import { Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';

@@ -41,10 +41,9 @@ import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({
-        config: {
-          url: config.get<string>('ioredis.uri'),
-          options: config.get<RedisOptions>('ioredis.options'),
-        },
+        type: 'single',
+        url: config.get<string>('ioredis.uri'),
+        options: config.get<RedisOptions>('ioredis.options'),
       }),
     }),
     BullModule.forRootAsync({

@@ -39,10 +39,9 @@ import { AuthModule } from '~/core/auth/auth.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({
-        config: {
-          ...config.get<RedisOptions>('ioredis.options'),
-          url: config.get<string>('ioredis.uri'),
-        },
+        type: 'single',
+        url: config.get<string>('ioredis.uri'),
+        options: config.get<RedisOptions>('ioredis.options'),
       }),
     }),
     BullModule.forRootAsync({
@@ -68,4 +67,4 @@ import { AuthModule } from '~/core/auth/auth.module';
     KeyringsCreateQuestions,
   ],
 })
-export class CliModule {}
+export class CliModule { }

@@ -386,7 +386,7 @@ import { AppService } from &#x27;./app.service&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { Public } from &#x27;./_common/decorators/public.decorator&#x27;;
-import { ApiBearerAuth, ApiOperation, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
 
 interface GithubUpdate {
   name?: string;
@@ -417,11 +417,12 @@ export class AppController extends AbstractController {
     });
   }
 
+  @ApiQuery({ name: &#x27;current&#x27;, required: false })
   @Get(&#x27;/get-update/:project(sesame-orchestrator|sesame-daemon|sesame-app-manager)&#x27;)
   public async update(
     @Res() res: Response,
-    @Param(&#x27;project&#x27;) project: string,
-    @Query(&#x27;current&#x27;) current: string,
+    @Param(&#x27;project&#x27;) project?: string,
+    @Query(&#x27;current&#x27;) current?: string,
   ): Promise&lt;Response&gt; {
     const update &#x3D; await fetch(&#x60;https://api.github.com/repos/Libertech-FR/${project}/tags&#x60;)
     const data: GithubUpdate &#x3D; await update.json()
@@ -429,7 +430,7 @@ export class AppController extends AbstractController {
     const pkgInfo &#x3D; this.appService.getInfo()
     const currentVersion &#x3D; current || pkgInfo.version
 
-    if (project !&#x3D;&#x3D; pkgInfo.name) {
+    if (project !&#x3D;&#x3D; pkgInfo.name || current) {
       if (!/[0-9]+\.[0-9]+\.[0-9]+/.test(current)) {
         throw new BadRequestException(&#x27;Invalid version for current parameter&#x27;)
       }

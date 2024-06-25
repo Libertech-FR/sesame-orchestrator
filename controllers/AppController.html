@@ -148,6 +148,7 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#update" >update</a>
@@ -255,6 +256,7 @@
                     <a name="update"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>update</b></span>
@@ -265,7 +267,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>update(res: Response, project: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, current: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>update(res: Response, project?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, current?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -273,14 +275,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;/get-update/:project(sesame-orchestrator|sesame-daemon|sesame-app-manager)&#x27;)<br /></code>
+                    <code>@ApiQuery({name: &#x27;current&#x27;, required: false})<br />@Get(&#x27;/get-update/:project(sesame-orchestrator|sesame-daemon|sesame-app-manager)&#x27;)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="38"
-                                    class="link-to-prism">src/app.controller.ts:38</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">src/app.controller.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -319,7 +321,7 @@
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
 
@@ -331,7 +333,7 @@
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
 
@@ -359,7 +361,7 @@ import { AppService } from &#x27;./app.service&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { Public } from &#x27;./_common/decorators/public.decorator&#x27;;
-import { ApiBearerAuth, ApiOperation, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
 
 interface GithubUpdate {
   name?: string;
@@ -390,11 +392,12 @@ export class AppController extends AbstractController {
     });
   }
 
+  @ApiQuery({ name: &#x27;current&#x27;, required: false })
   @Get(&#x27;/get-update/:project(sesame-orchestrator|sesame-daemon|sesame-app-manager)&#x27;)
   public async update(
     @Res() res: Response,
-    @Param(&#x27;project&#x27;) project: string,
-    @Query(&#x27;current&#x27;) current: string,
+    @Param(&#x27;project&#x27;) project?: string,
+    @Query(&#x27;current&#x27;) current?: string,
   ): Promise&lt;Response&gt; {
     const update &#x3D; await fetch(&#x60;https://api.github.com/repos/Libertech-FR/${project}/tags&#x60;)
     const data: GithubUpdate &#x3D; await update.json()
@@ -402,7 +405,7 @@ export class AppController extends AbstractController {
     const pkgInfo &#x3D; this.appService.getInfo()
     const currentVersion &#x3D; current || pkgInfo.version
 
-    if (project !&#x3D;&#x3D; pkgInfo.name) {
+    if (project !&#x3D;&#x3D; pkgInfo.name || current) {
       if (!/[0-9]+\.[0-9]+\.[0-9]+/.test(current)) {
         throw new BadRequestException(&#x27;Invalid version for current parameter&#x27;)
       }

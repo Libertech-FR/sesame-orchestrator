@@ -3,7 +3,7 @@ import { AppService } from './app.service';
 import { Response } from 'express';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { Public } from './_common/decorators/public.decorator';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 interface GithubUpdate {
   name?: string;
@@ -34,11 +34,12 @@ export class AppController extends AbstractController {
     });
   }
 
+  @ApiQuery({ name: 'current', required: false })
   @Get('/get-update/:project(sesame-orchestrator|sesame-daemon|sesame-app-manager)')
   public async update(
     @Res() res: Response,
-    @Param('project') project: string,
-    @Query('current') current: string,
+    @Param('project') project?: string,
+    @Query('current') current?: string,
   ): Promise<Response> {
     const update = await fetch(`https://api.github.com/repos/Libertech-FR/${project}/tags`)
     const data: GithubUpdate = await update.json()
@@ -46,7 +47,7 @@ export class AppController extends AbstractController {
     const pkgInfo = this.appService.getInfo()
     const currentVersion = current || pkgInfo.version
 
-    if (project !== pkgInfo.name) {
+    if (project !== pkgInfo.name || current) {
       if (!/[0-9]+\.[0-9]+\.[0-9]+/.test(current)) {
         throw new BadRequestException('Invalid version for current parameter')
       }

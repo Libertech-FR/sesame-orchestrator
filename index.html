@@ -96,53 +96,13 @@
 
 <h2>Description</h2>
 <p>Sésame est une application open source conçue pour faciliter la synchronisation d&#39;identités entre différentes sources de données, y compris des bases de données, des annuaires LDAP/Active Directory et des applications tierces, vers des serveurs OpenLDAP ou Active Directory. Le projet se compose de deux modules principaux : l&#39;orchestrateur et le démon.</p>
+<h2>Sesame Orchestrateur</h2>
+<p>API du projet SESAME</p>
 <h2>Architecture du projet</h2>
 <p><a href="https://www.figma.com/file/OplQ0tHFHS5rFz5K6OCgEd/Sesame?type=whiteboard&node-id=0%3A1&t=ZiPEDwJPp0id8frN-1">Figma</a></p>
-<h2>Modules</h2>
-<h3>Orchestrateur</h3>
-<ul>
-<li>Gère la synchronisation des identités.</li>
-<li>Maintient une base d&#39;identités pour faciliter la synchronisation.</li>
-<li>Permet la configuration de schémas additionnels pour une flexibilité totale.</li>
-<li>Expose des entrypoints via une API REST avec des tokens JWT.</li>
-</ul>
-<h3>Deamon</h3>
-<ul>
-<li>Déclenche les scripts backend pour effectuer les opérations de synchronisation.</li>
-<li>Utilise BullMQ et Redis pour communiquer avec l&#39;orchestrateur.</li>
-</ul>
-<h2>Schémas d&#39;Identité</h2>
-<ul>
-<li>Utilise le schéma LDAP <code>InetOrgPerson</code> pour stocker les informations dans une base de données MongoDB.</li>
-<li>Possibilité de configurer des schémas additionnels pour des champs différents dans chaque enregistrement.</li>
-<li>Permet de définir le typage, les règles, et la présence des champs dans les identités.</li>
-<li>Schémas optionnels tels que <code>Supann</code> et/ou <code>Renater</code> pour une utilisation fréquente.</li>
-</ul>
-<h2>Technologies utilisées</h2>
-<ul>
-<li>Langages : NodeJS et NestJS.</li>
-<li>Communication Démon-Orchestrateur : BullMQ et Redis.</li>
-<li>Authentification Orchestrateur : Comptes stockés dans MongoDB, mots de passe dans un serveur tiers (OpenLDAP).</li>
-<li>Backends : Scripts système en Python, PowerShell, Perl, Bash, etc.</li>
-</ul>
-<h2>Interfaces Utilisateur</h2>
-<ul>
-<li>Frontend : Interfaces permettant la configuration de l&#39;orchestrateur et la manipulation des données à importer.</li>
-</ul>
-<h2>Conclusion</h2>
-<p>Sésame offre une solution puissante et flexible pour la synchronisation d&#39;identités à partir de diverses sources vers des serveurs cibles. Son architecture modulaire et ses fonctionnalités avancées en font un outil idéal pour les environnements complexes nécessitant une gestion fine des schémas et des processus de synchronisation.</p>
-<h2>Variables d&#39;environnements</h2>
-<b>Example :</b><div><pre class="line-numbers"><code class="language-none">#Host Redis
-REDIS_HOST=redis
-#Port Redis
-REDIS_PORT=6379
-# redis credentials (si ces variables n existe pas, pas d&#39;authentification par defaut
-REDIS_USER=monUser
-REDIS_PASSWORD=xx
-#Log level  ( fatal,error,warn,info,debug)
-LOG_LEVEL=info
-#Nom de la queue (bullMQ) Redis
-NAME_QUEUE=backend</code></pre></div>
+<h2>Documentation</h2>
+<p><a href="https://libertech-fr.github.io/sesame-doc/"> Aller à la documentation</a></p>
+
 
 
 

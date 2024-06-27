@@ -56,10 +56,10 @@ export class AgentsCreateDto extends CustomFieldsDto {
   @ApiProperty()
   public baseURL?: string;
 
-  @IsArray()
-  @IsString({ each: true })
-  @ApiProperty({ type: [String] })
-  public roles: string[];
+  // @IsArray()
+  // @IsString({ each: true })
+  // @ApiProperty({ type: [String] })
+  // public roles: string[];
 
   @ValidateNested()
   @Type(() => SecurityPartDTO)
@@ -78,4 +78,4 @@ export class AgentsDto extends AgentsCreateDto {
   public _id: string;
 }
 
-export class AgentsUpdateDto extends PartialType(AgentsCreateDto) {}
+export class AgentsUpdateDto extends PartialType(AgentsCreateDto) { }

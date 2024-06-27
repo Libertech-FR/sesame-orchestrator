@@ -52,6 +52,9 @@ export class inetOrgPerson extends Document {
   departmentNumber: string;
 
   @Prop()
+  jpegPhoto?: string;
+
+  @Prop()
   userCertificate?: string;
 
   @Prop()

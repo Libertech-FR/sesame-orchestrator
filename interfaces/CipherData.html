@@ -331,12 +331,12 @@ export class PasswdService extends AbstractService {
 
   public async reset(data: ResetPasswordDto): Promise&lt;[Jobs, any]&gt; {
     const tokenData &#x3D; await this.decryptToken(data.token);
-    const identity &#x3D; await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: tokenData.uid });
+    const identity &#x3D; await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: tokenData.uid }) as Identities;
 
     return await this.backends.executeJob(
       ActionType.IDENTITY_PASSWORD_RESET,
       identity._id,
-      { uid: tokenData.uid, newPassword: data.newPassword },
+      { uid: tokenData.uid, newPassword: data.newPassword, ...pick(identity, [&#x27;inetOrgPerson&#x27;]) },
       {
         async: false,
       },

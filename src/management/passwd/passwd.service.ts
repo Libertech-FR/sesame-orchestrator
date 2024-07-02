@@ -95,12 +95,12 @@ export class PasswdService extends AbstractService {
 
   public async reset(data: ResetPasswordDto): Promise<[Jobs, any]> {
     const tokenData = await this.decryptToken(data.token);
-    const identity = await this.identities.findOne({ 'inetOrgPerson.uid': tokenData.uid });
+    const identity = await this.identities.findOne({ 'inetOrgPerson.uid': tokenData.uid }) as Identities;
 
     return await this.backends.executeJob(
       ActionType.IDENTITY_PASSWORD_RESET,
       identity._id,
-      { uid: tokenData.uid, newPassword: data.newPassword },
+      { uid: tokenData.uid, newPassword: data.newPassword, ...pick(identity, ['inetOrgPerson']) },
       {
         async: false,
       },

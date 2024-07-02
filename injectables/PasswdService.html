@@ -235,7 +235,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/management/passwd/passwd.service.ts:32</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/management/passwd/passwd.service.ts:34</a></div>
                             </td>
                         </tr>
 
@@ -325,8 +325,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="55"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:55</a></div>
                         </td>
                     </tr>
 
@@ -395,8 +395,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -465,8 +465,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -535,8 +535,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="91"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:91</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -614,7 +614,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/management/passwd/passwd.service.ts:28</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/management/passwd/passwd.service.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -647,7 +647,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/management/passwd/passwd.service.ts:27</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/management/passwd/passwd.service.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -680,7 +680,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/management/passwd/passwd.service.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/management/passwd/passwd.service.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -713,7 +713,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/management/passwd/passwd.service.ts:32</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/management/passwd/passwd.service.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -871,6 +871,8 @@ import { AskTokenDto } from &#x27;./dto/ask-token.dto&#x27;;
 import { ChangePasswordDto } from &#x27;./dto/change-password.dto&#x27;;
 import { ResetPasswordDto } from &#x27;./dto/reset-password.dto&#x27;;
 import { IdentitiesService } from &#x27;../identities/identities.service&#x27;;
+import { pick } from &#x27;radash&#x27;;
+import { Identities } from &#x27;../identities/_schemas/identities.schema&#x27;;
 
 interface TokenData {
   k: string;
@@ -901,9 +903,12 @@ export class PasswdService extends AbstractService {
   }
 
   public async change(passwdDto: ChangePasswordDto): Promise&lt;[Jobs, any]&gt; {
-    const identity &#x3D; await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: passwdDto.uid });
+    const identity &#x3D; await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: passwdDto.uid }) as Identities;
 
-    return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, identity._id, passwdDto, {
+    return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, identity._id, {
+      ...passwdDto,
+      ...pick(identity, [&#x27;inetOrgPerson&#x27;]),
+    }, {
       async: false,
     });
   }

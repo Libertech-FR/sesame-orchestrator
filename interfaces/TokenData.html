@@ -285,6 +285,8 @@ import { AskTokenDto } from &#x27;./dto/ask-token.dto&#x27;;
 import { ChangePasswordDto } from &#x27;./dto/change-password.dto&#x27;;
 import { ResetPasswordDto } from &#x27;./dto/reset-password.dto&#x27;;
 import { IdentitiesService } from &#x27;../identities/identities.service&#x27;;
+import { pick } from &#x27;radash&#x27;;
+import { Identities } from &#x27;../identities/_schemas/identities.schema&#x27;;
 
 interface TokenData {
   k: string;
@@ -315,9 +317,12 @@ export class PasswdService extends AbstractService {
   }
 
   public async change(passwdDto: ChangePasswordDto): Promise&lt;[Jobs, any]&gt; {
-    const identity &#x3D; await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: passwdDto.uid });
+    const identity &#x3D; await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: passwdDto.uid }) as Identities;
 
-    return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, identity._id, passwdDto, {
+    return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, identity._id, {
+      ...passwdDto,
+      ...pick(identity, [&#x27;inetOrgPerson&#x27;]),
+    }, {
       async: false,
     });
   }

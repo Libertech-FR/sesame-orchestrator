@@ -493,7 +493,7 @@ export class IdentitiesValidationController extends AbstractController {
   @Get()
   @ApiOperation({ summary: &#x27;Liste les schémas personnalisés d\&#x27;identités&#x27; })
   async searchAll(@Res() res: Response): Promise&lt;any&gt; {
-    const result &#x3D; await this._service.findAll();
+    const [result] &#x3D; await this._service.findAll();
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: result,

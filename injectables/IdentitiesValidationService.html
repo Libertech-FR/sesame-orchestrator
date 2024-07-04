@@ -283,8 +283,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="167"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:167</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="169"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:169</a></div>
                         </td>
                     </tr>
 
@@ -822,10 +822,12 @@ export class IdentitiesValidationService {
 
     const result &#x3D; [];
     for (const fileObj of files) {
+      if (/.yml$/.test(fileObj.file) &#x3D;&#x3D;&#x3D; false) continue;
+
       const filePath &#x3D; &#x60;${fileObj.path}/${fileObj.file}&#x60;;
       const data &#x3D; parse(readFileSync(filePath, &#x27;utf-8&#x27;));
       const key &#x3D; fileObj.file.replace(&#x27;.yml&#x27;, &#x27;&#x27;);
-      result.push({ [key]: data, source: fileObj.source });
+      result.push({ [key]: data, source: fileObj.source, name: key });
     }
     return [result, files.length];
   }

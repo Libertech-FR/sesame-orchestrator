@@ -156,10 +156,12 @@ export class IdentitiesValidationService {
 
     const result = [];
     for (const fileObj of files) {
+      if (/.yml$/.test(fileObj.file) === false) continue;
+
       const filePath = `${fileObj.path}/${fileObj.file}`;
       const data = parse(readFileSync(filePath, 'utf-8'));
       const key = fileObj.file.replace('.yml', '');
-      result.push({ [key]: data, source: fileObj.source });
+      result.push({ [key]: data, source: fileObj.source, name: key });
     }
     return [result, files.length];
   }

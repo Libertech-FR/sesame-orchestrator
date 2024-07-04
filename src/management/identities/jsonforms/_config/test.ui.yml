@@ -1,0 +1,15 @@
+type: Group
+label: Identité
+elements:
+- type: HorizontalLayout
+  elements:
+  - type: Control
+    label: test1
+    scope: "#/properties/test1"
+    options:
+      required: true
+  - type: Control
+    label: test2
+    scope: "#/properties/test2"
+    options:
+      required: true

@@ -283,8 +283,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="169"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:169</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="180"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:180</a></div>
                         </td>
                     </tr>
 
@@ -806,16 +806,27 @@ export class IdentitiesValidationService {
     const hardConfigPath &#x3D; &#x27;./src/management/identities/validations/_config&#x27;;
     const dynamicConfigPath &#x3D; &#x27;./configs/identities/validations&#x27;;
     // Retrieve files from each directory and tag them with their source
-    const hardConfigFiles &#x3D; readdirSync(hardConfigPath).map((file) &#x3D;&gt; ({
-      file,
-      path: hardConfigPath,
-      source: &#x27;hardConfig&#x27;,
-    }));
-    const dynamicConfigFiles &#x3D; readdirSync(dynamicConfigPath).map((file) &#x3D;&gt; ({
-      file,
-      path: dynamicConfigPath,
-      source: &#x27;dynamicConfig&#x27;,
-    }));
+    let hardConfigFiles &#x3D; [];
+    try {
+      hardConfigFiles &#x3D; readdirSync(hardConfigPath).map((file) &#x3D;&gt; ({
+        file,
+        path: hardConfigPath,
+        source: &#x27;hardConfig&#x27;,
+      }));
+    } catch (error) {
+      this.logger.error(&#x60;Error reading hard config files: ${error.message}&#x60;);
+    }
+
+    let dynamicConfigFiles &#x3D; [];
+    try {
+      dynamicConfigFiles &#x3D; readdirSync(dynamicConfigPath).map((file) &#x3D;&gt; ({
+        file,
+        path: dynamicConfigPath,
+        source: &#x27;dynamicConfig&#x27;,
+      }));
+    } catch (error) {
+      this.logger.error(&#x60;Error reading dynamic config files: ${error.message}&#x60;);
+    }
 
     // Combine the file arrays
     const files &#x3D; [...hardConfigFiles, ...dynamicConfigFiles];

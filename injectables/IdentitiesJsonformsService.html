@@ -257,8 +257,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="115"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:115</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="128"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:128</a></div>
                         </td>
                     </tr>
 
@@ -296,8 +296,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="132"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:132</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="157"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:157</a></div>
                         </td>
                     </tr>
 
@@ -807,15 +807,28 @@ export class IdentitiesJsonformsService extends AbstractService {
   async generateAll(): Promise&lt;any&gt; {
     const hardConfigPath &#x3D; &#x27;./src/management/identities/validations/_config&#x27;;
     const dynamicConfigPath &#x3D; &#x27;./configs/identities/validations&#x27;;
-    const hardConfigFiles &#x3D; readdirSync(hardConfigPath).map((file) &#x3D;&gt; ({ schema: file, path: hardConfigPath }));
-    const dynamicConfigFiles &#x3D; readdirSync(dynamicConfigPath).map((file) &#x3D;&gt; ({
-      schema: file,
-      path: dynamicConfigPath,
-    }));
+
+    let hardConfigFiles &#x3D; [];
+    try {
+      hardConfigFiles &#x3D; readdirSync(hardConfigPath).map((file) &#x3D;&gt; ({ schema: file, path: hardConfigPath }));
+    } catch (error) {
+      console.log(&#x60;Error reading hard config files: ${error.message}&#x60;);
+    }
+
+    let dynamicConfigFiles &#x3D; [];
+    try {
+      dynamicConfigFiles &#x3D; readdirSync(dynamicConfigPath).map((file) &#x3D;&gt; ({
+        schema: file,
+        path: dynamicConfigPath,
+      }));
+    } catch (error) {
+      console.log(&#x60;Error reading dynamic config files: ${error.message}&#x60;);
+    }
 
     console.log(&#x27;Generating jsonforms for all schemas&#x27;);
     console.log(&#x27;Hard config files:&#x27;, hardConfigFiles);
     console.log(&#x27;Dynamic config files:&#x27;, dynamicConfigFiles);
+
     const files &#x3D; [...hardConfigFiles, ...dynamicConfigFiles].filter((file) &#x3D;&gt; file.schema.endsWith(&#x27;.yml&#x27;));
     for (const file of files) {
       this.generate(file);
@@ -826,8 +839,20 @@ export class IdentitiesJsonformsService extends AbstractService {
   async findAll(): Promise&lt;any&gt; {
     const hardConfigPath &#x3D; &#x27;./src/management/identities/jsonforms/_config&#x27;;
     const dynamicConfigPath &#x3D; &#x27;./configs/identities/jsonforms&#x27;;
-    const hardConfigFiles &#x3D; readdirSync(hardConfigPath).map((file) &#x3D;&gt; ({ file, path: hardConfigPath }));
-    const dynamicConfigFiles &#x3D; readdirSync(dynamicConfigPath).map((file) &#x3D;&gt; ({ file, path: dynamicConfigPath }));
+
+    let hardConfigFiles &#x3D; [];
+    try {
+      hardConfigFiles &#x3D; readdirSync(hardConfigPath).map((file) &#x3D;&gt; ({ file, path: hardConfigPath }));
+    } catch (error) {
+      console.log(&#x60;Error reading hard config files: ${error.message}&#x60;);
+    }
+
+    let dynamicConfigFiles &#x3D; [];
+    try {
+      dynamicConfigFiles &#x3D; readdirSync(dynamicConfigPath).map((file) &#x3D;&gt; ({ file, path: dynamicConfigPath }));
+    } catch (error) {
+      console.log(&#x60;Error reading dynamic config files: ${error.message}&#x60;);
+    }
 
     const files &#x3D; [...hardConfigFiles, ...dynamicConfigFiles];
     const result &#x3D; [];

@@ -140,16 +140,27 @@ export class IdentitiesValidationService {
     const hardConfigPath = './src/management/identities/validations/_config';
     const dynamicConfigPath = './configs/identities/validations';
     // Retrieve files from each directory and tag them with their source
-    const hardConfigFiles = readdirSync(hardConfigPath).map((file) => ({
-      file,
-      path: hardConfigPath,
-      source: 'hardConfig',
-    }));
-    const dynamicConfigFiles = readdirSync(dynamicConfigPath).map((file) => ({
-      file,
-      path: dynamicConfigPath,
-      source: 'dynamicConfig',
-    }));
+    let hardConfigFiles = [];
+    try {
+      hardConfigFiles = readdirSync(hardConfigPath).map((file) => ({
+        file,
+        path: hardConfigPath,
+        source: 'hardConfig',
+      }));
+    } catch (error) {
+      this.logger.error(`Error reading hard config files: ${error.message}`);
+    }
+
+    let dynamicConfigFiles = [];
+    try {
+      dynamicConfigFiles = readdirSync(dynamicConfigPath).map((file) => ({
+        file,
+        path: dynamicConfigPath,
+        source: 'dynamicConfig',
+      }));
+    } catch (error) {
+      this.logger.error(`Error reading dynamic config files: ${error.message}`);
+    }
 
     // Combine the file arrays
     const files = [...hardConfigFiles, ...dynamicConfigFiles];

@@ -96,15 +96,28 @@ export class IdentitiesJsonformsService extends AbstractService {
   async generateAll(): Promise<any> {
     const hardConfigPath = './src/management/identities/validations/_config';
     const dynamicConfigPath = './configs/identities/validations';
-    const hardConfigFiles = readdirSync(hardConfigPath).map((file) => ({ schema: file, path: hardConfigPath }));
-    const dynamicConfigFiles = readdirSync(dynamicConfigPath).map((file) => ({
-      schema: file,
-      path: dynamicConfigPath,
-    }));
+
+    let hardConfigFiles = [];
+    try {
+      hardConfigFiles = readdirSync(hardConfigPath).map((file) => ({ schema: file, path: hardConfigPath }));
+    } catch (error) {
+      console.log(`Error reading hard config files: ${error.message}`);
+    }
+
+    let dynamicConfigFiles = [];
+    try {
+      dynamicConfigFiles = readdirSync(dynamicConfigPath).map((file) => ({
+        schema: file,
+        path: dynamicConfigPath,
+      }));
+    } catch (error) {
+      console.log(`Error reading dynamic config files: ${error.message}`);
+    }
 
     console.log('Generating jsonforms for all schemas');
     console.log('Hard config files:', hardConfigFiles);
     console.log('Dynamic config files:', dynamicConfigFiles);
+
     const files = [...hardConfigFiles, ...dynamicConfigFiles].filter((file) => file.schema.endsWith('.yml'));
     for (const file of files) {
       this.generate(file);
@@ -115,8 +128,20 @@ export class IdentitiesJsonformsService extends AbstractService {
   async findAll(): Promise<any> {
     const hardConfigPath = './src/management/identities/jsonforms/_config';
     const dynamicConfigPath = './configs/identities/jsonforms';
-    const hardConfigFiles = readdirSync(hardConfigPath).map((file) => ({ file, path: hardConfigPath }));
-    const dynamicConfigFiles = readdirSync(dynamicConfigPath).map((file) => ({ file, path: dynamicConfigPath }));
+
+    let hardConfigFiles = [];
+    try {
+      hardConfigFiles = readdirSync(hardConfigPath).map((file) => ({ file, path: hardConfigPath }));
+    } catch (error) {
+      console.log(`Error reading hard config files: ${error.message}`);
+    }
+
+    let dynamicConfigFiles = [];
+    try {
+      dynamicConfigFiles = readdirSync(dynamicConfigPath).map((file) => ({ file, path: dynamicConfigPath }));
+    } catch (error) {
+      console.log(`Error reading dynamic config files: ${error.message}`);
+    }
 
     const files = [...hardConfigFiles, ...dynamicConfigFiles];
     const result = [];

@@ -207,6 +207,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       .exec();
     if (identity) {
       this.logger.debug(`Fingerprint matched for <${identity._id}> (${fingerprint}).`);
+      this._model.findByIdAndUpdate(identity._id, { lastSync: new Date() }).exec();
       throw new HttpException('Fingerprint matched.', HttpStatus.NOT_MODIFIED);
     }
   }

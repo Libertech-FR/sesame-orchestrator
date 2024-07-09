@@ -403,7 +403,7 @@ export class AppController extends AbstractController {
     @Query(&#x27;current&#x27;) current?: string,
   ): Promise&lt;Response&gt; {
     let data: GithubUpdate[] | object &#x3D; {}
-    console.log(&#x27;this.storage&#x27;, storage.get(project))
+    // console.log(&#x27;this.storage&#x27;, storage.get(project))
     if (storage.has(project)) {
       this.logger.log(&#x60;Fetching ${project} tags from cache&#x60;)
       data &#x3D; storage.get(project) as GithubUpdate[] | object
@@ -412,7 +412,7 @@ export class AppController extends AbstractController {
       const update &#x3D; await fetch(&#x60;https://api.github.com/repos/Libertech-FR/${project}/tags&#x60;)
       data &#x3D; await update.json()
       storage.set(project, data)
-      console.log(&#x27;this.storage&#x27;, storage.get(project))
+      // console.log(&#x27;this.storage&#x27;, storage.get(project))
     }
     if (!Array.isArray(data)) {
       throw new BadRequestException(&#x60;Invalid data from Github &lt;${JSON.stringify(data)}&gt;&#x60;)

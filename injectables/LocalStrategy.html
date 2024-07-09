@@ -351,7 +351,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   ): Promise&lt;void&gt; {
     Logger.debug(&#x60;Try to authenticate user : ${username}&#x60;, &#x27;LocalStrategy&#x27;);
     const user &#x3D; await this.auth.authenticateWithLocal(username, password);
-    console.log(user);
+    // console.log(user);
     if (!user) done(new UnauthorizedException(), false);
     // if (user.state.current !&#x3D;&#x3D; IdentityState.ACTIVE) done(new ForbiddenException(), false)
     done(null, omit(user.toObject(), ExcludeAgentType) as AgentType);

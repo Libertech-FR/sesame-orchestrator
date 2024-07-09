@@ -1242,7 +1242,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
   public async authenticateWithLocal(username: string, password: string): Promise&lt;Agents | null&gt; {
     try {
       const user &#x3D; await this.agentsService.findOne&lt;Agents&gt;({ username });
-      console.log(user);
+      // console.log(user);
       if (user &amp;&amp; (await argon2Verify(user.password, password))) {
         return user;
       }

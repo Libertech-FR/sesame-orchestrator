@@ -202,8 +202,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">src/app.controller.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">src/app.controller.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -281,8 +281,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">src/app.controller.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">src/app.controller.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -362,6 +362,7 @@ import { Response } from &#x27;express&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { Public } from &#x27;./_common/decorators/public.decorator&#x27;;
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
+import LRU from &#x27;lru-cache&#x27;;
 
 interface GithubUpdate {
   name?: string;
@@ -373,6 +374,8 @@ interface GithubUpdate {
   tarball_url?: string;
   node_id?: string;
 }
+
+const storage &#x3D; new LRU({ ttl: 60 * 60 * 1000 })
 
 @Public()
 @Controller()
@@ -399,8 +402,21 @@ export class AppController extends AbstractController {
     @Param(&#x27;project&#x27;) project?: string,
     @Query(&#x27;current&#x27;) current?: string,
   ): Promise&lt;Response&gt; {
-    const update &#x3D; await fetch(&#x60;https://api.github.com/repos/Libertech-FR/${project}/tags&#x60;)
-    const data: GithubUpdate &#x3D; await update.json()
+    let data: GithubUpdate[] | object &#x3D; {}
+    console.log(&#x27;this.storage&#x27;, storage.get(project))
+    if (storage.has(project)) {
+      this.logger.log(&#x60;Fetching ${project} tags from cache&#x60;)
+      data &#x3D; storage.get(project) as GithubUpdate[] | object
+    } else {
+      this.logger.log(&#x60;Fetching ${project} tags&#x60;)
+      const update &#x3D; await fetch(&#x60;https://api.github.com/repos/Libertech-FR/${project}/tags&#x60;)
+      data &#x3D; await update.json()
+      storage.set(project, data)
+      console.log(&#x27;this.storage&#x27;, storage.get(project))
+    }
+    if (!Array.isArray(data)) {
+      throw new BadRequestException(&#x60;Invalid data from Github &lt;${JSON.stringify(data)}&gt;&#x60;)
+    }
     const lastVersion &#x3D; data[0].name.replace(/^v/, &#x27;&#x27;)
     const pkgInfo &#x3D; this.appService.getInfo()
     const currentVersion &#x3D; current || pkgInfo.version
@@ -416,10 +432,12 @@ export class AppController extends AbstractController {
     const updateAvailable &#x3D; currentMajor &gt; lastMajor || currentMinor &gt; lastMinor || currentPatch &gt; lastPatch
 
     return res.json({
-      project,
-      updateAvailable,
-      currentVersion,
-      lastVersion,
+      data: {
+        project,
+        updateAvailable,
+        currentVersion,
+        lastVersion,
+      },
     });
   }
 }

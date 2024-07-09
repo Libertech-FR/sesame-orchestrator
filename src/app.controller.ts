@@ -4,6 +4,7 @@ import { Response } from 'express';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { Public } from './_common/decorators/public.decorator';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import LRU from 'lru-cache';
 
 interface GithubUpdate {
   name?: string;
@@ -15,6 +16,8 @@ interface GithubUpdate {
   tarball_url?: string;
   node_id?: string;
 }
+
+const storage = new LRU({ ttl: 60 * 60 * 1000 })
 
 @Public()
 @Controller()
@@ -41,8 +44,21 @@ export class AppController extends AbstractController {
     @Param('project') project?: string,
     @Query('current') current?: string,
   ): Promise<Response> {
-    const update = await fetch(`https://api.github.com/repos/Libertech-FR/${project}/tags`)
-    const data: GithubUpdate = await update.json()
+    let data: GithubUpdate[] | object = {}
+    console.log('this.storage', storage.get(project))
+    if (storage.has(project)) {
+      this.logger.log(`Fetching ${project} tags from cache`)
+      data = storage.get(project) as GithubUpdate[] | object
+    } else {
+      this.logger.log(`Fetching ${project} tags`)
+      const update = await fetch(`https://api.github.com/repos/Libertech-FR/${project}/tags`)
+      data = await update.json()
+      storage.set(project, data)
+      console.log('this.storage', storage.get(project))
+    }
+    if (!Array.isArray(data)) {
+      throw new BadRequestException(`Invalid data from Github <${JSON.stringify(data)}>`)
+    }
     const lastVersion = data[0].name.replace(/^v/, '')
     const pkgInfo = this.appService.getInfo()
     const currentVersion = current || pkgInfo.version
@@ -58,10 +74,12 @@ export class AppController extends AbstractController {
     const updateAvailable = currentMajor > lastMajor || currentMinor > lastMinor || currentPatch > lastPatch
 
     return res.json({
-      project,
-      updateAvailable,
-      currentVersion,
-      lastVersion,
+      data: {
+        project,
+        updateAvailable,
+        currentVersion,
+        lastVersion,
+      },
     });
   }
 }

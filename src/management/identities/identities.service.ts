@@ -272,7 +272,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     if (error instanceof ValidationSchemaException) {
       this.logger.warn(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
       identity.additionalFields.validations = error.getValidations() as any;
-      console.log('identity.state', identity.state)
+      // console.log('identity.state', identity.state)
       if (identity.state === IdentityState.TO_CREATE) {
         this.logger.warn(`${logPrefix} State set to TO_COMPLETE.`);
         identity.state = IdentityState.TO_COMPLETE;

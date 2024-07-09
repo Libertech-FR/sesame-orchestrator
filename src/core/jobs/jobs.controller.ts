@@ -36,7 +36,7 @@ export class JobsController extends AbstractController {
     @SearchFilterSchema({ unsafe: true }) searchFilterSchema: FilterSchema,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
   ): Promise<Response> {
-    console.log('req', req.query)
+    // console.log('req', req.query)
 
     //TODO: search tree by parentId
     const [data, total] = await this._service.findAndCount(

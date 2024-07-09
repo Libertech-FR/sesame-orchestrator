@@ -1,6 +1,6 @@
 {
   "name": "sesame-orchestrator",
-  "version": "0.0.46",
+  "version": "0.1.0",
   "description": "Synchronisation d'Identités Multi-sources",
   "private": true,
   "contributors": [

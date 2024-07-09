@@ -24,6 +24,9 @@ export class Identities extends AbstractSchema {
 
   @Prop({ type: String })
   fingerprint: string;
+
+  @Prop({ type: Date })
+  lastSync?: Date;
 }
 
 export const IdentitiesSchema = SchemaFactory.createForClass(Identities);

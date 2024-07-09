@@ -46,7 +46,7 @@ export class PasswdService extends AbstractService {
 
     return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, identity._id, {
       ...passwdDto,
-      ...pick(identity, ['inetOrgPerson']),
+      ...pick(identity.toJSON(), ['inetOrgPerson']),
     }, {
       async: false,
     });

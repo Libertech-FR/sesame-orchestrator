@@ -638,8 +638,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="214"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:214</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="215"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:215</a></div>
                         </td>
                     </tr>
 
@@ -727,8 +727,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="261"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:261</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="262"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:262</a></div>
                         </td>
                     </tr>
 
@@ -821,8 +821,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="239"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:239</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="240"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:240</a></div>
                         </td>
                     </tr>
 
@@ -2281,6 +2281,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       .exec();
     if (identity) {
       this.logger.debug(&#x60;Fingerprint matched for &lt;${identity._id}&gt; (${fingerprint}).&#x60;);
+      this._model.findByIdAndUpdate(identity._id, { lastSync: new Date() }).exec();
       throw new HttpException(&#x27;Fingerprint matched.&#x27;, HttpStatus.NOT_MODIFIED);
     }
   }

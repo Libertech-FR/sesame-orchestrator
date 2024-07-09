@@ -97,6 +97,7 @@ export class IdentitiesService extends AbstractServiceSchema {
         $set: {
           ...crushedUpdate,
           'additionalFields.objectClasses': data.additionalFields.objectClasses,
+          'lastSync': new Date(),
         },
       },
       options,

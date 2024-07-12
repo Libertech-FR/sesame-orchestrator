@@ -409,7 +409,9 @@ export class AppController extends AbstractController {
       data &#x3D; storage.get(project) as GithubUpdate[] | object
     } else {
       this.logger.log(&#x60;Fetching ${project} tags&#x60;)
-      const update &#x3D; await fetch(&#x60;https://api.github.com/repos/Libertech-FR/${project}/tags&#x60;)
+      const update &#x3D; await fetch(&#x60;https://api.github.com/repos/Libertech-FR/${project}/tags&#x60;, {
+        signal: AbortSignal.timeout(1000),
+      })
       data &#x3D; await update.json()
       storage.set(project, data)
       // console.log(&#x27;this.storage&#x27;, storage.get(project))

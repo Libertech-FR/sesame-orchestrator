@@ -218,8 +218,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -358,8 +358,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="107"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:107</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="108"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:108</a></div>
                         </td>
                     </tr>
 
@@ -449,8 +449,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:63</a></div>
                         </td>
                     </tr>
 
@@ -540,8 +540,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -637,6 +637,7 @@ import { ExecuteJobDto } from &#x27;./_dto/execute-job.dto&#x27;;
 import { BackendsService } from &#x27;./backends.service&#x27;;
 import { SyncIdentitiesDto } from &#x27;./_dto/sync-identities.dto&#x27;;
 import { Types } from &#x27;mongoose&#x27;;
+import { ActionType } from &#x27;./_enum/action-type.enum&#x27;;
 
 function fireMessage(observer: Subscriber&lt;MessageEvent&gt;, channel: string, message: any, loggername: string) {
   try {
@@ -729,17 +730,18 @@ export class BackendsController {
     });
 
     return new Observable((observer) &#x3D;&gt; {
-      this.backendsService.queueEvents.on(&#x27;added&#x27;, (added) &#x3D;&gt;
-        fireMessage(observer, &#x27;job:added&#x27;, added, this.constructor.name),
-      );
+      this.backendsService.queueEvents.on(&#x27;added&#x27;, (added) &#x3D;&gt; {
+        if ([ActionType.DUMP_PACKAGE_CONFIG].includes(&lt;ActionType&gt;added.name)) return;
+        return fireMessage(observer, &#x27;job:added&#x27;, added, this.constructor.name);
+      });
 
-      this.backendsService.queueEvents.on(&#x27;completed&#x27;, (completed) &#x3D;&gt;
-        fireMessage(observer, &#x27;job:completed&#x27;, completed, this.constructor.name),
-      );
+      this.backendsService.queueEvents.on(&#x27;completed&#x27;, (completed) &#x3D;&gt; {
+        return fireMessage(observer, &#x27;job:completed&#x27;, completed, this.constructor.name);
+      });
 
-      this.backendsService.queueEvents.on(&#x27;failed&#x27;, (failed) &#x3D;&gt;
-        fireMessage(observer, &#x27;job:failed&#x27;, failed, this.constructor.name),
-      );
+      this.backendsService.queueEvents.on(&#x27;failed&#x27;, (failed) &#x3D;&gt; {
+        return fireMessage(observer, &#x27;job:failed&#x27;, failed, this.constructor.name);
+      });
     });
   }
 }

@@ -20,6 +20,7 @@ import { ExecuteJobDto } from './_dto/execute-job.dto';
 import { BackendsService } from './backends.service';
 import { SyncIdentitiesDto } from './_dto/sync-identities.dto';
 import { Types } from 'mongoose';
+import { ActionType } from './_enum/action-type.enum';
 
 function fireMessage(observer: Subscriber<MessageEvent>, channel: string, message: any, loggername: string) {
   try {
@@ -112,17 +113,18 @@ export class BackendsController {
     });
 
     return new Observable((observer) => {
-      this.backendsService.queueEvents.on('added', (added) =>
-        fireMessage(observer, 'job:added', added, this.constructor.name),
-      );
+      this.backendsService.queueEvents.on('added', (added) => {
+        if ([ActionType.DUMP_PACKAGE_CONFIG].includes(<ActionType>added.name)) return;
+        return fireMessage(observer, 'job:added', added, this.constructor.name);
+      });
 
-      this.backendsService.queueEvents.on('completed', (completed) =>
-        fireMessage(observer, 'job:completed', completed, this.constructor.name),
-      );
+      this.backendsService.queueEvents.on('completed', (completed) => {
+        return fireMessage(observer, 'job:completed', completed, this.constructor.name);
+      });
 
-      this.backendsService.queueEvents.on('failed', (failed) =>
-        fireMessage(observer, 'job:failed', failed, this.constructor.name),
-      );
+      this.backendsService.queueEvents.on('failed', (failed) => {
+        return fireMessage(observer, 'job:failed', failed, this.constructor.name);
+      });
     });
   }
 }

@@ -377,7 +377,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>search(res: Response, schema)</code>
+                    <code>search(res: Response, schema, mode: "create" | "update")</code>
                 </td>
             </tr>
 
@@ -427,6 +427,18 @@
                                         <tr>
                                                 <td>schema</td>
                                             <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>mode</td>
+                                            <td>
+                                                        <code>&quot;create&quot; | &quot;update&quot;</code>
                                             </td>
 
                                             <td>
@@ -531,7 +543,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, HttpStatus, Param, Post, Res } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, HttpStatus, Param, Post, Query, Res } from &#x27;@nestjs/common&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { IdentitiesJsonformsService } from &#x27;./identities.jsonforms.service&#x27;;
 import { Response } from &#x27;express&#x27;;
@@ -576,8 +588,8 @@ export class IdentitiesJsonFormsController extends AbstractController {
 
   @Get(&#x27;:schema&#x27;)
   @ApiOperation({ summary: &#x27;Récupère un JSON Forms d\&#x27;un schéma personnalisé&#x27; })
-  async search(@Res() res: Response, @Param(&#x27;schema&#x27;) schema): Promise&lt;any&gt; {
-    const result &#x3D; await this._service.findOne(schema);
+  async search(@Res() res: Response, @Param(&#x27;schema&#x27;) schema, @Query(&#x27;mode&#x27;) mode: &#x27;create&#x27; | &#x27;update&#x27;): Promise&lt;any&gt; {
+    const result &#x3D; await this._service.findOne(schema, { mode });
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: result,

@@ -184,6 +184,7 @@
                                 <a href="#findAll" >findAll</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findOne" >findOne</a>
                             </li>
@@ -280,6 +281,7 @@
                 <td class="col-md-4">
                     <a name="findOne"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findOne</b></span>
                         <a href="#findOne"><span class="icon ion-ios-link"></span></a>
@@ -289,7 +291,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findOne(schema)</code>
+                    <code>findOne(schema, options?: literal type)</code>
                 </td>
             </tr>
 
@@ -312,15 +314,30 @@
                                     <thead>
                                         <tr>
                                             <td>Name</td>
+                                                <td>Type</td>
                                             <td>Optional</td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
                                                 <td>schema</td>
+                                            <td>
+                                            </td>
 
                                             <td>
                                                     No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
                                             </td>
 
 
@@ -865,12 +882,24 @@ export class IdentitiesJsonformsService extends AbstractService {
     return [result, files.length];
   }
 
-  async findOne(schema): Promise&lt;any&gt; {
+  public async findOne(schema, options?: { mode: string }): Promise&lt;any&gt; {
+    options &#x3D; {
+      mode: &#x27;create&#x27;,
+      ...options,
+    };
+
     if (schema.endsWith(&#x27;.yml&#x27;)) schema &#x3D; schema.replace(&#x27;.yml&#x27;, &#x27;&#x27;);
-    const filePath &#x3D; this.resolveJsonFormPath(schema + &#x27;.ui&#x27;);
+
+    let filePath &#x3D; this.resolveJsonFormPath(schema + &#x27;.&#x27; + options?.mode + &#x27;.ui&#x27;)
+
+    if (!filePath) {
+      filePath &#x3D; this.resolveJsonFormPath(schema + &#x27;.ui&#x27;);
+    }
+
     if (!filePath) {
       throw new ValidationConfigException({ message: &#x60;File not found: ${schema}.ui.yml&#x60; });
     }
+
     return parse(readFileSync(filePath, &#x27;utf-8&#x27;));
   }
 }

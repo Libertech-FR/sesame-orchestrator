@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { IdentitiesJsonformsService } from './identities.jsonforms.service';
 import { Response } from 'express';
@@ -43,8 +43,8 @@ export class IdentitiesJsonFormsController extends AbstractController {
 
   @Get(':schema')
   @ApiOperation({ summary: 'Récupère un JSON Forms d\'un schéma personnalisé' })
-  async search(@Res() res: Response, @Param('schema') schema): Promise<any> {
-    const result = await this._service.findOne(schema);
+  async search(@Res() res: Response, @Param('schema') schema, @Query('mode') mode: 'create' | 'update'): Promise<any> {
+    const result = await this._service.findOne(schema, { mode });
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: result,

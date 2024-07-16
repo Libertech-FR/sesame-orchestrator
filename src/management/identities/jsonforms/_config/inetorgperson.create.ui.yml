@@ -9,11 +9,10 @@ elements:
     options:
       required: true
   - type: Control
-    label: Nom
+    label: Création Nom
     scope: "#/properties/sn"
     options:
       required: true
-      readonly: true
   - type: Control
     label: UID
     scope: "#/properties/uid"

@@ -40,3 +40,6 @@ docker/docker-compose.yml
 documentation/*
 .dev-token.json
 *.mongodb.js
+app/.idea/modules.xml
+app/.idea/app.iml
+app/.idea/inspectionProfiles/Project_Default.xml

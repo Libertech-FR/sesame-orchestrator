@@ -231,7 +231,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/core/backends/backends.service.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/core/backends/backends.service.ts:25</a></div>
                             </td>
                         </tr>
 
@@ -333,8 +333,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="207"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:207</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="206"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:206</a></div>
                         </td>
                     </tr>
 
@@ -445,7 +445,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:36</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:35</a></code>
 </div>
                         </td>
                     </tr>
@@ -485,8 +485,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="129"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:129</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="128"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:128</a></div>
                         </td>
                     </tr>
 
@@ -555,8 +555,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="169"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:169</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="168"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:168</a></div>
                         </td>
                     </tr>
 
@@ -900,7 +900,6 @@
   HttpException,
   HttpStatus,
   Injectable,
-  NotFoundException,
   UnprocessableEntityException,
 } from &#x27;@nestjs/common&#x27;;
 import { ModuleRef } from &#x27;@nestjs/core&#x27;;
@@ -1141,7 +1140,7 @@ export class BackendsService extends AbstractQueueProcessor {
       });
     }
 
-    if (concernedTo) {
+    if (concernedTo &amp;&amp; !!options?.updateStatus) {
       await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
         $set: {
           state: IdentityState.PROCESSING,
@@ -1154,6 +1153,7 @@ export class BackendsService extends AbstractQueueProcessor {
       try {
         const response &#x3D; await job.waitUntilFinished(this.queueEvents, options.syncTimeout || DEFAULT_SYNC_TIMEOUT);
         let jobStoreUpdated: ModifyResult&lt;Query&lt;Jobs, Jobs&gt;&gt; &#x3D; null;
+
         if (!options?.disableLogs) {
           jobStoreUpdated &#x3D; await this.jobsService.update&lt;Jobs&gt;(jobStore._id, {
             $set: {
@@ -1164,13 +1164,15 @@ export class BackendsService extends AbstractQueueProcessor {
             },
           });
         }
-        if (concernedTo) {
+
+        if (concernedTo &amp;&amp; !!options?.updateStatus) {
           await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
             $set: {
               state: IdentityState.SYNCED,
             },
           });
         }
+
         return [jobStoreUpdated as unknown as Jobs, response];
       } catch (err) {
         error &#x3D; err;
@@ -1190,7 +1192,7 @@ export class BackendsService extends AbstractQueueProcessor {
           },
         });
       }
-      if (concernedTo) {
+      if (concernedTo &amp;&amp; !!options?.updateStatus) {
         await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
           $set: {
             state: IdentityState.ON_ERROR,

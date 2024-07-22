@@ -314,8 +314,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -406,8 +406,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -498,8 +498,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -581,10 +581,18 @@ export class PasswdController {
   @ApiOperation({ summary: &#x27;Execute un job de changement de mot de passe sur le/les backends&#x27; })
   @ApiResponse({ status: HttpStatus.OK, description: &#x27;Mot de passe synchronisé sur le/les backends&#x27; })
   public async change(@Body() body: ChangePasswordDto, @Res() res: Response): Promise&lt;Response&gt; {
+    const debug &#x3D; {}
     const [_, data] &#x3D; await this.passwdService.change(body);
     this.logger.log(&#x60;Call passwd change for : ${body.uid}&#x60;);
 
-    return res.status(HttpStatus.OK).json(data);
+    if (process.env.NODE_ENV &#x3D;&#x3D;&#x3D; &#x27;development&#x27;) {
+      debug[&#x27;_debug&#x27;] &#x3D; data;
+    }
+
+    return res.status(HttpStatus.OK).json({
+      message: &#x27;Password changed&#x27;,
+      ...debug,
+    });
   }
 
   @Post(&#x27;gettoken&#x27;)
@@ -594,7 +602,7 @@ export class PasswdController {
     this.logger.log(&#x27;GetToken for : &#x27; + asktoken.uid);
     const token &#x3D; await this.passwdService.askToken(asktoken);
 
-    return res.status(HttpStatus.OK).json({ token });
+    return res.status(HttpStatus.OK).json({ data: { token } });
   }
 
   @Post(&#x27;verifytoken&#x27;)
@@ -604,16 +612,24 @@ export class PasswdController {
     this.logger.log(&#x27;Verify token : &#x27; + body.token);
     const data &#x3D; await this.passwdService.decryptToken(body.token);
 
-    return res.status(HttpStatus.OK).json(data);
+    return res.status(HttpStatus.OK).json({ data });
   }
 
   @Post(&#x27;reset&#x27;)
   @ApiOperation({ summary: &#x27;Execute un job de réinitialisation de mot de passe sur le/les backends&#x27; })
   @ApiResponse({ status: HttpStatus.OK })
   public async reset(@Body() body: ResetPasswordDto, @Res() res: Response): Promise&lt;Response&gt; {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const debug &#x3D; {}
     const [_, data] &#x3D; await this.passwdService.reset(body);
-    return res.status(HttpStatus.OK).json(data);
+
+    if (process.env.NODE_ENV &#x3D;&#x3D;&#x3D; &#x27;development&#x27;) {
+      debug[&#x27;_debug&#x27;] &#x3D; data;
+    }
+
+    return res.status(HttpStatus.OK).json({
+      message: &#x27;Password changed&#x27;,
+      ...debug,
+    });
   }
 }
 </code></pre>

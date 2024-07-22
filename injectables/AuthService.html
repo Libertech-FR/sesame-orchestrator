@@ -454,8 +454,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="195"
-                                    class="link-to-prism">src/core/auth/auth.service.ts:195</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="193"
+                                    class="link-to-prism">src/core/auth/auth.service.ts:193</a></div>
                         </td>
                     </tr>
 
@@ -524,8 +524,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="118"
-                                    class="link-to-prism">src/core/auth/auth.service.ts:118</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="116"
+                                    class="link-to-prism">src/core/auth/auth.service.ts:116</a></div>
                         </td>
                     </tr>
 
@@ -618,8 +618,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="168"
-                                    class="link-to-prism">src/core/auth/auth.service.ts:168</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="166"
+                                    class="link-to-prism">src/core/auth/auth.service.ts:166</a></div>
                         </td>
                     </tr>
 
@@ -728,8 +728,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="183"
-                                    class="link-to-prism">src/core/auth/auth.service.ts:183</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="181"
+                                    class="link-to-prism">src/core/auth/auth.service.ts:181</a></div>
                         </td>
                     </tr>
 
@@ -798,8 +798,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="84"
-                                    class="link-to-prism">src/core/auth/auth.service.ts:84</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">src/core/auth/auth.service.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -1242,7 +1242,6 @@ export class AuthService extends AbstractService implements OnModuleInit {
   public async authenticateWithLocal(username: string, password: string): Promise&lt;Agents | null&gt; {
     try {
       const user &#x3D; await this.agentsService.findOne&lt;Agents&gt;({ username });
-      // console.log(user);
       if (user &amp;&amp; (await argon2Verify(user.password, password))) {
         return user;
       }
@@ -1254,7 +1253,6 @@ export class AuthService extends AbstractService implements OnModuleInit {
 
   // eslint-disable-next-line
   public async verifyIdentity(payload: any &amp; { identity: AgentType &amp; { token: string } }): Promise&lt;any&gt; {
-    this.logger.debug(&#x60;Atempt to authenticate with JTI: &lt;${payload.jti}&gt;&#x60;);
     if (payload.scopes.includes(&#x27;offline&#x27;)) {
       return payload.identity;
     }

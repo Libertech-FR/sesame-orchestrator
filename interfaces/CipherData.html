@@ -288,6 +288,7 @@ export class PasswdService extends AbstractService {
         async: false,
         timeoutDiscard: true,
         disableLogs: true,
+        updateStatus: false,
       });
     } catch (e) {
       this.logger.error(&quot;Error while changing password. &quot; + e + &#x60; (uid&#x3D;${passwdDto?.uid})&#x60;);
@@ -360,6 +361,7 @@ export class PasswdService extends AbstractService {
           async: false,
           timeoutDiscard: true,
           disableLogs: true,
+          updateStatus: false,
         },
       );
 

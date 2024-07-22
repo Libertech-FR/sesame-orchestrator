@@ -333,8 +333,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="206"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:206</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="208"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:208</a></div>
                         </td>
                     </tr>
 
@@ -555,8 +555,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="168"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:168</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="169"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:169</a></div>
                         </td>
                     </tr>
 
@@ -1047,6 +1047,7 @@ export class BackendsService extends AbstractQueueProcessor {
           { identity },
           {
             ...options,
+            updateStatus: true,
             task: task._id,
           },
         );
@@ -1093,6 +1094,7 @@ export class BackendsService extends AbstractQueueProcessor {
     for (const identity of identities) {
       const [executedJob] &#x3D; await this.executeJob(identity.action, identity.identity._id, identity.identity, {
         ...options,
+        updateStatus: true,
         task: task._id,
       });
       result[identity.identity._id] &#x3D; executedJob;

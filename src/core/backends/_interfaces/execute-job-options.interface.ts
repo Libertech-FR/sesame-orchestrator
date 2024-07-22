@@ -7,6 +7,7 @@ export interface ExecuteJobOptions {
   disableLogs?: boolean;
   syncTimeout?: number;
   timeoutDiscard?: boolean;
+  updateStatus?: boolean;
   comment?: string;
   task?: Types.ObjectId;
 }

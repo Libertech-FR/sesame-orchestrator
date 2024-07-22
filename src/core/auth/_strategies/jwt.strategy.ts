@@ -27,7 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     payload: JwtPayload & { identity: AgentType },
     done: VerifiedCallback,
   ): Promise<void> {
-    Logger.debug(`Atempt to authenticate with JTI: <${payload.jti}>`, 'JwtStrategy');
+    Logger.verbose(`Atempt to authenticate with JTI: <${payload.jti}>`, JwtStrategy.name);
     if (!payload?.identity) return done(new UnauthorizedException(), false);
     const user = await this.auth.verifyIdentity(payload);
 

@@ -70,7 +70,6 @@ export class AuthService extends AbstractService implements OnModuleInit {
   public async authenticateWithLocal(username: string, password: string): Promise<Agents | null> {
     try {
       const user = await this.agentsService.findOne<Agents>({ username });
-      // console.log(user);
       if (user && (await argon2Verify(user.password, password))) {
         return user;
       }
@@ -82,7 +81,6 @@ export class AuthService extends AbstractService implements OnModuleInit {
 
   // eslint-disable-next-line
   public async verifyIdentity(payload: any & { identity: AgentType & { token: string } }): Promise<any> {
-    this.logger.debug(`Atempt to authenticate with JTI: <${payload.jti}>`);
     if (payload.scopes.includes('offline')) {
       return payload.identity;
     }

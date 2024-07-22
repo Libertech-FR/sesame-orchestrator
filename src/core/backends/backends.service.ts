@@ -3,7 +3,6 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
@@ -244,7 +243,7 @@ export class BackendsService extends AbstractQueueProcessor {
       });
     }
 
-    if (concernedTo) {
+    if (concernedTo && !!options?.updateStatus) {
       await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
         $set: {
           state: IdentityState.PROCESSING,
@@ -257,6 +256,7 @@ export class BackendsService extends AbstractQueueProcessor {
       try {
         const response = await job.waitUntilFinished(this.queueEvents, options.syncTimeout || DEFAULT_SYNC_TIMEOUT);
         let jobStoreUpdated: ModifyResult<Query<Jobs, Jobs>> = null;
+
         if (!options?.disableLogs) {
           jobStoreUpdated = await this.jobsService.update<Jobs>(jobStore._id, {
             $set: {
@@ -267,13 +267,15 @@ export class BackendsService extends AbstractQueueProcessor {
             },
           });
         }
-        if (concernedTo) {
+
+        if (concernedTo && !!options?.updateStatus) {
           await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
             $set: {
               state: IdentityState.SYNCED,
             },
           });
         }
+
         return [jobStoreUpdated as unknown as Jobs, response];
       } catch (err) {
         error = err;
@@ -293,7 +295,7 @@ export class BackendsService extends AbstractQueueProcessor {
           },
         });
       }
-      if (concernedTo) {
+      if (concernedTo && !!options?.updateStatus) {
         await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
           $set: {
             state: IdentityState.ON_ERROR,

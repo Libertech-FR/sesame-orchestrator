@@ -22,7 +22,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     // eslint-disable-next-line
     done: (error: any, user?: Express.User | false, options?: IVerifyOptions) => void,
   ): Promise<void> {
-    Logger.debug(`Try to authenticate user : ${username}`, 'LocalStrategy');
+    Logger.verbose(`Try to authenticate user : ${username}`, LocalStrategy.name);
     const user = await this.auth.authenticateWithLocal(username, password);
     // console.log(user);
     if (!user) done(new UnauthorizedException(), false);

@@ -42,40 +42,52 @@ export class PasswdService extends AbstractService {
   }
 
   public async change(passwdDto: ChangePasswordDto): Promise<[Jobs, any]> {
-    const identity = await this.identities.findOne({ 'inetOrgPerson.uid': passwdDto.uid }) as Identities;
+    try {
+      const identity = await this.identities.findOne({ 'inetOrgPerson.uid': passwdDto.uid }) as Identities;
 
-    return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, identity._id, {
-      ...passwdDto,
-      ...pick(identity.toJSON(), ['inetOrgPerson']),
-    }, {
-      async: false,
-    });
+      return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, identity._id, {
+        ...passwdDto,
+        ...pick(identity.toJSON(), ['inetOrgPerson']),
+      }, {
+        async: false,
+        timeoutDiscard: true,
+        disableLogs: true,
+      });
+    } catch (e) {
+      this.logger.error("Error while changing password. " + e + ` (uid=${passwdDto?.uid})`);
+      throw new BadRequestException('Une erreur est survenue : Mot de passe incorrect ou utilisateur inconnu');
+    }
   }
 
   public async askToken(askToken: AskTokenDto): Promise<string> {
-    await this.identities.findOne({ 'inetOrgPerson.uid': askToken.uid });
+    try {
+      await this.identities.findOne({ 'inetOrgPerson.uid': askToken.uid });
 
-    const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
-    const iv = crypto.randomBytes(PasswdService.RANDOM_BYTES_IV).toString('base64');
-    const cipher = crypto.createCipheriv(PasswdService.TOKEN_ALGORITHM, k, iv);
+      const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
+      const iv = crypto.randomBytes(PasswdService.RANDOM_BYTES_IV).toString('base64');
+      const cipher = crypto.createCipheriv(PasswdService.TOKEN_ALGORITHM, k, iv);
 
-    let ciphertext = cipher.update(
-      JSON.stringify(<CipherData>{ uid: askToken.uid, mail: askToken.mail }),
-      'utf8',
-      'base64',
-    );
-    ciphertext += cipher.final('base64');
+      let ciphertext = cipher.update(
+        JSON.stringify(<CipherData>{ uid: askToken.uid, mail: askToken.mail }),
+        'utf8',
+        'base64',
+      );
+      ciphertext += cipher.final('base64');
 
-    await this.redis.set(
-      ciphertext,
-      JSON.stringify(<TokenData>{
-        k,
-        iv,
-        tag: cipher.getAuthTag().toString('base64'),
-      }),
-    );
-    await this.redis.expire(ciphertext, PasswdService.TOKEN_EXPIRATION);
-    return ciphertext;
+      await this.redis.set(
+        ciphertext,
+        JSON.stringify(<TokenData>{
+          k,
+          iv,
+          tag: cipher.getAuthTag().toString('base64'),
+        }),
+      );
+      await this.redis.expire(ciphertext, PasswdService.TOKEN_EXPIRATION);
+      return ciphertext;
+    } catch (e) {
+      this.logger.error("Error while ask token. " + e + ` (uid=${askToken?.uid})`);
+      throw new BadRequestException('Impossible de générer un token, une erreur est survenue');
+    }
   }
 
   public async decryptToken(token: string): Promise<CipherData> {
@@ -83,27 +95,48 @@ export class PasswdService extends AbstractService {
       const result = await this.redis.get(token);
       const cypherData: TokenData = JSON.parse(result);
 
+      if (cypherData?.iv === undefined || cypherData?.k === undefined || cypherData?.tag === undefined) {
+        throw new NotFoundException('Invalid token');
+      }
+
       const decipher = crypto.createDecipheriv(PasswdService.TOKEN_ALGORITHM, cypherData.k, cypherData.iv);
       decipher.setAuthTag(Buffer.from(cypherData.tag, 'base64'));
       const plaintext = decipher.update(token, 'base64', 'ascii');
 
       return JSON.parse(plaintext);
     } catch (error) {
+      this.logger.verbose("Error while decrypting token. " + error + ` (token=${token})`);
       throw new BadRequestException('Invalid token');
     }
   }
 
   public async reset(data: ResetPasswordDto): Promise<[Jobs, any]> {
     const tokenData = await this.decryptToken(data.token);
-    const identity = await this.identities.findOne({ 'inetOrgPerson.uid': tokenData.uid }) as Identities;
 
-    return await this.backends.executeJob(
-      ActionType.IDENTITY_PASSWORD_RESET,
-      identity._id,
-      { uid: tokenData.uid, newPassword: data.newPassword, ...pick(identity, ['inetOrgPerson']) },
-      {
-        async: false,
-      },
-    );
+    try {
+      const identity = await this.identities.findOne({ 'inetOrgPerson.uid': tokenData.uid }) as Identities;
+
+      const [_, response] = await this.backends.executeJob(
+        ActionType.IDENTITY_PASSWORD_RESET,
+        identity._id,
+        { uid: tokenData.uid, newPassword: data.newPassword, ...pick(identity, ['inetOrgPerson']) },
+        {
+          async: false,
+          timeoutDiscard: true,
+          disableLogs: true,
+        },
+      );
+
+      if (response?.status === 0) {
+        await this.redis.del(data.token);
+        return [_, response];
+      }
+
+      throw new InternalServerErrorException('Une erreur est survenue : Impossible de réinitialiser le mot de passe');
+
+    } catch (e) {
+      this.logger.error("Error while reseting password. " + e + ` (token=${data?.token})`);
+      throw new BadRequestException('Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible');
+    }
   }
 }

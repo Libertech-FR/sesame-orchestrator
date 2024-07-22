@@ -117,7 +117,7 @@ export class BackendsController {
 
     return new Observable((observer) => {
       this.backendsService.queueEvents.on('added', (added) => {
-        if ([ActionType.DUMP_PACKAGE_CONFIG].includes(<ActionType>added.name)) return;
+        if (![ActionType.IDENTITY_UPDATE, ActionType.IDENTITY_CREATE, ActionType.IDENTITY_DELETE].includes(<ActionType>added.name)) return;
         return fireMessage(observer, 'job:added', added, this.constructor.name);
       });
 

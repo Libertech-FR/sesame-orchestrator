@@ -76,6 +76,7 @@ export class BackendsController {
     @Query('async') asyncQuery: string,
     @Query('timeoutDiscard') timeoutDiscardQuery: string,
     @Query('disableLogs') disableLogsQuery: string,
+    @Query('updateStatus') updateStatusQuery: string,
     @Query(
       'syncTimeout',
       new ParseIntPipe({
@@ -88,6 +89,7 @@ export class BackendsController {
     const async = /true|on|yes|1/i.test(asyncQuery);
     const timeoutDiscard = /true|on|yes|1/i.test(timeoutDiscardQuery);
     const disableLogs = /true|on|yes|1/i.test(disableLogsQuery);
+    const updateStatus = /true|on|yes|1/i.test(updateStatusQuery);
     const [job, response] = await this.backendsService.executeJob(
       body.action,
       body.id ? new Types.ObjectId(body.id) : null,
@@ -97,6 +99,7 @@ export class BackendsController {
         syncTimeout,
         timeoutDiscard,
         disableLogs,
+        updateStatus,
       },
     );
     return res.status(HttpStatus.ACCEPTED).json({ async, job, response });

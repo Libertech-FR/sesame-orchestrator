@@ -150,6 +150,7 @@ export class BackendsService extends AbstractQueueProcessor {
           { identity },
           {
             ...options,
+            updateStatus: true,
             task: task._id,
           },
         );
@@ -196,6 +197,7 @@ export class BackendsService extends AbstractQueueProcessor {
     for (const identity of identities) {
       const [executedJob] = await this.executeJob(identity.action, identity.identity._id, identity.identity, {
         ...options,
+        updateStatus: true,
         task: task._id,
       });
       result[identity.identity._id] = executedJob;

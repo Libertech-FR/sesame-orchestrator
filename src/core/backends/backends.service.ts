@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  RequestTimeoutException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
@@ -12,6 +13,7 @@ import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { IdentitiesService } from '~/management/identities/identities.service';
 import { JobState } from '../jobs/_enums/state.enum';
+import { JobState as StateOfJob } from 'bullmq';
 import { Jobs } from '../jobs/_schemas/jobs.schema';
 import { JobsService } from '../jobs/jobs.service';
 import { Tasks } from '../tasks/_schemas/tasks.schema';
@@ -218,7 +220,10 @@ export class BackendsService extends AbstractQueueProcessor {
         concernedTo,
         payload,
       },
-      options?.job,
+      {
+        ...options?.job,
+        attempts: 1,
+      },
     );
     const optionals = {};
     if (!options?.async) {
@@ -255,8 +260,17 @@ export class BackendsService extends AbstractQueueProcessor {
 
     if (!options?.async) {
       let error: Error;
+
       try {
         const response = await job.waitUntilFinished(this.queueEvents, options.syncTimeout || DEFAULT_SYNC_TIMEOUT);
+
+        if (response?.status > 0) {
+          const jobError: Error & { response: any } = new Error() as unknown as Error & { response: any };
+          jobError.response = response;
+
+          throw jobError;
+        }
+
         let jobStoreUpdated: ModifyResult<Query<Jobs, Jobs>> = null;
 
         if (!options?.disableLogs) {
@@ -280,8 +294,11 @@ export class BackendsService extends AbstractQueueProcessor {
 
         return [jobStoreUpdated as unknown as Jobs, response];
       } catch (err) {
+        this.logger.error(`Error while executing job ${job.id}`, err);
         error = err;
       }
+
+      const stateOfJob = await job.getState();
 
       let jobFailed: ModifyResult<Query<Jobs, Jobs>> = null;
       if (!options?.disableLogs) {
@@ -297,6 +314,7 @@ export class BackendsService extends AbstractQueueProcessor {
           },
         });
       }
+
       if (concernedTo && !!options?.updateStatus) {
         await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
           $set: {
@@ -304,22 +322,34 @@ export class BackendsService extends AbstractQueueProcessor {
           },
         });
       }
-      if (options?.timeoutDiscard !== false) {
+
+      if (options?.timeoutDiscard && stateOfJob !== 'completed' && stateOfJob !== 'failed') {
         job.discard();
-        throw new BadRequestException({
-          status: HttpStatus.BAD_REQUEST,
+
+        throw new RequestTimeoutException({
+          status: HttpStatus.REQUEST_TIMEOUT,
           message: `Sync job ${job.id} failed to finish in time`,
           error,
           job: jobFailed as unknown as Jobs,
         });
       }
-      throw new UnprocessableEntityException({
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        message: `Job now continue to run in background ${job.id}, timeout wait until finish reached`,
+
+      if (error && stateOfJob !== 'completed' && stateOfJob !== 'failed') {
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          message: `Job now continue to run in background ${job.id}, timeout wait until finish reached`,
+          error,
+          job: jobFailed as unknown as Jobs,
+        });
+      }
+
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
         error,
-        job: jobFailed as unknown as Jobs,
+        job: (error as any).response,
       });
     }
+
     return [jobStore?.toObject() || null, null];
   }
 }

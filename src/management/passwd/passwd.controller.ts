@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, Logger, HttpStatus } from '@nestjs/common';
+import {Controller, Post, Body, Res, Logger, HttpStatus, Get} from '@nestjs/common';
 import { PasswdService } from './passwd.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -6,6 +6,7 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { AskTokenDto } from './dto/ask-token.dto';
 import { VerifyTokenDto } from './dto/verify-token.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import {omit} from "radash";
 
 @Controller('passwd')
 @ApiTags('management/passwd')
@@ -27,7 +28,7 @@ export class PasswdController {
     }
 
     return res.status(HttpStatus.OK).json({
-      message: 'Password changed',
+      message: 'Password changed', status:0,
       ...debug,
     });
   }
@@ -67,5 +68,13 @@ export class PasswdController {
       message: 'Password changed',
       ...debug,
     });
+  }
+  @Get('getpolicies')
+  @ApiOperation({ summary: 'Retourne la politique de mot de passe à appliquer' })
+  @ApiResponse({ status: HttpStatus.OK })
+  public async getPolicies(@Res() res: Response): Promise<Response> {
+    const data = await this.passwdService.getPolicies()
+    //const datax=omit(data.toObject,['_id'])
+    return res.status(HttpStatus.OK).json({data})
   }
 }

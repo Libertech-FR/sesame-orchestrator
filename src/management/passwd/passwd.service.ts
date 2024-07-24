@@ -12,6 +12,9 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { IdentitiesService } from '../identities/identities.service';
 import { pick } from 'radash';
 import { Identities } from '../identities/_schemas/identities.schema';
+import {PasswordPolicies} from "~/management/passwd/_schemas/PasswordPolicies";
+import {Model} from "mongoose";
+import {InjectModel} from "@nestjs/mongoose";
 
 interface TokenData {
   k: string;
@@ -37,6 +40,7 @@ export class PasswdService extends AbstractService {
     protected readonly backends: BackendsService,
     protected readonly identities: IdentitiesService,
     @InjectRedis() private readonly redis: Redis,
+    @InjectModel(PasswordPolicies.name) protected passwordPolicies: Model<PasswordPolicies>
   ) {
     super();
   }
@@ -140,5 +144,13 @@ export class PasswdService extends AbstractService {
       this.logger.error("Error while reseting password. " + e + ` (token=${data?.token})`);
       throw new BadRequestException('Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible');
     }
+  }
+
+  public async getPolicies(): Promise<any>{
+    const passwordPolicies = await this.passwordPolicies.findOne()
+    if (passwordPolicies === null){
+      return new this.passwordPolicies()
+    }
+    return passwordPolicies
   }
 }

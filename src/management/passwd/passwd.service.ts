@@ -59,7 +59,7 @@ export class PasswdService extends AbstractService {
       let _debug = undefined;
       this.logger.error("Error while changing password. " + e + ` (uid=${passwdDto?.uid})`);
 
-      if (e?.response?.statusCode === HttpStatus.BAD_REQUEST) {
+      if (e?.response?.status === HttpStatus.BAD_REQUEST) {
         job = {};
         job['status'] = e?.response?.job?.status;
       }

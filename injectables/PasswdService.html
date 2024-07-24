@@ -920,7 +920,7 @@ export class PasswdService extends AbstractService {
       let _debug &#x3D; undefined;
       this.logger.error(&quot;Error while changing password. &quot; + e + &#x60; (uid&#x3D;${passwdDto?.uid})&#x60;);
 
-      if (e?.response?.statusCode &#x3D;&#x3D;&#x3D; HttpStatus.BAD_REQUEST) {
+      if (e?.response?.status &#x3D;&#x3D;&#x3D; HttpStatus.BAD_REQUEST) {
         job &#x3D; {};
         job[&#x27;status&#x27;] &#x3D; e?.response?.job?.status;
       }

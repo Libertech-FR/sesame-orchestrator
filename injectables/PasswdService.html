@@ -325,8 +325,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -465,8 +465,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="94"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:94</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="112"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:112</a></div>
                         </td>
                     </tr>
 
@@ -535,8 +535,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:132</a></div>
                         </td>
                     </tr>
 
@@ -860,7 +860,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { InjectRedis } from &#x27;@nestjs-modules/ioredis&#x27;;
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { BadRequestException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import * as crypto from &#x27;crypto&#x27;;
 import Redis from &#x27;ioredis&#x27;;
 import { AbstractService } from &#x27;~/_common/abstracts/abstract.service&#x27;;
@@ -916,8 +916,26 @@ export class PasswdService extends AbstractService {
         updateStatus: false,
       });
     } catch (e) {
+      let job &#x3D; undefined;
+      let _debug &#x3D; undefined;
       this.logger.error(&quot;Error while changing password. &quot; + e + &#x60; (uid&#x3D;${passwdDto?.uid})&#x60;);
-      throw new BadRequestException(&#x27;Une erreur est survenue : Mot de passe incorrect ou utilisateur inconnu&#x27;);
+
+      if (e?.response?.statusCode &#x3D;&#x3D;&#x3D; HttpStatus.BAD_REQUEST) {
+        job &#x3D; {};
+        job[&#x27;status&#x27;] &#x3D; e?.response?.job?.status;
+      }
+
+      if (process.env.NODE_ENV &#x3D;&#x3D;&#x3D; &#x27;development&#x27;) {
+        _debug &#x3D; e?.response?.error?.response;
+      }
+
+      throw new BadRequestException({
+        message: &#x27;Une erreur est survenue : Mot de passe incorrect ou utilisateur inconnu&#x27;,
+        error: &quot;Bad Request&quot;,
+        statusCode: 400,
+        job,
+        _debug,
+      });
     }
   }
 

@@ -231,7 +231,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/core/backends/backends.service.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/core/backends/backends.service.ts:27</a></div>
                             </td>
                         </tr>
 
@@ -333,8 +333,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="208"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:208</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="210"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:210</a></div>
                         </td>
                     </tr>
 
@@ -445,7 +445,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:35</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:37</a></code>
 </div>
                         </td>
                     </tr>
@@ -485,8 +485,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="128"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:128</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="130"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:130</a></div>
                         </td>
                     </tr>
 
@@ -555,8 +555,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="169"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:169</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:171</a></div>
                         </td>
                     </tr>
 
@@ -900,6 +900,7 @@
   HttpException,
   HttpStatus,
   Injectable,
+  RequestTimeoutException,
   UnprocessableEntityException,
 } from &#x27;@nestjs/common&#x27;;
 import { ModuleRef } from &#x27;@nestjs/core&#x27;;
@@ -909,6 +910,7 @@ import { IdentityState } from &#x27;~/management/identities/_enums/states.enum&#
 import { Identities } from &#x27;~/management/identities/_schemas/identities.schema&#x27;;
 import { IdentitiesService } from &#x27;~/management/identities/identities.service&#x27;;
 import { JobState } from &#x27;../jobs/_enums/state.enum&#x27;;
+import { JobState as StateOfJob } from &#x27;bullmq&#x27;;
 import { Jobs } from &#x27;../jobs/_schemas/jobs.schema&#x27;;
 import { JobsService } from &#x27;../jobs/jobs.service&#x27;;
 import { Tasks } from &#x27;../tasks/_schemas/tasks.schema&#x27;;
@@ -1115,7 +1117,10 @@ export class BackendsService extends AbstractQueueProcessor {
         concernedTo,
         payload,
       },
-      options?.job,
+      {
+        ...options?.job,
+        attempts: 1,
+      },
     );
     const optionals &#x3D; {};
     if (!options?.async) {
@@ -1152,8 +1157,17 @@ export class BackendsService extends AbstractQueueProcessor {
 
     if (!options?.async) {
       let error: Error;
+
       try {
         const response &#x3D; await job.waitUntilFinished(this.queueEvents, options.syncTimeout || DEFAULT_SYNC_TIMEOUT);
+
+        if (response?.status &gt; 0) {
+          const jobError: Error &amp; { response: any } &#x3D; new Error() as unknown as Error &amp; { response: any };
+          jobError.response &#x3D; response;
+
+          throw jobError;
+        }
+
         let jobStoreUpdated: ModifyResult&lt;Query&lt;Jobs, Jobs&gt;&gt; &#x3D; null;
 
         if (!options?.disableLogs) {
@@ -1177,8 +1191,11 @@ export class BackendsService extends AbstractQueueProcessor {
 
         return [jobStoreUpdated as unknown as Jobs, response];
       } catch (err) {
+        this.logger.error(&#x60;Error while executing job ${job.id}&#x60;, err);
         error &#x3D; err;
       }
+
+      const stateOfJob &#x3D; await job.getState();
 
       let jobFailed: ModifyResult&lt;Query&lt;Jobs, Jobs&gt;&gt; &#x3D; null;
       if (!options?.disableLogs) {
@@ -1194,6 +1211,7 @@ export class BackendsService extends AbstractQueueProcessor {
           },
         });
       }
+
       if (concernedTo &amp;&amp; !!options?.updateStatus) {
         await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
           $set: {
@@ -1201,22 +1219,34 @@ export class BackendsService extends AbstractQueueProcessor {
           },
         });
       }
-      if (options?.timeoutDiscard !&#x3D;&#x3D; false) {
+
+      if (options?.timeoutDiscard &amp;&amp; stateOfJob !&#x3D;&#x3D; &#x27;completed&#x27; &amp;&amp; stateOfJob !&#x3D;&#x3D; &#x27;failed&#x27;) {
         job.discard();
-        throw new BadRequestException({
-          status: HttpStatus.BAD_REQUEST,
+
+        throw new RequestTimeoutException({
+          status: HttpStatus.REQUEST_TIMEOUT,
           message: &#x60;Sync job ${job.id} failed to finish in time&#x60;,
           error,
           job: jobFailed as unknown as Jobs,
         });
       }
-      throw new UnprocessableEntityException({
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        message: &#x60;Job now continue to run in background ${job.id}, timeout wait until finish reached&#x60;,
+
+      if (error &amp;&amp; stateOfJob !&#x3D;&#x3D; &#x27;completed&#x27; &amp;&amp; stateOfJob !&#x3D;&#x3D; &#x27;failed&#x27;) {
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          message: &#x60;Job now continue to run in background ${job.id}, timeout wait until finish reached&#x60;,
+          error,
+          job: jobFailed as unknown as Jobs,
+        });
+      }
+
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
         error,
-        job: jobFailed as unknown as Jobs,
+        job: (error as any).response,
       });
     }
+
     return [jobStore?.toObject() || null, null];
   }
 }

@@ -1,5 +1,5 @@
 import { InjectRedis } from '@nestjs-modules/ioredis';
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import Redis from 'ioredis';
 import { AbstractService } from '~/_common/abstracts/abstract.service';
@@ -102,8 +102,26 @@ export class PasswdService extends AbstractService {
         updateStatus: false,
       });
     } catch (e) {
+      let job = undefined;
+      let _debug = undefined;
       this.logger.error("Error while changing password. " + e + ` (uid=${passwdDto?.uid})`);
-      throw new BadRequestException('Une erreur est survenue : Mot de passe incorrect ou utilisateur inconnu');
+
+      if (e?.response?.status === HttpStatus.BAD_REQUEST) {
+        job = {};
+        job['status'] = e?.response?.job?.status;
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        _debug = e?.response?.error?.response;
+      }
+
+      throw new BadRequestException({
+        message: 'Une erreur est survenue : Mot de passe incorrect ou utilisateur inconnu',
+        error: "Bad Request",
+        statusCode: 400,
+        job,
+        _debug,
+      });
     }
   }
   /*

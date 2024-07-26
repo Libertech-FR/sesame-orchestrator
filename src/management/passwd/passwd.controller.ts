@@ -7,13 +7,16 @@ import { AskTokenDto } from './dto/ask-token.dto';
 import { VerifyTokenDto } from './dto/verify-token.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import {omit} from "radash";
+import {PasswdadmService} from "~/settings/passwdadm/passwdadm.service";
+import {PasswordPolicies} from "~/settings/passwdadm/_schemas/PasswordPolicies";
+import {InitAccountDto} from "~/management/passwd/dto/init-account.dto";
 
 @Controller('passwd')
 @ApiTags('management/passwd')
 export class PasswdController {
   private readonly logger = new Logger(PasswdController.name);
 
-  public constructor(private passwdService: PasswdService) { }
+  public constructor(private passwdService: PasswdService,private passwdadmService: PasswdadmService) { }
 
   @Post('change')
   @ApiOperation({ summary: 'Execute un job de changement de mot de passe sur le/les backends' })
@@ -73,8 +76,19 @@ export class PasswdController {
   @ApiOperation({ summary: 'Retourne la politique de mot de passe à appliquer' })
   @ApiResponse({ status: HttpStatus.OK })
   public async getPolicies(@Res() res: Response): Promise<Response> {
-    const data = await this.passwdService.getPolicies()
+    const data = await this.passwdadmService.getPolicies()
     //const datax=omit(data.toObject,['_id'])
     return res.status(HttpStatus.OK).json({data})
+  }
+  @Post('init')
+  @ApiOperation({ summary: 'Initialise le compte envoi un jeton par mail à l\'identité' })
+  @ApiResponse({ status: HttpStatus.OK })
+  public async init(@Body() body: InitAccountDto, @Res() res: Response): Promise<Response> {
+    const debug = {}
+    const ok=await this.passwdService.initAccount(body)
+    return res.status(HttpStatus.OK).json({
+      message: 'Email envoyé verifiez votre boite mail alternative et vos spam',
+      ...debug,
+    });
   }
 }

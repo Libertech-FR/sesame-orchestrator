@@ -6,7 +6,7 @@ export type PasswordPoliciesDocument = Identities & Document;
 
 @Schema({ versionKey: false })
 export class PasswordPolicies extends AbstractSchema {
-  @Prop({ type: Number, default: 8 })
+  @Prop({ type: Number, default: 10 })
   len: Number;
 
   @Prop({ type: Number,default:1 })
@@ -35,7 +35,11 @@ export class PasswordPolicies extends AbstractSchema {
 
   @Prop({ type: Number,default:3600 })
   bannedTime: Number;
+  @Prop({ type: Boolean,default:false })
+  resetBySms: Boolean;
 
+  @Prop({ type: String,default:'https://google.fr' })
+  redirectUrl: String;
 }
 
 export const PasswordPoliciesSchema = SchemaFactory.createForClass(PasswordPolicies);

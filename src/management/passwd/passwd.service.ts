@@ -10,11 +10,11 @@ import { AskTokenDto } from './dto/ask-token.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { IdentitiesService } from '../identities/identities.service';
-import { pick } from 'radash';
+import { pick,get } from 'radash';
 import { Identities } from '../identities/_schemas/identities.schema';
-import {PasswordPolicies} from "~/management/passwd/_schemas/PasswordPolicies";
-import {Model} from "mongoose";
-import {InjectModel} from "@nestjs/mongoose";
+import {MailerModule, MailerService} from "@nestjs-modules/mailer";
+import {InitAccountDto} from "~/management/passwd/dto/init-account.dto";
+import {ConfigService} from "@nestjs/config";
 
 interface TokenData {
   k: string;
@@ -31,20 +31,63 @@ interface CipherData {
 export class PasswdService extends AbstractService {
   public static readonly RANDOM_BYTES_K = 16;
   public static readonly RANDOM_BYTES_IV = 12;
+  public static readonly RANDOM_BYTES_CODE = 5;
 
   public static readonly TOKEN_ALGORITHM = 'aes-256-gcm';
 
-  public static readonly TOKEN_EXPIRATION = 3600;
+  public static readonly TOKEN_EXPIRATION = 604800;
+  public static readonly CODE_EXPIRATION = 900;
 
   public constructor(
     protected readonly backends: BackendsService,
     protected readonly identities: IdentitiesService,
-    @InjectRedis() private readonly redis: Redis,
-    @InjectModel(PasswordPolicies.name) protected passwordPolicies: Model<PasswordPolicies>
+    protected mailer: MailerService,
+    protected config: ConfigService,
+    @InjectRedis() private readonly redis: Redis
   ) {
     super();
   }
+  public async initAccount(initDto: InitAccountDto):Promise<any>{
+    //recherche de l'identity
+    try{
+      const identity = await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid }) as Identities;
+      //envoi du mail
+      const mailAttribute=this.config.get('frontPwd.identityMailAttribute')
+      this.logger.log("mailer.identityMailAttribute : " +mailAttribute )
+      if (mailAttribute !== '') {
+        const mail = <string>get(identity.toObject(), mailAttribute)
+        //demande du token
+        const token = await this.askToken({mail: mail, uid: initDto.uid})
+        //envoi du token
+        this.mailer.sendMail({
+          from: this.config.get('mailer.sender'),
+          to: mail,
+          subject: 'Activation de votre compte',
+          template: "initaccount",
+          context:{
+            uid: initDto.uid,
+            url:this.config.get('frontPwd.url')+'/initaccount/'+ token
+          }
 
+        })
+          .then(() => {
+            this.logger.log("Init compte envoyé  pour uid" +initDto.uid +" à " + mail )
+          })
+          .catch((e) => {
+            this.logger.error("Erreur envoi mail" + e )
+          })
+
+        return true
+      }else{
+        this.logger.error("Error while initAccount identityMailAttribute nor defined");
+        return false
+      }
+    }catch(e){
+      this.logger.error("Error while changing password. " + e + ` (uid=${initDto?.uid})`);
+      return false
+    }
+
+  }
   public async change(passwdDto: ChangePasswordDto): Promise<[Jobs, any]> {
     try {
       const identity = await this.identities.findOne({ 'inetOrgPerson.uid': passwdDto.uid }) as Identities;
@@ -63,8 +106,40 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException('Une erreur est survenue : Mot de passe incorrect ou utilisateur inconnu');
     }
   }
+  /*
+ public async askCode(askCode: AdkCode):Promise<[string,string]>{
+   try {
+     await this.identities.findOne({'inetOrgPerson.uid': askCode.uid});
+     const code = crypto.randomBytes(PasswdService.RANDOM_BYTES_CODE).toString('utf8')
+     const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
+     const iv = crypto.randomBytes(PasswdService.RANDOM_BYTES_IV).toString('base64');
+     const cipher = crypto.createCipheriv(PasswdService.TOKEN_ALGORITHM, k, iv);
 
-  public async askToken(askToken: AskTokenDto): Promise<string> {
+     let ciphertext = cipher.update(
+       JSON.stringify(<CipherData>{ code:code,uid: askToken.uid}),
+       'utf8',
+       'base64',
+     );
+     ciphertext += cipher.final('base64');
+
+     await this.redis.set(
+       ciphertext,
+       JSON.stringify(<TokenData>{
+         k,
+         iv,
+         tag: cipher.getAuthTag().toString('base64'),
+       }),
+     );
+     await this.redis.expire(ciphertext, PasswdService.TOKEN_EXPIRATION);
+     return [k,cipherText]
+   } catch (e) {
+    this.logger.error("Error while ask Code. " + e + ` (uid=${askToken?.uid})`);
+    throw new BadRequestException('Impossible de générer un token, une erreur est survenue');
+  }
+ }
+ */
+
+ public async askToken(askToken: AskTokenDto): Promise<string> {
     try {
       await this.identities.findOne({ 'inetOrgPerson.uid': askToken.uid });
 
@@ -88,7 +163,7 @@ export class PasswdService extends AbstractService {
         }),
       );
       await this.redis.expire(ciphertext, PasswdService.TOKEN_EXPIRATION);
-      return ciphertext;
+      return encodeURIComponent(ciphertext);
     } catch (e) {
       this.logger.error("Error while ask token. " + e + ` (uid=${askToken?.uid})`);
       throw new BadRequestException('Impossible de générer un token, une erreur est survenue');
@@ -97,6 +172,7 @@ export class PasswdService extends AbstractService {
 
   public async decryptToken(token: string): Promise<CipherData> {
     try {
+      token=decodeURIComponent(token)
       const result = await this.redis.get(token);
       const cypherData: TokenData = JSON.parse(result);
 
@@ -146,11 +222,5 @@ export class PasswdService extends AbstractService {
     }
   }
 
-  public async getPolicies(): Promise<any>{
-    const passwordPolicies = await this.passwordPolicies.findOne()
-    if (passwordPolicies === null){
-      return new this.passwordPolicies()
-    }
-    return passwordPolicies
-  }
+
 }

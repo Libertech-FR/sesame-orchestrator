@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsBoolean } from 'class-validator';
+import {IsNumber, IsBoolean, IsString} from 'class-validator';
 
 export class PasswordPoliciesDto {
   @IsNumber()
@@ -34,6 +34,10 @@ export class PasswordPoliciesDto {
   @ApiProperty({ example: true, description: 'Teh password will be checked on Pwned', type: Boolean })
   public checkPwned: Boolean;
 
+  @IsBoolean()
+  @ApiProperty({ example: true, description: 'Mote de passe peut etre reinitialisé par sms', type: Boolean })
+  public resetBySms: Boolean;
+
   @IsNumber()
   @ApiProperty({ example: '10', description: 'after X bad logins the user will be banned for  bannedTime', type: Number })
   public maxRetry: Number;
@@ -41,4 +45,8 @@ export class PasswordPoliciesDto {
   @IsNumber()
   @ApiProperty({ example: '3600', description: 'in Seconds', type: Number })
   public bannedTime: Number;
+
+  @IsString()
+  @ApiProperty({ example: 'https://monsite.com', description: 'Après un changement ou reset reussi le navigateur sera redirigé', type: Number })
+  public redirectUrl: String;
 }

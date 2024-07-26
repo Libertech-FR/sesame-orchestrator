@@ -34,6 +34,16 @@ export interface ConfigInstance {
   jwt: {
     options: JwtModuleOptions;
   };
+  mailer: {
+    host: string;
+    port: number;
+    sender: string;
+  };
+  frontPwd: {
+    url:string;
+    identityMailAttribute: string;
+    identityMobileAttribute: string;
+  };
   swagger: {
     path: string;
     api: string;
@@ -101,4 +111,15 @@ export default (): ConfigInstance => ({
       },
     },
   },
+  mailer:{
+    host: process.env['SESAME_SMTP_SERVER'],
+    port: parseInt(process.env['SESAME_SMTP_PORT']) || 25,
+    sender: process.env['SESAME_MDP_SENDER'] || 'noreply@mydomain.com'
+  },
+  frontPwd:{
+    url: process.env['SESAME_FRONT_MDP'],
+    identityMailAttribute: process.env['SESAME_RESET_PWD_MAIL'] || '',
+    identityMobileAttribute: process.env['SESAME_RESET_PWD_MOBILE'] || ''
+  }
+
 });

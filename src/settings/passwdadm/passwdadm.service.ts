@@ -1,10 +1,11 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {BadRequestException, Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
 import Redis from 'ioredis';
-import { AbstractService } from '~/_common/abstracts/abstract.service';
+import {AbstractService} from '~/_common/abstracts/abstract.service';
 import {PasswordPolicies} from "~/settings/passwdadm/_schemas/PasswordPolicies";
 import {Model} from "mongoose";
 import {InjectModel} from "@nestjs/mongoose";
 import {IdentitiesService} from "~/management/identities/identities.service";
+import stringEntropy from 'fast-password-entropy'
 
 @Injectable()
 export class PasswdadmService extends AbstractService {
@@ -15,76 +16,52 @@ export class PasswdadmService extends AbstractService {
     super();
   }
 
-  public async getPolicies(): Promise<any>{
+  public async getPolicies(): Promise<PasswordPolicies> {
     const passwordPolicies = await this.passwordPolicies.findOne()
-    if (passwordPolicies === null){
+    if (passwordPolicies === null) {
       return new this.passwordPolicies()
     }
     return passwordPolicies
   }
-  public async checkPolicies(password: string):Promise<boolean>{
-    const policies=this.getPolicies()
+
+  public async checkPolicies(password: string): Promise<boolean> {
+    const policies = this.getPolicies()
     if (password.length < policies.len) {
       this.logger.error('Password too short')
       return false
     }
-
+    //tes caracteres speciaux
+    if (policies.hasSpecialChars > 0) {
+      if (/[!@#\$%\^\&*\)\(+=._-]/.test(password) === false) {
+        this.logger.error('must have special characters')
+        return false
+      }
+    }
+    if (policies.hasLowerCase > 0) {
+      if (/[a-z]/.test(password) === false) {
+        this.logger.error('must have lower case characters')
+        return false
+      }
+    }
+    if (policies.hasUpperCase > 0) {
+      if (/[A-Z]/.test(password) === false) {
+        this.logger.error('must have upper case characters')
+        return false
+      }
+    }
+    if (policies.hasNumbers > 0) {
+      if (/[A-Z]/.test(password) === false) {
+        this.logger.error('must have number')
+        return false
+      }
+    }
+    //calcul de l'entropie
+    let c = stringEntropy(password)
+    if (c < policies.minComplexity) {
+      this.logger.error('entropie trop faible')
+    }
     return true
   }
-  /*
-  function checkPolicy(password) {
-    has_len.value='highlight_off'
-    let statut=true
-    if (/[!@#\$%\^\&*\)\(+=._-]/.test(password) === false){
-      pwdColor.value = 'red'
-      iconSpecialOK(false)
-      statut=false
-    }else{
-      iconSpecialOK(true)
-    }
-    if (/\d/.test(password) === false){
-      pwdColor.value = 'red'
-      iconNumberOK(false)
-      statut=false
-    }else{
-      iconNumberOK(true)
-    }
-    if (/[a-z]/.test(password) === false){
-      pwdColor.value = 'red'
-      iconLowerOK(false)
-      statut=false
-    }else{
-      iconLowerOK(true)
-    }
-    if (/[A-Z]/.test(password) === false){
-      pwdColor.value = 'red'
-      iconUpperOK(false)
-      statut=false
-    }else{
-      iconUpperOK(true)
-    }
-    if (password.length < props.min) {
-      console.log('trop court ' + props.min)
-      iconLenOK(false)
-      statut=false
-    }else{
-      iconLenOK(true)
-    }
-    console.log('password OK ')
-    if (statut === true){
-      pwdColor.value = 'green'
-    }else {
-      pwdColor.value = 'red'
-    }
-    //entropie
-    if (complexity(password) === false){
-      statut=false
-      iconComplexityOK(false)
-    }else{
-      iconComplexityOK(true)
-    }
-    return statut
-  }
-  */
+    
 
 }

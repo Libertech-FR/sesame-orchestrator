@@ -9,4 +9,8 @@ export class ResetByCodeDto {
   @IsNumber
   @ApiProperty({ example: '123456', description: 'Code received by email or Sms' })
   code: number;
+  @IsString()
+  @ApiProperty({ example: 'hdfddyf18A', description: 'new password' })
+  newpassword: string;
+
 }

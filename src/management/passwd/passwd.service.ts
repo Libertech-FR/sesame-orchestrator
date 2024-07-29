@@ -262,7 +262,31 @@ export class PasswdService extends AbstractService {
     }
   }
   public async resetByCode(data:ResetByCodeDto):Promise<[Jobs,any]>{
+    const tokenData=await this.decryptTokenWithCode(data.token,data.code)
+    try{
+      const identity = await this.identities.findOne({ 'inetOrgPerson.uid': tokenData.uid }) as Identities;
+      const [_, response] = await this.backends.executeJob(
+        ActionType.IDENTITY_PASSWORD_RESET,
+        identity._id,
+        { uid: tokenData.uid, newPassword: data.newPassword, ...pick(identity, ['inetOrgPerson']) },
+        {
+          async: false,
+          timeoutDiscard: true,
+          disableLogs: true,
+          updateStatus: false,
+        },
+      );
 
+      if (response?.status === 0) {
+        await this.redis.del(data.token);
+        return [_, response];
+      }
+      this.logger.error("Error from backend while reseting password by code" );
+      throw new InternalServerErrorException('Une erreur est survenue : Impossible de réinitialiser le mot de passe');
+    }catch (e) {
+      this.logger.error("Error while reseting password by code. " + e + ` (token=${data?.token})`);
+      throw new BadRequestException('Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible');
+    }
   }
   public async reset(data: ResetPasswordDto): Promise<[Jobs, any]> {
     const tokenData = await this.decryptToken(data.token);

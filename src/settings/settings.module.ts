@@ -5,7 +5,7 @@ import {PasswdadmModule} from "~/settings/passwdadm/passwdadm.module";
 import {SettingsController} from "~/settings/settings.controller";
 import {SettingsService} from "~/settings/settings.service";
 @Module({
-  imports: [IdentitiesModule, PasswdadmModule],
+  imports: [ PasswdadmModule],
   providers: [SettingsService],
   controllers: [SettingsController],
 })

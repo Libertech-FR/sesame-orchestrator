@@ -35,7 +35,7 @@ export class PasswordPolicies extends AbstractSchema {
 
   @Prop({ type: Number,default:3600 })
   bannedTime: Number;
-  @Prop({ type: Boolean,default:false })
+  @Prop({ type: Boolean,default:true })
   resetBySms: Boolean;
 
   @Prop({ type: String,default:'https://google.fr' })

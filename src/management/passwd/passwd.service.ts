@@ -15,6 +15,8 @@ import { Identities } from '../identities/_schemas/identities.schema';
 import {MailerModule, MailerService} from "@nestjs-modules/mailer";
 import {InitAccountDto} from "~/management/passwd/dto/init-account.dto";
 import {ConfigService} from "@nestjs/config";
+import {randomInt} from "crypto";
+import {ResetByCodeDto} from "~/management/passwd/dto/reset-by-code-dto";
 
 interface TokenData {
   k: string;
@@ -37,7 +39,7 @@ export class PasswdService extends AbstractService {
 
   public static readonly TOKEN_EXPIRATION = 604800;
   public static readonly CODE_EXPIRATION = 900;
-
+  public static readonly CODE_PADDING = '000000000000000000000000000'
   public constructor(
     protected readonly backends: BackendsService,
     protected readonly identities: IdentitiesService,
@@ -46,6 +48,57 @@ export class PasswdService extends AbstractService {
     @InjectRedis() private readonly redis: Redis
   ) {
     super();
+  }
+  public async initReset(initDto: InitAccountDto):Promise<any>{
+    //envoi du mail
+    try{
+      const identity = await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid }) as Identities;
+      const mailAttribute=this.config.get('frontPwd.identityMailAttribute')
+      this.logger.log("Reset passord asked for  : " + initDto.uid )
+      if (mailAttribute !== '') {
+        const mail = <string>get(identity.toObject(), mailAttribute)
+        const displayName=identity.inetOrgPerson.displayName
+        //const k=crypto.randomBytes(PasswdService.RANDOM_BYTES_CODE).toString('hex')
+        const k = randomInt(100000, 999999);
+        //asking for padding
+        const padd = await this.getPaddingForCode()
+        const token = await this.askToken({mail: mail, uid: initDto.uid}, padd + k.toString(16),PasswdService.CODE_EXPIRATION)
+        this.logger.log("Token :" + token + '  int : ' + k.toString(10))
+        this.mailer.sendMail({
+          from: this.config.get('mailer.sender'),
+          to: mail,
+          subject: 'Reinitialisation de votre mot de passe',
+          template: "resetaccount",
+          context:{
+            uid: identity.inetOrgPerson.uid,
+            displayName: displayName,
+            code: k
+          }
+
+        })
+          .then(() => {
+            this.logger.log("reset compte envoyé  pour uid" +initDto.uid +" à " + mail )
+          })
+          .catch((e) => {
+            throw new BadRequestException({
+              message: 'Erreur serveur lors de l envoi du mail',
+              error: "Bad Request",
+              statusCode: 400
+            });
+          })
+        return token
+      }else{
+        return false
+      }
+    }catch(e){
+      this.logger.error("Error while reseting password. " + e + ` (uid=${initDto?.uid})`);
+      //on retoune un token qui ne sert à rien pour ne pas divulguer que l uid n existe pas
+      const k=crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
+      const falseToken=await this.askToken({mail: 'xxxxxx@xxxxxxxxxxx', uid: 'xxxxxxxx@xxxxxxx'},  k,0)
+      return falseToken
+    }
+
+
   }
   public async initAccount(initDto: InitAccountDto):Promise<any>{
     //recherche de l'identity
@@ -57,7 +110,8 @@ export class PasswdService extends AbstractService {
       if (mailAttribute !== '') {
         const mail = <string>get(identity.toObject(), mailAttribute)
         //demande du token
-        const token = await this.askToken({mail: mail, uid: initDto.uid})
+        const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
+        const token = await this.askToken({mail: mail, uid: initDto.uid},k,PasswdService.TOKEN_EXPIRATION)
         //envoi du token
         this.mailer.sendMail({
           from: this.config.get('mailer.sender'),
@@ -74,7 +128,13 @@ export class PasswdService extends AbstractService {
             this.logger.log("Init compte envoyé  pour uid" +initDto.uid +" à " + mail )
           })
           .catch((e) => {
-            this.logger.error("Erreur envoi mail" + e )
+            throw new BadRequestException({
+              message: 'Erreur serveur lors de l envoi du mail',
+              error: "Bad Request",
+              statusCode: 400,
+              job,
+              _debug,
+            });
           })
 
         return true
@@ -83,7 +143,7 @@ export class PasswdService extends AbstractService {
         return false
       }
     }catch(e){
-      this.logger.error("Error while changing password. " + e + ` (uid=${initDto?.uid})`);
+      this.logger.error("Error while initialize password. " + e + ` (uid=${initDto?.uid})`);
       return false
     }
 
@@ -124,44 +184,16 @@ export class PasswdService extends AbstractService {
       });
     }
   }
-  /*
- public async askCode(askCode: AdkCode):Promise<[string,string]>{
-   try {
-     await this.identities.findOne({'inetOrgPerson.uid': askCode.uid});
-     const code = crypto.randomBytes(PasswdService.RANDOM_BYTES_CODE).toString('utf8')
-     const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
-     const iv = crypto.randomBytes(PasswdService.RANDOM_BYTES_IV).toString('base64');
-     const cipher = crypto.createCipheriv(PasswdService.TOKEN_ALGORITHM, k, iv);
 
-     let ciphertext = cipher.update(
-       JSON.stringify(<CipherData>{ code:code,uid: askToken.uid}),
-       'utf8',
-       'base64',
-     );
-     ciphertext += cipher.final('base64');
-
-     await this.redis.set(
-       ciphertext,
-       JSON.stringify(<TokenData>{
-         k,
-         iv,
-         tag: cipher.getAuthTag().toString('base64'),
-       }),
-     );
-     await this.redis.expire(ciphertext, PasswdService.TOKEN_EXPIRATION);
-     return [k,cipherText]
-   } catch (e) {
-    this.logger.error("Error while ask Code. " + e + ` (uid=${askToken?.uid})`);
-    throw new BadRequestException('Impossible de générer un token, une erreur est survenue');
-  }
- }
- */
-
- public async askToken(askToken: AskTokenDto): Promise<string> {
+ public async askToken(askToken: AskTokenDto,k,ttl): Promise<string> {
     try {
-      await this.identities.findOne({ 'inetOrgPerson.uid': askToken.uid });
+      /*
+      if (ttl >0){
 
-      const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
+        await this.identities.findOne({ 'inetOrgPerson.uid': askToken.uid });
+      }
+      */
+
       const iv = crypto.randomBytes(PasswdService.RANDOM_BYTES_IV).toString('base64');
       const cipher = crypto.createCipheriv(PasswdService.TOKEN_ALGORITHM, k, iv);
 
@@ -171,23 +203,44 @@ export class PasswdService extends AbstractService {
         'base64',
       );
       ciphertext += cipher.final('base64');
-
-      await this.redis.set(
-        ciphertext,
-        JSON.stringify(<TokenData>{
-          k,
-          iv,
-          tag: cipher.getAuthTag().toString('base64'),
-        }),
-      );
-      await this.redis.expire(ciphertext, PasswdService.TOKEN_EXPIRATION);
+      //on enregistre pas dans redis si le ttl =0
+      if (ttl >0){
+        await this.redis.set(
+          ciphertext,
+          JSON.stringify(<TokenData>{
+            k,
+            iv,
+            tag: cipher.getAuthTag().toString('base64'),
+          }),
+        );
+        await this.redis.expire(ciphertext, ttl);
+      }
       return encodeURIComponent(ciphertext);
     } catch (e) {
       this.logger.error("Error while ask token. " + e + ` (uid=${askToken?.uid})`);
       throw new BadRequestException('Impossible de générer un token, une erreur est survenue');
     }
   }
+  public async decryptTokenWithCode(token: string,code: number): Promise<CipherData> {
+    try {
+      token=decodeURIComponent(token)
+      const result = await this.redis.get(token);
+      const cypherData: TokenData = JSON.parse(result);
 
+      if (cypherData?.iv === undefined || cypherData?.k === undefined || cypherData?.tag === undefined) {
+        throw new NotFoundException('Invalid token');
+      }
+      const padd=this.getPaddingForCode();
+      const k=padd + code.toString(16)
+      const decipher = crypto.createDecipheriv(PasswdService.TOKEN_ALGORITHM, k, cypherData.iv);
+      decipher.setAuthTag(Buffer.from(cypherData.tag, 'base64'));
+      const plaintext = decipher.update(token, 'base64', 'ascii');
+      return JSON.parse(plaintext);
+    } catch (error) {
+      this.logger.verbose("Error while decrypting token. " + error + ` (token=${token})`);
+      throw new BadRequestException('Invalid token');
+    }
+  }
   public async decryptToken(token: string): Promise<CipherData> {
     try {
       token=decodeURIComponent(token)
@@ -208,7 +261,9 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException('Invalid token');
     }
   }
+  public async resetByCode(data:ResetByCodeDto):Promise<[Jobs,any]>{
 
+  }
   public async reset(data: ResetPasswordDto): Promise<[Jobs, any]> {
     const tokenData = await this.decryptToken(data.token);
 
@@ -238,6 +293,17 @@ export class PasswdService extends AbstractService {
       this.logger.error("Error while reseting password. " + e + ` (token=${data?.token})`);
       throw new BadRequestException('Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible');
     }
+  }
+  // genere des octect pour completer le code qui est de 4 octets et demi
+  private async getPaddingForCode(): Promise<string>{
+     let code = ""
+     if ( await this.redis.exists('CODEPADDING')){
+       code = await this.redis.get('CODEPADDING')
+     }else{
+       code = crypto.randomBytes(13).toString('hex') +'0';
+       await this.redis.set('CODEPADDING',code)
+     }
+     return code
   }
 
 

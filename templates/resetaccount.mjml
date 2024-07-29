@@ -1,0 +1,29 @@
+<mjml>
+  <mj-body>
+    <mj-section background-color="#0000A0">
+      <mj-column>
+        <mj-text align="center" font-style="italic" font-size="20px" color="#FFFFFF">
+          Reinitialisation de votre mot de passe
+        </mj-text>
+      </mj-column>
+      <mj-section background-color="#fafafa">
+        <mj-column width="400px">
+
+          <mj-text font-style="italic" font-size="20px" font-family="Helvetica Neue" color="#626262">Cher {{ displayName }}</mj-text>
+
+          <mj-text color="#525252">
+            Vous avez demandé la reinitialisation de votre mot de passe.
+            Si vous n'etes pas à l'origine de cette demande, ignorez ce message
+
+          </mj-text>
+
+          <mj-text font-style="italic" font-size="25px" font-family="Helvetica Neue" color="#626262">
+            Votre code : {{ code }}
+          </mj-text>
+
+        </mj-column>
+      </mj-section>
+
+    </mj-section>
+  </mj-body>
+</mjml>

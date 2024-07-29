@@ -33,13 +33,11 @@ interface CipherData {
 export class PasswdService extends AbstractService {
   public static readonly RANDOM_BYTES_K = 16;
   public static readonly RANDOM_BYTES_IV = 12;
-  public static readonly RANDOM_BYTES_CODE = 5;
 
   public static readonly TOKEN_ALGORITHM = 'aes-256-gcm';
 
   public static readonly TOKEN_EXPIRATION = 604800;
-  public static readonly CODE_EXPIRATION = 900;
-  public static readonly CODE_PADDING = '000000000000000000000000000'
+  public static readonly CODE_EXPIRATION = 1900;
   public constructor(
     protected readonly backends: BackendsService,
     protected readonly identities: IdentitiesService,
@@ -131,9 +129,7 @@ export class PasswdService extends AbstractService {
             throw new BadRequestException({
               message: 'Erreur serveur lors de l envoi du mail',
               error: "Bad Request",
-              statusCode: 400,
-              job,
-              _debug,
+              statusCode: 400
             });
           })
 
@@ -226,19 +222,20 @@ export class PasswdService extends AbstractService {
       token=decodeURIComponent(token)
       const result = await this.redis.get(token);
       const cypherData: TokenData = JSON.parse(result);
-
+      this.logger.log('decrypt ' +cypherData)
       if (cypherData?.iv === undefined || cypherData?.k === undefined || cypherData?.tag === undefined) {
         throw new NotFoundException('Invalid token');
       }
-      const padd=this.getPaddingForCode();
+      const padd=await this.getPaddingForCode();
       const k=padd + code.toString(16)
+      this.logger.log('k=' + k)
       const decipher = crypto.createDecipheriv(PasswdService.TOKEN_ALGORITHM, k, cypherData.iv);
       decipher.setAuthTag(Buffer.from(cypherData.tag, 'base64'));
       const plaintext = decipher.update(token, 'base64', 'ascii');
       return JSON.parse(plaintext);
     } catch (error) {
-      this.logger.verbose("Error while decrypting token. " + error + ` (token=${token})`);
-      throw new BadRequestException('Invalid token');
+      this.logger.error("Error while decrypting token. " + error + ` (token=${token})`);
+      throw new BadRequestException('Invalid token xx');
     }
   }
   public async decryptToken(token: string): Promise<CipherData> {
@@ -262,13 +259,15 @@ export class PasswdService extends AbstractService {
     }
   }
   public async resetByCode(data:ResetByCodeDto):Promise<[Jobs,any]>{
+    this.logger.log('resetByCode : ' + data.token+ ' '+ data.code )
     const tokenData=await this.decryptTokenWithCode(data.token,data.code)
+    this.logger.log( 'dataToken :' + tokenData)
     try{
       const identity = await this.identities.findOne({ 'inetOrgPerson.uid': tokenData.uid }) as Identities;
       const [_, response] = await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_RESET,
         identity._id,
-        { uid: tokenData.uid, newPassword: data.newPassword, ...pick(identity, ['inetOrgPerson']) },
+        { uid: tokenData.uid, newPassword: data.newpassword, ...pick(identity, ['inetOrgPerson']) },
         {
           async: false,
           timeoutDiscard: true,
@@ -278,6 +277,7 @@ export class PasswdService extends AbstractService {
       );
 
       if (response?.status === 0) {
+        this.logger.log('delete key')
         await this.redis.del(data.token);
         return [_, response];
       }

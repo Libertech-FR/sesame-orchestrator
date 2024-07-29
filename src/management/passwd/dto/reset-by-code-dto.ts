@@ -6,7 +6,7 @@ export class ResetByCodeDto {
   @ApiProperty({ example: '3F4AC...', description: 'Token received by initreset' })
   token: string;
 
-  @IsNumber
+  @IsNumber()
   @ApiProperty({ example: '123456', description: 'Code received by email or Sms' })
   code: number;
   @IsString()

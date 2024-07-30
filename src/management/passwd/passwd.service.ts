@@ -17,6 +17,10 @@ import {InitAccountDto} from "~/management/passwd/dto/init-account.dto";
 import {ConfigService} from "@nestjs/config";
 import {randomInt} from "crypto";
 import {ResetByCodeDto} from "~/management/passwd/dto/reset-by-code-dto";
+import {PasswdadmService} from "~/settings/passwdadm/passwdadm.service";
+import {IdentityState} from "~/management/identities/_enums/states.enum";
+import {InitResetDto} from "~/management/passwd/dto/init-reset.dto";
+import {SmsService} from "~/management/passwd/sms-service";
 
 interface TokenData {
   k: string;
@@ -43,51 +47,70 @@ export class PasswdService extends AbstractService {
     protected readonly identities: IdentitiesService,
     protected mailer: MailerService,
     protected config: ConfigService,
+    private passwdadmService: PasswdadmService,
+    private smsService: SmsService,
     @InjectRedis() private readonly redis: Redis
   ) {
     super();
   }
-  public async initReset(initDto: InitAccountDto):Promise<any>{
+  //Initialisation du reset de mot de passe envoie un email ou par sms  un code et fourni un token au front.
+  // Le code est la clé du token
+  public async initReset(initDto: InitResetDto):Promise<any>{
     //envoi du mail
     try{
       const identity = await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid }) as Identities;
+      const k = randomInt(100000, 999999);
+      //asking for padding
+      const padd = await this.getPaddingForCode()
       const mailAttribute=this.config.get('frontPwd.identityMailAttribute')
-      this.logger.log("Reset passord asked for  : " + initDto.uid )
-      if (mailAttribute !== '') {
-        const mail = <string>get(identity.toObject(), mailAttribute)
-        const displayName=identity.inetOrgPerson.displayName
-        //const k=crypto.randomBytes(PasswdService.RANDOM_BYTES_CODE).toString('hex')
-        const k = randomInt(100000, 999999);
-        //asking for padding
-        const padd = await this.getPaddingForCode()
-        const token = await this.askToken({mail: mail, uid: initDto.uid}, padd + k.toString(16),PasswdService.CODE_EXPIRATION)
-        this.logger.log("Token :" + token + '  int : ' + k.toString(10))
-        this.mailer.sendMail({
-          from: this.config.get('mailer.sender'),
-          to: mail,
-          subject: 'Reinitialisation de votre mot de passe',
-          template: "resetaccount",
-          context:{
-            uid: identity.inetOrgPerson.uid,
-            displayName: displayName,
-            code: k
-          }
-
-        })
-          .then(() => {
-            this.logger.log("reset compte envoyé  pour uid" +initDto.uid +" à " + mail )
+      const mail = <string>get(identity.toObject(), mailAttribute)
+      const token = await this.askToken({mail: mail, uid: initDto.uid}, padd + k.toString(16),PasswdService.CODE_EXPIRATION)
+      this.logger.log("Token :" + token + '  int : ' + k.toString(10))
+      if (initDto.type === 0){
+        this.logger.log("Reset password asked by mail for  : " + initDto.uid )
+        if (mailAttribute !== '') {
+          const displayName=identity.inetOrgPerson.displayName
+          this.mailer.sendMail({
+            from: this.config.get('mailer.sender'),
+            to: mail,
+            subject: 'Reinitialisation de votre mot de passe',
+            template: "resetaccount",
+            context:{
+              uid: identity.inetOrgPerson.uid,
+              displayName: displayName,
+              code: k
+            }
           })
-          .catch((e) => {
-            throw new BadRequestException({
-              message: 'Erreur serveur lors de l envoi du mail',
-              error: "Bad Request",
-              statusCode: 400
-            });
-          })
-        return token
+            .then(() => {
+              this.logger.log("reset compte envoyé  pour uid" +initDto.uid +" à " + mail )
+            })
+            .catch((e) => {
+              throw new BadRequestException({
+                message: 'Erreur serveur lors de l envoi du mail',
+                error: "Bad Request",
+                statusCode: 400
+              });
+            })
+          return token
+        }else{
+          return false
+        }
       }else{
-        return false
+        //envoi par SMS si c est possible
+        const policies=await this.passwdadmService.getPolicies()
+        if (policies.resetBySms === true){
+          this.logger.log("Reset password asked by SMS for  : " + initDto.uid )
+          const smsAttribute=this.config.get('frontPwd.identityMobileAttribute')
+          if (smsAttribute !== ''){
+            const numTel = <string>get(identity.toObject(), smsAttribute)
+            this.smsService.send(numTel,"Votre code de reinitialisation : " + k.toString(10))
+          }
+          return token
+        }else{
+          return false
+        }
       }
+
     }catch(e){
       this.logger.error("Error while reseting password. " + e + ` (uid=${initDto?.uid})`);
       //on retoune un token qui ne sert à rien pour ne pas divulguer que l uid n existe pas
@@ -98,6 +121,7 @@ export class PasswdService extends AbstractService {
 
 
   }
+  //Initialisation du compte. Envoi d' un mail avec un token pour l'init du compte
   public async initAccount(initDto: InitAccountDto):Promise<any>{
     //recherche de l'identity
     try{
@@ -144,10 +168,19 @@ export class PasswdService extends AbstractService {
     }
 
   }
+  //Changement du password
   public async change(passwdDto: ChangePasswordDto): Promise<[Jobs, any]> {
     try {
-      const identity = await this.identities.findOne({ 'inetOrgPerson.uid': passwdDto.uid }) as Identities;
-
+      const identity = await this.identities.findOne({ 'inetOrgPerson.uid': passwdDto.uid,'state':IdentityState.SYNCED }) as Identities;
+      //verification de la police de mdp
+      if (await this.passwdadmService.checkPolicies(passwdDto.newPassword) === false){
+        throw new BadRequestException({
+          message: 'Une erreur est survenue : Le mot de passe ne respecte pas la politique des mots de passe',
+          error: "Bad Request",
+          statusCode: 400,
+        });
+      }
+      //tout est ok en envoie au backend
       return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, identity._id, {
         ...passwdDto,
         ...pick(identity.toJSON(), ['inetOrgPerson']),
@@ -181,7 +214,8 @@ export class PasswdService extends AbstractService {
     }
   }
 
- public async askToken(askToken: AskTokenDto,k,ttl): Promise<string> {
+  // Genere un token pour les autres methodes
+  public async askToken(askToken: AskTokenDto,k, ttl: number): Promise<string> {
     try {
       /*
       if (ttl >0){
@@ -217,6 +251,7 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException('Impossible de générer un token, une erreur est survenue');
     }
   }
+  // decrypte le token à l aide du code
   public async decryptTokenWithCode(token: string,code: number): Promise<CipherData> {
     try {
       token=decodeURIComponent(token)
@@ -238,6 +273,7 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException('Invalid token xx');
     }
   }
+  // decrypte le token d'initialisation du compte
   public async decryptToken(token: string): Promise<CipherData> {
     try {
       token=decodeURIComponent(token)
@@ -258,8 +294,17 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException('Invalid token');
     }
   }
+  // reset du password
   public async resetByCode(data:ResetByCodeDto):Promise<[Jobs,any]>{
     this.logger.log('resetByCode : ' + data.token+ ' '+ data.code )
+    //verification du passwordPolicies
+    if (await this.passwdadmService.checkPolicies(data.newpassword) === false){
+      throw new BadRequestException({
+        message: 'Une erreur est survenue : Le mot de passe ne respecte pas la politique de securité',
+        error: "Bad Request",
+        statusCode: 400,
+      });
+    }
     const tokenData=await this.decryptTokenWithCode(data.token,data.code)
     this.logger.log( 'dataToken :' + tokenData)
     try{
@@ -288,11 +333,12 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException('Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible');
     }
   }
+  // methode pour le reset par token (pour l initialisation du compte)
   public async reset(data: ResetPasswordDto): Promise<[Jobs, any]> {
     const tokenData = await this.decryptToken(data.token);
 
     try {
-      const identity = await this.identities.findOne({ 'inetOrgPerson.uid': tokenData.uid }) as Identities;
+      const identity = await this.identities.findOne({ 'inetOrgPerson.uid': tokenData.uid,'state':IdentityState.SYNCED }) as Identities;
 
       const [_, response] = await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_RESET,

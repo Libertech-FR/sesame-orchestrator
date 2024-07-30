@@ -3597,6 +3597,11 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
+awesome-phonenumber@^6.10.0:
+  version "6.10.0"
+  resolved "https://registry.yarnpkg.com/awesome-phonenumber/-/awesome-phonenumber-6.10.0.tgz#7a3d85d14afa3f98c17f893fa2af29ab9b332d22"
+  integrity sha512-nLzMoIWl7cP/1xL7ErlT3+zoGu9S/nbdZ89HdLwiW75U4tV26vaDkFQiz6QdIm5SWRY+BmI5LN9+HiiqFHHq8Q==
+
 axobject-query@3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/axobject-query/-/axobject-query-3.1.1.tgz#3b6e5c6d4e43ca7ba51c5babf99d22a9c68485e1"
@@ -5746,6 +5751,13 @@ find-versions@^5.0.0:
   dependencies:
     semver-regex "^4.0.5"
 
+findhit-proxywrap@^0.3.12:
+  version "0.3.13"
+  resolved "https://registry.yarnpkg.com/findhit-proxywrap/-/findhit-proxywrap-0.3.13.tgz#3befef7409710b1bdb3bc35378c317ebd7d9b78b"
+  integrity sha512-gI1KV7yCuMHtveiWbQUJZheNOukScz+15MTtrH/MK5RJ77JjYeJ1DegUfkBnlPvDx5NhZESl48zE/MwpWZ1LXQ==
+  dependencies:
+    lodash "^4.17.21"
+
 fixpack@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/fixpack/-/fixpack-4.0.0.tgz#28b9fb8ca04f89aab382021cfa826b36dc381dfd"
@@ -6235,6 +6247,14 @@ hexoid@^1.0.0:
   resolved "https://registry.yarnpkg.com/hexoid/-/hexoid-1.0.0.tgz#ad10c6573fb907de23d9ec63a711267d9dc9bc18"
   integrity sha512-QFLV0taWQOZtvIRIAdBChesmogZrtuXvVWsFHZTk2SU+anspqZ2vMnoLg7IE1+Uk16N19APic1BuF8bC8c2m5g==
 
+hibp@^14.1.2:
+  version "14.1.2"
+  resolved "https://registry.yarnpkg.com/hibp/-/hibp-14.1.2.tgz#a484b5ed24e4bd916ff0b4e63e13347545a645f7"
+  integrity sha512-DAMzWEEsjKFZMv4g8mDp1qPPo4FPmwLPhTlnJ6I1sBiC0x5FhjSyLhwvGA90uHCl8/6ckHwlgNuoinYrBCh3cQ==
+  dependencies:
+    jssha "^3.3.1"
+    undici "^6.14.1"
+
 hosted-git-info@^6.0.0:
   version "6.1.1"
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-6.1.1.tgz#629442c7889a69c05de604d52996b74fe6f26d58"
@@ -6421,7 +6441,7 @@ iconv-lite@0.4.24, iconv-lite@^0.4.24:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
-iconv-lite@0.6.3, iconv-lite@^0.6.2, iconv-lite@^0.6.3:
+iconv-lite@0.6.3, iconv-lite@0.x, iconv-lite@^0.6.2, iconv-lite@^0.6.3:
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.6.3.tgz#a52f80bf38da1952eb5c681790719871a1a72501"
   integrity sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==
@@ -7461,6 +7481,11 @@ jsonwebtoken@9.0.2, jsonwebtoken@^9.0.0:
     lodash.once "^4.0.0"
     ms "^2.1.1"
     semver "^7.5.4"
+
+jssha@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/jssha/-/jssha-3.3.1.tgz#c5b7fc7fb9aa745461923b87df0e247dd59c7ea8"
+  integrity sha512-VCMZj12FCFMQYcFLPRm/0lOBbLi8uM2BhXPTqw3U4YAfs4AZfiApOoBLoN8cQE60Z50m1MYMTQVCfgF/KaCVhQ==
 
 jstransformer@1.0.0:
   version "1.0.0"
@@ -10388,6 +10413,15 @@ smart-buffer@^4.2.0:
   resolved "https://registry.yarnpkg.com/smart-buffer/-/smart-buffer-4.2.0.tgz#6e1d71fa4f18c05f7d0ff216dd16a481d0e8d9ae"
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
+smpp@^0.6.0-rc.4:
+  version "0.6.0-rc.4"
+  resolved "https://registry.yarnpkg.com/smpp/-/smpp-0.6.0-rc.4.tgz#96cad8a3dd08233a4a7da04128f27ed8e58e6c05"
+  integrity sha512-WDa0XBRQkkJJPcKRtoC9C0cnzhopFIK9/zFcWBOy3sD4xZr3i/Dt3yX+XRparKzpp9QkqRr2/8EYt8JNGxu85w==
+  dependencies:
+    findhit-proxywrap "^0.3.12"
+    iconv-lite "0.x"
+    safer-buffer ">= 2.1.2 < 3"
+
 socks-proxy-agent@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/socks-proxy-agent/-/socks-proxy-agent-7.0.0.tgz#dc069ecf34436621acb41e3efa66ca1b5fed15b6"
@@ -11227,6 +11261,11 @@ undici-types@~5.26.4:
   version "5.26.5"
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-5.26.5.tgz#bcd539893d00b56e964fd2657a4866b221a65617"
   integrity sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==
+
+undici@^6.14.1:
+  version "6.19.4"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-6.19.4.tgz#5ec3b191699a1678ee0aa9ed14e443a682d0f7a8"
+  integrity sha512-i3uaEUwNdkRq2qtTRRJb13moW5HWqviu7Vl7oYRYz++uPtGHJj+x7TGjcEuwS5Mt2P4nA0U9dhIX3DdB6JGY0g==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"

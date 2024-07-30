@@ -7,39 +7,39 @@ export type PasswordPoliciesDocument = Identities & Document;
 @Schema({ versionKey: false })
 export class PasswordPolicies extends AbstractSchema {
   @Prop({ type: Number, default: 10 })
-  len: Number;
+  len: number;
 
   @Prop({ type: Number,default:1 })
-  hasUpperCase: Number;
+  hasUpperCase: number;
 
   @Prop({ type: Number,default:1 })
-  hasLowerCase: Number;
+  hasLowerCase: number;
 
   @Prop({ type: Number,default:1 })
-  hasNumbers: Number;
+  hasNumbers: number;
 
   @Prop({ type: Number,default:1 })
-  hasSpecialChars: Number;
+  hasSpecialChars: number;
 
   @Prop({ type: Number,default:20 })
-  minComplexity: Number;
+  minComplexity: number;
 
   @Prop({ type: Number,default:60 })
-  goodComplexity: Number;
+  goodComplexity: number;
 
   @Prop({ type: Boolean,default:true })
-  checkPwned: Boolean;
+  checkPwned: boolean;
 
   @Prop({ type: Number,default:10 })
-  maxRetry: Number;
+  maxRetry: number;
 
   @Prop({ type: Number,default:3600 })
-  bannedTime: Number;
+  bannedTime: number;
   @Prop({ type: Boolean,default:true })
-  resetBySms: Boolean;
+  resetBySms: boolean;
 
   @Prop({ type: String,default:'https://google.fr' })
-  redirectUrl: String;
+  redirectUrl: string;
 }
 
 export const PasswordPoliciesSchema = SchemaFactory.createForClass(PasswordPolicies);

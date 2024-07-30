@@ -27,6 +27,7 @@ export class PasswdController {
   @ApiResponse({status: HttpStatus.OK, description: 'Mot de passe synchronisé sur le/les backends'})
   public async change(@Body() body: ChangePasswordDto, @Res() res: Response): Promise<Response> {
     const debug = {}
+
     const [_, data] = await this.passwdService.change(body);
     this.logger.log(`Call passwd change for : ${body.uid}`);
 
@@ -40,6 +41,7 @@ export class PasswdController {
     });
   }
 
+  /*
   @Post('gettoken')
   @ApiOperation({summary: 'Récupère un jeton de réinitialisation de mot de passe'})
   @ApiResponse({status: HttpStatus.OK, description: 'Retourne un jeton de réinitialisation de mot de passe'})
@@ -60,7 +62,7 @@ export class PasswdController {
 
     return res.status(HttpStatus.OK).json({data});
   }
-
+*/
   @Post('resetbycode')
   @ApiOperation({summary: 'reinitialise le mot de passe avec le code reçu'})
   @ApiResponse({status: HttpStatus.OK})

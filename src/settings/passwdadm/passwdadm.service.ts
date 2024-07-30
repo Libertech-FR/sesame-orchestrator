@@ -6,6 +6,8 @@ import {Model} from "mongoose";
 import {InjectModel} from "@nestjs/mongoose";
 import {IdentitiesService} from "~/management/identities/identities.service";
 import stringEntropy from 'fast-password-entropy'
+import {pwnedPassword} from "hibp";
+import {PasswordPoliciesDto} from "~/settings/passwdadm/dto/password-policy.dto";
 
 @Injectable()
 export class PasswdadmService extends AbstractService {
@@ -24,8 +26,18 @@ export class PasswdadmService extends AbstractService {
     return passwordPolicies
   }
 
+  public async setPolicies(policies: PasswordPoliciesDto):Promise<boolean>{
+    //lecture de la police
+    let passwordPolicies = await this.passwordPolicies.findOne()
+    if (passwordPolicies === null) {
+      passwordPolicies= new this.passwordPolicies()
+    }
+    return true
+
+  }
+
   public async checkPolicies(password: string): Promise<boolean> {
-    const policies = this.getPolicies()
+    const policies = await this.getPolicies()
     if (password.length < policies.len) {
       this.logger.error('Password too short')
       return false
@@ -56,12 +68,21 @@ export class PasswdadmService extends AbstractService {
       }
     }
     //calcul de l'entropie
-    let c = stringEntropy(password)
-    if (c < policies.minComplexity) {
-      this.logger.error('entropie trop faible')
+    if (policies.minComplexity >0){
+      let c = stringEntropy(password)
+      if (c < policies.minComplexity) {
+        this.logger.error('entropie trop faible')
+        return false
+      }
+    }
+
+    // check si le mdp est pwned
+    if (policies.checkPwned === true){
+      const numPwns = await pwnedPassword(password);
+      if (numPwns > 0){
+        return false
+      }
     }
     return true
   }
-    
-
 }

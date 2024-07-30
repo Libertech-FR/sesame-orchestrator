@@ -39,6 +39,13 @@ export interface ConfigInstance {
     port: number;
     sender: string;
   };
+  sms:{
+    host: string,
+    systemId: string,
+    password: string,
+    sourceAddr: string,
+    regionCode: string
+  },
   frontPwd: {
     url:string;
     identityMailAttribute: string;
@@ -120,6 +127,13 @@ export default (): ConfigInstance => ({
     url: process.env['SESAME_FRONT_MDP'],
     identityMailAttribute: process.env['SESAME_RESET_PWD_MAIL'] || '',
     identityMobileAttribute: process.env['SESAME_RESET_PWD_MOBILE'] || ''
+  },
+  sms:{
+    host: process.env['SESAME_SMPP_SERVER'] || '',
+    systemId: process.env['SESAME_SMPP_SYSTEMID'] || '',
+    password: process.env['SESAME_SMPP_PASSWORD'] || '',
+    sourceAddr: process.env['SESAME_SMPP_SOURCEADDR'] || '',
+    regionCode: process.env['SESAME_SMPP_REGIONCODE'] || 'FR'
   }
 
 });

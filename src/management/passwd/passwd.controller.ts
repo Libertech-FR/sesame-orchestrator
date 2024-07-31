@@ -2,17 +2,17 @@ import {Controller, Post, Body, Res, Logger, HttpStatus, Get} from '@nestjs/comm
 import {PasswdService} from './passwd.service';
 import {ApiTags, ApiOperation, ApiResponse} from '@nestjs/swagger';
 import {Response} from 'express';
-import {ChangePasswordDto} from './dto/change-password.dto';
-import {AskTokenDto} from './dto/ask-token.dto';
-import {VerifyTokenDto} from './dto/verify-token.dto';
-import {ResetPasswordDto} from './dto/reset-password.dto';
+import {ChangePasswordDto} from './_dto/change-password.dto';
+import {AskTokenDto} from './_dto/ask-token.dto';
+import {VerifyTokenDto} from './_dto/verify-token.dto';
+import {ResetPasswordDto} from './_dto/reset-password.dto';
 import {omit} from "radash";
 import {PasswdadmService} from "~/settings/passwdadm/passwdadm.service";
 import {PasswordPolicies} from "~/settings/passwdadm/_schemas/PasswordPolicies";
-import {InitAccountDto} from "~/management/passwd/dto/init-account.dto";
-import {InitResetDto} from "~/management/passwd/dto/init-reset.dto";
+import {InitAccountDto} from "~/management/passwd/_dto/init-account.dto";
+import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
 import crypto from "crypto";
-import {ResetByCodeDto} from "~/management/passwd/dto/reset-by-code-dto";
+import {ResetByCodeDto} from "~/management/passwd/_dto/reset-by-code-dto";
 
 @Controller('passwd')
 @ApiTags('management/passwd')

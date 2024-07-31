@@ -9,7 +9,7 @@ export class SmsService extends AbstractService {
     super()
   }
   public send(telNumber: string , message:string){
-    this.logger.log('Envoi SMS : ' +telNumber + ' message :' + message)
+    this.logger.verbose('Envoi SMS : ' +telNumber + ' message :' + message)
     const host = this.config.get('sms.host')
     const systemId = this.config.get('sms.systemId')
     const password = this.config.get('sms.password')
@@ -18,11 +18,11 @@ export class SmsService extends AbstractService {
     const logger=this.logger
     //normalisation du numero de telephone
     const pTelNumber=parsePhoneNumber(telNumber,{ regionCode: this.config.get('sms.regionCode') })
-    this.logger.log('phone number parsed :' +pTelNumber.number.e164)
+    this.logger.verbose('phone number parsed :' +pTelNumber.number.e164)
     if (pTelNumber.valid === true){
       const session = smpp.connect({
         url: host,
-        debug: true
+        debug: false
       }, function() {
         session.bind_transmitter({
           system_id: systemId,
@@ -47,15 +47,14 @@ export class SmsService extends AbstractService {
                 session.unbind()
                 session.close()
               }else{
-                console.log('FAIL : ' + pdu.command_status)
+                console.error('FAIL : ' + pdu.command_status)
                 session.unbind()
                 session.close()
               }
             });
           }
           session.on('error', function(error){
-            console.log('smpp error', error)
-            logger.log('SMS ERREUR ' + error)
+            logger.error('SMS ERREUR ' + error)
             session.unbind()
             session.close()
           })

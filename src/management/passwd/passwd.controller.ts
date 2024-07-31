@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Controller, Post, Body, Res, Logger, HttpStatus, Get } from '@nestjs/common';
 import { PasswdService } from './passwd.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -22,6 +23,22 @@ import {
 import { Document } from 'mongoose';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { MixedValue } from '~/_common/types/mixed-value.type';
+=======
+import {Controller, Post, Body, Res, Logger, HttpStatus, Get} from '@nestjs/common';
+import {PasswdService} from './passwd.service';
+import {ApiTags, ApiOperation, ApiResponse} from '@nestjs/swagger';
+import {Response} from 'express';
+import {ChangePasswordDto} from './_dto/change-password.dto';
+import {AskTokenDto} from './_dto/ask-token.dto';
+import {VerifyTokenDto} from './_dto/verify-token.dto';
+import {ResetPasswordDto} from './_dto/reset-password.dto';
+import {omit} from "radash";
+import {PasswdadmService} from "~/settings/passwdadm/passwdadm.service";
+import {InitAccountDto} from "~/management/passwd/_dto/init-account.dto";
+import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
+import crypto from "crypto";
+import {ResetByCodeDto} from "~/management/passwd/_dto/reset-by-code-dto";
+>>>>>>> 85a4ce7 (save)
 
 @Controller('passwd')
 @ApiTags('management/passwd')

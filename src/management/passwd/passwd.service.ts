@@ -20,6 +20,7 @@ import { ResetPasswordDto } from './_dto/reset-password.dto';
 import { IdentitiesService } from '../identities/identities.service';
 import { get, pick } from 'radash';
 import { Identities } from '../identities/_schemas/identities.schema';
+<<<<<<< HEAD
 import { MailerService } from '@nestjs-modules/mailer';
 import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
 import { ConfigService } from '@nestjs/config';
@@ -32,6 +33,18 @@ import { SmsadmService } from '~/settings/smsadm.service';
 import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
 import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
 import { MailadmService } from '~/settings/mailadm.service';
+=======
+import {MailerModule, MailerService} from "@nestjs-modules/mailer";
+import {InitAccountDto} from "~/management/passwd/_dto/init-account.dto";
+import {ConfigService} from "@nestjs/config";
+import {randomInt} from "crypto";
+import {ResetByCodeDto} from "~/management/passwd/_dto/reset-by-code-dto";
+import {PasswdadmService} from "~/settings/passwdadm/passwdadm.service";
+import {IdentityState} from "~/management/identities/_enums/states.enum";
+import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
+import {SmsService} from "~/management/passwd/sms-service";
+import {PasswordPoliciesDto} from "~/settings/passwdadm/dto/password-policy.dto";
+>>>>>>> 85a4ce7 (save)
 
 interface TokenData {
   k: string;
@@ -111,6 +124,7 @@ export class PasswdService extends AbstractService {
         }
       } else {
         //envoi par SMS si c est possible
+<<<<<<< HEAD
         const policies = new PasswordPoliciesDto();
         if (policies.resetBySms === true) {
           this.logger.log('Reset password asked by SMS for  : ' + initDto.uid);
@@ -118,6 +132,15 @@ export class PasswdService extends AbstractService {
           if (smsAttribute !== '') {
             const numTel = <string>get(identity.toObject(), smsAttribute);
             await this.smsadmService.send(numTel, 'Votre code de reinitialisation : ' + k.toString(10));
+=======
+        const policies=new PasswordPoliciesDto()
+        if (policies.resetBySms === true){
+          this.logger.log("Reset password asked by SMS for  : " + initDto.uid )
+          const smsAttribute=this.config.get('frontPwd.identityMobileAttribute')
+          if (smsAttribute !== ''){
+            const numTel = <string>get(identity.toObject(), smsAttribute)
+            this.smsService.send(numTel,"Votre code de reinitialisation : " + k.toString(10))
+>>>>>>> 85a4ce7 (save)
           }
           return token;
         } else {

@@ -1,5 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
+<<<<<<< HEAD
 import { SettingsController } from '~/settings/settings.controller';
 import { SettingsService } from '~/settings/settings.service';
 import { SmsadmService } from '~/settings/smsadm.service';
@@ -10,6 +11,11 @@ import { PasswdadmService } from '~/settings/passwdadm.service';
 import { PasswdadmController } from '~/settings/passwdadm.controller';
 import { MailadmService } from '~/settings/mailadm.service';
 import { MailadmController } from '~/settings/mailadm.controller';
+=======
+import {PasswdadmModule} from "~/settings/passwdadm/passwdadm.module";
+import {SettingsController} from "~/settings/settings.controller";
+import {SettingsService} from "~/settings/settings.service";
+>>>>>>> 85a4ce7 (save)
 @Module({
   exports: [SmsadmService, PasswdadmService, MailadmService],
   imports: [

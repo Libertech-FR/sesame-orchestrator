@@ -95,7 +95,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >VerifyTokenDto</li>
+  <li class="breadcrumb-item" >InitAccountDto</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -119,7 +119,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/management/passwd/_dto/verify-token.dto.ts</code>
+            <code>src/management/passwd/_dto/init-account.dto.ts</code>
         </p>
 
 
@@ -142,7 +142,7 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
-                                <a href="#token" >token</a>
+                                <a href="#uid" >uid</a>
                             </li>
                         </ul>
                     </td>
@@ -167,12 +167,12 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="token"></a>
+                    <a name="uid"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
-                        <span ><b>token</b></span>
-                        <a href="#token"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>uid</b></span>
+                        <a href="#uid"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -187,13 +187,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({example: &#x27;S9nv9vjxdW7bS0haoWUmdJ3XPbSJ7dSdRj2ND1z9RvqLK/sF1LKZpfnWDvLX1dZuG0WGEyAb9A&#x3D;&#x3D;&#x27;, description: &#x27;token received by getToken&#x27;})<br />@IsString()<br />
+                            @ApiProperty({example: &#x27;uid&#x27;, description: &#x27;paul.smith&#x27;})<br />@IsString()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/management/passwd/_dto/verify-token.dto.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">src/management/passwd/_dto/init-account.dto.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -215,13 +215,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { IsString } from &#x27;class-validator&#x27;;
 
-export class VerifyTokenDto {
-  @ApiProperty({
-    example: &#x27;S9nv9vjxdW7bS0haoWUmdJ3XPbSJ7dSdRj2ND1z9RvqLK/sF1LKZpfnWDvLX1dZuG0WGEyAb9A&#x3D;&#x3D;&#x27;,
-    description: &#x27;token received by getToken&#x27;,
-  })
+export class InitAccountDto {
+
+  @ApiProperty({ example: &#x27;uid&#x27;, description: &#x27;paul.smith&#x27; })
   @IsString()
-  token: string;
+  uid: string;
 }
 </code></pre>
     </div>
@@ -261,7 +259,7 @@ export class VerifyTokenDto {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'VerifyTokenDto.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'InitAccountDto.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

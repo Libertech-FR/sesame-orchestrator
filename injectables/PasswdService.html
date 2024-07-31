@@ -143,6 +143,11 @@
                             <li>
                                     <span class="modifier">Static</span>
                                     <span class="modifier">Readonly</span>
+                                <a href="#CODE_EXPIRATION" >CODE_EXPIRATION</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                    <span class="modifier">Readonly</span>
                                 <a href="#RANDOM_BYTES_IV" >RANDOM_BYTES_IV</a>
                             </li>
                             <li>
@@ -209,7 +214,32 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#decryptTokenWithCode" >decryptTokenWithCode</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getPaddingForCode" >getPaddingForCode</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#initAccount" >initAccount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#initReset" >initReset</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#reset" >reset</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#resetByCode" >resetByCode</a>
                             </li>
                         </ul>
                     </td>
@@ -230,12 +260,12 @@
                 <tr>
                     <td class="col-md-4">
                                 <span class="modifier">Public</span>
-                        <code>constructor(backends: <a href="../injectables/BackendsService.html" target="_self">BackendsService</a>, identities: <a href="../injectables/IdentitiesService.html" target="_self">IdentitiesService</a>, redis: Redis)</code>
+                        <code>constructor(backends: <a href="../injectables/BackendsService.html" target="_self">BackendsService</a>, identities: <a href="../injectables/IdentitiesService.html" target="_self">IdentitiesService</a>, mailer: MailerService, config: ConfigService, passwdadmService: <a href="../injectables/PasswdadmService.html" target="_self">PasswdadmService</a>, smsService: <a href="../injectables/SmsService.html" target="_self">SmsService</a>, redis: Redis)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/management/passwd/passwd.service.ts:34</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/management/passwd/passwd.service.ts:44</a></div>
                             </td>
                         </tr>
 
@@ -269,6 +299,54 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/IdentitiesService.html" target="_self" >IdentitiesService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mailer</td>
+                                                  
+                                                        <td>
+                                                                    <code>MailerService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>config</td>
+                                                  
+                                                        <td>
+                                                                    <code>ConfigService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>passwdadmService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/PasswdadmService.html" target="_self" >PasswdadmService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>smsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SmsService.html" target="_self" >SmsService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -318,15 +396,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>askToken(askToken: <a href="../classes/AskTokenDto.html" target="_self">AskTokenDto</a>)</code>
+                    <code>askToken(askToken: <a href="../classes/AskTokenDto.html" target="_self">AskTokenDto</a>, k, ttl: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="81"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:81</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="218"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:218</a></div>
                         </td>
                     </tr>
 
@@ -350,6 +428,29 @@
                                                 <td>askToken</td>
                                             <td>
                                                             <code><a href="../classes/AskTokenDto.html" target="_self" >AskTokenDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>k</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>ttl</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                             </td>
 
                                             <td>
@@ -395,8 +496,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="172"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:172</a></div>
                         </td>
                     </tr>
 
@@ -465,8 +566,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="112"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:112</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="277"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:277</a></div>
                         </td>
                     </tr>
 
@@ -516,6 +617,268 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="decryptTokenWithCode"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>decryptTokenWithCode</b></span>
+                        <a href="#decryptTokenWithCode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>decryptTokenWithCode(token: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, code: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="255"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:255</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>token</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>code</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/CipherData.html" target="_self" >Promise&lt;CipherData&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getPaddingForCode"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getPaddingForCode</b></span>
+                        <a href="#getPaddingForCode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getPaddingForCode()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="368"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:368</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initAccount"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>initAccount</b></span>
+                        <a href="#initAccount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>initAccount(initDto: <a href="../classes/InitAccountDto.html" target="_self">InitAccountDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="125"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:125</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>initDto</td>
+                                            <td>
+                                                            <code><a href="../classes/InitAccountDto.html" target="_self" >InitAccountDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initReset"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>initReset</b></span>
+                        <a href="#initReset"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>initReset(initDto: <a href="../classes/InitResetDto.html" target="_self">InitResetDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:58</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>initDto</td>
+                                            <td>
+                                                            <code><a href="../classes/InitResetDto.html" target="_self" >InitResetDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="reset"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -535,8 +898,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="132"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:132</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="337"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:337</a></div>
                         </td>
                     </tr>
 
@@ -582,12 +945,115 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="resetByCode"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>resetByCode</b></span>
+                        <a href="#resetByCode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>resetByCode(data: <a href="../classes/ResetByCodeDto.html" target="_self">ResetByCodeDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="298"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:298</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/ResetByCodeDto.html" target="_self" >ResetByCodeDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
             <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="CODE_EXPIRATION"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>CODE_EXPIRATION</b></span>
+                        <a href="#CODE_EXPIRATION"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>1900</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/management/passwd/passwd.service.ts:44</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -614,7 +1080,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/management/passwd/passwd.service.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/management/passwd/passwd.service.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -647,7 +1113,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/management/passwd/passwd.service.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/management/passwd/passwd.service.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -680,7 +1146,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/management/passwd/passwd.service.ts:32</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/management/passwd/passwd.service.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -708,12 +1174,12 @@
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>3600</code>
+                        <i>Default value : </i><code>604800</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/management/passwd/passwd.service.ts:34</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/management/passwd/passwd.service.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -867,12 +1333,21 @@ import { AbstractService } from &#x27;~/_common/abstracts/abstract.service&#x27;
 import { ActionType } from &#x27;~/core/backends/_enum/action-type.enum&#x27;;
 import { BackendsService } from &#x27;~/core/backends/backends.service&#x27;;
 import { Jobs } from &#x27;~/core/jobs/_schemas/jobs.schema&#x27;;
-import { AskTokenDto } from &#x27;./dto/ask-token.dto&#x27;;
-import { ChangePasswordDto } from &#x27;./dto/change-password.dto&#x27;;
-import { ResetPasswordDto } from &#x27;./dto/reset-password.dto&#x27;;
+import { AskTokenDto } from &#x27;./_dto/ask-token.dto&#x27;;
+import { ChangePasswordDto } from &#x27;./_dto/change-password.dto&#x27;;
+import { ResetPasswordDto } from &#x27;./_dto/reset-password.dto&#x27;;
 import { IdentitiesService } from &#x27;../identities/identities.service&#x27;;
-import { pick } from &#x27;radash&#x27;;
+import { pick,get } from &#x27;radash&#x27;;
 import { Identities } from &#x27;../identities/_schemas/identities.schema&#x27;;
+import {MailerModule, MailerService} from &quot;@nestjs-modules/mailer&quot;;
+import {InitAccountDto} from &quot;~/management/passwd/_dto/init-account.dto&quot;;
+import {ConfigService} from &quot;@nestjs/config&quot;;
+import {randomInt} from &quot;crypto&quot;;
+import {ResetByCodeDto} from &quot;~/management/passwd/_dto/reset-by-code-dto&quot;;
+import {PasswdadmService} from &quot;~/settings/passwdadm/passwdadm.service&quot;;
+import {IdentityState} from &quot;~/management/identities/_enums/states.enum&quot;;
+import {InitResetDto} from &quot;~/management/passwd/_dto/init-reset.dto&quot;;
+import {SmsService} from &quot;~/management/passwd/sms-service&quot;;
 
 interface TokenData {
   k: string;
@@ -892,20 +1367,147 @@ export class PasswdService extends AbstractService {
 
   public static readonly TOKEN_ALGORITHM &#x3D; &#x27;aes-256-gcm&#x27;;
 
-  public static readonly TOKEN_EXPIRATION &#x3D; 3600;
-
+  public static readonly TOKEN_EXPIRATION &#x3D; 604800;
+  public static readonly CODE_EXPIRATION &#x3D; 1900;
   public constructor(
     protected readonly backends: BackendsService,
     protected readonly identities: IdentitiesService,
-    @InjectRedis() private readonly redis: Redis,
+    protected mailer: MailerService,
+    protected config: ConfigService,
+    private passwdadmService: PasswdadmService,
+    private smsService: SmsService,
+    @InjectRedis() private readonly redis: Redis
   ) {
     super();
   }
+  //Initialisation du reset de mot de passe envoie un email ou par sms  un code et fourni un token au front.
+  // Le code est la clé du token
+  public async initReset(initDto: InitResetDto):Promise&lt;any&gt;{
+    //envoi du mail
+    try{
+      const identity &#x3D; await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: initDto.uid }) as Identities;
+      const k &#x3D; randomInt(100000, 999999);
+      //asking for padding
+      const padd &#x3D; await this.getPaddingForCode()
+      const mailAttribute&#x3D;this.config.get(&#x27;frontPwd.identityMailAttribute&#x27;)
+      const mail &#x3D; &lt;string&gt;get(identity.toObject(), mailAttribute)
+      const token &#x3D; await this.askToken({mail: mail, uid: initDto.uid}, padd + k.toString(16),PasswdService.CODE_EXPIRATION)
+      this.logger.log(&quot;Token :&quot; + token + &#x27;  int : &#x27; + k.toString(10))
+      if (initDto.type &#x3D;&#x3D;&#x3D; 0){
+        this.logger.log(&quot;Reset password asked by mail for  : &quot; + initDto.uid )
+        if (mailAttribute !&#x3D;&#x3D; &#x27;&#x27;) {
+          const displayName&#x3D;identity.inetOrgPerson.displayName
+          this.mailer.sendMail({
+            from: this.config.get(&#x27;mailer.sender&#x27;),
+            to: mail,
+            subject: &#x27;Reinitialisation de votre mot de passe&#x27;,
+            template: &quot;resetaccount&quot;,
+            context:{
+              uid: identity.inetOrgPerson.uid,
+              displayName: displayName,
+              code: k
+            }
+          })
+            .then(() &#x3D;&gt; {
+              this.logger.log(&quot;reset compte envoyé  pour uid&quot; +initDto.uid +&quot; à &quot; + mail )
+            })
+            .catch((e) &#x3D;&gt; {
+              throw new BadRequestException({
+                message: &#x27;Erreur serveur lors de l envoi du mail&#x27;,
+                error: &quot;Bad Request&quot;,
+                statusCode: 400
+              });
+            })
+          return token
+        }else{
+          return false
+        }
+      }else{
+        //envoi par SMS si c est possible
+        const policies&#x3D;await this.passwdadmService.getPolicies()
+        if (policies.resetBySms &#x3D;&#x3D;&#x3D; true){
+          this.logger.log(&quot;Reset password asked by SMS for  : &quot; + initDto.uid )
+          const smsAttribute&#x3D;this.config.get(&#x27;frontPwd.identityMobileAttribute&#x27;)
+          if (smsAttribute !&#x3D;&#x3D; &#x27;&#x27;){
+            const numTel &#x3D; &lt;string&gt;get(identity.toObject(), smsAttribute)
+            this.smsService.send(numTel,&quot;Votre code de reinitialisation : &quot; + k.toString(10))
+          }
+          return token
+        }else{
+          return false
+        }
+      }
 
+    }catch(e){
+      this.logger.error(&quot;Error while reseting password. &quot; + e + &#x60; (uid&#x3D;${initDto?.uid})&#x60;);
+      //on retoune un token qui ne sert à rien pour ne pas divulguer que l uid n existe pas
+      const k&#x3D;crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString(&#x27;hex&#x27;);
+      const falseToken&#x3D;await this.askToken({mail: &#x27;xxxxxx@xxxxxxxxxxx&#x27;, uid: &#x27;xxxxxxxx@xxxxxxx&#x27;},  k,0)
+      return falseToken
+    }
+
+
+  }
+  //Initialisation du compte. Envoi d&#x27; un mail avec un token pour l&#x27;init du compte
+  public async initAccount(initDto: InitAccountDto):Promise&lt;any&gt;{
+    //recherche de l&#x27;identity
+    try{
+      const identity &#x3D; await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: initDto.uid }) as Identities;
+      //envoi du mail
+      const mailAttribute&#x3D;this.config.get(&#x27;frontPwd.identityMailAttribute&#x27;)
+      this.logger.log(&quot;mailer.identityMailAttribute : &quot; +mailAttribute )
+      if (mailAttribute !&#x3D;&#x3D; &#x27;&#x27;) {
+        const mail &#x3D; &lt;string&gt;get(identity.toObject(), mailAttribute)
+        //demande du token
+        const k &#x3D; crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString(&#x27;hex&#x27;);
+        const token &#x3D; await this.askToken({mail: mail, uid: initDto.uid},k,PasswdService.TOKEN_EXPIRATION)
+        //envoi du token
+        this.mailer.sendMail({
+          from: this.config.get(&#x27;mailer.sender&#x27;),
+          to: mail,
+          subject: &#x27;Activation de votre compte&#x27;,
+          template: &quot;initaccount&quot;,
+          context:{
+            uid: initDto.uid,
+            url:this.config.get(&#x27;frontPwd.url&#x27;)+&#x27;/initaccount/&#x27;+ token
+          }
+
+        })
+          .then(() &#x3D;&gt; {
+            this.logger.log(&quot;Init compte envoyé  pour uid&quot; +initDto.uid +&quot; à &quot; + mail )
+          })
+          .catch((e) &#x3D;&gt; {
+            throw new BadRequestException({
+              message: &#x27;Erreur serveur lors de l envoi du mail&#x27;,
+              error: &quot;Bad Request&quot;,
+              statusCode: 400
+            });
+          })
+
+        return true
+      }else{
+        this.logger.error(&quot;Error while initAccount identityMailAttribute nor defined&quot;);
+        return false
+      }
+    }catch(e){
+      this.logger.error(&quot;Error while initialize password. &quot; + e + &#x60; (uid&#x3D;${initDto?.uid})&#x60;);
+      return false
+    }
+
+  }
+  //Changement du password
   public async change(passwdDto: ChangePasswordDto): Promise&lt;[Jobs, any]&gt; {
     try {
-      const identity &#x3D; await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: passwdDto.uid }) as Identities;
-
+      const identity &#x3D; await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: passwdDto.uid,&#x27;state&#x27;:IdentityState.SYNCED }) as Identities;
+      //verification de la police de mdp
+      if (await this.passwdadmService.checkPolicies(passwdDto.newPassword) &#x3D;&#x3D;&#x3D; false){
+        throw new BadRequestException({
+          message: &#x27;Une erreur est survenue : Le mot de passe ne respecte pas la politique des mots de passe&#x27;,
+          error: &quot;Bad Request&quot;,
+          statusCode: 400,
+        });
+      }
+      //tout est ok en envoie au backend
       return await this.backends.executeJob(ActionType.IDENTITY_PASSWORD_CHANGE, identity._id, {
         ...passwdDto,
         ...pick(identity.toJSON(), [&#x27;inetOrgPerson&#x27;]),
@@ -939,11 +1541,16 @@ export class PasswdService extends AbstractService {
     }
   }
 
-  public async askToken(askToken: AskTokenDto): Promise&lt;string&gt; {
+  // Genere un token pour les autres methodes
+  public async askToken(askToken: AskTokenDto,k, ttl: number): Promise&lt;string&gt; {
     try {
-      await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: askToken.uid });
+      /*
+      if (ttl &gt;0){
 
-      const k &#x3D; crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString(&#x27;hex&#x27;);
+        await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: askToken.uid });
+      }
+      */
+
       const iv &#x3D; crypto.randomBytes(PasswdService.RANDOM_BYTES_IV).toString(&#x27;base64&#x27;);
       const cipher &#x3D; crypto.createCipheriv(PasswdService.TOKEN_ALGORITHM, k, iv);
 
@@ -953,25 +1560,50 @@ export class PasswdService extends AbstractService {
         &#x27;base64&#x27;,
       );
       ciphertext +&#x3D; cipher.final(&#x27;base64&#x27;);
-
-      await this.redis.set(
-        ciphertext,
-        JSON.stringify(&lt;TokenData&gt;{
-          k,
-          iv,
-          tag: cipher.getAuthTag().toString(&#x27;base64&#x27;),
-        }),
-      );
-      await this.redis.expire(ciphertext, PasswdService.TOKEN_EXPIRATION);
-      return ciphertext;
+      //on enregistre pas dans redis si le ttl &#x3D;0
+      if (ttl &gt;0){
+        await this.redis.set(
+          ciphertext,
+          JSON.stringify(&lt;TokenData&gt;{
+            k,
+            iv,
+            tag: cipher.getAuthTag().toString(&#x27;base64&#x27;),
+          }),
+        );
+        await this.redis.expire(ciphertext, ttl);
+      }
+      return encodeURIComponent(ciphertext);
     } catch (e) {
       this.logger.error(&quot;Error while ask token. &quot; + e + &#x60; (uid&#x3D;${askToken?.uid})&#x60;);
       throw new BadRequestException(&#x27;Impossible de générer un token, une erreur est survenue&#x27;);
     }
   }
-
+  // decrypte le token à l aide du code
+  public async decryptTokenWithCode(token: string,code: number): Promise&lt;CipherData&gt; {
+    try {
+      token&#x3D;decodeURIComponent(token)
+      const result &#x3D; await this.redis.get(token);
+      const cypherData: TokenData &#x3D; JSON.parse(result);
+      this.logger.log(&#x27;decrypt &#x27; +cypherData)
+      if (cypherData?.iv &#x3D;&#x3D;&#x3D; undefined || cypherData?.k &#x3D;&#x3D;&#x3D; undefined || cypherData?.tag &#x3D;&#x3D;&#x3D; undefined) {
+        throw new NotFoundException(&#x27;Invalid token&#x27;);
+      }
+      const padd&#x3D;await this.getPaddingForCode();
+      const k&#x3D;padd + code.toString(16)
+      this.logger.log(&#x27;k&#x3D;&#x27; + k)
+      const decipher &#x3D; crypto.createDecipheriv(PasswdService.TOKEN_ALGORITHM, k, cypherData.iv);
+      decipher.setAuthTag(Buffer.from(cypherData.tag, &#x27;base64&#x27;));
+      const plaintext &#x3D; decipher.update(token, &#x27;base64&#x27;, &#x27;ascii&#x27;);
+      return JSON.parse(plaintext);
+    } catch (error) {
+      this.logger.error(&quot;Error while decrypting token. &quot; + error + &#x60; (token&#x3D;${token})&#x60;);
+      throw new BadRequestException(&#x27;Invalid token xx&#x27;);
+    }
+  }
+  // decrypte le token d&#x27;initialisation du compte
   public async decryptToken(token: string): Promise&lt;CipherData&gt; {
     try {
+      token&#x3D;decodeURIComponent(token)
       const result &#x3D; await this.redis.get(token);
       const cypherData: TokenData &#x3D; JSON.parse(result);
 
@@ -989,12 +1621,51 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException(&#x27;Invalid token&#x27;);
     }
   }
+  // reset du password
+  public async resetByCode(data:ResetByCodeDto):Promise&lt;[Jobs,any]&gt;{
+    this.logger.log(&#x27;resetByCode : &#x27; + data.token+ &#x27; &#x27;+ data.code )
+    //verification du passwordPolicies
+    if (await this.passwdadmService.checkPolicies(data.newpassword) &#x3D;&#x3D;&#x3D; false){
+      throw new BadRequestException({
+        message: &#x27;Une erreur est survenue : Le mot de passe ne respecte pas la politique de securité&#x27;,
+        error: &quot;Bad Request&quot;,
+        statusCode: 400,
+      });
+    }
+    const tokenData&#x3D;await this.decryptTokenWithCode(data.token,data.code)
+    this.logger.log( &#x27;dataToken :&#x27; + tokenData)
+    try{
+      const identity &#x3D; await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: tokenData.uid }) as Identities;
+      const [_, response] &#x3D; await this.backends.executeJob(
+        ActionType.IDENTITY_PASSWORD_RESET,
+        identity._id,
+        { uid: tokenData.uid, newPassword: data.newpassword, ...pick(identity, [&#x27;inetOrgPerson&#x27;]) },
+        {
+          async: false,
+          timeoutDiscard: true,
+          disableLogs: true,
+          updateStatus: false,
+        },
+      );
 
+      if (response?.status &#x3D;&#x3D;&#x3D; 0) {
+        this.logger.log(&#x27;delete key&#x27;)
+        await this.redis.del(data.token);
+        return [_, response];
+      }
+      this.logger.error(&quot;Error from backend while reseting password by code&quot; );
+      throw new InternalServerErrorException(&#x27;Une erreur est survenue : Impossible de réinitialiser le mot de passe&#x27;);
+    }catch (e) {
+      this.logger.error(&quot;Error while reseting password by code. &quot; + e + &#x60; (token&#x3D;${data?.token})&#x60;);
+      throw new BadRequestException(&#x27;Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible&#x27;);
+    }
+  }
+  // methode pour le reset par token (pour l initialisation du compte)
   public async reset(data: ResetPasswordDto): Promise&lt;[Jobs, any]&gt; {
     const tokenData &#x3D; await this.decryptToken(data.token);
 
     try {
-      const identity &#x3D; await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: tokenData.uid }) as Identities;
+      const identity &#x3D; await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: tokenData.uid,&#x27;state&#x27;:IdentityState.SYNCED }) as Identities;
 
       const [_, response] &#x3D; await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_RESET,
@@ -1020,6 +1691,19 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException(&#x27;Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible&#x27;);
     }
   }
+  // genere des octect pour completer le code qui est de 4 octets et demi
+  private async getPaddingForCode(): Promise&lt;string&gt;{
+     let code &#x3D; &quot;&quot;
+     if ( await this.redis.exists(&#x27;CODEPADDING&#x27;)){
+       code &#x3D; await this.redis.get(&#x27;CODEPADDING&#x27;)
+     }else{
+       code &#x3D; crypto.randomBytes(13).toString(&#x27;hex&#x27;) +&#x27;0&#x27;;
+       await this.redis.set(&#x27;CODEPADDING&#x27;,code)
+     }
+     return code
+  }
+
+
 }
 </code></pre>
     </div>

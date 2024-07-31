@@ -154,7 +154,23 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#gettoken" >gettoken</a>
+                                <a href="#getPolicies" >getPolicies</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#init" >init</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#initreset" >initreset</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -170,7 +186,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#verifyToken" >verifyToken</a>
+                                <a href="#resetbycode" >resetbycode</a>
                             </li>
                         </ul>
                     </td>
@@ -222,8 +238,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -285,22 +301,22 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="gettoken"></a>
+                    <a name="getPolicies"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>gettoken</b></span>
-                        <a href="#gettoken"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getPolicies</b></span>
+                        <a href="#getPolicies"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>gettoken(asktoken: <a href="../classes/AskTokenDto.html" target="_self">AskTokenDto</a>, res: Response)</code>
+                    <code>getPolicies(res: Response)</code>
                 </td>
             </tr>
 
@@ -308,14 +324,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;gettoken&#x27;)<br />@ApiOperation({summary: &#x27;Récupère un jeton de réinitialisation de mot de passe&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Retourne un jeton de réinitialisation de mot de passe&#x27;})<br /></code>
+                    <code>@Get(&#x27;getpolicies&#x27;)<br />@ApiOperation({summary: &#x27;Retourne la politique de mot de passe à appliquer&#x27;})<br />@ApiResponse({status: undefined})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="38"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:38</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="103"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:103</a></div>
                         </td>
                     </tr>
 
@@ -336,9 +352,181 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>asktoken</td>
+                                                <td>res</td>
                                             <td>
-                                                            <code><a href="../classes/AskTokenDto.html" target="_self" >AskTokenDto</a></code>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="init"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>init</b></span>
+                        <a href="#init"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>init(body: <a href="../classes/InitAccountDto.html" target="_self">InitAccountDto</a>, res: Response)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;init&#x27;)<br />@ApiOperation({summary: &#x27;Initialise le compte envoi un jeton par mail à l&#x27;identité&#x27;})<br />@ApiResponse({status: undefined})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="112"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:112</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../classes/InitAccountDto.html" target="_self" >InitAccountDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initreset"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>initreset</b></span>
+                        <a href="#initreset"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>initreset(body: <a href="../classes/InitResetDto.html" target="_self">InitResetDto</a>, res: Response)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;initreset&#x27;)<br />@ApiOperation({summary: &#x27;Demande l envoi de mail pour le reset&#x27;})<br />@ApiResponse({status: undefined})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="124"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:124</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../classes/InitResetDto.html" target="_self" >InitResetDto</a></code>
                                             </td>
 
                                             <td>
@@ -406,8 +594,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -469,22 +657,22 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="verifyToken"></a>
+                    <a name="resetbycode"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>verifyToken</b></span>
-                        <a href="#verifyToken"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>resetbycode</b></span>
+                        <a href="#resetbycode"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>verifyToken(body: <a href="../classes/VerifyTokenDto.html" target="_self">VerifyTokenDto</a>, res: Response)</code>
+                    <code>resetbycode(body: <a href="../classes/ResetByCodeDto.html" target="_self">ResetByCodeDto</a>, res: Response)</code>
                 </td>
             </tr>
 
@@ -492,14 +680,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;verifytoken&#x27;)<br />@ApiOperation({summary: &#x27;Vérifie un jeton de réinitilisation de mot de passe&#x27;})<br />@ApiResponse({status: undefined})<br /></code>
+                    <code>@Post(&#x27;resetbycode&#x27;)<br />@ApiOperation({summary: &#x27;reinitialise le mot de passe avec le code reçu&#x27;})<br />@ApiResponse({status: undefined})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -522,7 +710,7 @@
                                         <tr>
                                                 <td>body</td>
                                             <td>
-                                                            <code><a href="../classes/VerifyTokenDto.html" target="_self" >VerifyTokenDto</a></code>
+                                                            <code><a href="../classes/ResetByCodeDto.html" target="_self" >ResetByCodeDto</a></code>
                                             </td>
 
                                             <td>
@@ -561,30 +749,78 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Post, Body, Res, Logger, HttpStatus } from &#x27;@nestjs/common&#x27;;
-import { PasswdService } from &#x27;./passwd.service&#x27;;
-import { ApiTags, ApiOperation, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
-import { Response } from &#x27;express&#x27;;
-import { ChangePasswordDto } from &#x27;./dto/change-password.dto&#x27;;
-import { AskTokenDto } from &#x27;./dto/ask-token.dto&#x27;;
-import { VerifyTokenDto } from &#x27;./dto/verify-token.dto&#x27;;
-import { ResetPasswordDto } from &#x27;./dto/reset-password.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {Controller, Post, Body, Res, Logger, HttpStatus, Get} from &#x27;@nestjs/common&#x27;;
+import {PasswdService} from &#x27;./passwd.service&#x27;;
+import {ApiTags, ApiOperation, ApiResponse} from &#x27;@nestjs/swagger&#x27;;
+import {Response} from &#x27;express&#x27;;
+import {ChangePasswordDto} from &#x27;./_dto/change-password.dto&#x27;;
+import {AskTokenDto} from &#x27;./_dto/ask-token.dto&#x27;;
+import {VerifyTokenDto} from &#x27;./_dto/verify-token.dto&#x27;;
+import {ResetPasswordDto} from &#x27;./_dto/reset-password.dto&#x27;;
+import {omit} from &quot;radash&quot;;
+import {PasswdadmService} from &quot;~/settings/passwdadm/passwdadm.service&quot;;
+import {PasswordPolicies} from &quot;~/settings/passwdadm/_schemas/PasswordPolicies&quot;;
+import {InitAccountDto} from &quot;~/management/passwd/_dto/init-account.dto&quot;;
+import {InitResetDto} from &quot;~/management/passwd/_dto/init-reset.dto&quot;;
+import crypto from &quot;crypto&quot;;
+import {ResetByCodeDto} from &quot;~/management/passwd/_dto/reset-by-code-dto&quot;;
 
 @Controller(&#x27;passwd&#x27;)
 @ApiTags(&#x27;management/passwd&#x27;)
 export class PasswdController {
   private readonly logger &#x3D; new Logger(PasswdController.name);
 
-  public constructor(private passwdService: PasswdService) { }
+  public constructor(private passwdService: PasswdService, private passwdadmService: PasswdadmService) {
+  }
 
   @Post(&#x27;change&#x27;)
-  @ApiOperation({ summary: &#x27;Execute un job de changement de mot de passe sur le/les backends&#x27; })
-  @ApiResponse({ status: HttpStatus.OK, description: &#x27;Mot de passe synchronisé sur le/les backends&#x27; })
+  @ApiOperation({summary: &#x27;Execute un job de changement de mot de passe sur le/les backends&#x27;})
+  @ApiResponse({status: HttpStatus.OK, description: &#x27;Mot de passe synchronisé sur le/les backends&#x27;})
   public async change(@Body() body: ChangePasswordDto, @Res() res: Response): Promise&lt;Response&gt; {
     const debug &#x3D; {}
+
     const [_, data] &#x3D; await this.passwdService.change(body);
     this.logger.log(&#x60;Call passwd change for : ${body.uid}&#x60;);
 
+    if (process.env.NODE_ENV &#x3D;&#x3D;&#x3D; &#x27;development&#x27;) {
+      debug[&#x27;_debug&#x27;] &#x3D; data;
+    }
+
+    return res.status(HttpStatus.OK).json({
+      message: &#x27;Password changed&#x27;, status: 0,
+      ...debug,
+    });
+  }
+
+  /*
+  @Post(&#x27;gettoken&#x27;)
+  @ApiOperation({summary: &#x27;Récupère un jeton de réinitialisation de mot de passe&#x27;})
+  @ApiResponse({status: HttpStatus.OK, description: &#x27;Retourne un jeton de réinitialisation de mot de passe&#x27;})
+  public async gettoken(@Body() asktoken: AskTokenDto, @Res() res: Response): Promise&lt;Response&gt; {
+    this.logger.log(&#x27;GetToken for : &#x27; + asktoken.uid);
+    const k &#x3D; crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString(&#x27;hex&#x27;);
+    const token &#x3D; await this.passwdService.askToken(asktoken, k, PasswdService.TOKEN_EXPIRATION);
+
+    return res.status(HttpStatus.OK).json({data: {token}});
+  }
+
+  @Post(&#x27;verifytoken&#x27;)
+  @ApiOperation({summary: &#x27;Vérifie un jeton de réinitilisation de mot de passe&#x27;})
+  @ApiResponse({status: HttpStatus.OK})
+  public async verifyToken(@Body() body: VerifyTokenDto, @Res() res: Response): Promise&lt;Response&gt; {
+    this.logger.log(&#x27;Verify token : &#x27; + body.token);
+    const data &#x3D; await this.passwdService.decryptToken(body.token);
+
+    return res.status(HttpStatus.OK).json({data});
+  }
+*/
+  @Post(&#x27;resetbycode&#x27;)
+  @ApiOperation({summary: &#x27;reinitialise le mot de passe avec le code reçu&#x27;})
+  @ApiResponse({status: HttpStatus.OK})
+  public async resetbycode(@Body() body: ResetByCodeDto, @Res() res: Response): Promise&lt;Response&gt; {
+    const debug &#x3D; {}
+    this.logger.log(&#x27;Reset by code : &#x27; + body.token + &quot; code : &quot; + body.code);
+    const [_, data] &#x3D; await this.passwdService.resetByCode(body);
     if (process.env.NODE_ENV &#x3D;&#x3D;&#x3D; &#x27;development&#x27;) {
       debug[&#x27;_debug&#x27;] &#x3D; data;
     }
@@ -595,29 +831,9 @@ export class PasswdController {
     });
   }
 
-  @Post(&#x27;gettoken&#x27;)
-  @ApiOperation({ summary: &#x27;Récupère un jeton de réinitialisation de mot de passe&#x27; })
-  @ApiResponse({ status: HttpStatus.OK, description: &#x27;Retourne un jeton de réinitialisation de mot de passe&#x27; })
-  public async gettoken(@Body() asktoken: AskTokenDto, @Res() res: Response): Promise&lt;Response&gt; {
-    this.logger.log(&#x27;GetToken for : &#x27; + asktoken.uid);
-    const token &#x3D; await this.passwdService.askToken(asktoken);
-
-    return res.status(HttpStatus.OK).json({ data: { token } });
-  }
-
-  @Post(&#x27;verifytoken&#x27;)
-  @ApiOperation({ summary: &#x27;Vérifie un jeton de réinitilisation de mot de passe&#x27; })
-  @ApiResponse({ status: HttpStatus.OK })
-  public async verifyToken(@Body() body: VerifyTokenDto, @Res() res: Response): Promise&lt;Response&gt; {
-    this.logger.log(&#x27;Verify token : &#x27; + body.token);
-    const data &#x3D; await this.passwdService.decryptToken(body.token);
-
-    return res.status(HttpStatus.OK).json({ data });
-  }
-
   @Post(&#x27;reset&#x27;)
-  @ApiOperation({ summary: &#x27;Execute un job de réinitialisation de mot de passe sur le/les backends&#x27; })
-  @ApiResponse({ status: HttpStatus.OK })
+  @ApiOperation({summary: &#x27;Execute un job de réinitialisation de mot de passe sur le/les backends&#x27;})
+  @ApiResponse({status: HttpStatus.OK})
   public async reset(@Body() body: ResetPasswordDto, @Res() res: Response): Promise&lt;Response&gt; {
     const debug &#x3D; {}
     const [_, data] &#x3D; await this.passwdService.reset(body);
@@ -631,6 +847,42 @@ export class PasswdController {
       ...debug,
     });
   }
+
+  @Get(&#x27;getpolicies&#x27;)
+  @ApiOperation({summary: &#x27;Retourne la politique de mot de passe à appliquer&#x27;})
+  @ApiResponse({status: HttpStatus.OK})
+  public async getPolicies(@Res() res: Response): Promise&lt;Response&gt; {
+    const data &#x3D; await this.passwdadmService.getPolicies()
+    //const datax&#x3D;omit(data.toObject,[&#x27;_id&#x27;])
+    return res.status(HttpStatus.OK).json({data})
+  }
+
+  @Post(&#x27;init&#x27;)
+  @ApiOperation({summary: &#x27;Initialise le compte envoi un jeton par mail à l\&#x27;identité&#x27;})
+  @ApiResponse({status: HttpStatus.OK})
+  public async init(@Body() body: InitAccountDto, @Res() res: Response): Promise&lt;Response&gt; {
+    const debug &#x3D; {}
+    const ok &#x3D; await this.passwdService.initAccount(body)
+    return res.status(HttpStatus.OK).json({
+      message: &#x27;Email envoyé verifiez votre boite mail alternative et vos spam&#x27;,
+      ...debug,
+    });
+  }
+
+  @Post(&#x27;initreset&#x27;)
+  @ApiOperation({summary: &#x27;Demande l envoi de mail pour le reset&#x27;})
+  @ApiResponse({status: HttpStatus.OK})
+  public async initreset(@Body() body: InitResetDto, @Res() res: Response): Promise&lt;Response&gt; {
+    const debug &#x3D; {}
+    const data &#x3D; await this.passwdService.initReset(body)
+
+    return res.status(HttpStatus.OK).json({
+      message: &#x27;Email envoyé verifiez votre boite mail alternative et vos spam&#x27;,
+      token: data,
+      ...debug,
+    });
+  }
+
 }
 </code></pre>
     </div>

@@ -2,7 +2,7 @@ import {Document, Model} from "mongoose";
 import {InjectModel} from "@nestjs/mongoose";
 import stringEntropy from 'fast-password-entropy'
 import {pwnedPassword} from "hibp";
-import {PasswordPoliciesDto} from "~/settings/passwdadm/dto/password-policy.dto";
+import {PasswordPoliciesDto} from "~/settings/passwdadm/_dto/password-policy.dto";
 import {AbstractSettingsService} from "~/_common/abstracts/abstract-settings.service";
 import {Injectable} from "@nestjs/common";
 

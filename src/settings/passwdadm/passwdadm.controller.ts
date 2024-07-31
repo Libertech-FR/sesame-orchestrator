@@ -4,7 +4,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
 import {omit} from "radash";
 import {InitAccountDto} from "~/management/passwd/_dto/init-account.dto";
-import {PasswordPoliciesDto} from "~/settings/passwdadm/dto/password-policy.dto";
+import {PasswordPoliciesDto} from "~/settings/passwdadm/_dto/password-policy.dto";
 
 
 @Controller('passwd')
@@ -26,7 +26,7 @@ export class PasswdadmController {
   @ApiOperation({summary: 'Retourne la police de mot de passe'})
   @ApiResponse({status: HttpStatus.OK})
   public async getPolicies(@Res() res:Response):Promise<Response>{
-    const test=await this.passwdadmService.getPolicies()
-    return res.status(HttpStatus.OK).json(test)
+    const data=await this.passwdadmService.getPolicies()
+    return res.status(HttpStatus.OK).json({data})
   }
 }

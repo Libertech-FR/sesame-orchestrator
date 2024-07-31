@@ -21,6 +21,7 @@ import {PasswdadmService} from "~/settings/passwdadm/passwdadm.service";
 import {IdentityState} from "~/management/identities/_enums/states.enum";
 import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
 import {SmsService} from "~/management/passwd/sms-service";
+import {PasswordPoliciesDto} from "~/settings/passwdadm/dto/password-policy.dto";
 
 interface TokenData {
   k: string;
@@ -97,7 +98,7 @@ export class PasswdService extends AbstractService {
         }
       }else{
         //envoi par SMS si c est possible
-        const policies=await this.passwdadmService.getPolicies()
+        const policies=new PasswordPoliciesDto()
         if (policies.resetBySms === true){
           this.logger.log("Reset password asked by SMS for  : " + initDto.uid )
           const smsAttribute=this.config.get('frontPwd.identityMobileAttribute')

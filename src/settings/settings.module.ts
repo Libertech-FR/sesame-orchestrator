@@ -1,6 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
-import {IdentitiesModule} from "~/management/identities/identities.module";
 import {PasswdadmModule} from "~/settings/passwdadm/passwdadm.module";
 import {SettingsController} from "~/settings/settings.controller";
 import {SettingsService} from "~/settings/settings.service";

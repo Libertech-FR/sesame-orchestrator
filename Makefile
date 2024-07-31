@@ -25,7 +25,7 @@ dev: ## Start development environment
 		-p $(APP_PORT):4000 \
 		-p 9229:9229 \
 		-v $(CURDIR):/data \
-		$(IMG_NAME) yarn start:debug 
+		$(IMG_NAME) yarn start:debug
 
 install: ## Install dependencies
 	@docker run -it --rm \

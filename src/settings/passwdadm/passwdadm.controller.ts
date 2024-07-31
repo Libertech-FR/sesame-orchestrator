@@ -17,9 +17,16 @@ export class PasswdadmController {
   @Post('setpolicies')
   @ApiOperation({summary: 'enregistre la police de mdp'})
   @ApiResponse({status: HttpStatus.OK})
-  public async getPolicies(@Body() body: PasswordPoliciesDto,@Res() res: Response): Promise<Response> {
+  public async setPolicies(@Body() body: PasswordPoliciesDto,@Res() res: Response): Promise<Response> {
     const data = await this.passwdadmService.setPolicies(body)
     //const datax=omit(data.toObject,['_id'])
     return res.status(HttpStatus.OK).json({data})
+  }
+  @Get('getpolicies')
+  @ApiOperation({summary: 'Retourne la police de mot de passe'})
+  @ApiResponse({status: HttpStatus.OK})
+  public async getPolicies(@Res() res:Response):Promise<Response>{
+    const test=await this.passwdadmService.getPolicies()
+    return res.status(HttpStatus.OK).json(test)
   }
 }

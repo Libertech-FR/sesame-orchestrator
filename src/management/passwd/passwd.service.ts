@@ -6,20 +6,20 @@ import { AbstractService } from '~/_common/abstracts/abstract.service';
 import { ActionType } from '~/core/backends/_enum/action-type.enum';
 import { BackendsService } from '~/core/backends/backends.service';
 import { Jobs } from '~/core/jobs/_schemas/jobs.schema';
-import { AskTokenDto } from './dto/ask-token.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
+import { AskTokenDto } from './_dto/ask-token.dto';
+import { ChangePasswordDto } from './_dto/change-password.dto';
+import { ResetPasswordDto } from './_dto/reset-password.dto';
 import { IdentitiesService } from '../identities/identities.service';
 import { pick,get } from 'radash';
 import { Identities } from '../identities/_schemas/identities.schema';
 import {MailerModule, MailerService} from "@nestjs-modules/mailer";
-import {InitAccountDto} from "~/management/passwd/dto/init-account.dto";
+import {InitAccountDto} from "~/management/passwd/_dto/init-account.dto";
 import {ConfigService} from "@nestjs/config";
 import {randomInt} from "crypto";
-import {ResetByCodeDto} from "~/management/passwd/dto/reset-by-code-dto";
+import {ResetByCodeDto} from "~/management/passwd/_dto/reset-by-code-dto";
 import {PasswdadmService} from "~/settings/passwdadm/passwdadm.service";
 import {IdentityState} from "~/management/identities/_enums/states.enum";
-import {InitResetDto} from "~/management/passwd/dto/init-reset.dto";
+import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
 import {SmsService} from "~/management/passwd/sms-service";
 
 interface TokenData {

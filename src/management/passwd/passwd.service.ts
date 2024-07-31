@@ -21,7 +21,7 @@ import {PasswdadmService} from "~/settings/passwdadm/passwdadm.service";
 import {IdentityState} from "~/management/identities/_enums/states.enum";
 import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
 import {SmsService} from "~/management/passwd/sms-service";
-import {PasswordPoliciesDto} from "~/settings/passwdadm/dto/password-policy.dto";
+import {PasswordPoliciesDto} from "~/settings/passwdadm/_dto/password-policy.dto";
 
 interface TokenData {
   k: string;

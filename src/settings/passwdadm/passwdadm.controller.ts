@@ -3,6 +3,8 @@ import { PasswdadmService } from './passwdadm.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
 import {omit} from "radash";
+import {InitAccountDto} from "~/management/passwd/_dto/init-account.dto";
+import {PasswordPoliciesDto} from "~/settings/passwdadm/dto/password-policy.dto";
 
 
 @Controller('passwd')
@@ -12,4 +14,12 @@ export class PasswdadmController {
 
   public constructor(private passwdadmService: PasswdadmService) { }
 
+  @Post('setpolicies')
+  @ApiOperation({summary: 'enregistre la police de mdp'})
+  @ApiResponse({status: HttpStatus.OK})
+  public async getPolicies(@Body() body: PasswordPoliciesDto,@Res() res: Response): Promise<Response> {
+    const data = await this.passwdadmService.setPolicies(body)
+    //const datax=omit(data.toObject,['_id'])
+    return res.status(HttpStatus.OK).json({data})
+  }
 }

@@ -1,41 +1,27 @@
-import {BadRequestException, Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
-import Redis from 'ioredis';
-import {AbstractService} from '~/_common/abstracts/abstract.service';
-import {PasswordPolicies} from "~/settings/passwdadm/_schemas/PasswordPolicies";
-import {Model} from "mongoose";
+import {Document, Model} from "mongoose";
 import {InjectModel} from "@nestjs/mongoose";
-import {IdentitiesService} from "~/management/identities/identities.service";
 import stringEntropy from 'fast-password-entropy'
 import {pwnedPassword} from "hibp";
 import {PasswordPoliciesDto} from "~/settings/passwdadm/dto/password-policy.dto";
+import {AbstractSettingsService} from "~/_common/abstracts/abstract-settings.service";
+import {Injectable} from "@nestjs/common";
 
 @Injectable()
-export class PasswdadmService extends AbstractService {
-  public constructor(
-    protected readonly identities: IdentitiesService,
-    @InjectModel(PasswordPolicies.name) protected passwordPolicies: Model<PasswordPolicies>
-  ) {
-    super();
+export class PasswdadmService extends AbstractSettingsService {
+
+
+  public async getPolicies(): Promise<object> {
+    const parameters=this.getParameter('passwordpolicies')
+    return parameters
   }
 
-  public async getPolicies(): Promise<PasswordPolicies> {
-    const passwordPolicies = await this.passwordPolicies.findOne()
-    if (passwordPolicies === null) {
-      return new this.passwordPolicies()
-    }
-    return passwordPolicies
+  public async  setPolicies(policies: PasswordPoliciesDto):Promise<any>{
+    return this.setParameter('passwordpolicies',policies)
   }
-
-  public async setPolicies(policies: PasswordPoliciesDto):Promise<boolean>{
-    //lecture de la police
-    let passwordPolicies = await this.passwordPolicies.findOne()
-    if (passwordPolicies === null) {
-      passwordPolicies= new this.passwordPolicies()
-    }
-    return true
-
+  public async checkPolicies(password: string): Promise<boolean> {
+     return true
   }
-
+/*
   public async checkPolicies(password: string): Promise<boolean> {
     const policies = await this.getPolicies()
     if (password.length < policies.len) {
@@ -85,4 +71,13 @@ export class PasswdadmService extends AbstractService {
     }
     return true
   }
+
+ */
+  protected async defaultValues(): Promise<object> {
+    return new PasswordPoliciesDto()
+  }
+
+
+
+
 }

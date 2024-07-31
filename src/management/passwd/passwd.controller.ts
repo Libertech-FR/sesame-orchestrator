@@ -8,7 +8,6 @@ import {VerifyTokenDto} from './_dto/verify-token.dto';
 import {ResetPasswordDto} from './_dto/reset-password.dto';
 import {omit} from "radash";
 import {PasswdadmService} from "~/settings/passwdadm/passwdadm.service";
-import {PasswordPolicies} from "~/settings/passwdadm/_schemas/PasswordPolicies";
 import {InitAccountDto} from "~/management/passwd/_dto/init-account.dto";
 import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
 import crypto from "crypto";

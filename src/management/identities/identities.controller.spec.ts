@@ -1,4 +1,4 @@
-import { FilterOptions } from '@streamkits/nestjs_module_scrud';
+import { FilterOptions } from '@the-software-compagny/nestjs_module_scrud';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdentitiesController } from './identities.controller';
 import { IdentitiesService } from './identities.service';

@@ -12,7 +12,7 @@ export class AbstractSettingsService extends AbstractServiceSchema {
 
   protected async getParameter(settingName: string): Promise<object | null> {
     try {
-      const enr=  await this.findOne({name: settingName})
+      const enr=  await this.findOne<Settings>({name: settingName})
       return enr.parameters
     } catch (e) {
       return this.defaultValues()

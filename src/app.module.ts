@@ -108,4 +108,4 @@ import { SettingsService } from '~/settings/settings.service';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

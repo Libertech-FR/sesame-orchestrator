@@ -284,10 +284,10 @@ import { APP_FILTER, APP_GUARD, APP_PIPE } from &#x27;@nestjs/core&#x27;;
 import { AuthGuard } from &#x27;./_common/guards/auth.guard&#x27;;
 import { MongooseValidationFilter } from &#x27;./_common/filters/mongoose-validation.filter&#x27;;
 import { DtoValidationPipe } from &#x27;./_common/pipes/dto-validation.pipe&#x27;;
-import {SettingstModule} from &quot;~/settings/settings.module&quot;;
-import {MailerModule} from &quot;@nestjs-modules/mailer&quot;;
-import {HandlebarsAdapter} from &quot;@nestjs-modules/mailer/dist/adapters/handlebars.adapter&quot;;
-import {MjmlAdapter} from &quot;@nestjs-modules/mailer/dist/adapters/mjml.adapter&quot;;
+import { SettingstModule } from &quot;~/settings/settings.module&quot;;
+import { MailerModule } from &quot;@nestjs-modules/mailer&quot;;
+import { HandlebarsAdapter } from &quot;@nestjs-modules/mailer/dist/adapters/handlebars.adapter&quot;;
+import { MjmlAdapter } from &quot;@nestjs-modules/mailer/dist/adapters/mjml.adapter&quot;;
 
 @Module({
   imports: [
@@ -299,7 +299,7 @@ import {MjmlAdapter} from &quot;@nestjs-modules/mailer/dist/adapters/mjml.adapte
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) &#x3D;&gt; ({
-        transport: config.get(&#x27;mailer.host&#x27;),
+        transport: config.get(&#x27;mailer.host&#x27;) || &#x27;smtp://localhost:25&#x27;,
         defaults: {
           from: config.get(&#x27;mailer.sender&#x27;),
         },

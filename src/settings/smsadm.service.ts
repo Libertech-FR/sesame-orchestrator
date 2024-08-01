@@ -4,7 +4,7 @@ import {SmsSettingsDto} from "~/settings/_dto/sms.settings.dto";
 import {parsePhoneNumber} from "awesome-phonenumber";
 
 @Injectable()
-export class SmsService extends AbstractSettingsService {
+export class SmsadmService extends AbstractSettingsService {
     public async getParams():Promise <SmsSettingsDto|null>{
       const data= await this.getParameter<SmsSettingsDto>('smsServer')
       return data
@@ -12,9 +12,9 @@ export class SmsService extends AbstractSettingsService {
     public async setParams(params:SmsSettingsDto):Promise <any>{
       return await this.setParameter('smsServer',params)
     }
-  public send(telNumber: string , message:string){
+  public async send(telNumber: string , message:string){
     this.logger.verbose('Envoi SMS : ' +telNumber + ' message :' + message)
-    const params =  this.getParams()
+    const params =  await this.getParams<SmsSettingsDto>()
     const host = params.host
     const systemId = params.systemId
     const password = params.password
@@ -71,4 +71,6 @@ export class SmsService extends AbstractSettingsService {
 
 
   }
+
+
 }

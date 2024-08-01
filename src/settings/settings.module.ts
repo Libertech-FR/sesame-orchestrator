@@ -3,12 +3,13 @@ import { RouterModule } from '@nestjs/core';
 import {PasswdadmModule} from "~/settings/passwdadm/passwdadm.module";
 import {SettingsController} from "~/settings/settings.controller";
 import {SettingsService} from "~/settings/settings.service";
+import {SmsadmService} from "~/settings/smsadm.service";
 @Module({
   imports: [ PasswdadmModule],
-  providers: [SettingsService],
+  providers: [SettingsService,SmsadmService],
   controllers: [SettingsController],
 })
-export class SettingstModule {
+export class SettingsModule {
   public static register(): DynamicModule {
     return {
       module: this,

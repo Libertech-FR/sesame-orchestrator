@@ -5,6 +5,7 @@ import {pwnedPassword} from "hibp";
 import {PasswordPoliciesDto} from "~/settings/passwdadm/_dto/password-policy.dto";
 import {AbstractSettingsService} from "~/_common/abstracts/abstract-settings.service";
 import {Injectable} from "@nestjs/common";
+import {SmsSettingsDto} from "~/settings/_dto/sms.settings.dto";
 
 @Injectable()
 export class PasswdadmService extends AbstractSettingsService {
@@ -21,7 +22,7 @@ export class PasswdadmService extends AbstractSettingsService {
   public async checkPolicies(password: string): Promise<boolean> {
      return true
   }
-/*
+
   public async checkPolicies(password: string): Promise<boolean> {
     const policies = await this.getPolicies()
     if (password.length < policies.len) {
@@ -72,12 +73,8 @@ export class PasswdadmService extends AbstractSettingsService {
     return true
   }
 
- */
-  protected async defaultValues(): Promise<object> {
-    return new PasswordPoliciesDto()
+
+  protected async defaultValues<T = PasswordPoliciesDto>(): Promise<T> {
+    return <T>new PasswordPoliciesDto()
   }
-
-
-
-
 }

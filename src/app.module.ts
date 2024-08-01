@@ -15,7 +15,7 @@ import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { AuthGuard } from './_common/guards/auth.guard';
 import { MongooseValidationFilter } from './_common/filters/mongoose-validation.filter';
 import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe';
-import { SettingstModule } from "~/settings/settings.module";
+import { SettingsModule } from "~/settings/settings.module";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import { MjmlAdapter } from "@nestjs-modules/mailer/dist/adapters/mjml.adapter";
@@ -80,7 +80,7 @@ import { MjmlAdapter } from "@nestjs-modules/mailer/dist/adapters/mjml.adapter";
     RequestContextModule,
     CoreModule.register(),
     ManagementModule.register(),
-    SettingstModule.register()
+    SettingsModule.register()
   ],
   controllers: [AppController],
   providers: [

@@ -20,8 +20,8 @@ import {ResetByCodeDto} from "~/management/passwd/_dto/reset-by-code-dto";
 import {PasswdadmService} from "~/settings/passwdadm/passwdadm.service";
 import {IdentityState} from "~/management/identities/_enums/states.enum";
 import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
-import {SmsService} from "~/management/passwd/sms-service";
 import {PasswordPoliciesDto} from "~/settings/passwdadm/_dto/password-policy.dto";
+import {SmsadmService} from "~/settings/smsadm.service";
 
 interface TokenData {
   k: string;
@@ -49,7 +49,7 @@ export class PasswdService extends AbstractService {
     protected mailer: MailerService,
     protected config: ConfigService,
     private passwdadmService: PasswdadmService,
-    private smsService: SmsService,
+    private smsadmService: SmsadmService,
     @InjectRedis() private readonly redis: Redis
   ) {
     super();
@@ -104,7 +104,7 @@ export class PasswdService extends AbstractService {
           const smsAttribute=this.config.get('frontPwd.identityMobileAttribute')
           if (smsAttribute !== ''){
             const numTel = <string>get(identity.toObject(), smsAttribute)
-            this.smsService.send(numTel,"Votre code de reinitialisation : " + k.toString(10))
+            await this.smsadmService.send(numTel,"Votre code de reinitialisation : " + k.toString(10))
           }
           return token
         }else{

@@ -1,24 +1,28 @@
 import {Injectable} from "@nestjs/common";
-import {AbstractService} from "~/_common/abstracts/abstract.service";
-import {ConfigService} from "@nestjs/config";
-import { parsePhoneNumber } from 'awesome-phonenumber'
+import {AbstractSettingsService} from "~/_common/abstracts/abstract-settings.service";
+import {SmsSettingsDto} from "~/settings/_dto/sms.settings.dto";
+import {parsePhoneNumber} from "awesome-phonenumber";
 
 @Injectable()
-export class SmsService extends AbstractService {
-  public constructor(protected config: ConfigService){
-    super()
-  }
+export class SmsService extends AbstractSettingsService {
+    public async getParams():Promise <SmsSettingsDto|null>{
+      const data= await this.getParameter<SmsSettingsDto>('smsServer')
+      return data
+    }
+    public async setParams(params:SmsSettingsDto):Promise <any>{
+      return await this.setParameter('smsServer',params)
+    }
   public send(telNumber: string , message:string){
     this.logger.verbose('Envoi SMS : ' +telNumber + ' message :' + message)
-
-    const host = this.config.get('sms.host')
-    const systemId = this.config.get('sms.systemId')
-    const password = this.config.get('sms.password')
-    const sourceAddr=this.config.get('sms.sourceAddr')
+    const params =  this.getParams()
+    const host = params.host
+    const systemId = params.systemId
+    const password = params.password
+    const sourceAddr=params.sourceAddr
     const smpp = require('smpp');
     const logger=this.logger
     //normalisation du numero de telephone
-    const pTelNumber=parsePhoneNumber(telNumber,{ regionCode: this.config.get('sms.regionCode') })
+    const pTelNumber=parsePhoneNumber(telNumber,{ regionCode: params.regionCode})
     this.logger.verbose('phone number parsed :' +pTelNumber.number.e164)
     if (pTelNumber.valid === true){
       const session = smpp.connect({

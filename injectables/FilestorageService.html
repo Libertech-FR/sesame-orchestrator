@@ -1807,19 +1807,22 @@ export class FilestorageService extends AbstractServiceSchema {
     let updated: ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;
     const data &#x3D; await super.findById&lt;Document&lt;any, any, Filestorage&gt; &amp; Filestorage&gt;(_id)
     if (!data) throw new BadRequestException(&#x60;Filestorage ${_id} not found&#x60;)
-    await this._model.db.transaction(async (session) &#x3D;&gt; {
-      updated &#x3D; await super.update(_id, update, { ...options, session })
-      try {
-        await this.storage.getDisk(data.namespace).move(data.path, update.path)
-      } catch (e) {
-        if (e.code &#x3D;&#x3D;&#x3D; &#x27;E_UNKNOWN&#x27;) {
-          const err &#x3D; new BadRequestException(&#x60;Impossible de déplacer le fichier ${data.path} vers ${update.path}&#x60;)
-          err.stack &#x3D; e.stack
-          throw err
+
+    if (update.path &amp;&amp; data.path !&#x3D;&#x3D; update.path) {
+      await this._model.db.transaction(async (session) &#x3D;&gt; {
+        updated &#x3D; await super.update(_id, update, { ...options, session })
+        try {
+          await this.storage.getDisk(data.namespace).move(data.path, update.path)
+        } catch (e) {
+          if (e.code &#x3D;&#x3D;&#x3D; &#x27;E_UNKNOWN&#x27;) {
+            const err &#x3D; new BadRequestException(&#x60;Impossible de déplacer le fichier ${data.path} vers ${update.path}&#x60;)
+            err.stack &#x3D; e.stack
+            throw err
+          }
+          throw e
         }
-        throw e
-      }
-    })
+      })
+    }
     return updated
   }
   /* eslint-enable */

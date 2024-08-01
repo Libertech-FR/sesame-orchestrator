@@ -17,7 +17,7 @@ import { TransformersFilestorageService } from './_services/transformers-filesto
 import { FilestorageService } from './filestorage.service'
 import { ApiFileUploadDecorator } from '~/_common/decorators/api-file-upload.decorator'
 
-@ApiTags('default')
+@ApiTags('core/filestorage')
 @Controller('filestorage')
 export class FilestorageController extends AbstractController {
   protected static readonly projection: PartialProjectionType<FilestorageDto> = {

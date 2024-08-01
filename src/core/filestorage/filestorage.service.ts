@@ -44,13 +44,19 @@ export class FilestorageService extends AbstractServiceSchema {
       const basePath = this.reservedChars.reduce((acc, char) => {
         if (char === EMBED_SEPARATOR) return acc
         return acc.replace(char, '_')
-      }, payload.path.replace(/^\//, '').replace(/\.\.\//g, ''))
-      const partPath = ['', basePath]
+      }, payload.path.replace(/(?<!^)\/{2,}|(?<!\/)\/+$/, ''))
+      const partPath = [basePath]
       // noinspection ExceptionCaughtLocallyJS
       switch (data.type) {
         case FsType.FILE: {
+          console.log('basePath', basePath)
+          console.log('hasFileExtension', hasFileExtension(basePath))
           if (!basePath || !hasFileExtension(basePath)) {
             partPath.push(file.originalname)
+          }
+          const exists = await this.storage.getDisk(data.namespace).exists(partPath.join('/'))
+          if (exists.exists) {
+            throw new BadRequestException(`File ${partPath.join('/')} already exists`)
           }
           payload.mime = data.mime || file.mimetype
           await this.storage.getDisk(data.namespace).put(partPath.join('/'), file.buffer)
@@ -150,7 +156,10 @@ export class FilestorageService extends AbstractServiceSchema {
           throw e
         }
       })
+    } else {
+      updated = await super.update(_id, update, options)
     }
+
     return updated
   }
   /* eslint-enable */

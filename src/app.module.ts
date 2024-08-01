@@ -18,7 +18,6 @@ import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe';
 import { SettingstModule } from "~/settings/settings.module";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
-import { MjmlAdapter } from "@nestjs-modules/mailer/dist/adapters/mjml.adapter";
 
 @Module({
   imports: [

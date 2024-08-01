@@ -4,6 +4,8 @@ import { HelmetOptions } from 'helmet';
 import { SwaggerCustomOptions } from '@nestjs/swagger';
 import { IAuthModuleOptions } from '@nestjs/passport';
 import { JwtModuleOptions } from '@nestjs/jwt';
+import { StorageManagerConfig } from '@the-software-compagny/nestjs_module_factorydrive';
+import { AmazonWebServicesS3StorageConfig } from '@the-software-compagny/nestjs_module_factorydrive-s3';
 
 export interface MongoosePlugin {
   package: string;
@@ -28,6 +30,18 @@ export interface ConfigInstance {
     uri: string;
     options: RedisOptions;
   };
+  factorydrive: {
+    options:
+    | StorageManagerConfig
+    | {
+      disks: {
+        [key: string]: {
+          driver: 's3'
+          config: AmazonWebServicesS3StorageConfig
+        }
+      }
+    }
+  }
   passport: {
     options: IAuthModuleOptions;
   };
@@ -39,7 +53,7 @@ export interface ConfigInstance {
     port: number;
     sender: string;
   };
-  sms:{
+  sms: {
     host: string,
     systemId: string,
     password: string,
@@ -47,7 +61,7 @@ export interface ConfigInstance {
     regionCode: string
   },
   frontPwd: {
-    url:string;
+    url: string;
     identityMailAttribute: string;
     identityMobileAttribute: string;
   };
@@ -93,6 +107,25 @@ export default (): ConfigInstance => ({
     },
     plugins: [],
   },
+  factorydrive: {
+    options: {
+      default: 'local',
+      disks: {
+        local: {
+          driver: 'local',
+          config: {
+            root: process.cwd() + '/storage',
+          },
+        },
+        pictures: {
+          driver: 'local',
+          config: {
+            root: process.cwd() + '/storage/pictures',
+          },
+        },
+      },
+    },
+  },
   passport: {
     options: {
       defaultStrategy: 'jwt',
@@ -118,17 +151,17 @@ export default (): ConfigInstance => ({
       },
     },
   },
-  mailer:{
+  mailer: {
     host: process.env['SESAME_SMTP_SERVER'],
     port: parseInt(process.env['SESAME_SMTP_PORT']) || 25,
     sender: process.env['SESAME_MDP_SENDER'] || 'noreply@mydomain.com'
   },
-  frontPwd:{
+  frontPwd: {
     url: process.env['SESAME_FRONT_MDP'],
     identityMailAttribute: process.env['SESAME_RESET_PWD_MAIL'] || '',
     identityMobileAttribute: process.env['SESAME_RESET_PWD_MOBILE'] || ''
   },
-  sms:{
+  sms: {
     host: process.env['SESAME_SMPP_SERVER'] || '',
     systemId: process.env['SESAME_SMPP_SYSTEMID'] || '',
     password: process.env['SESAME_SMPP_PASSWORD'] || '',

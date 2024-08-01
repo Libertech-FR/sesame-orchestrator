@@ -18,6 +18,7 @@ import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe';
 import { SettingstModule } from "~/settings/settings.module";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factorydrive';
 
 @Module({
   imports: [
@@ -74,6 +75,13 @@ import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handleba
           host: configService.get('ioredis.host'),
           port: configService.get('ioredis.port'),
         },
+      }),
+    }),
+    FactorydriveModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        ...config.get('factorydrive.options'),
       }),
     }),
     RequestContextModule,

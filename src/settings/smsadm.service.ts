@@ -1,5 +1,5 @@
 import {Injectable} from "@nestjs/common";
-import {AbstractSettingsService} from "~/_common/abstracts/abstract-settings.service";
+import {AbstractSettingsService} from "~/settings/_abstracts/abstract-settings.service";
 import {SmsSettingsDto} from "~/settings/_dto/sms.settings.dto";
 import {parsePhoneNumber} from "awesome-phonenumber";
 
@@ -14,7 +14,7 @@ export class SmsadmService extends AbstractSettingsService {
     }
   public async send(telNumber: string , message:string){
     this.logger.verbose('Envoi SMS : ' +telNumber + ' message :' + message)
-    const params =  await this.getParams<SmsSettingsDto>()
+    const params =  await this.getParams()
     const host = params.host
     const systemId = params.systemId
     const password = params.password

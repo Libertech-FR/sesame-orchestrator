@@ -4,10 +4,22 @@ import {PasswdadmModule} from "~/settings/passwdadm/passwdadm.module";
 import {SettingsController} from "~/settings/settings.controller";
 import {SettingsService} from "~/settings/settings.service";
 import {SmsadmService} from "~/settings/smsadm.service";
+import {MongooseModule} from "@nestjs/mongoose";
+import {Settings, SettingsSchema} from "~/settings/_schemas/settings.schema";
+import {SmsadmController} from "~/settings/smsadm.controller";
 @Module({
-  imports: [ PasswdadmModule],
+  exports: [
+    SmsadmService
+  ],
+  imports: [ PasswdadmModule,
+    MongooseModule.forFeatureAsync([
+    {
+      name: Settings.name,
+      useFactory: () => SettingsSchema,
+    }
+  ])],
   providers: [SettingsService,SmsadmService],
-  controllers: [SettingsController],
+  controllers: [SettingsController,SmsadmController],
 })
 export class SettingsModule {
   public static register(): DynamicModule {

@@ -3,7 +3,7 @@ import {InjectModel} from "@nestjs/mongoose";
 import stringEntropy from 'fast-password-entropy'
 import {pwnedPassword} from "hibp";
 import {PasswordPoliciesDto} from "~/settings/passwdadm/_dto/password-policy.dto";
-import {AbstractSettingsService} from "~/_common/abstracts/abstract-settings.service";
+import {AbstractSettingsService} from "~/settings/_abstracts/abstract-settings.service";
 import {Injectable} from "@nestjs/common";
 import {SmsSettingsDto} from "~/settings/_dto/sms.settings.dto";
 
@@ -12,19 +12,16 @@ export class PasswdadmService extends AbstractSettingsService {
 
 
   public async getPolicies(): Promise<object> {
-    const parameters=this.getParameter('passwordpolicies')
+    const parameters=this.getParameter<PasswordPoliciesDto>('passwordpolicies')
     return parameters
   }
 
   public async  setPolicies(policies: PasswordPoliciesDto):Promise<any>{
     return this.setParameter('passwordpolicies',policies)
   }
-  public async checkPolicies(password: string): Promise<boolean> {
-     return true
-  }
 
   public async checkPolicies(password: string): Promise<boolean> {
-    const policies = await this.getPolicies()
+    const policies = await this.getPolicies<PasswordPoliciesDto>()
     if (password.length < policies.len) {
       this.logger.error('Password too short')
       return false

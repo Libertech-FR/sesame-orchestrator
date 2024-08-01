@@ -8,7 +8,7 @@ import {PasswordPoliciesDto} from "~/settings/passwdadm/_dto/password-policy.dto
 
 
 @Controller('passwd')
-@ApiTags('settings/passwd')
+@ApiTags('settings')
 export class PasswdadmController {
   private readonly logger = new Logger(PasswdadmController.name);
 

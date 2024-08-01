@@ -287,6 +287,7 @@ import { DtoValidationPipe } from &#x27;./_common/pipes/dto-validation.pipe&#x27
 import { SettingstModule } from &quot;~/settings/settings.module&quot;;
 import { MailerModule } from &quot;@nestjs-modules/mailer&quot;;
 import { HandlebarsAdapter } from &quot;@nestjs-modules/mailer/dist/adapters/handlebars.adapter&quot;;
+import { FactorydriveModule } from &#x27;@the-software-compagny/nestjs_module_factorydrive&#x27;;
 
 @Module({
   imports: [
@@ -343,6 +344,13 @@ import { HandlebarsAdapter } from &quot;@nestjs-modules/mailer/dist/adapters/han
           host: configService.get(&#x27;ioredis.host&#x27;),
           port: configService.get(&#x27;ioredis.port&#x27;),
         },
+      }),
+    }),
+    FactorydriveModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) &#x3D;&gt; ({
+        ...config.get(&#x27;factorydrive.options&#x27;),
       }),
     }),
     RequestContextModule,

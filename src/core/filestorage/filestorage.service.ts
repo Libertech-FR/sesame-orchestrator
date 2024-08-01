@@ -135,19 +135,22 @@ export class FilestorageService extends AbstractServiceSchema {
     let updated: ModifyResult<Query<T, T, any, T>>
     const data = await super.findById<Document<any, any, Filestorage> & Filestorage>(_id)
     if (!data) throw new BadRequestException(`Filestorage ${_id} not found`)
-    await this._model.db.transaction(async (session) => {
-      updated = await super.update(_id, update, { ...options, session })
-      try {
-        await this.storage.getDisk(data.namespace).move(data.path, update.path)
-      } catch (e) {
-        if (e.code === 'E_UNKNOWN') {
-          const err = new BadRequestException(`Impossible de déplacer le fichier ${data.path} vers ${update.path}`)
-          err.stack = e.stack
-          throw err
+
+    if (update.path && data.path !== update.path) {
+      await this._model.db.transaction(async (session) => {
+        updated = await super.update(_id, update, { ...options, session })
+        try {
+          await this.storage.getDisk(data.namespace).move(data.path, update.path)
+        } catch (e) {
+          if (e.code === 'E_UNKNOWN') {
+            const err = new BadRequestException(`Impossible de déplacer le fichier ${data.path} vers ${update.path}`)
+            err.stack = e.stack
+            throw err
+          }
+          throw e
         }
-        throw e
-      }
-    })
+      })
+    }
     return updated
   }
   /* eslint-enable */

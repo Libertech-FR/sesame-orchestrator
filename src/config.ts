@@ -4,6 +4,8 @@ import { HelmetOptions } from 'helmet';
 import { SwaggerCustomOptions } from '@nestjs/swagger';
 import { IAuthModuleOptions } from '@nestjs/passport';
 import { JwtModuleOptions } from '@nestjs/jwt';
+import { StorageManagerConfig } from '@the-software-compagny/nestjs_module_factorydrive';
+import { AmazonWebServicesS3StorageConfig } from '@the-software-compagny/nestjs_module_factorydrive-s3';
 
 export interface MongoosePlugin {
   package: string;
@@ -28,6 +30,18 @@ export interface ConfigInstance {
     uri: string;
     options: RedisOptions;
   };
+  factorydrive: {
+    options:
+    | StorageManagerConfig
+    | {
+      disks: {
+        [key: string]: {
+          driver: 's3'
+          config: AmazonWebServicesS3StorageConfig
+        }
+      }
+    }
+  }
   passport: {
     options: IAuthModuleOptions;
   };
@@ -40,12 +54,21 @@ export interface ConfigInstance {
     sender: string;
   };
   sms: {
+<<<<<<< HEAD
     host: string;
     systemId: string;
     password: string;
     sourceAddr: string;
     regionCode: string;
   };
+=======
+    host: string,
+    systemId: string,
+    password: string,
+    sourceAddr: string,
+    regionCode: string
+  },
+>>>>>>> 84c012f (chore: Add @the-software-compagny/nestjs_module_factorydrive and @the-software-compagny/nestjs_module_factorydrive-s3 dependencies)
   frontPwd: {
     url: string;
     identityMailAttribute: string;
@@ -92,6 +115,25 @@ export default (): ConfigInstance => ({
       directConnection: true,
     },
     plugins: [],
+  },
+  factorydrive: {
+    options: {
+      default: 'local',
+      disks: {
+        local: {
+          driver: 'local',
+          config: {
+            root: process.cwd() + '/storage',
+          },
+        },
+        pictures: {
+          driver: 'local',
+          config: {
+            root: process.cwd() + '/storage/pictures',
+          },
+        },
+      },
+    },
   },
   passport: {
     options: {

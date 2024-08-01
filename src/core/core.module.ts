@@ -9,9 +9,10 @@ import { JobsModule } from './jobs/jobs.module';
 import { KeyringsModule } from './keyrings/keyrings.module';
 import { LoggerModule } from './logger/logger.module';
 import { TasksModule } from './tasks/tasks.module';
+import { FilestorageModule } from './filestorage/filestorage.module';
 
 @Module({
-  imports: [AuthModule, BackendsModule, LoggerModule, KeyringsModule, AgentsModule, JobsModule, TasksModule],
+  imports: [AuthModule, BackendsModule, LoggerModule, KeyringsModule, AgentsModule, JobsModule, TasksModule, FilestorageModule],
   providers: [CoreService],
   controllers: [CoreController],
 })

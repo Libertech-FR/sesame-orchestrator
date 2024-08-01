@@ -196,6 +196,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                 <a href="#path" >path</a>
                             </li>
@@ -268,13 +269,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsOptional()<br />@IsObject()<br />@ApiProperty({type: Object})<br />
+                            @IsOptional()<br />@IsObject()<br />@ApiProperty({type: String, required: false, nullable: true})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:51</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -308,13 +309,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsOptional()<br />@IsString()<br />@ApiProperty()<br />
+                            @IsOptional()<br />@IsString()<br />@ApiProperty({type: String, required: false})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:31</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -348,13 +349,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsOptional()<br />@IsBoolean()<br />@ApiProperty()<br />
+                            @IsOptional()<br />@IsBoolean()<br />@ApiProperty({type: Boolean, required: false})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:41</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -388,13 +389,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsOptional()<br />@IsMongoId()<br />@ApiProperty({type: String})<br />
+                            @IsOptional()<br />@IsMongoId()<br />@ApiProperty({type: String, required: false})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -428,13 +429,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsOptional()<br />@IsMimeType()<br />@ApiProperty()<br />
+                            @IsOptional()<br />@IsMimeType()<br />@ApiProperty({type: String, required: false})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:36</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -467,13 +468,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@IsNotEmpty()<br />@ApiProperty()<br />
+                            @IsString()<br />@IsNotEmpty()<br />@ApiProperty({type: String, required: true})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -486,6 +487,7 @@
                 <td class="col-md-4">
                     <a name="path"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -506,13 +508,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@IsNotEmpty()<br />@ApiProperty()<br />
+                            @IsString()<br />@IsNotEmpty()<br />@ApiProperty({type: String, default: &#x27;/&#x27;})<br />@Matches(/^\/(\.?[^\/\0]+\/?)+$/, {message: &#x27;Path must be a valid path&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -546,13 +548,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsOptional()<br />@IsObject()<br />@ApiProperty({type: Object})<br />
+                            @IsOptional()<br />@IsObject()<br />@ApiProperty({type: String, required: false, nullable: true})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:46</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -585,13 +587,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsEnum(FsTypeList)<br />@IsNotEmpty()<br />@ApiProperty({enum: FsTypeList})<br />
+                            @IsEnum(FsTypeList)<br />@IsNotEmpty()<br />@ApiProperty({enum: FsTypeList, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -659,54 +661,60 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;
 import { CustomFieldsDto } from &#x27;~/_common/abstracts/dto/custom-fields.dto&#x27;
-import { IsMongoId, IsString, IsEnum, IsOptional, IsObject, IsBoolean, IsNotEmpty, IsMimeType } from &#x27;class-validator&#x27;
+import { IsMongoId, IsString, IsEnum, IsOptional, IsObject, IsBoolean, IsNotEmpty, IsMimeType, Matches } from &#x27;class-validator&#x27;
 import { FsType, FsTypeList } from &#x27;~/core/filestorage/_enum/fs-type.enum&#x27;
 import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;
+
+export class FileUploadDto {
+  @ApiProperty({ type: &#x27;string&#x27;, format: &#x27;binary&#x27; })
+  public file: string
+}
 
 export class FilestorageCreateDto extends CustomFieldsDto {
   @IsEnum(FsTypeList)
   @IsNotEmpty()
-  @ApiProperty({ enum: FsTypeList })
+  @ApiProperty({ enum: FsTypeList, default: FsType.FILE, })
   public type: FsType
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ type: String, required: true })
   public namespace: string
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ type: String, default: &#x27;/&#x27; })
+  @Matches(/^\/(\.?[^\/\0]+\/?)+$/, { message: &#x27;Path must be a valid path&#x27; })
   public path: string
 
   @IsOptional()
   @IsMongoId()
-  @ApiProperty({ type: String })
+  @ApiProperty({ type: String, required: false })
   public linkedTo?: string
 
   @IsOptional()
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ type: String, required: false })
   public comments?: string
 
   @IsOptional()
   @IsMimeType()
-  @ApiProperty()
+  @ApiProperty({ type: String, required: false })
   public mime?: string
 
   @IsOptional()
   @IsBoolean()
-  @ApiProperty()
+  @ApiProperty({ type: Boolean, required: false })
   public hidden?: boolean
 
   @IsOptional()
   @IsObject()
-  @ApiProperty({ type: Object })
+  @ApiProperty({ type: String, required: false, nullable: true })
   public tags?: { [key: string]: MixedValue }
 
   @IsOptional()
   @IsObject()
-  @ApiProperty({ type: Object })
+  @ApiProperty({ type: String, required: false, nullable: true })
   public acls?: { [key: string]: any } // eslint-disable-line
 }
 

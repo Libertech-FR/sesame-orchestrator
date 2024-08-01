@@ -136,6 +136,9 @@
                             <a href="#ApiDeletedResponseDecorator" title="src/_common/decorators/api-deleted-response.decorator.ts" ><b>ApiDeletedResponseDecorator</b>&nbsp;&nbsp;&nbsp;(src/.../api-deleted-response.decorator.ts)</a>
                         </li>
                         <li>
+                            <a href="#ApiFileUploadDecorator" title="src/_common/decorators/api-file-upload.decorator.ts" ><b>ApiFileUploadDecorator</b>&nbsp;&nbsp;&nbsp;(src/.../api-file-upload.decorator.ts)</a>
+                        </li>
+                        <li>
                             <a href="#ApiPaginatedDecorator" title="src/_common/decorators/api-paginated.decorator.ts" ><b>ApiPaginatedDecorator</b>&nbsp;&nbsp;&nbsp;(src/.../api-paginated.decorator.ts)</a>
                         </li>
                         <li>
@@ -633,6 +636,71 @@
       ...options?.notFoundOptions,
     }),
     ApiOperation({ summary: &#x60;Suppression d&#x27;une entrée &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt;&#x60;, ...options?.operationOptions }),
+  );
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/_common/decorators/api-file-upload.decorator.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ApiFileUploadDecorator"></a>
+                    <span class="name">
+                        <span ><b>ApiFileUploadDecorator</b></span>
+                        <a href="#ApiFileUploadDecorator"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
+  uploadModel: Type&lt;NonNullable&lt;unknown&gt;&gt;,
+  bodyModel: TModel,
+  responseModel: TModel,
+  options?: {
+    bodyOptions?: ApiBodyOptions | null | undefined,
+    responseOptions?: ApiResponseOptions | null | undefined,
+    operationOptions?: ApiOperationOptions | null | undefined,
+    consumesOptions?: string[],
+  },
+) &#x3D;&gt; {
+  const consumes &#x3D; options?.consumesOptions || [&#x27;multipart/form-data&#x27;];
+
+  return applyDecorators(
+    ApiExtraModels(uploadModel),
+    ApiExtraModels(bodyModel),
+    ApiBody({
+      schema: {
+        type: &#x27;object&#x27;,
+        allOf: [
+          { $ref: getSchemaPath(bodyModel) },
+          { $ref: getSchemaPath(uploadModel) },
+        ],
+        // properties: {
+        //   // comment: { type: &#x27;string&#x27; },
+        //   // outletId: { type: &#x27;integer&#x27; },
+
+        //   file: {
+        //     type: &#x27;string&#x27;,
+        //     format: &#x27;binary&#x27;,
+        //   },
+        // },
+      },
+      description: &#x27;Corps de création de l\&#x27;enregistrement&#x27;,
+      ...options?.bodyOptions,
+    }),
+    ApiCreatedResponseDecorator(responseModel, {
+      responseOptions: options?.responseOptions,
+      operationOptions: options?.operationOptions,
+    }),
+    ApiConsumes(...consumes),
   );
 }</code>
                     </td>

@@ -445,7 +445,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:70</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:76</a></code>
 </div>
                         </td>
                     </tr>
@@ -547,8 +547,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="87"
-                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:87</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="93"
+                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:93</a></div>
                         </td>
                     </tr>
 
@@ -655,7 +655,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:100</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:106</a></code>
 </div>
                         </td>
                     </tr>
@@ -757,8 +757,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="117"
-                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:117</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="123"
+                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:123</a></div>
                         </td>
                     </tr>
 
@@ -865,7 +865,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:130</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:136</a></code>
 </div>
                         </td>
                     </tr>
@@ -1716,13 +1716,19 @@ export class FilestorageService extends AbstractServiceSchema {
       const basePath &#x3D; this.reservedChars.reduce((acc, char) &#x3D;&gt; {
         if (char &#x3D;&#x3D;&#x3D; EMBED_SEPARATOR) return acc
         return acc.replace(char, &#x27;_&#x27;)
-      }, payload.path.replace(/^\//, &#x27;&#x27;).replace(/\.\.\//g, &#x27;&#x27;))
-      const partPath &#x3D; [&#x27;&#x27;, basePath]
+      }, payload.path.replace(/(?&lt;!^)\/{2,}|(?&lt;!\/)\/+$/, &#x27;&#x27;))
+      const partPath &#x3D; [basePath]
       // noinspection ExceptionCaughtLocallyJS
       switch (data.type) {
         case FsType.FILE: {
+          console.log(&#x27;basePath&#x27;, basePath)
+          console.log(&#x27;hasFileExtension&#x27;, hasFileExtension(basePath))
           if (!basePath || !hasFileExtension(basePath)) {
             partPath.push(file.originalname)
+          }
+          const exists &#x3D; await this.storage.getDisk(data.namespace).exists(partPath.join(&#x27;/&#x27;))
+          if (exists.exists) {
+            throw new BadRequestException(&#x60;File ${partPath.join(&#x27;/&#x27;)} already exists&#x60;)
           }
           payload.mime &#x3D; data.mime || file.mimetype
           await this.storage.getDisk(data.namespace).put(partPath.join(&#x27;/&#x27;), file.buffer)
@@ -1822,7 +1828,10 @@ export class FilestorageService extends AbstractServiceSchema {
           throw e
         }
       })
+    } else {
+      updated &#x3D; await super.update(_id, update, options)
     }
+
     return updated
   }
   /* eslint-enable */

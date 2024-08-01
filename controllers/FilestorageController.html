@@ -250,14 +250,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post()<br />@UseInterceptors(undefined)<br />@ApiCreateDecorator(FilestorageCreateDto, FilestorageDto)<br /></code>
+                    <code>@Post()<br />@UseInterceptors(undefined)<br />@ApiFileUploadDecorator(FileUploadDto, FilestorageCreateDto, FilestorageDto)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -360,8 +360,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -451,8 +451,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -554,8 +554,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="90"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:90</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="104"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:104</a></div>
                         </td>
                     </tr>
 
@@ -680,8 +680,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="97"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:97</a></div>
                         </td>
                     </tr>
 
@@ -792,8 +792,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="109"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:109</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="123"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:123</a></div>
                         </td>
                     </tr>
 
@@ -869,7 +869,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>search(res: Response, searchFilterSchema: FilterSchema, searchFilterOptions: FilterOptions)</code>
+                    <code>search(res: Response, searchFilterSchema: FilterSchema, searchFilterOptions: FilterOptions, hiddenQuery: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -883,8 +883,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -940,6 +940,18 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>hiddenQuery</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -987,8 +999,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="98"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:98</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="112"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:112</a></div>
                         </td>
                     </tr>
 
@@ -1062,9 +1074,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, HttpStatus, Param, ParseFilePipe, Patch, Post, Query, Res, UploadedFile, UseInterceptors } from &#x27;@nestjs/common&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, HttpStatus, Param, ParseBoolPipe, ParseFilePipe, Patch, Post, Query, Res, UploadedFile, UseInterceptors } from &#x27;@nestjs/common&#x27;
 import { FileInterceptor } from &#x27;@nestjs/platform-express&#x27;
-import { ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;
+import { ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiProduces, ApiTags, getSchemaPath } from &#x27;@nestjs/swagger&#x27;
 import { FilterOptions, FilterSchema, ObjectIdValidationPipe, SearchFilterOptions, SearchFilterSchema } from &#x27;@the-software-compagny/nestjs_module_restools&#x27;
 import { Response } from &#x27;express&#x27;
 import { Types } from &#x27;mongoose&#x27;
@@ -1076,11 +1088,12 @@ import { ApiReadResponseDecorator } from &#x27;~/_common/decorators/api-read-res
 import { ApiUpdateDecorator } from &#x27;~/_common/decorators/api-update.decorator&#x27;
 import { PickProjectionHelper } from &#x27;~/_common/helpers/pick-projection.helper&#x27;
 import { PartialProjectionType } from &#x27;~/_common/types/partial-projection.type&#x27;
-import { FilestorageCreateDto, FilestorageDto, FilestorageUpdateDto } from &#x27;./_dto/filestorage.dto&#x27;
+import { FilestorageCreateDto, FilestorageDto, FilestorageUpdateDto, FileUploadDto } from &#x27;./_dto/filestorage.dto&#x27;
 import { TransformersFilestorageService } from &#x27;./_services/transformers-filestorage.service&#x27;
 import { FilestorageService } from &#x27;./filestorage.service&#x27;
+import { ApiFileUploadDecorator } from &#x27;~/_common/decorators/api-file-upload.decorator&#x27;
 
-@ApiTags(&#x27;core&#x27;)
+@ApiTags(&#x27;default&#x27;)
 @Controller(&#x27;filestorage&#x27;)
 export class FilestorageController extends AbstractController {
   protected static readonly projection: PartialProjectionType&lt;FilestorageDto&gt; &#x3D; {
@@ -1096,7 +1109,7 @@ export class FilestorageController extends AbstractController {
 
   @Post()
   @UseInterceptors(FileInterceptor(&#x27;file&#x27;))
-  @ApiCreateDecorator(FilestorageCreateDto, FilestorageDto)
+  @ApiFileUploadDecorator(FileUploadDto, FilestorageCreateDto, FilestorageDto)
   public async create(
     @Res() res: Response,
     @Body() body: FilestorageCreateDto,
@@ -1111,8 +1124,21 @@ export class FilestorageController extends AbstractController {
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(FilestorageDto, FilestorageController.projection))
-  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise&lt;Response&gt; {
-    const [data, total] &#x3D; await this._service.findAndCount(searchFilterSchema, FilestorageController.projection, searchFilterOptions)
+  public async search(
+    @Res() res: Response,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+    @Query(&#x27;hidden&#x27;) hiddenQuery: string,
+  ): Promise&lt;Response&gt; {
+    const hidden &#x3D; /true|on|yes|1/i.test(hiddenQuery);
+    const extraSearch &#x3D; { hidden: { $ne: true } }
+    if (hidden) delete extraSearch[&#x27;hidden&#x27;]
+
+    const [data, total] &#x3D; await this._service.findAndCount({
+      ...extraSearch,
+      ...searchFilterSchema,
+    }, FilestorageController.projection, searchFilterOptions)
+
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,

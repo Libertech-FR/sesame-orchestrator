@@ -818,6 +818,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/FilestorageUpdateDto.html" data-type="entity-link" >FilestorageUpdateDto</a>
                             </li>
                             <li class="link">
+                                <a href="classes/FileUploadDto.html" data-type="entity-link" >FileUploadDto</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/Form.html" data-type="entity-link" >Form</a>
                             </li>
                             <li class="link">

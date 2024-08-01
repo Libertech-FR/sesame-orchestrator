@@ -127,8 +127,225 @@
 
 
 
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
 
-    </div>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getPolicies" >getPolicies</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#setPolicies" >setPolicies</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getPolicies"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getPolicies</b></span>
+                        <a href="#getPolicies"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getPolicies(res: Response)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;getpolicies&#x27;)<br />@ApiOperation({summary: &#x27;Retourne la police de mot de passe&#x27;})<br />@ApiResponse({status: undefined})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/settings/passwdadm/passwdadm.controller.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setPolicies"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>setPolicies</b></span>
+                        <a href="#setPolicies"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setPolicies(body: <a href="../classes/PasswordPoliciesDto.html" target="_self">PasswordPoliciesDto</a>, res: Response)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;setpolicies&#x27;)<br />@ApiOperation({summary: &#x27;enregistre la police de mdp&#x27;})<br />@ApiResponse({status: undefined})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">src/settings/passwdadm/passwdadm.controller.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../classes/PasswordPoliciesDto.html" target="_self" >PasswordPoliciesDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
@@ -137,6 +354,8 @@ import { PasswdadmService } from &#x27;./passwdadm.service&#x27;;
 import { ApiTags, ApiOperation, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
 import { Response } from &#x27;express&#x27;;
 import {omit} from &quot;radash&quot;;
+import {InitAccountDto} from &quot;~/management/passwd/_dto/init-account.dto&quot;;
+import {PasswordPoliciesDto} from &quot;~/settings/passwdadm/_dto/password-policy.dto&quot;;
 
 
 @Controller(&#x27;passwd&#x27;)
@@ -146,6 +365,21 @@ export class PasswdadmController {
 
   public constructor(private passwdadmService: PasswdadmService) { }
 
+  @Post(&#x27;setpolicies&#x27;)
+  @ApiOperation({summary: &#x27;enregistre la police de mdp&#x27;})
+  @ApiResponse({status: HttpStatus.OK})
+  public async setPolicies(@Body() body: PasswordPoliciesDto,@Res() res: Response): Promise&lt;Response&gt; {
+    const data &#x3D; await this.passwdadmService.setPolicies(body)
+    //const datax&#x3D;omit(data.toObject,[&#x27;_id&#x27;])
+    return res.status(HttpStatus.OK).json({data})
+  }
+  @Get(&#x27;getpolicies&#x27;)
+  @ApiOperation({summary: &#x27;Retourne la police de mot de passe&#x27;})
+  @ApiResponse({status: HttpStatus.OK})
+  public async getPolicies(@Res() res:Response):Promise&lt;Response&gt;{
+    const data&#x3D;await this.passwdadmService.getPolicies()
+    return res.status(HttpStatus.OK).json({data})
+  }
 }
 </code></pre>
     </div>

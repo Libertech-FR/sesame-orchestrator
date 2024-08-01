@@ -49,8 +49,6 @@ export class FilestorageService extends AbstractServiceSchema {
       // noinspection ExceptionCaughtLocallyJS
       switch (data.type) {
         case FsType.FILE: {
-          console.log('basePath', basePath)
-          console.log('hasFileExtension', hasFileExtension(basePath))
           if (!basePath || !hasFileExtension(basePath)) {
             partPath.push(file.originalname)
           }

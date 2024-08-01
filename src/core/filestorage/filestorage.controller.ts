@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, ParseFilePipe, Patch, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseBoolPipe, ParseFilePipe, Patch, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { ApiParam, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiProduces, ApiTags, getSchemaPath } from '@nestjs/swagger'
 import { FilterOptions, FilterSchema, ObjectIdValidationPipe, SearchFilterOptions, SearchFilterSchema } from '@the-software-compagny/nestjs_module_restools'
 import { Response } from 'express'
 import { Types } from 'mongoose'
@@ -12,11 +12,12 @@ import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response
 import { ApiUpdateDecorator } from '~/_common/decorators/api-update.decorator'
 import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper'
 import { PartialProjectionType } from '~/_common/types/partial-projection.type'
-import { FilestorageCreateDto, FilestorageDto, FilestorageUpdateDto } from './_dto/filestorage.dto'
+import { FilestorageCreateDto, FilestorageDto, FilestorageUpdateDto, FileUploadDto } from './_dto/filestorage.dto'
 import { TransformersFilestorageService } from './_services/transformers-filestorage.service'
 import { FilestorageService } from './filestorage.service'
+import { ApiFileUploadDecorator } from '~/_common/decorators/api-file-upload.decorator'
 
-@ApiTags('core')
+@ApiTags('default')
 @Controller('filestorage')
 export class FilestorageController extends AbstractController {
   protected static readonly projection: PartialProjectionType<FilestorageDto> = {
@@ -32,7 +33,7 @@ export class FilestorageController extends AbstractController {
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  @ApiCreateDecorator(FilestorageCreateDto, FilestorageDto)
+  @ApiFileUploadDecorator(FileUploadDto, FilestorageCreateDto, FilestorageDto)
   public async create(
     @Res() res: Response,
     @Body() body: FilestorageCreateDto,
@@ -47,8 +48,21 @@ export class FilestorageController extends AbstractController {
 
   @Get()
   @ApiPaginatedDecorator(PickProjectionHelper(FilestorageDto, FilestorageController.projection))
-  public async search(@Res() res: Response, @SearchFilterSchema() searchFilterSchema: FilterSchema, @SearchFilterOptions() searchFilterOptions: FilterOptions): Promise<Response> {
-    const [data, total] = await this._service.findAndCount(searchFilterSchema, FilestorageController.projection, searchFilterOptions)
+  public async search(
+    @Res() res: Response,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+    @Query('hidden') hiddenQuery: string,
+  ): Promise<Response> {
+    const hidden = /true|on|yes|1/i.test(hiddenQuery);
+    const extraSearch = { hidden: { $ne: true } }
+    if (hidden) delete extraSearch['hidden']
+
+    const [data, total] = await this._service.findAndCount({
+      ...extraSearch,
+      ...searchFilterSchema,
+    }, FilestorageController.projection, searchFilterOptions)
+
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,

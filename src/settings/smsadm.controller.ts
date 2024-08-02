@@ -5,7 +5,7 @@ import {Response} from "express";
 import {SmsSettingsDto} from "~/settings/_dto/sms.settings.dto";
 
 
-@Controller('sms')
+@Controller('settings/sms')
 @ApiTags('settings')
 export class SmsadmController{
   private readonly logger= new Logger(SmsadmController.name)

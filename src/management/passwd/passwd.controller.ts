@@ -7,11 +7,12 @@ import {AskTokenDto} from './_dto/ask-token.dto';
 import {VerifyTokenDto} from './_dto/verify-token.dto';
 import {ResetPasswordDto} from './_dto/reset-password.dto';
 import {omit} from "radash";
-import {PasswdadmService} from "~/settings/passwdadm/passwdadm.service";
+import {PasswdadmService} from "~/settings/passwdadm.service";
 import {InitAccountDto} from "~/management/passwd/_dto/init-account.dto";
 import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
 import crypto from "crypto";
-import {ResetByCodeDto} from "~/management/passwd/_dto/reset-by-code-dto";
+import {ResetByCodeDto} from "~/management/passwd/_dto/reset-by-code.dto";
+import {InitManyDto} from "~/management/passwd/_dto/init-many.dto";
 
 @Controller('passwd')
 @ApiTags('management/passwd')
@@ -116,7 +117,15 @@ export class PasswdController {
       ...debug,
     });
   }
-
+  @Post('initmany')
+  @ApiOperation({summary: 'Initialise plusieurs identités. envoi un jeton par mail à l\'identité'})
+  @ApiResponse({status: HttpStatus.OK})
+  public async initMany(@Body() body: InitManyDto, @Res() res: Response): Promise<Response> {
+    const result=await this.passwdService.initMany(body)
+    return res.status(HttpStatus.OK).json({
+      message: 'identités initialisées'
+    });
+  }
   @Post('initreset')
   @ApiOperation({summary: 'Demande l envoi de mail pour le reset'})
   @ApiResponse({status: HttpStatus.OK})

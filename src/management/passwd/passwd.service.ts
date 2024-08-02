@@ -1,5 +1,12 @@
 import { InjectRedis } from '@nestjs-modules/ioredis';
-import { BadRequestException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import * as crypto from 'crypto';
 import Redis from 'ioredis';
 import { AbstractService } from '~/_common/abstracts/abstract.service';
@@ -16,12 +23,13 @@ import {MailerModule, MailerService} from "@nestjs-modules/mailer";
 import {InitAccountDto} from "~/management/passwd/_dto/init-account.dto";
 import {ConfigService} from "@nestjs/config";
 import {randomInt} from "crypto";
-import {ResetByCodeDto} from "~/management/passwd/_dto/reset-by-code-dto";
-import {PasswdadmService} from "~/settings/passwdadm/passwdadm.service";
+import {ResetByCodeDto} from "~/management/passwd/_dto/reset-by-code.dto";
+import {PasswdadmService} from "~/settings/passwdadm.service";
 import {IdentityState} from "~/management/identities/_enums/states.enum";
 import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
-import {PasswordPoliciesDto} from "~/settings/passwdadm/_dto/password-policy.dto";
+import {PasswordPoliciesDto} from "~/settings/_dto/password-policy.dto";
 import {SmsadmService} from "~/settings/smsadm.service";
+import {InitManyDto} from "~/management/passwd/_dto/init-many.dto";
 
 interface TokenData {
   k: string;
@@ -364,6 +372,20 @@ export class PasswdService extends AbstractService {
       this.logger.error("Error while reseting password. " + e + ` (token=${data?.token})`);
       throw new BadRequestException('Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible');
     }
+  }
+  //Envoi le message d init à plusieurs identités
+  public async initMany(ids:InitManyDto):Promise<any>{
+    const identities = await this.identities.find({ _id: { $in: ids.ids },state:IdentityState.SYNCED });
+    if (identities.length === 0) {
+      throw new HttpException('Aucune identité trouvée.', 404);
+    }
+    const updated = await Promise.all(
+      identities.map((identity) => {
+        this.logger.verbose('send To :' + identity.get('inetOrgPerson.uid'))
+        return this.initAccount({uid:identity.get('inetOrgPerson.uid')});
+      }),
+    );
+    return updated as any;
   }
   // genere des octect pour completer le code qui est de 4 octets et demi
   private async getPaddingForCode(): Promise<string>{

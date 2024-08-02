@@ -5,6 +5,7 @@ import { Document } from 'mongoose';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
 import { IdentityState } from '../_enums/states.enum';
 import { AdditionalFieldsPart, AdditionalFieldsPartSchema } from './_parts/additionalFields.part.schema';
+import {InitStatesEnum} from "~/management/identities/_enums/init-state.enum";
 
 export type IdentitiesDocument = Identities & Document;
 
@@ -27,6 +28,9 @@ export class Identities extends AbstractSchema {
 
   @Prop({ type: Date })
   lastSync?: Date;
+
+  @Prop({type:InitStatesEnum})
+  initState : InitStatesEnum
 }
 
 export const IdentitiesSchema = SchemaFactory.createForClass(Identities);

@@ -218,16 +218,6 @@
                                     <span class="modifier"></span>
                                 <a href="#uid" >uid</a>
                             </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Optional</span>
-                                <a href="#userCertificate" >userCertificate</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Optional</span>
-                                <a href="#userPassword" >userPassword</a>
-                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -270,7 +260,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop({required: true})<br />
+                            @Prop({type: String, required: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -306,7 +296,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop()<br />
+                            @Prop({type: String, required: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -343,7 +333,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop()<br />
+                            @Prop({type: String, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -379,7 +369,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop({required: true})<br />
+                            @Prop({type: String, required: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -415,7 +405,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop({required: true})<br />
+                            @Prop({type: String, required: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -452,7 +442,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop()<br />
+                            @Prop({type: String, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -489,7 +479,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop()<br />
+                            @Prop({type: String, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -526,7 +516,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop()<br />
+                            @Prop({type: String, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -563,7 +553,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop()<br />
+                            @Prop({type: String, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -600,7 +590,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop()<br />
+                            @Prop({type: String, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -637,7 +627,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop()<br />
+                            @Prop({type: String, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -674,7 +664,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop()<br />
+                            @Prop({type: String, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -711,7 +701,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop()<br />
+                            @Prop({type: String, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -747,7 +737,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop({required: true})<br />
+                            @Prop({type: String, required: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -784,7 +774,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop()<br />
+                            @Prop({type: String, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -821,7 +811,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop()<br />
+                            @Prop({type: String, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -857,87 +847,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop({required: true})<br />
+                            @Prop({type: String, required: true})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
                                 <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:43</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="userCertificate"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier">Optional</span>
-                        <span ><b>userCertificate</b></span>
-                        <a href="#userCertificate"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Prop()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:58</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="userPassword"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier">Optional</span>
-                        <span ><b>userPassword</b></span>
-                        <a href="#userPassword"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Prop()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -961,62 +877,62 @@ import { Document } from &#x27;mongoose&#x27;;
 
 @Schema({ _id: false })
 export class inetOrgPerson extends Document {
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   cn: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   displayName?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   facsimileTelephoneNumber?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   givenName?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   labeledURI?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   mail?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   mobile?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   postalAddress?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   preferredLanguage?: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   sn: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   telephoneNumber?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   title?: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   uid: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   employeeNumber: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   employeeType: string;
 
-  @Prop()
+  @Prop({ type: String, required: true })
   departmentNumber: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   jpegPhoto?: string;
 
-  @Prop()
-  userCertificate?: string;
+  // @Prop({ type: String, default: null })
+  // userCertificate?: string;
 
-  @Prop()
-  userPassword?: string;
+  // @Prop({ type: String, default: null })
+  // userPassword?: string;
 }
 
 export const inetOrgPersonSchema &#x3D; SchemaFactory.createForClass(inetOrgPerson).index(

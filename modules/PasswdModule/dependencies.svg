@@ -24,79 +24,79 @@
 <title>cluster_PasswdModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 722,-195 722,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_PasswdModule_providers</title>
-<polygon fill="none" stroke="black" points="428,-78 428,-130 714,-130 714,-78 428,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_PasswdModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 420,-130 420,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="310,-78 310,-130 714,-130 714,-78 310,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_PasswdModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 302,-130 302,-78 16,-78"/>
 </g>
 <!-- BackendsModule -->
 <g id="node1" class="node">
 <title>BackendsModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="411.97,-122 408.97,-126 387.97,-126 384.97,-122 298.03,-122 298.03,-86 411.97,-86 411.97,-122"/>
-<text text-anchor="middle" x="355" y="-99.8" font-family="Times,serif" font-size="14.00">BackendsModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="705.97,-122 702.97,-126 681.97,-126 678.97,-122 592.03,-122 592.03,-86 705.97,-86 705.97,-122"/>
+<text text-anchor="middle" x="649" y="-99.8" font-family="Times,serif" font-size="14.00">BackendsModule</text>
 </g>
 <!-- PasswdModule -->
 <g id="node4" class="node">
 <title>PasswdModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="405.54,-187 402.54,-191 381.54,-191 378.54,-187 304.46,-187 304.46,-151 405.54,-151 405.54,-187"/>
-<text text-anchor="middle" x="355" y="-164.8" font-family="Times,serif" font-size="14.00">PasswdModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="431.54,-187 428.54,-191 407.54,-191 404.54,-187 330.46,-187 330.46,-151 431.54,-151 431.54,-187"/>
+<text text-anchor="middle" x="381" y="-164.8" font-family="Times,serif" font-size="14.00">PasswdModule</text>
 </g>
 <!-- BackendsModule&#45;&gt;PasswdModule -->
 <g id="edge1" class="edge">
 <title>BackendsModule&#45;&gt;PasswdModule</title>
-<path fill="none" stroke="black" d="M355,-122.11C355,-122.11 355,-140.99 355,-140.99"/>
-<polygon fill="black" stroke="black" points="351.5,-140.99 355,-150.99 358.5,-140.99 351.5,-140.99"/>
+<path fill="none" stroke="black" d="M649,-122.28C649,-143.32 649,-175 649,-175 649,-175 441.72,-175 441.72,-175"/>
+<polygon fill="black" stroke="black" points="441.72,-171.5 431.72,-175 441.72,-178.5 441.72,-171.5"/>
 </g>
 <!-- IdentitiesModule -->
 <g id="node2" class="node">
 <title>IdentitiesModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="279.65,-122 276.65,-126 255.65,-126 252.65,-122 168.35,-122 168.35,-86 279.65,-86 279.65,-122"/>
-<text text-anchor="middle" x="224" y="-99.8" font-family="Times,serif" font-size="14.00">IdentitiesModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="573.65,-122 570.65,-126 549.65,-126 546.65,-122 462.35,-122 462.35,-86 573.65,-86 573.65,-122"/>
+<text text-anchor="middle" x="518" y="-99.8" font-family="Times,serif" font-size="14.00">IdentitiesModule</text>
 </g>
 <!-- IdentitiesModule&#45;&gt;PasswdModule -->
 <g id="edge2" class="edge">
 <title>IdentitiesModule&#45;&gt;PasswdModule</title>
-<path fill="none" stroke="black" d="M224,-122.02C224,-139.37 224,-163 224,-163 224,-163 294.35,-163 294.35,-163"/>
-<polygon fill="black" stroke="black" points="294.35,-166.5 304.35,-163 294.35,-159.5 294.35,-166.5"/>
+<path fill="none" stroke="black" d="M518,-122.02C518,-139.37 518,-163 518,-163 518,-163 441.62,-163 441.62,-163"/>
+<polygon fill="black" stroke="black" points="441.62,-159.5 431.62,-163 441.62,-166.5 441.62,-159.5"/>
 </g>
 <!-- PasswdadmModule -->
 <g id="node3" class="node">
 <title>PasswdadmModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="149.65,-122 146.65,-126 125.65,-126 122.65,-122 24.35,-122 24.35,-86 149.65,-86 149.65,-122"/>
-<text text-anchor="middle" x="87" y="-99.8" font-family="Times,serif" font-size="14.00">PasswdadmModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="443.65,-122 440.65,-126 419.65,-126 416.65,-122 318.35,-122 318.35,-86 443.65,-86 443.65,-122"/>
+<text text-anchor="middle" x="381" y="-99.8" font-family="Times,serif" font-size="14.00">PasswdadmModule</text>
 </g>
 <!-- PasswdadmModule&#45;&gt;PasswdModule -->
 <g id="edge3" class="edge">
 <title>PasswdadmModule&#45;&gt;PasswdModule</title>
-<path fill="none" stroke="black" d="M87,-122.28C87,-143.32 87,-175 87,-175 87,-175 294.28,-175 294.28,-175"/>
-<polygon fill="black" stroke="black" points="294.28,-178.5 304.28,-175 294.28,-171.5 294.28,-178.5"/>
+<path fill="none" stroke="black" d="M381,-122.11C381,-122.11 381,-140.99 381,-140.99"/>
+<polygon fill="black" stroke="black" points="377.5,-140.99 381,-150.99 384.5,-140.99 377.5,-140.99"/>
 </g>
 <!-- PasswdService -->
 <g id="node5" class="node">
 <title>PasswdService</title>
-<ellipse fill="#fdb462" stroke="black" cx="637" cy="-104" rx="68.92" ry="18"/>
-<text text-anchor="middle" x="637" y="-99.8" font-family="Times,serif" font-size="14.00">PasswdService</text>
+<ellipse fill="#fdb462" stroke="black" cx="225" cy="-104" rx="68.92" ry="18"/>
+<text text-anchor="middle" x="225" y="-99.8" font-family="Times,serif" font-size="14.00">PasswdService</text>
 </g>
 <!-- PasswdService&#45;&gt;PasswdModule -->
 <g id="edge4" class="edge">
 <title>PasswdService&#45;&gt;PasswdModule</title>
-<path fill="none" stroke="black" d="M637,-122.28C637,-143.32 637,-175 637,-175 637,-175 415.74,-175 415.74,-175"/>
-<polygon fill="black" stroke="black" points="415.74,-171.5 405.74,-175 415.74,-178.5 415.74,-171.5"/>
+<path fill="none" stroke="black" d="M225,-122.02C225,-139.37 225,-163 225,-163 225,-163 320.35,-163 320.35,-163"/>
+<polygon fill="black" stroke="black" points="320.35,-166.5 330.35,-163 320.35,-159.5 320.35,-166.5"/>
 </g>
 <!-- SmsService -->
 <g id="node6" class="node">
 <title>SmsService</title>
-<ellipse fill="#fdb462" stroke="black" cx="493" cy="-104" rx="56.76" ry="18"/>
-<text text-anchor="middle" x="493" y="-99.8" font-family="Times,serif" font-size="14.00">SmsService</text>
+<ellipse fill="#fdb462" stroke="black" cx="81" cy="-104" rx="56.76" ry="18"/>
+<text text-anchor="middle" x="81" y="-99.8" font-family="Times,serif" font-size="14.00">SmsService</text>
 </g>
 <!-- SmsService&#45;&gt;PasswdModule -->
 <g id="edge5" class="edge">
 <title>SmsService&#45;&gt;PasswdModule</title>
-<path fill="none" stroke="black" d="M493,-122.02C493,-139.37 493,-163 493,-163 493,-163 415.6,-163 415.6,-163"/>
-<polygon fill="black" stroke="black" points="415.6,-159.5 405.6,-163 415.6,-166.5 415.6,-159.5"/>
+<path fill="none" stroke="black" d="M81,-122.28C81,-143.32 81,-175 81,-175 81,-175 320.45,-175 320.45,-175"/>
+<polygon fill="black" stroke="black" points="320.45,-178.5 330.45,-175 320.45,-171.5 320.45,-178.5"/>
 </g>
 </g>
 </svg>

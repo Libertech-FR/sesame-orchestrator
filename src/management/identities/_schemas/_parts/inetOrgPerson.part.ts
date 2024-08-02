@@ -54,11 +54,11 @@ export class inetOrgPerson extends Document {
   @Prop({ type: String, default: null })
   jpegPhoto?: string;
 
-  // @Prop({ type: String, default: null })
-  // userCertificate?: string;
+  @Prop({ type: String, default: null })
+  userCertificate?: string;
 
-  // @Prop({ type: String, default: null })
-  // userPassword?: string;
+  @Prop({ type: String, default: null })
+  userPassword?: string;
 }
 
 export const inetOrgPersonSchema = SchemaFactory.createForClass(inetOrgPerson).index(

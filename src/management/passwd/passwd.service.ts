@@ -366,7 +366,7 @@ export class PasswdService extends AbstractService {
 
       if (response?.status === 0) {
         await this.redis.del(data.token);
-        const k=await this.setInitState(identity,InitStatesEnum.INITIALIZED)
+        await this.setInitState(identity,InitStatesEnum.INITIALIZED)
         return [_, response];
       }
 
@@ -404,11 +404,12 @@ export class PasswdService extends AbstractService {
   }
   private async setInitState(identity: Identities,state:InitStatesEnum):Promise<any>{
     identity.initState= state
-    const date=new Date()
     if (state === InitStatesEnum.SENT){
       identity.initInfo.initDate=new Date()
-    }else if(state === InitStatesEnum.INITIALIZED){
+    }else{
+
        identity.initInfo.sentDate=new Date()
+      console.log("Init State :" + identity.initInfo.sentDate.toISOString())
     }
     const ok= await identity.save()
     return ok

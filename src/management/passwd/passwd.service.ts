@@ -1,4 +1,4 @@
-import { InjectRedis } from '@nestjs-modules/ioredis';
+import {InjectRedis} from '@nestjs-modules/ioredis';
 import {
   BadRequestException,
   HttpException,
@@ -8,21 +8,21 @@ import {
   NotFoundException
 } from '@nestjs/common';
 import * as crypto from 'crypto';
+import {randomInt} from 'crypto';
 import Redis from 'ioredis';
-import { AbstractService } from '~/_common/abstracts/abstract.service';
-import { ActionType } from '~/core/backends/_enum/action-type.enum';
-import { BackendsService } from '~/core/backends/backends.service';
-import { Jobs } from '~/core/jobs/_schemas/jobs.schema';
-import { AskTokenDto } from './_dto/ask-token.dto';
-import { ChangePasswordDto } from './_dto/change-password.dto';
-import { ResetPasswordDto } from './_dto/reset-password.dto';
-import { IdentitiesService } from '../identities/identities.service';
-import { pick,get } from 'radash';
-import { Identities } from '../identities/_schemas/identities.schema';
-import {MailerModule, MailerService} from "@nestjs-modules/mailer";
+import {AbstractService} from '~/_common/abstracts/abstract.service';
+import {ActionType} from '~/core/backends/_enum/action-type.enum';
+import {BackendsService} from '~/core/backends/backends.service';
+import {Jobs} from '~/core/jobs/_schemas/jobs.schema';
+import {AskTokenDto} from './_dto/ask-token.dto';
+import {ChangePasswordDto} from './_dto/change-password.dto';
+import {ResetPasswordDto} from './_dto/reset-password.dto';
+import {IdentitiesService} from '../identities/identities.service';
+import {get, pick} from 'radash';
+import {Identities} from '../identities/_schemas/identities.schema';
+import {MailerService} from "@nestjs-modules/mailer";
 import {InitAccountDto} from "~/management/passwd/_dto/init-account.dto";
 import {ConfigService} from "@nestjs/config";
-import {randomInt} from "crypto";
 import {ResetByCodeDto} from "~/management/passwd/_dto/reset-by-code.dto";
 import {PasswdadmService} from "~/settings/passwdadm.service";
 import {IdentityState} from "~/management/identities/_enums/states.enum";
@@ -30,6 +30,7 @@ import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
 import {PasswordPoliciesDto} from "~/settings/_dto/password-policy.dto";
 import {SmsadmService} from "~/settings/smsadm.service";
 import {InitManyDto} from "~/management/passwd/_dto/init-many.dto";
+import {InitStatesEnum} from "~/management/identities/_enums/init-state.enum";
 
 interface TokenData {
   k: string;
@@ -92,6 +93,7 @@ export class PasswdService extends AbstractService {
           })
             .then(() => {
               this.logger.log("reset compte envoyé  pour uid" +initDto.uid +" à " + mail )
+
             })
             .catch((e) => {
               throw new BadRequestException({
@@ -157,6 +159,7 @@ export class PasswdService extends AbstractService {
         })
           .then(() => {
             this.logger.log("Init compte envoyé  pour uid" +initDto.uid +" à " + mail )
+            this.setInitState(identity,InitStatesEnum.SENT)
           })
           .catch((e) => {
             throw new BadRequestException({
@@ -363,6 +366,7 @@ export class PasswdService extends AbstractService {
 
       if (response?.status === 0) {
         await this.redis.del(data.token);
+        const k=await this.setInitState(identity,InitStatesEnum.INITIALIZED)
         return [_, response];
       }
 
@@ -397,6 +401,17 @@ export class PasswdService extends AbstractService {
        await this.redis.set('CODEPADDING',code)
      }
      return code
+  }
+  private async setInitState(identity: Identities,state:InitStatesEnum):Promise<any>{
+    identity.initState= state
+    const date=new Date()
+    if (state === InitStatesEnum.SENT){
+      identity.initInfo.initDate=new Date()
+    }else if(state === InitStatesEnum.INITIALIZED){
+       identity.initInfo.sentDate=new Date()
+    }
+    const ok= await identity.save()
+    return ok
   }
 
 

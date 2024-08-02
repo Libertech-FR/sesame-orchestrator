@@ -406,10 +406,9 @@ export class PasswdService extends AbstractService {
     identity.initState= state
     if (state === InitStatesEnum.SENT){
       identity.initInfo.initDate=new Date()
-    }else{
-
+      identity.initInfo.sentDate=null
+    }else if (state === InitStatesEnum.INITIALIZED){
        identity.initInfo.sentDate=new Date()
-      console.log("Init State :" + identity.initInfo.sentDate.toISOString())
     }
     const ok= await identity.save()
     return ok

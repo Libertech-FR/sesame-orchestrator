@@ -20,6 +20,7 @@ import { MailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import { MjmlAdapter } from "@nestjs-modules/mailer/dist/adapters/mjml.adapter";
 import {MailadmService} from "~/settings/mailadm.service";
+import {SettingsService} from "~/settings/settings.service";
 
 @Module({
   imports: [
@@ -28,21 +29,24 @@ import {MailadmService} from "~/settings/mailadm.service";
       load: [config],
     }),
     MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (config: ConfigService) => ({
-        transport: config.get('mailer.host') || 'smtp://localhost',
-        defaults: {
-          from: config.get('mailer.sender'),
-        },
-        template: {
-          dir: __dirname + '/../templates',
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true,
+      imports: [ SettingsModule],
+      inject: [ MailadmService],
+      useFactory: async ( service: MailadmService) => {
+        const params=await service.getParams()
+        return {
+          transport: params.host,
+          defaults: {
+            from: params.sender,
           },
-        },
-      }),
+          template: {
+            dir: __dirname + '/../templates',
+            adapter: new HandlebarsAdapter(),
+            options: {
+              strict: true,
+            },
+          },
+        }
+      }
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

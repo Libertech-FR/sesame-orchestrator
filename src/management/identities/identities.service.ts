@@ -21,12 +21,14 @@ import { IdentitiesUpsertDto } from './_dto/identities.dto';
 import { IdentityState } from './_enums/states.enum';
 import { Identities } from './_schemas/identities.schema';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
+import { FactorydriveService } from '@the-software-compagny/nestjs_module_factorydrive';
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
   constructor(
     @InjectModel(Identities.name) protected _model: Model<Identities>,
     protected readonly _validation: IdentitiesValidationService,
+    protected readonly storage: FactorydriveService,
   ) {
     super();
   }
@@ -35,6 +37,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     data?: any,
     options?: SaveOptions,
   ): Promise<Document<T, any, T>> {
+    await this.checkInetOrgPersonJpegPhoto(data);
     const created: Document<T, any, T> = await super.create(data, options);
     return created;
     //TODO: add backends service logic here
@@ -65,6 +68,8 @@ export class IdentitiesService extends AbstractServiceSchema {
     if (!data?.inetOrgPerson?.employeeNumber || !data?.inetOrgPerson?.employeeType) {
       throw new BadRequestException('inetOrgPerson.employeeNumber and inetOrgPerson.employeeType are required for create identity.');
     }
+
+    await this.checkInetOrgPersonJpegPhoto(data);
 
     const logPrefix = `Validation [${data?.inetOrgPerson?.employeeType}:${data?.inetOrgPerson?.employeeNumber}]:`;
     try {
@@ -139,6 +144,8 @@ export class IdentitiesService extends AbstractServiceSchema {
 
     // if (update.state === IdentityState.TO_COMPLETE) {
     update = { ...update, state: IdentityState.TO_VALIDATE };
+
+    await this.checkInetOrgPersonJpegPhoto(update);
 
     // }
     // if (update.state === IdentityState.SYNCED) {
@@ -284,6 +291,23 @@ export class IdentitiesService extends AbstractServiceSchema {
     } else {
       this.logger.error(`${logPrefix} Unhandled error: ${error.message}`);
       throw error; // Rethrow the original error if it's not one of the handled types.
+    }
+  }
+
+  private async checkInetOrgPersonJpegPhoto(data: any) {
+    if (data?.inetOrgPerson?.jpegPhoto) {
+      let reqStorage;
+      const [disk, path] = data.inetOrgPerson.jpegPhoto.split(':');
+
+      try {
+        reqStorage = await this.storage.getDisk(disk).exists(path);
+      } catch (error) {
+        throw new BadRequestException(`Error while checking photo in storage: ${error.message}`);
+      }
+
+      if (!reqStorage.exists) {
+        throw new BadRequestException(`Photo not found in storage: ${data.inetOrgPerson.jpegPhoto}`);
+      }
     }
   }
 }

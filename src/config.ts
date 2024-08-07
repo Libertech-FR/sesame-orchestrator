@@ -117,10 +117,10 @@ export default (): ConfigInstance => ({
             root: process.cwd() + '/storage',
           },
         },
-        pictures: {
+        identities: {
           driver: 'local',
           config: {
-            root: process.cwd() + '/storage/pictures',
+            root: process.cwd() + '/storage/identities',
           },
         },
       },

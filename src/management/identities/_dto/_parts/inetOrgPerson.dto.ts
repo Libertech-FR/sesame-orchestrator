@@ -87,6 +87,11 @@ export class inetOrgPersonCreateDto {
   @ApiProperty({ required: false })
   @IsOptional()
   userPassword?: string;
+
+  @IsString()
+  @ApiProperty({ required: false })
+  @IsOptional()
+  jpegPhoto?: string;
 }
 
 export class inetOrgPersonDto extends inetOrgPersonCreateDto { }

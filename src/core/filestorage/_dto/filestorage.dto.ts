@@ -27,6 +27,11 @@ export class FilestorageCreateDto extends CustomFieldsDto {
   public path: string
 
   @IsOptional()
+  @IsString()
+  @ApiProperty({ type: String, required: false })
+  public fingerprint?: string
+
+  @IsOptional()
   @IsMongoId()
   @ApiProperty({ type: String, required: false })
   public linkedTo?: string

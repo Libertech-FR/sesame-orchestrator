@@ -14,7 +14,5 @@ export class MailSettingsDto{
   @IsString()
   @ApiProperty({ example: 'myPassword', description: 'password', type: String })
   public password: string
-  @IsString()
-  @ApiProperty({ example: 'inetOrgPerson.mail', description: 'Attribut qui contient le mail alternatif', type: String })
-  public identityMailAttribute: string
+
 }

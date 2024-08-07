@@ -31,6 +31,7 @@ import {PasswordPoliciesDto} from "~/settings/_dto/password-policy.dto";
 import {SmsadmService} from "~/settings/smsadm.service";
 import {InitManyDto} from "~/management/passwd/_dto/init-many.dto";
 import {InitStatesEnum} from "~/management/identities/_enums/init-state.enum";
+import {MailadmService} from "~/settings/mailadm.service";
 
 interface TokenData {
   k: string;
@@ -59,6 +60,7 @@ export class PasswdService extends AbstractService {
     protected config: ConfigService,
     private passwdadmService: PasswdadmService,
     private smsadmService: SmsadmService,
+    private mailadmService: MailadmService,
     @InjectRedis() private readonly redis: Redis
   ) {
     super();
@@ -69,19 +71,22 @@ export class PasswdService extends AbstractService {
     //envoi du mail
     try{
       const identity = await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid }) as Identities;
+      //prise des parametres
+      const params=await this.passwdadmService.getPolicies()
       const k = randomInt(100000, 999999);
       //asking for padding
       const padd = await this.getPaddingForCode()
-      const mailAttribute=this.config.get('frontPwd.identityMailAttribute')
+      const mailAttribute=params.emailAttribute
       const mail = <string>get(identity.toObject(), mailAttribute)
       const token = await this.askToken({mail: mail, uid: initDto.uid}, padd + k.toString(16),PasswdService.CODE_EXPIRATION)
       this.logger.log("Token :" + token + '  int : ' + k.toString(10))
       if (initDto.type === 0){
         this.logger.log("Reset password asked by mail for  : " + initDto.uid )
+        const smtpParams=await this.mailadmService.getParams()
         if (mailAttribute !== '') {
           const displayName=identity.inetOrgPerson.displayName
           this.mailer.sendMail({
-            from: this.config.get('mailer.sender'),
+            from: smtpParams.sender,
             to: mail,
             subject: 'Reinitialisation de votre mot de passe',
             template: "resetaccount",
@@ -111,7 +116,7 @@ export class PasswdService extends AbstractService {
         const policies=new PasswordPoliciesDto()
         if (policies.resetBySms === true){
           this.logger.log("Reset password asked by SMS for  : " + initDto.uid )
-          const smsAttribute=this.config.get('frontPwd.identityMobileAttribute')
+          const smsAttribute=params.mobileAttribute
           if (smsAttribute !== ''){
             const numTel = <string>get(identity.toObject(), smsAttribute)
             await this.smsadmService.send(numTel,"Votre code de reinitialisation : " + k.toString(10))

@@ -22,7 +22,4 @@ export class SmsSettingsDto{
   @ApiProperty({ example: 'SMPP.ORG', description: 'Adresse emetteur (11 caracteres max)', type: String,maxLength:11 })
   public sourceAddr: string
 
-  @IsString()
-  @ApiProperty({ example: 'inetOrgPerson.mobile', description: 'Attribut qui contient numero de mobile', type: String })
-  public identityMobileAttribute: string
 }

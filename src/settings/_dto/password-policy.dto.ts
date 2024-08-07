@@ -40,5 +40,10 @@ export class PasswordPoliciesDto {
 
   @IsString()
   @ApiProperty({ example: 'https://monsite.com', description: 'Après un changement ou reset reussi le navigateur sera redirigé', type: Number })
-  public redirectUrl: String="";
+  public redirectUrl: string="";
+  @IsString()
+  @ApiProperty({ example: 'interOrgPerson.mail', description: 'Attribut de l email alternatif pour envoi message', type: String })
+  public emailAttribute: string="";
+  @ApiProperty({ example: 'interOrgPerson.mobile', description: 'Attribut de l email alternatif pour envoi message', type: String })
+  public mobileAttribute: string="";
 }

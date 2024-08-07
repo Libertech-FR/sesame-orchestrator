@@ -184,6 +184,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#checkFingerprint" >checkFingerprint</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#create" >create</a>
                             </li>
                             <li>
@@ -210,6 +215,11 @@
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#update" >update</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#upsertFile" >upsertFile</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -260,7 +270,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/core/filestorage/filestorage.service.ts:24</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/core/filestorage/filestorage.service.ts:25</a></div>
                             </td>
                         </tr>
 
@@ -331,6 +341,96 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkFingerprint"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkFingerprint</b></span>
+                        <a href="#checkFingerprint"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkFingerprint(filters: FilterQuery<T>, fingerprint: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="203"
+                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:203</a></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>filters</td>
+                                            <td>
+                                                        <code>FilterQuery&lt;T&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>fingerprint</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="create"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -356,7 +456,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:36</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:37</a></code>
 </div>
                         </td>
                     </tr>
@@ -445,7 +545,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:74</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:80</a></code>
 </div>
                         </td>
                     </tr>
@@ -547,8 +647,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="91"
-                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:91</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="97"
+                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:97</a></div>
                         </td>
                     </tr>
 
@@ -655,7 +755,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:104</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:110</a></code>
 </div>
                         </td>
                     </tr>
@@ -757,8 +857,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="121"
-                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:121</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="127"
+                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:127</a></div>
                         </td>
                     </tr>
 
@@ -865,7 +965,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:134</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:140</a></code>
 </div>
                         </td>
                     </tr>
@@ -934,6 +1034,106 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>Promise&lt;ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="upsertFile"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>upsertFile</b></span>
+                        <a href="#upsertFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>upsertFile(filter?: FilterQuery<T>, data?, options?)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="170"
+                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:170</a></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>filter</td>
+                                            <td>
+                                                        <code>FilterQuery&lt;T&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
 
                         </div>
                             <div class="io-description">
@@ -1491,7 +1691,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/core/filestorage/filestorage.service.ts:24</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/core/filestorage/filestorage.service.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -1672,7 +1872,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, Inject, Injectable, Scope } from &#x27;@nestjs/common&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, Scope } from &#x27;@nestjs/common&#x27;
 import { InjectModel } from &#x27;@nestjs/mongoose&#x27;
 import { Filestorage } from &#x27;./_schemas/filestorage.schema&#x27;
 import { Document, FilterQuery, Model, ModifyResult, ProjectionType, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from &#x27;mongoose&#x27;
@@ -1683,6 +1883,7 @@ import { FilestorageCreateDto } from &#x27;~/core/filestorage/_dto/filestorage.d
 import { FsType } from &#x27;~/core/filestorage/_enum/fs-type.enum&#x27;
 import { omit } from &#x27;radash&#x27;
 import { ModuleRef } from &#x27;@nestjs/core&#x27;
+import { createHash } from &#x27;node:crypto&#x27;
 
 export const EMBED_SEPARATOR &#x3D; &#x27;#&#x27;
 
@@ -1733,7 +1934,12 @@ export class FilestorageService extends AbstractServiceSchema {
           break
         }
       }
+
+      const fingerprint &#x3D; createHash(&#x27;sha256&#x27;);
+      fingerprint.update(file.buffer);
+      payload.fingerprint &#x3D; fingerprint.digest(&#x27;hex&#x27;).toString();
       payload.path &#x3D; partPath.join(&#x27;/&#x27;)
+
       return super.create(payload, options)
     } catch (e) {
       if (e.code &#x3D;&#x3D;&#x3D; &#x27;E_INVALID_CONFIG&#x27;) {
@@ -1831,6 +2037,57 @@ export class FilestorageService extends AbstractServiceSchema {
     }
 
     return updated
+  }
+
+  public async upsertFile&lt;T extends AbstractSchema | Document&gt;(
+    filter?: FilterQuery&lt;T&gt;,
+    data?: FilestorageCreateDto &amp; { file?: Express.Multer.File },
+    options?: QueryOptions&lt;T&gt; &amp; { rawResult: true },
+  ) {
+    let stored: Document&lt;any, any, Filestorage&gt; &amp; Filestorage
+    try {
+      stored &#x3D; await this.findOne&lt;Filestorage&gt;(filter, options)
+    } catch (e) {
+      if (e.status !&#x3D;&#x3D; HttpStatus.NOT_FOUND) throw e
+    }
+
+    if (stored) {
+      const update &#x3D; { ...omit(data, [&#x27;file&#x27;]) }
+
+      const fingerprint &#x3D; createHash(&#x27;sha256&#x27;);
+      fingerprint.update(data.file.buffer);
+      update.fingerprint &#x3D; fingerprint.digest(&#x27;hex&#x27;).toString();
+
+      await this.checkFingerprint(
+        { _id: stored._id },
+        update.fingerprint,
+      )
+
+      const updated &#x3D; await this.update(stored._id, update, options)
+      this.storage.getDisk(stored.namespace).put(stored.path, data.file.buffer)
+
+      return updated
+    } else {
+      return await this.create(data, options)
+    }
+  }
+
+  public async checkFingerprint&lt;T extends AbstractSchema | Document&gt;(
+    filters: FilterQuery&lt;T&gt;,
+    fingerprint: string,
+  ): Promise&lt;void&gt; {
+    const file &#x3D; await this.model
+      .findOne(
+        { ...filters, fingerprint },
+        {
+          _id: 1,
+        },
+      )
+      .exec();
+    if (file) {
+      this.logger.debug(&#x60;Fingerprint matched for &lt;${file._id}&gt; (${fingerprint}).&#x60;);
+      throw new HttpException(&#x27;Fingerprint matched.&#x27;, HttpStatus.NOT_MODIFIED);
+    }
   }
   /* eslint-enable */
 }

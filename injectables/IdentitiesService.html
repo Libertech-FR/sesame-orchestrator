@@ -182,6 +182,11 @@
                                 <a href="#checkFingerprint" >checkFingerprint</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#checkInetOrgPersonJpegPhoto" >checkInetOrgPersonJpegPhoto</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#create" >create</a>
@@ -273,12 +278,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(_model: <a href="../classes/Identities.html" target="_self">Model&lt;Identities&gt;</a>, _validation: <a href="../injectables/IdentitiesValidationService.html" target="_self">IdentitiesValidationService</a>)</code>
+<code>constructor(_model: <a href="../classes/Identities.html" target="_self">Model&lt;Identities&gt;</a>, _validation: <a href="../injectables/IdentitiesValidationService.html" target="_self">IdentitiesValidationService</a>, storage: FactorydriveService)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/management/identities/identities.service.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/management/identities/identities.service.ts:27</a></div>
                             </td>
                         </tr>
 
@@ -312,6 +317,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/IdentitiesValidationService.html" target="_self" >IdentitiesValidationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>storage</td>
+                                                  
+                                                        <td>
+                                                                    <code>FactorydriveService</code>
                                                         </td>
                                                   
                                                     <td>
@@ -356,8 +373,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="196"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:196</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="203"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:203</a></div>
                         </td>
                     </tr>
 
@@ -427,6 +444,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkInetOrgPersonJpegPhoto"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkInetOrgPersonJpegPhoto</b></span>
+                        <a href="#checkInetOrgPersonJpegPhoto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkInetOrgPersonJpegPhoto(data: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="297"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:297</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="create"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -452,7 +539,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:34</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:36</a></code>
 </div>
                         </td>
                     </tr>
@@ -548,7 +635,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:185</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:192</a></code>
 </div>
                         </td>
                     </tr>
@@ -638,8 +725,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="215"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:215</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="222"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:222</a></div>
                         </td>
                     </tr>
 
@@ -727,8 +814,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="262"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:262</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="269"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:269</a></div>
                         </td>
                     </tr>
 
@@ -821,8 +908,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="240"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:240</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="247"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:247</a></div>
                         </td>
                     </tr>
 
@@ -897,7 +984,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:112</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:117</a></code>
 </div>
                         </td>
                     </tr>
@@ -998,8 +1085,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="153"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:153</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="160"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:160</a></div>
                         </td>
                     </tr>
 
@@ -1099,8 +1186,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="162"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:162</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="169"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:169</a></div>
                         </td>
                     </tr>
 
@@ -1177,8 +1264,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -2095,12 +2182,14 @@ import { IdentitiesUpsertDto } from &#x27;./_dto/identities.dto&#x27;;
 import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
 import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
 import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
+import { FactorydriveService } from &#x27;@the-software-compagny/nestjs_module_factorydrive&#x27;;
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
   constructor(
     @InjectModel(Identities.name) protected _model: Model&lt;Identities&gt;,
     protected readonly _validation: IdentitiesValidationService,
+    protected readonly storage: FactorydriveService,
   ) {
     super();
   }
@@ -2109,6 +2198,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     data?: any,
     options?: SaveOptions,
   ): Promise&lt;Document&lt;T, any, T&gt;&gt; {
+    await this.checkInetOrgPersonJpegPhoto(data);
     const created: Document&lt;T, any, T&gt; &#x3D; await super.create(data, options);
     return created;
     //TODO: add backends service logic here
@@ -2139,6 +2229,8 @@ export class IdentitiesService extends AbstractServiceSchema {
     if (!data?.inetOrgPerson?.employeeNumber || !data?.inetOrgPerson?.employeeType) {
       throw new BadRequestException(&#x27;inetOrgPerson.employeeNumber and inetOrgPerson.employeeType are required for create identity.&#x27;);
     }
+
+    await this.checkInetOrgPersonJpegPhoto(data);
 
     const logPrefix &#x3D; &#x60;Validation [${data?.inetOrgPerson?.employeeType}:${data?.inetOrgPerson?.employeeNumber}]:&#x60;;
     try {
@@ -2213,6 +2305,8 @@ export class IdentitiesService extends AbstractServiceSchema {
 
     // if (update.state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
     update &#x3D; { ...update, state: IdentityState.TO_VALIDATE };
+
+    await this.checkInetOrgPersonJpegPhoto(update);
 
     // }
     // if (update.state &#x3D;&#x3D;&#x3D; IdentityState.SYNCED) {
@@ -2358,6 +2452,23 @@ export class IdentitiesService extends AbstractServiceSchema {
     } else {
       this.logger.error(&#x60;${logPrefix} Unhandled error: ${error.message}&#x60;);
       throw error; // Rethrow the original error if it&#x27;s not one of the handled types.
+    }
+  }
+
+  private async checkInetOrgPersonJpegPhoto(data: any) {
+    if (data?.inetOrgPerson?.jpegPhoto) {
+      let reqStorage;
+      const [disk, path] &#x3D; data.inetOrgPerson.jpegPhoto.split(&#x27;:&#x27;);
+
+      try {
+        reqStorage &#x3D; await this.storage.getDisk(disk).exists(path);
+      } catch (error) {
+        throw new BadRequestException(&#x60;Error while checking photo in storage: ${error.message}&#x60;);
+      }
+
+      if (!reqStorage.exists) {
+        throw new BadRequestException(&#x60;Photo not found in storage: ${data.inetOrgPerson.jpegPhoto}&#x60;);
+      }
     }
   }
 }

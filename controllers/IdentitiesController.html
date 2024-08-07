@@ -170,6 +170,13 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#readPhotoRaw" >readPhotoRaw</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
@@ -211,6 +218,14 @@
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#upsert" >upsert</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#upsertInetOrgPersonJpegPhoto" >upsertInetOrgPersonJpegPhoto</a>
                             </li>
                         </ul>
                     </td>
@@ -261,8 +276,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="197"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:197</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="210"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:210</a></div>
                         </td>
                     </tr>
 
@@ -364,8 +379,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -456,8 +471,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="174"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:174</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="187"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:187</a></div>
                         </td>
                     </tr>
 
@@ -519,6 +534,117 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="readPhotoRaw"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>readPhotoRaw</b></span>
+                        <a href="#readPhotoRaw"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>readPhotoRaw(res: Response, searchFilterSchema: FilterSchema, mime: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;photo/raw&#x27;)<br />@ApiReadResponseDecorator(FilestorageDto)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="333"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:333</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>searchFilterSchema</td>
+                                            <td>
+                                                        <code>FilterSchema</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>mime</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>&#x27;&#x27;</code>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="remove"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -548,8 +674,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="267"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:267</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="280"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:280</a></div>
                         </td>
                     </tr>
 
@@ -639,8 +765,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="143"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:143</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="156"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:156</a></div>
                         </td>
                     </tr>
 
@@ -743,8 +869,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="212"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:212</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="225"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:225</a></div>
                         </td>
                     </tr>
 
@@ -847,8 +973,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="227"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:227</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="240"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:240</a></div>
                         </td>
                     </tr>
 
@@ -950,8 +1076,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="248"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:248</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="261"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:261</a></div>
                         </td>
                     </tr>
 
@@ -1041,8 +1167,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="91"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:91</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="104"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:104</a></div>
                         </td>
                     </tr>
 
@@ -1150,6 +1276,122 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="upsertInetOrgPersonJpegPhoto"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>upsertInetOrgPersonJpegPhoto</b></span>
+                        <a href="#upsertInetOrgPersonJpegPhoto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>upsertInetOrgPersonJpegPhoto(res: Response, body: <a href="../s/storage.html" target="_self">Partial&lt;FilestorageCreateDto&gt;</a>, searchFilterSchema: FilterSchema, file?: Express.Multer.File)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;upsert/photo&#x27;)<br />@UseInterceptors(undefined)<br />@ApiFileUploadDecorator(FileUploadDto, undefined, FilestorageDto)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="302"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:302</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/variables.html#storage" target="_self" >Partial&lt;FilestorageCreateDto&gt;</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>searchFilterSchema</td>
+                                            <td>
+                                                        <code>FilterSchema</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>file</td>
+                                            <td>
+                                                        <code>Express.Multer.File</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
@@ -1162,12 +1404,15 @@
   Get,
   HttpStatus,
   Param,
+  ParseFilePipe,
   Patch,
   Post,
   Query,
-  Res
+  Res,
+  UploadedFile,
+  UseInterceptors
 } from &#x27;@nestjs/common&#x27;;
-import { ApiOperation, ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ApiOperation, ApiParam, ApiTags, PartialType } from &#x27;@nestjs/swagger&#x27;;
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from &#x27;@the-software-compagny/nestjs_module_restools&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { Document, Types, isValidObjectId } from &#x27;mongoose&#x27;;
@@ -1186,6 +1431,14 @@ import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
 import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
 import { IdentitiesService } from &#x27;./identities.service&#x27;;
 import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
+import { FileInterceptor } from &#x27;@nestjs/platform-express&#x27;;
+import { ApiFileUploadDecorator } from &#x27;~/_common/decorators/api-file-upload.decorator&#x27;;
+import { FilestorageCreateDto, FilestorageDto, FileUploadDto } from &#x27;~/core/filestorage/_dto/filestorage.dto&#x27;;
+import { FilestorageService } from &#x27;~/core/filestorage/filestorage.service&#x27;;
+import { FsType } from &#x27;~/core/filestorage/_enum/fs-type.enum&#x27;;
+import { join } from &#x27;node:path&#x27;;
+import { omit } from &#x27;radash&#x27;;
+import { TransformersFilestorageService } from &#x27;~/core/filestorage/_services/transformers-filestorage.service&#x27;;
 // import { IdentitiesValidationFilter } from &#x27;~/_common/filters/identities-validation.filter&#x27;;
 
 // @UseFilters(new IdentitiesValidationFilter())
@@ -1195,6 +1448,8 @@ export class IdentitiesController extends AbstractController {
   constructor(
     protected readonly _service: IdentitiesService,
     protected readonly _validation: IdentitiesValidationService,
+    protected readonly filestorage: FilestorageService,
+    private readonly transformerService: TransformersFilestorageService,
   ) {
     super();
   }
@@ -1437,6 +1692,57 @@ export class IdentitiesController extends AbstractController {
         validations: error.validations,
       });
     }
+  }
+
+  @Post(&#x27;upsert/photo&#x27;)
+  @UseInterceptors(FileInterceptor(&#x27;file&#x27;))
+  @ApiFileUploadDecorator(FileUploadDto, PartialType(FilestorageCreateDto), FilestorageDto)
+  public async upsertInetOrgPersonJpegPhoto(
+    @Res() res: Response,
+    @Body() body: Partial&lt;FilestorageCreateDto&gt;,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) file?: Express.Multer.File,
+  ): Promise&lt;Response&gt; {
+    const identity &#x3D; await this._service.findOne&lt;Identities&gt;(searchFilterSchema)
+    const filter &#x3D; {
+      namespace: &#x27;identities&#x27;,
+      path: join([
+        identity.inetOrgPerson?.employeeType,
+        identity.inetOrgPerson?.employeeNumber,
+        &#x27;jpegPhoto.jpg&#x27;,
+      ].join(&#x27;/&#x27;)),
+    }
+
+    const data &#x3D; await this.filestorage.upsertFile(filter, {
+      ...filter,
+      type: FsType.FILE,
+      file,
+      ...omit(body, [&#x27;namespace&#x27;, &#x27;path&#x27;, &#x27;type&#x27;, &#x27;file&#x27;] as any),
+    })
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    })
+  }
+
+  @Get(&#x27;photo/raw&#x27;)
+  @ApiReadResponseDecorator(FilestorageDto)
+  public async readPhotoRaw(
+    @Res() res: Response,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @Query(&#x27;mime&#x27;) mime: string &#x3D; &#x27;&#x27;,
+  ): Promise&lt;void&gt; {
+    const identity &#x3D; await this._service.findOne&lt;Identities&gt;(searchFilterSchema)
+    const [data, stream, parent] &#x3D; await this.filestorage.findOneWithRawData({
+      namespace: &#x27;identities&#x27;,
+      path: join([
+        identity.inetOrgPerson?.employeeType,
+        identity.inetOrgPerson?.employeeNumber,
+        &#x27;jpegPhoto.jpg&#x27;,
+      ].join(&#x27;/&#x27;)),
+    })
+    await this.transformerService.transform(mime, res, data, stream, parent)
   }
 }
 </code></pre>

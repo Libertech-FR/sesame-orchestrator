@@ -167,6 +167,14 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Optional</span>
+                                <a href="#fingerprint" >fingerprint</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#hidden" >hidden</a>
                             </li>
                             <li>
@@ -275,7 +283,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:57</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -315,7 +323,47 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:37</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fingerprint"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>fingerprint</b></span>
+                        <a href="#fingerprint"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsOptional()<br />@IsString()<br />@ApiProperty({type: String, required: false})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -355,7 +403,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:47</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -395,7 +443,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:32</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -435,7 +483,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:42</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -554,7 +602,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:52</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -686,6 +734,11 @@ export class FilestorageCreateDto extends CustomFieldsDto {
   @ApiProperty({ type: String, default: &#x27;/&#x27; })
   @Matches(/^\/(\.?[^\/\0]+\/?)+$/, { message: &#x27;Path must be a valid path&#x27; })
   public path: string
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ type: String, required: false })
+  public fingerprint?: string
 
   @IsOptional()
   @IsMongoId()

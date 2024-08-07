@@ -24,55 +24,67 @@
 <title>cluster_FilestorageModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 494,-268 494,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_FilestorageModule_exports</title>
-<polygon fill="none" stroke="black" points="207,-208 207,-260 347,-260 347,-208 207,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_FilestorageModule_providers</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 486,-130 486,-78 16,-78"/>
 </g>
+<g id="clust4" class="cluster">
+<title>cluster_FilestorageModule_exports</title>
+<polygon fill="none" stroke="black" points="53,-208 53,-260 410,-260 410,-208 53,-208"/>
+</g>
 <!-- FilestorageService  -->
 <g id="node1" class="node">
 <title>FilestorageService </title>
-<polygon fill="#fb8072" stroke="black" points="338.68,-252 215.32,-252 215.32,-216 338.68,-216 338.68,-252"/>
-<text text-anchor="middle" x="277" y="-229.8" font-family="Times,serif" font-size="14.00">FilestorageService </text>
+<polygon fill="#fb8072" stroke="black" points="401.68,-252 278.32,-252 278.32,-216 401.68,-216 401.68,-252"/>
+<text text-anchor="middle" x="340" y="-229.8" font-family="Times,serif" font-size="14.00">FilestorageService </text>
+</g>
+<!-- TransformersFilestorageService  -->
+<g id="node2" class="node">
+<title>TransformersFilestorageService </title>
+<polygon fill="#fb8072" stroke="black" points="260.59,-252 61.41,-252 61.41,-216 260.59,-216 260.59,-252"/>
+<text text-anchor="middle" x="161" y="-229.8" font-family="Times,serif" font-size="14.00">TransformersFilestorageService </text>
 </g>
 <!-- FilestorageModule -->
-<g id="node2" class="node">
+<g id="node3" class="node">
 <title>FilestorageModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="337.75,-187 334.75,-191 313.75,-191 310.75,-187 216.25,-187 216.25,-151 337.75,-151 337.75,-187"/>
-<text text-anchor="middle" x="277" y="-164.8" font-family="Times,serif" font-size="14.00">FilestorageModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="258.75,-187 255.75,-191 234.75,-191 231.75,-187 137.25,-187 137.25,-151 258.75,-151 258.75,-187"/>
+<text text-anchor="middle" x="198" y="-164.8" font-family="Times,serif" font-size="14.00">FilestorageModule</text>
 </g>
 <!-- FilestorageModule&#45;&gt;FilestorageService  -->
 <g id="edge1" class="edge">
 <title>FilestorageModule&#45;&gt;FilestorageService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M277,-187.11C277,-187.11 277,-205.99 277,-205.99"/>
-<polygon fill="black" stroke="black" points="273.5,-205.99 277,-215.99 280.5,-205.99 273.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M259.14,-175C274.17,-175 286.04,-175 286.04,-175 286.04,-175 286.04,-205.98 286.04,-205.98"/>
+<polygon fill="black" stroke="black" points="282.54,-205.98 286.04,-215.98 289.54,-205.98 282.54,-205.98"/>
+</g>
+<!-- FilestorageModule&#45;&gt;TransformersFilestorageService  -->
+<g id="edge2" class="edge">
+<title>FilestorageModule&#45;&gt;TransformersFilestorageService </title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M198,-187.11C198,-187.11 198,-205.99 198,-205.99"/>
+<polygon fill="black" stroke="black" points="194.5,-205.99 198,-215.99 201.5,-205.99 194.5,-205.99"/>
 </g>
 <!-- FilestorageService -->
-<g id="node3" class="node">
+<g id="node4" class="node">
 <title>FilestorageService</title>
 <ellipse fill="#fdb462" stroke="black" cx="395" cy="-104" rx="82.8" ry="18"/>
 <text text-anchor="middle" x="395" y="-99.8" font-family="Times,serif" font-size="14.00">FilestorageService</text>
 </g>
 <!-- FilestorageService&#45;&gt;FilestorageModule -->
-<g id="edge2" class="edge">
+<g id="edge3" class="edge">
 <title>FilestorageService&#45;&gt;FilestorageModule</title>
-<path fill="none" stroke="black" d="M324.99,-113.87C324.99,-113.87 324.99,-140.91 324.99,-140.91"/>
-<polygon fill="black" stroke="black" points="321.49,-140.91 324.99,-150.91 328.49,-140.91 321.49,-140.91"/>
+<path fill="none" stroke="black" d="M356.97,-120.12C356.97,-137.59 356.97,-163 356.97,-163 356.97,-163 269.01,-163 269.01,-163"/>
+<polygon fill="black" stroke="black" points="269.01,-159.5 259.01,-163 269.01,-166.5 269.01,-159.5"/>
 </g>
 <!-- TransformersFilestorageService -->
-<g id="node4" class="node">
+<g id="node5" class="node">
 <title>TransformersFilestorageService</title>
 <ellipse fill="#fdb462" stroke="black" cx="159" cy="-104" rx="134.82" ry="18"/>
 <text text-anchor="middle" x="159" y="-99.8" font-family="Times,serif" font-size="14.00">TransformersFilestorageService</text>
 </g>
 <!-- TransformersFilestorageService&#45;&gt;FilestorageModule -->
-<g id="edge3" class="edge">
+<g id="edge4" class="edge">
 <title>TransformersFilestorageService&#45;&gt;FilestorageModule</title>
-<path fill="none" stroke="black" d="M255.02,-116.84C255.02,-116.84 255.02,-140.52 255.02,-140.52"/>
-<polygon fill="black" stroke="black" points="251.52,-140.52 255.02,-150.52 258.52,-140.52 251.52,-140.52"/>
+<path fill="none" stroke="black" d="M198,-121.42C198,-121.42 198,-140.62 198,-140.62"/>
+<polygon fill="black" stroke="black" points="194.5,-140.62 198,-150.62 201.5,-140.62 194.5,-140.62"/>
 </g>
 </g>
 </svg>

@@ -70,6 +70,10 @@
     "userPassword": {
       "type": "string",
       "description": "User password of the inetOrgPerson."
+    },
+    "jpegPhoto": {
+      "type": "string",
+      "description": "User photo of the inetOrgPerson."
     }
   },
   "required": ["uid", "employeeNumber", "employeeType"]

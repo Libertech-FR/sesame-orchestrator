@@ -33,6 +33,12 @@ export class Filestorage extends AbstractSchema {
   public path: string
 
   @Prop({
+    required: true,
+    type: String,
+  })
+  public fingerprint: string
+
+  @Prop({
     required: false,
     type: String,
   })

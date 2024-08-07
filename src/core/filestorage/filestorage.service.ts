@@ -1,6 +1,6 @@
 // noinspection ExceptionCaughtLocallyJS
 
-import { BadRequestException, Inject, Injectable, Scope } from '@nestjs/common'
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Filestorage } from './_schemas/filestorage.schema'
 import { Document, FilterQuery, Model, ModifyResult, ProjectionType, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose'
@@ -11,6 +11,7 @@ import { FilestorageCreateDto } from '~/core/filestorage/_dto/filestorage.dto'
 import { FsType } from '~/core/filestorage/_enum/fs-type.enum'
 import { omit } from 'radash'
 import { ModuleRef } from '@nestjs/core'
+import { createHash } from 'node:crypto'
 
 export const EMBED_SEPARATOR = '#'
 
@@ -61,7 +62,12 @@ export class FilestorageService extends AbstractServiceSchema {
           break
         }
       }
+
+      const fingerprint = createHash('sha256');
+      fingerprint.update(file.buffer);
+      payload.fingerprint = fingerprint.digest('hex').toString();
       payload.path = partPath.join('/')
+
       return super.create(payload, options)
     } catch (e) {
       if (e.code === 'E_INVALID_CONFIG') {
@@ -159,6 +165,57 @@ export class FilestorageService extends AbstractServiceSchema {
     }
 
     return updated
+  }
+
+  public async upsertFile<T extends AbstractSchema | Document>(
+    filter?: FilterQuery<T>,
+    data?: FilestorageCreateDto & { file?: Express.Multer.File },
+    options?: QueryOptions<T> & { rawResult: true },
+  ) {
+    let stored: Document<any, any, Filestorage> & Filestorage
+    try {
+      stored = await this.findOne<Filestorage>(filter, options)
+    } catch (e) {
+      if (e.status !== HttpStatus.NOT_FOUND) throw e
+    }
+
+    if (stored) {
+      const update = { ...omit(data, ['file']) }
+
+      const fingerprint = createHash('sha256');
+      fingerprint.update(data.file.buffer);
+      update.fingerprint = fingerprint.digest('hex').toString();
+
+      await this.checkFingerprint(
+        { _id: stored._id },
+        update.fingerprint,
+      )
+
+      const updated = await this.update(stored._id, update, options)
+      this.storage.getDisk(stored.namespace).put(stored.path, data.file.buffer)
+
+      return updated
+    } else {
+      return await this.create(data, options)
+    }
+  }
+
+  public async checkFingerprint<T extends AbstractSchema | Document>(
+    filters: FilterQuery<T>,
+    fingerprint: string,
+  ): Promise<void> {
+    const file = await this.model
+      .findOne(
+        { ...filters, fingerprint },
+        {
+          _id: 1,
+        },
+      )
+      .exec();
+    if (file) {
+      this.logger.debug(`Fingerprint matched for <${file._id}> (${fingerprint}).`);
+      throw new HttpException('Fingerprint matched.', HttpStatus.NOT_MODIFIED);
+    }
   }
   /* eslint-enable */
 }

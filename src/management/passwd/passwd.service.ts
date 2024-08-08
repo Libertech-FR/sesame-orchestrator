@@ -51,8 +51,6 @@ export class PasswdService extends AbstractService {
 
   public static readonly TOKEN_ALGORITHM = 'aes-256-gcm';
 
-  public static readonly TOKEN_EXPIRATION = 604800;
-  public static readonly CODE_EXPIRATION = 1900;
   public constructor(
     protected readonly backends: BackendsService,
     protected readonly identities: IdentitiesService,
@@ -78,7 +76,7 @@ export class PasswdService extends AbstractService {
       const padd = await this.getPaddingForCode()
       const mailAttribute=params.emailAttribute
       const mail = <string>get(identity.toObject(), mailAttribute)
-      const token = await this.askToken({mail: mail, uid: initDto.uid}, padd + k.toString(16),PasswdService.CODE_EXPIRATION)
+      const token = await this.askToken({mail: mail, uid: initDto.uid}, padd + k.toString(16),params.resetCodeTTL)
       this.logger.log("Token :" + token + '  int : ' + k.toString(10))
       if (initDto.type === 0){
         this.logger.log("Reset password asked by mail for  : " + initDto.uid )
@@ -143,13 +141,14 @@ export class PasswdService extends AbstractService {
     try{
       const identity = await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid }) as Identities;
       //envoi du mail
-      const mailAttribute=this.config.get('frontPwd.identityMailAttribute')
+      const params=await this.passwdadmService.getPolicies()
+      const mailAttribute=params.emailAttribute
       this.logger.log("mailer.identityMailAttribute : " +mailAttribute )
       if (mailAttribute !== '') {
         const mail = <string>get(identity.toObject(), mailAttribute)
         //demande du token
         const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
-        const token = await this.askToken({mail: mail, uid: initDto.uid},k,PasswdService.TOKEN_EXPIRATION)
+        const token = await this.askToken({mail: mail, uid: initDto.uid},k,params.initTokenTTL)
         //envoi du token
         this.mailer.sendMail({
           from: this.config.get('mailer.sender'),

@@ -1,5 +1,5 @@
 export enum InitStatesEnum{
-  NOSENT,
-  SENT,
-  INITIALIZED
+  NOSENT = 0,
+  SENT = 1,
+  INITIALIZED = 2
 }

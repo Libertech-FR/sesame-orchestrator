@@ -46,4 +46,12 @@ export class PasswordPoliciesDto {
   public emailAttribute: string="";
   @ApiProperty({ example: 'interOrgPerson.mobile', description: 'Attribut de l email alternatif pour envoi message', type: String })
   public mobileAttribute: string="";
+
+  @IsNumber()
+  @ApiProperty({ example: '900', description: 'TTL du code de reset ( en secondes)', type: Number })
+  public resetCodeTTL: number=900;
+
+  @IsNumber()
+  @ApiProperty({ example: '604800', description: 'TTL du jeton d\'initialisation ( en secondes)', type: Number })
+  public initTokenTTL: number=604800;
 }

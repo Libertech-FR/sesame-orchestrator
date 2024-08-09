@@ -22,7 +22,7 @@ export const IdentitiesUpdateDtoStub = (): IdentitiesUpdateDto => {
   return {
     state: IdentityState.TO_COMPLETE,
     lifecycle: IdentityLifecycle.INACTIVE,
-    initSate:InitStatesEnum.NOSENT,
+    initState:InitStatesEnum.NOSENT,
     inetOrgPerson,
     additionalFields: additionalFieldsPartDtoStub(),
   };

@@ -52,6 +52,7 @@ import { FsType } from '~/core/filestorage/_enum/fs-type.enum';
 import { join } from 'node:path';
 import { omit } from 'radash';
 import { TransformersFilestorageService } from '~/core/filestorage/_services/transformers-filestorage.service';
+import { Public } from '~/_common/decorators/public.decorator';
 // import { IdentitiesValidationFilter } from '~/_common/filters/identities-validation.filter';
 
 // @UseFilters(new IdentitiesValidationFilter())
@@ -340,6 +341,7 @@ export class IdentitiesController extends AbstractController {
     })
   }
 
+  @Public()
   @Get('photo/raw')
   @ApiReadResponseDecorator(FilestorageDto)
   public async readPhotoRaw(

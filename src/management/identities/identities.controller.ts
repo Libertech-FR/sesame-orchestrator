@@ -283,4 +283,5 @@ export class IdentitiesController extends AbstractController {
       });
     }
   }
+
 }

@@ -13,6 +13,15 @@ import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
 import crypto from "crypto";
 import {ResetByCodeDto} from "~/management/passwd/_dto/reset-by-code.dto";
 import {InitManyDto} from "~/management/passwd/_dto/init-many.dto";
+import {
+  FilterOptions,
+  FilterSchema,
+  SearchFilterOptions,
+  SearchFilterSchema
+} from "@the-software-compagny/nestjs_module_restools";
+import {Document} from "mongoose";
+import {Identities} from "~/management/identities/_schemas/identities.schema";
+import {MixedValue} from "~/_common/types/mixed-value.type";
 
 @Controller('passwd')
 @ApiTags('management/passwd')
@@ -137,6 +146,27 @@ export class PasswdController {
       message: 'Email envoyé verifiez votre boite mail alternative et vos spam',
       token: data,
       ...debug,
+    });
+  }
+  @Get('ioutdated')
+  @ApiOperation({ summary: 'Compte donc l invitation d init n a pas été repondue dans les temps' })
+  public async search(
+    @Res() res: Response,
+
+  ): Promise<
+    Response<
+      {
+        data?: Document<Identities, any, Identities>;
+      },
+      any
+      >
+    > {
+    const data = await this.passwdService.checkInitOutDated()
+    const total=data.length
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      total,
+      data
     });
   }
 

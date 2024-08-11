@@ -146,12 +146,13 @@ export class PasswdService extends AbstractService {
       this.logger.log("mailer.identityMailAttribute : " +mailAttribute )
       if (mailAttribute !== '') {
         const mail = <string>get(identity.toObject(), mailAttribute)
+        const smtpParams=await this.mailadmService.getParams()
         //demande du token
         const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
         const token = await this.askToken({mail: mail, uid: initDto.uid},k,params.initTokenTTL)
         //envoi du token
         this.mailer.sendMail({
-          from: this.config.get('mailer.sender'),
+          from: smtpParams.sender,
           to: mail,
           subject: 'Activation de votre compte',
           template: "initaccount",
@@ -166,8 +167,9 @@ export class PasswdService extends AbstractService {
             this.setInitState(identity,InitStatesEnum.SENT)
           })
           .catch((e) => {
+            this.logger.error('Erreur serveur lors de l envoi du mail' + e)
             throw new BadRequestException({
-              message: 'Erreur serveur lors de l envoi du mail',
+              message: 'Erreur serveur lors de l envoi du mail' + e,
               error: "Bad Request",
               statusCode: 400
             });
@@ -175,7 +177,7 @@ export class PasswdService extends AbstractService {
 
         return true
       }else{
-        this.logger.error("Error while initAccount identityMailAttribute nor defined");
+        this.logger.error("Error while initAccount identityMailAttribute not defined");
         return false
       }
     }catch(e){
@@ -416,6 +418,15 @@ export class PasswdService extends AbstractService {
     }
     const ok= await identity.save()
     return ok
+  }
+  // sort les identites qui n ont pas repondu dans le delai à l init de leurs comptes
+  public async checkInitOutDated():Promise<any>{
+    let date=new Date()
+    const params=await this.passwdadmService.getPolicies()
+    date.setTime(date.getTime() - params.initTokenTTL*1000)
+    console.log('modifié:' + date)
+    const identities=await this.identities.find({initState: InitStatesEnum.SENT,'initInfo.initDate':{$lt:date}})
+    return identities
   }
 
 

@@ -162,7 +162,7 @@ export class IdentitiesJsonformsService extends AbstractService {
 
     if (schema.endsWith('.yml')) schema = schema.replace('.yml', '');
 
-    let filePath = this.resolveJsonFormPath(schema + '.' + options?.mode + '.ui')
+    let filePath = this.resolveJsonFormPath(schema + '.' + options?.mode + '.ui');
 
     if (!filePath) {
       filePath = this.resolveJsonFormPath(schema + '.ui');

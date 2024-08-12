@@ -17,7 +17,7 @@ interface GithubUpdate {
   node_id?: string;
 }
 
-const storage = new LRU({ ttl: 60 * 60 * 1000 })
+const storage = new LRU({ ttl: 60 * 60 * 1000 });
 
 @Public()
 @Controller()
@@ -44,36 +44,36 @@ export class AppController extends AbstractController {
     @Param('project') project?: string,
     @Query('current') current?: string,
   ): Promise<Response> {
-    let data: GithubUpdate[] | object = {}
+    let data: GithubUpdate[] | object = {};
     // console.log('this.storage', storage.get(project))
     if (storage.has(project)) {
-      this.logger.log(`Fetching ${project} tags from cache`)
-      data = storage.get(project) as GithubUpdate[] | object
+      this.logger.log(`Fetching ${project} tags from cache`);
+      data = storage.get(project) as GithubUpdate[] | object;
     } else {
-      this.logger.log(`Fetching ${project} tags`)
+      this.logger.log(`Fetching ${project} tags`);
       const update = await fetch(`https://api.github.com/repos/Libertech-FR/${project}/tags`, {
         signal: AbortSignal.timeout(1000),
-      })
-      data = await update.json()
-      storage.set(project, data)
+      });
+      data = await update.json();
+      storage.set(project, data);
       // console.log('this.storage', storage.get(project))
     }
     if (!Array.isArray(data)) {
-      throw new BadRequestException(`Invalid data from Github <${JSON.stringify(data)}>`)
+      throw new BadRequestException(`Invalid data from Github <${JSON.stringify(data)}>`);
     }
-    const lastVersion = data[0].name.replace(/^v/, '')
-    const pkgInfo = this.appService.getInfo()
-    const currentVersion = current || pkgInfo.version
+    const lastVersion = data[0].name.replace(/^v/, '');
+    const pkgInfo = this.appService.getInfo();
+    const currentVersion = current || pkgInfo.version;
 
     if (project !== pkgInfo.name || current) {
       if (!/[0-9]+\.[0-9]+\.[0-9]+/.test(current)) {
-        throw new BadRequestException('Invalid version for current parameter')
+        throw new BadRequestException('Invalid version for current parameter');
       }
     }
 
-    const [currentMajor, currentMinor, currentPatch] = lastVersion.split('.').map(Number)
-    const [lastMajor, lastMinor, lastPatch] = currentVersion.split('.').map(Number)
-    const updateAvailable = currentMajor > lastMajor || currentMinor > lastMinor || currentPatch > lastPatch
+    const [currentMajor, currentMinor, currentPatch] = lastVersion.split('.').map(Number);
+    const [lastMajor, lastMinor, lastPatch] = currentVersion.split('.').map(Number);
+    const updateAvailable = currentMajor > lastMajor || currentMinor > lastMinor || currentPatch > lastPatch;
 
     return res.json({
       data: {

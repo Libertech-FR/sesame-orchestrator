@@ -35,4 +35,4 @@ import { FilestorageModule } from '~/core/filestorage/filestorage.module';
   controllers: [IdentitiesController],
   exports: [IdentitiesService],
 })
-export class IdentitiesModule { }
+export class IdentitiesModule {}

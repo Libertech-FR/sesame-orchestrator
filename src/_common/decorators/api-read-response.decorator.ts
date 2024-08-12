@@ -6,9 +6,9 @@ import { NotFoundDto } from '~/_common/dto/not-found.dto';
 export const ApiReadResponseDecorator = <TModel extends Type<NonNullable<unknown>>>(
   model: TModel,
   options?: {
-    responseOptions?: ApiResponseOptions | null | undefined,
-    notFoundOptions?: ApiResponseOptions | null | undefined,
-    operationOptions?: ApiOperationOptions | null | undefined,
+    responseOptions?: ApiResponseOptions | null | undefined;
+    notFoundOptions?: ApiResponseOptions | null | undefined;
+    operationOptions?: ApiOperationOptions | null | undefined;
   },
 ) => {
   return applyDecorators(
@@ -26,16 +26,19 @@ export const ApiReadResponseDecorator = <TModel extends Type<NonNullable<unknown
           },
         },
       },
-      description: 'L\'enregistrement a été récupéré avec succès',
+      description: "L'enregistrement a été récupéré avec succès",
       ...options?.responseOptions,
     }),
     ApiNotFoundResponse({
-      description: 'Impossible de trouver l\'entrée ciblée',
+      description: "Impossible de trouver l'entrée ciblée",
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },
       ...options?.notFoundOptions,
     }),
-    ApiOperation({ summary: `Récupère l'entrée <${model.name.replace(/Dto$/, '')}> ciblée`, ...options?.operationOptions }),
+    ApiOperation({
+      summary: `Récupère l'entrée <${model.name.replace(/Dto$/, '')}> ciblée`,
+      ...options?.operationOptions,
+    }),
   );
 };

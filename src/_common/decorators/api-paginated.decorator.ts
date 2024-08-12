@@ -7,7 +7,7 @@ import { PaginatedFilterDto } from '~/_common/dto/paginated-filter.dto';
 export const ApiPaginatedDecorator = <TModel extends Type<NonNullable<unknown>>>(
   model: TModel,
   options?: {
-    responseOptions?: ApiResponseOptions | null | undefined,
+    responseOptions?: ApiResponseOptions | null | undefined;
   },
 ) => {
   return applyDecorators(
@@ -15,7 +15,7 @@ export const ApiPaginatedDecorator = <TModel extends Type<NonNullable<unknown>>>
       name: 'limit',
       type: Number,
       required: false,
-      description: 'Limite le nombre d\'éléments retournés',
+      description: "Limite le nombre d'éléments retournés",
     }),
     ApiQuery({
       name: 'skip',

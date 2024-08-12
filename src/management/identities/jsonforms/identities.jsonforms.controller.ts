@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpStatus, Param, Post, Query, Res } from '@nes
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { IdentitiesJsonformsService } from './identities.jsonforms.service';
 import { Response } from 'express';
-import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('management/identities/jsonforms')
 @Controller('management/identities/jsonforms')
@@ -22,7 +22,7 @@ export class IdentitiesJsonFormsController extends AbstractController {
   }
 
   @Post('generate')
-  @ApiOperation({ summary: 'Génère un JSON Forms d\'un schéma personnalisé' })
+  @ApiOperation({ summary: "Génère un JSON Forms d'un schéma personnalisé" })
   async generate(@Res() res: Response, @Body('schema') schema: string | null = null): Promise<any> {
     const result = await this._service.generate({ schema, path: './configs/identities/jsonforms' });
     return res.status(HttpStatus.OK).json({
@@ -42,7 +42,7 @@ export class IdentitiesJsonFormsController extends AbstractController {
   }
 
   @Get(':schema')
-  @ApiOperation({ summary: 'Récupère un JSON Forms d\'un schéma personnalisé' })
+  @ApiOperation({ summary: "Récupère un JSON Forms d'un schéma personnalisé" })
   async search(@Res() res: Response, @Param('schema') schema, @Query('mode') mode: 'create' | 'update'): Promise<any> {
     const result = await this._service.findOne(schema, { mode });
     return res.status(HttpStatus.OK).json({

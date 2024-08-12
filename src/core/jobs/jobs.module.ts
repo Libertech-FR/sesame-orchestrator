@@ -17,4 +17,4 @@ import { JobsService } from './jobs.service';
   controllers: [JobsController],
   exports: [JobsService],
 })
-export class JobsModule { }
+export class JobsModule {}

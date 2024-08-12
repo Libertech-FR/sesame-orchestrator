@@ -1,10 +1,10 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
-import {PasswdadmModule} from "~/settings/passwdadm/passwdadm.module";
-import {SettingsController} from "~/settings/settings.controller";
-import {SettingsService} from "~/settings/settings.service";
+import { PasswdadmModule } from '~/settings/passwdadm/passwdadm.module';
+import { SettingsController } from '~/settings/settings.controller';
+import { SettingsService } from '~/settings/settings.service';
 @Module({
-  imports: [ PasswdadmModule],
+  imports: [PasswdadmModule],
   providers: [SettingsService],
   controllers: [SettingsController],
 })

@@ -94,6 +94,6 @@ export class inetOrgPersonCreateDto {
   jpegPhoto?: string;
 }
 
-export class inetOrgPersonDto extends inetOrgPersonCreateDto { }
+export class inetOrgPersonDto extends inetOrgPersonCreateDto {}
 
-export class inetOrgPersonUpdateDto extends PartialType(inetOrgPersonCreateDto) { }
+export class inetOrgPersonUpdateDto extends PartialType(inetOrgPersonCreateDto) {}

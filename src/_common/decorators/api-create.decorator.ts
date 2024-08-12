@@ -8,9 +8,9 @@ export const ApiCreateDecorator = <TModel extends Type<NonNullable<unknown>>>(
   bodyModel: TModel,
   responseModel: TModel,
   options?: {
-    bodyOptions?: ApiBodyOptions | null | undefined,
-    responseOptions?: ApiResponseOptions | null | undefined,
-    operationOptions?: ApiOperationOptions | null | undefined,
+    bodyOptions?: ApiBodyOptions | null | undefined;
+    responseOptions?: ApiResponseOptions | null | undefined;
+    operationOptions?: ApiOperationOptions | null | undefined;
   },
 ) => {
   return applyDecorators(

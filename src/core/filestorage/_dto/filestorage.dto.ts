@@ -1,60 +1,70 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger'
-import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto'
-import { IsMongoId, IsString, IsEnum, IsOptional, IsObject, IsBoolean, IsNotEmpty, IsMimeType, Matches } from 'class-validator'
-import { FsType, FsTypeList } from '~/core/filestorage/_enum/fs-type.enum'
-import { MixedValue } from '~/_common/types/mixed-value.type'
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto';
+import {
+  IsMongoId,
+  IsString,
+  IsEnum,
+  IsOptional,
+  IsObject,
+  IsBoolean,
+  IsNotEmpty,
+  IsMimeType,
+  Matches,
+} from 'class-validator';
+import { FsType, FsTypeList } from '~/core/filestorage/_enum/fs-type.enum';
+import { MixedValue } from '~/_common/types/mixed-value.type';
 
 export class FileUploadDto {
   @ApiProperty({ type: 'string', format: 'binary' })
-  public file: string
+  public file: string;
 }
 
 export class FilestorageCreateDto extends CustomFieldsDto {
   @IsEnum(FsTypeList)
   @IsNotEmpty()
-  @ApiProperty({ enum: FsTypeList, default: FsType.FILE, })
-  public type: FsType
+  @ApiProperty({ enum: FsTypeList, default: FsType.FILE })
+  public type: FsType;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ type: String, required: true })
-  public namespace: string
+  public namespace: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ type: String, default: '/' })
   @Matches(/^\/(\.?[^\/\0]+\/?)+$/, { message: 'Path must be a valid path' })
-  public path: string
+  public path: string;
 
   @IsOptional()
   @IsString()
   @ApiProperty({ type: String, required: false })
-  public fingerprint?: string
+  public fingerprint?: string;
 
   @IsOptional()
   @IsMongoId()
   @ApiProperty({ type: String, required: false })
-  public linkedTo?: string
+  public linkedTo?: string;
 
   @IsOptional()
   @IsString()
   @ApiProperty({ type: String, required: false })
-  public comments?: string
+  public comments?: string;
 
   @IsOptional()
   @IsMimeType()
   @ApiProperty({ type: String, required: false })
-  public mime?: string
+  public mime?: string;
 
   @IsOptional()
   @IsBoolean()
   @ApiProperty({ type: Boolean, required: false })
-  public hidden?: boolean
+  public hidden?: boolean;
 
   @IsOptional()
   @IsObject()
   @ApiProperty({ type: String, required: false, nullable: true })
-  public tags?: { [key: string]: MixedValue }
+  public tags?: { [key: string]: MixedValue };
 
   @IsOptional()
   @IsObject()
@@ -65,7 +75,7 @@ export class FilestorageCreateDto extends CustomFieldsDto {
 export class FilestorageDto extends FilestorageCreateDto {
   @IsMongoId()
   @ApiProperty({ type: String })
-  public _id: string
+  public _id: string;
 }
 
-export class FilestorageUpdateDto extends PartialType(FilestorageCreateDto) { }
+export class FilestorageUpdateDto extends PartialType(FilestorageCreateDto) {}

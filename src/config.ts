@@ -32,16 +32,16 @@ export interface ConfigInstance {
   };
   factorydrive: {
     options:
-    | StorageManagerConfig
-    | {
-      disks: {
-        [key: string]: {
-          driver: 's3'
-          config: AmazonWebServicesS3StorageConfig
-        }
-      }
-    }
-  }
+      | StorageManagerConfig
+      | {
+          disks: {
+            [key: string]: {
+              driver: 's3';
+              config: AmazonWebServicesS3StorageConfig;
+            };
+          };
+        };
+  };
   passport: {
     options: IAuthModuleOptions;
   };
@@ -54,12 +54,12 @@ export interface ConfigInstance {
     sender: string;
   };
   sms: {
-    host: string,
-    systemId: string,
-    password: string,
-    sourceAddr: string,
-    regionCode: string
-  },
+    host: string;
+    systemId: string;
+    password: string;
+    sourceAddr: string;
+    regionCode: string;
+  };
   frontPwd: {
     url: string;
     identityMailAttribute: string;
@@ -154,19 +154,18 @@ export default (): ConfigInstance => ({
   mailer: {
     host: process.env['SESAME_SMTP_SERVER'],
     port: parseInt(process.env['SESAME_SMTP_PORT']) || 25,
-    sender: process.env['SESAME_MDP_SENDER'] || 'noreply@mydomain.com'
+    sender: process.env['SESAME_MDP_SENDER'] || 'noreply@mydomain.com',
   },
   frontPwd: {
     url: process.env['SESAME_FRONT_MDP'],
     identityMailAttribute: process.env['SESAME_RESET_PWD_MAIL'] || '',
-    identityMobileAttribute: process.env['SESAME_RESET_PWD_MOBILE'] || ''
+    identityMobileAttribute: process.env['SESAME_RESET_PWD_MOBILE'] || '',
   },
   sms: {
     host: process.env['SESAME_SMPP_SERVER'] || '',
     systemId: process.env['SESAME_SMPP_SYSTEMID'] || '',
     password: process.env['SESAME_SMPP_PASSWORD'] || '',
     sourceAddr: process.env['SESAME_SMPP_SOURCEADDR'] || '',
-    regionCode: process.env['SESAME_SMPP_REGIONCODE'] || 'FR'
-  }
-
+    regionCode: process.env['SESAME_SMPP_REGIONCODE'] || 'FR',
+  },
 });

@@ -11,7 +11,7 @@ export const ApiBodyDecorator = <TModel extends Type<NonNullable<unknown>>>(
       schema: {
         $ref: getSchemaPath(model),
       },
-      description: 'Corps de création de l\'enregistrement',
+      description: "Corps de création de l'enregistrement",
       ...options,
     }),
   );

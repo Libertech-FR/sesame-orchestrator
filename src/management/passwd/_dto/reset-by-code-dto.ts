@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {IsNumber, IsString} from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class ResetByCodeDto {
   @IsString()
@@ -12,5 +12,4 @@ export class ResetByCodeDto {
   @IsString()
   @ApiProperty({ example: 'hdfddyf18A', description: 'new password' })
   newpassword: string;
-
 }

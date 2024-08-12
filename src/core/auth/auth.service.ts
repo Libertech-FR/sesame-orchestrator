@@ -93,7 +93,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
         if (identity) {
           return identity.toObject();
         }
-      } catch (e) { }
+      } catch (e) {}
       return null;
     }
     try {

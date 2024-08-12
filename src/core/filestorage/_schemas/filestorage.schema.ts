@@ -12,43 +12,43 @@ export class Filestorage extends AbstractSchema {
     type: String,
     enum: FsTypeList,
   })
-  public type: FsType
+  public type: FsType;
 
   @Prop({
     type: String,
   })
-  public mime?: string
+  public mime?: string;
 
   @Prop({
     required: true,
     type: String,
   })
-  public namespace: string
+  public namespace: string;
 
   @Prop({
     required: true,
     type: String,
     //TODO: check file path ..?
   })
-  public path: string
+  public path: string;
 
   @Prop({
     required: true,
     type: String,
   })
-  public fingerprint: string
+  public fingerprint: string;
 
   @Prop({
     required: false,
     type: String,
   })
-  public comments?: string
+  public comments?: string;
 
   @Prop({
     type: Boolean,
     default: false,
   })
-  public hidden: boolean
+  public hidden: boolean;
 
   @Prop({
     required: false,
@@ -70,8 +70,11 @@ export class Filestorage extends AbstractSchema {
   public customFields?: { [key: string]: any }
 }
 
-export const FilestorageSchema = SchemaFactory.createForClass(Filestorage).index({ namespace: 1, path: 1 }, { unique: true })
+export const FilestorageSchema = SchemaFactory.createForClass(Filestorage).index(
+  { namespace: 1, path: 1 },
+  { unique: true },
+);
 
 FilestorageSchema.virtual('filename').get(function (this: Filestorage): string {
-  return this.path.split('/').pop()
-})
+  return this.path.split('/').pop();
+});

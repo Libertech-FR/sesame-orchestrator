@@ -9,5 +9,4 @@ export class AskTokenDto {
   @ApiProperty({ example: 'monemail@mondomaine.com', description: 'secondary mail' })
   @IsString()
   mail: string;
-
 }

@@ -41,10 +41,10 @@ export class BackendsController {
   constructor(
     private backendsService: BackendsService,
     @InjectRedis() protected readonly redis: Redis,
-  ) { }
+  ) {}
 
   @Post('sync')
-  @ApiOperation({ summary: 'Synchronise une liste d\'identitées' })
+  @ApiOperation({ summary: "Synchronise une liste d'identitées" })
   public async syncIdentities(
     @Res() res: Response,
     @Body() body: SyncIdentitiesDto,
@@ -117,7 +117,12 @@ export class BackendsController {
 
     return new Observable((observer) => {
       this.backendsService.queueEvents.on('added', (added) => {
-        if (![ActionType.IDENTITY_UPDATE, ActionType.IDENTITY_CREATE, ActionType.IDENTITY_DELETE].includes(<ActionType>added.name)) return;
+        if (
+          ![ActionType.IDENTITY_UPDATE, ActionType.IDENTITY_CREATE, ActionType.IDENTITY_DELETE].includes(
+            <ActionType>added.name,
+          )
+        )
+          return;
         return fireMessage(observer, 'job:added', added, this.constructor.name);
       });
 

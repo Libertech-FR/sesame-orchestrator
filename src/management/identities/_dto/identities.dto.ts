@@ -44,9 +44,9 @@ export class IdentitiesCreateDto extends MetadataDto {
   additionalFields?: additionalFieldsPartDto;
 }
 
-export class IdentitiesDto extends IdentitiesCreateDto { }
+export class IdentitiesDto extends IdentitiesCreateDto {}
 
-export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) { }
+export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) {}
 
 export class IdentitiesUpsertDto extends PartialType(IdentitiesUpdateDto) {
   $setOnInsert?: Partial<IdentitiesUpdateDto>;

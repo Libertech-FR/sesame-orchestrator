@@ -15,9 +15,9 @@ import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { AuthGuard } from './_common/guards/auth.guard';
 import { MongooseValidationFilter } from './_common/filters/mongoose-validation.filter';
 import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe';
-import { SettingstModule } from "~/settings/settings.module";
-import { MailerModule } from "@nestjs-modules/mailer";
-import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import { SettingstModule } from '~/settings/settings.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factorydrive';
 
 @Module({
@@ -87,7 +87,7 @@ import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factory
     RequestContextModule,
     CoreModule.register(),
     ManagementModule.register(),
-    SettingstModule.register()
+    SettingstModule.register(),
   ],
   controllers: [AppController],
   providers: [
@@ -110,4 +110,4 @@ import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factory
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

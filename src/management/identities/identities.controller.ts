@@ -12,10 +12,15 @@ import {
   Query,
   Res,
   UploadedFile,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags, PartialType } from '@nestjs/swagger';
-import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@the-software-compagny/nestjs_module_restools';
+import {
+  FilterOptions,
+  FilterSchema,
+  SearchFilterOptions,
+  SearchFilterSchema,
+} from '@the-software-compagny/nestjs_module_restools';
 import { Response } from 'express';
 import { Document, Types, isValidObjectId } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
@@ -207,7 +212,7 @@ export class IdentitiesController extends AbstractController {
   }
 
   @Get('count')
-  @ApiOperation({ summary: 'Compte le nombre d\'identitées en fonctions des filtres fournis' })
+  @ApiOperation({ summary: "Compte le nombre d'identitées en fonctions des filtres fournis" })
   public async count(
     @Res() res: Response,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
@@ -258,7 +263,7 @@ export class IdentitiesController extends AbstractController {
   }
 
   @Patch('state')
-  @ApiOperation({ summary: 'Met à jour l\'état d\'une ou plusieurs <Identitées> en masse' })
+  @ApiOperation({ summary: "Met à jour l'état d'une ou plusieurs <Identitées> en masse" })
   public async updateStateMany(
     @Res() res: Response,
     @Body()
@@ -306,27 +311,25 @@ export class IdentitiesController extends AbstractController {
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) file?: Express.Multer.File,
   ): Promise<Response> {
-    const identity = await this._service.findOne<Identities>(searchFilterSchema)
+    const identity = await this._service.findOne<Identities>(searchFilterSchema);
     const filter = {
       namespace: 'identities',
-      path: join([
-        identity.inetOrgPerson?.employeeType,
-        identity.inetOrgPerson?.employeeNumber,
-        'jpegPhoto.jpg',
-      ].join('/')),
-    }
+      path: join(
+        [identity.inetOrgPerson?.employeeType, identity.inetOrgPerson?.employeeNumber, 'jpegPhoto.jpg'].join('/'),
+      ),
+    };
 
     const data = await this.filestorage.upsertFile(filter, {
       ...filter,
       type: FsType.FILE,
       file,
       ...omit(body, ['namespace', 'path', 'type', 'file'] as any),
-    })
+    });
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,
-    })
+    });
   }
 
   @Public()
@@ -337,15 +340,13 @@ export class IdentitiesController extends AbstractController {
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @Query('mime') mime: string = '',
   ): Promise<void> {
-    const identity = await this._service.findOne<Identities>(searchFilterSchema)
+    const identity = await this._service.findOne<Identities>(searchFilterSchema);
     const [data, stream, parent] = await this.filestorage.findOneWithRawData({
       namespace: 'identities',
-      path: join([
-        identity.inetOrgPerson?.employeeType,
-        identity.inetOrgPerson?.employeeNumber,
-        'jpegPhoto.jpg',
-      ].join('/')),
-    })
-    await this.transformerService.transform(mime, res, data, stream, parent)
+      path: join(
+        [identity.inetOrgPerson?.employeeType, identity.inetOrgPerson?.employeeNumber, 'jpegPhoto.jpg'].join('/'),
+      ),
+    });
+    await this.transformerService.transform(mime, res, data, stream, parent);
   }
 }

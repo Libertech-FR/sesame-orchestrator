@@ -283,11 +283,11 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
 import { RouterModule } from &#x27;@nestjs/core&#x27;;
-import {PasswdadmModule} from &quot;~/settings/passwdadm/passwdadm.module&quot;;
-import {SettingsController} from &quot;~/settings/settings.controller&quot;;
-import {SettingsService} from &quot;~/settings/settings.service&quot;;
+import { PasswdadmModule } from &#x27;~/settings/passwdadm/passwdadm.module&#x27;;
+import { SettingsController } from &#x27;~/settings/settings.controller&#x27;;
+import { SettingsService } from &#x27;~/settings/settings.service&#x27;;
 @Module({
-  imports: [ PasswdadmModule],
+  imports: [PasswdadmModule],
   providers: [SettingsService],
   controllers: [SettingsController],
 })

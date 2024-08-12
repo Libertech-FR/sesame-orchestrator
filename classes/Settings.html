@@ -253,15 +253,14 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
 import { Prop, Schema, SchemaFactory } from &#x27;@nestjs/mongoose&#x27;;
 
-export type SettingsDocument &#x3D;  Document;
+export type SettingsDocument &#x3D; Document;
 
 @Schema({ versionKey: false })
 export class Settings extends AbstractSchema {
-  @Prop({ type: String, default: &quot;&quot; ,required: true, unique: true,})
-  name: string
-  @Prop({type: Object, default:{}})
-  parameters: object
-
+  @Prop({ type: String, default: &#x27;&#x27;, required: true, unique: true })
+  name: string;
+  @Prop({ type: Object, default: {} })
+  parameters: object;
 }
 
 export const SettingsSchema &#x3D; SchemaFactory.createForClass(Settings);

@@ -255,17 +255,16 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import {IsNumber, IsString} from &#x27;class-validator&#x27;;
+import { IsNumber, IsString } from &#x27;class-validator&#x27;;
 
 export class InitResetDto {
   @IsString()
   @ApiProperty({ example: &#x27;paul.bismuth&#x27;, description: &#x27;User id&#x27; })
-  uid: string
+  uid: string;
 
   @IsNumber()
   @ApiProperty({ example: 0, description: &#x27;0 &#x3D; send by mail, 1 &#x3D; send by SMS&#x27; })
-  type: number
-
+  type: number;
 }
 </code></pre>
     </div>

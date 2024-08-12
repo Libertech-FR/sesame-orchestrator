@@ -284,9 +284,9 @@ import { APP_FILTER, APP_GUARD, APP_PIPE } from &#x27;@nestjs/core&#x27;;
 import { AuthGuard } from &#x27;./_common/guards/auth.guard&#x27;;
 import { MongooseValidationFilter } from &#x27;./_common/filters/mongoose-validation.filter&#x27;;
 import { DtoValidationPipe } from &#x27;./_common/pipes/dto-validation.pipe&#x27;;
-import { SettingstModule } from &quot;~/settings/settings.module&quot;;
-import { MailerModule } from &quot;@nestjs-modules/mailer&quot;;
-import { HandlebarsAdapter } from &quot;@nestjs-modules/mailer/dist/adapters/handlebars.adapter&quot;;
+import { SettingstModule } from &#x27;~/settings/settings.module&#x27;;
+import { MailerModule } from &#x27;@nestjs-modules/mailer&#x27;;
+import { HandlebarsAdapter } from &#x27;@nestjs-modules/mailer/dist/adapters/handlebars.adapter&#x27;;
 import { FactorydriveModule } from &#x27;@the-software-compagny/nestjs_module_factorydrive&#x27;;
 
 @Module({
@@ -356,7 +356,7 @@ import { FactorydriveModule } from &#x27;@the-software-compagny/nestjs_module_fa
     RequestContextModule,
     CoreModule.register(),
     ManagementModule.register(),
-    SettingstModule.register()
+    SettingstModule.register(),
   ],
   controllers: [AppController],
   providers: [
@@ -379,7 +379,7 @@ import { FactorydriveModule } from &#x27;@the-software-compagny/nestjs_module_fa
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}
 </code></pre>
     </div>
 </div>

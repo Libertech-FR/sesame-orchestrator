@@ -287,18 +287,16 @@ import { PasswdService } from &#x27;./passwd.service&#x27;;
 import { PasswdController } from &#x27;./passwd.controller&#x27;;
 import { BackendsModule } from &#x27;~/core/backends/backends.module&#x27;;
 import { IdentitiesModule } from &#x27;../identities/identities.module&#x27;;
-import { PasswdadmModule} from &quot;~/settings/passwdadm/passwdadm.module&quot;;
-import {PasswdadmService} from &quot;~/settings/passwdadm/passwdadm.service&quot;;
-import {SmsService} from &quot;~/management/passwd/sms-service&quot;;
-
+import { PasswdadmModule } from &#x27;~/settings/passwdadm/passwdadm.module&#x27;;
+import { PasswdadmService } from &#x27;~/settings/passwdadm/passwdadm.service&#x27;;
+import { SmsService } from &#x27;~/management/passwd/sms-service&#x27;;
 
 @Module({
-  imports: [BackendsModule,
-    IdentitiesModule, PasswdadmModule ],
+  imports: [BackendsModule, IdentitiesModule, PasswdadmModule],
   controllers: [PasswdController],
-  providers: [PasswdService,SmsService],
+  providers: [PasswdService, SmsService],
 })
-export class PasswdModule { }
+export class PasswdModule {}
 </code></pre>
     </div>
 </div>

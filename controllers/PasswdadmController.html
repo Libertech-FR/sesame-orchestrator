@@ -206,8 +206,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">src/settings/passwdadm/passwdadm.controller.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">src/settings/passwdadm/passwdadm.controller.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -286,8 +286,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">src/settings/passwdadm/passwdadm.controller.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">src/settings/passwdadm/passwdadm.controller.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -349,36 +349,35 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {Controller, Post, Body, Res, Logger, HttpStatus, Get} from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Post, Body, Res, Logger, HttpStatus, Get } from &#x27;@nestjs/common&#x27;;
 import { PasswdadmService } from &#x27;./passwdadm.service&#x27;;
 import { ApiTags, ApiOperation, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
 import { Response } from &#x27;express&#x27;;
-import {omit} from &quot;radash&quot;;
-import {InitAccountDto} from &quot;~/management/passwd/_dto/init-account.dto&quot;;
-import {PasswordPoliciesDto} from &quot;~/settings/passwdadm/_dto/password-policy.dto&quot;;
-
+import { omit } from &#x27;radash&#x27;;
+import { InitAccountDto } from &#x27;~/management/passwd/_dto/init-account.dto&#x27;;
+import { PasswordPoliciesDto } from &#x27;~/settings/passwdadm/_dto/password-policy.dto&#x27;;
 
 @Controller(&#x27;passwd&#x27;)
 @ApiTags(&#x27;settings/passwd&#x27;)
 export class PasswdadmController {
   private readonly logger &#x3D; new Logger(PasswdadmController.name);
 
-  public constructor(private passwdadmService: PasswdadmService) { }
+  public constructor(private passwdadmService: PasswdadmService) {}
 
   @Post(&#x27;setpolicies&#x27;)
-  @ApiOperation({summary: &#x27;enregistre la police de mdp&#x27;})
-  @ApiResponse({status: HttpStatus.OK})
-  public async setPolicies(@Body() body: PasswordPoliciesDto,@Res() res: Response): Promise&lt;Response&gt; {
-    const data &#x3D; await this.passwdadmService.setPolicies(body)
+  @ApiOperation({ summary: &#x27;enregistre la police de mdp&#x27; })
+  @ApiResponse({ status: HttpStatus.OK })
+  public async setPolicies(@Body() body: PasswordPoliciesDto, @Res() res: Response): Promise&lt;Response&gt; {
+    const data &#x3D; await this.passwdadmService.setPolicies(body);
     //const datax&#x3D;omit(data.toObject,[&#x27;_id&#x27;])
-    return res.status(HttpStatus.OK).json({data})
+    return res.status(HttpStatus.OK).json({ data });
   }
   @Get(&#x27;getpolicies&#x27;)
-  @ApiOperation({summary: &#x27;Retourne la police de mot de passe&#x27;})
-  @ApiResponse({status: HttpStatus.OK})
-  public async getPolicies(@Res() res:Response):Promise&lt;Response&gt;{
-    const data&#x3D;await this.passwdadmService.getPolicies()
-    return res.status(HttpStatus.OK).json({data})
+  @ApiOperation({ summary: &#x27;Retourne la police de mot de passe&#x27; })
+  @ApiResponse({ status: HttpStatus.OK })
+  public async getPolicies(@Res() res: Response): Promise&lt;Response&gt; {
+    const data &#x3D; await this.passwdadmService.getPolicies();
+    return res.status(HttpStatus.OK).json({ data });
   }
 }
 </code></pre>

@@ -890,7 +890,7 @@ export class IdentitiesJsonformsService extends AbstractService {
 
     if (schema.endsWith(&#x27;.yml&#x27;)) schema &#x3D; schema.replace(&#x27;.yml&#x27;, &#x27;&#x27;);
 
-    let filePath &#x3D; this.resolveJsonFormPath(schema + &#x27;.&#x27; + options?.mode + &#x27;.ui&#x27;)
+    let filePath &#x3D; this.resolveJsonFormPath(schema + &#x27;.&#x27; + options?.mode + &#x27;.ui&#x27;);
 
     if (!filePath) {
       filePath &#x3D; this.resolveJsonFormPath(schema + &#x27;.ui&#x27;);

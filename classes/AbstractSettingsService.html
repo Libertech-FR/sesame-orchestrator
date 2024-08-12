@@ -536,8 +536,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">src/_common/abstracts/abstract-settings.service.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">src/_common/abstracts/abstract-settings.service.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -1651,13 +1651,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {AbstractServiceSchema} from &quot;~/_common/abstracts/abstract.service.schema&quot;;
-import {InjectModel} from &quot;@nestjs/mongoose&quot;;
-import {Model} from &quot;mongoose&quot;;
-import {Settings, SettingsSchema} from &quot;~/settings/_schemas/settings.schema&quot;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
+import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
+import { Model } from &#x27;mongoose&#x27;;
+import { Settings, SettingsSchema } from &#x27;~/settings/_schemas/settings.schema&#x27;;
 
 export class AbstractSettingsService extends AbstractServiceSchema {
-  protected settingsName: string
+  protected settingsName: string;
 
   constructor(@InjectModel(Settings.name) protected _model: Model&lt;Settings&gt;) {
     super();
@@ -1665,36 +1665,35 @@ export class AbstractSettingsService extends AbstractServiceSchema {
 
   protected async getParameter(settingName: string): Promise&lt;object | null&gt; {
     try {
-      const enr&#x3D;  await this.findOne&lt;Settings&gt;({name: settingName})
-      return enr.parameters
+      const enr &#x3D; await this.findOne&lt;Settings&gt;({ name: settingName });
+      return enr.parameters;
     } catch (e) {
-      return this.defaultValues()
+      return this.defaultValues();
     }
   }
 
   protected async setParameter(settingName: string, parameters: object): Promise&lt;any&gt; {
     const enr &#x3D; new this._model({
-      name: settingName
-      , parameters: parameters
-    })
-    const ok&#x3D; await this.upsert(
-      {name: settingName},
+      name: settingName,
+      parameters: parameters,
+    });
+    const ok &#x3D; await this.upsert(
+      { name: settingName },
       {
         $setOnInsert: {
-          name: settingName
+          name: settingName,
         },
         $set: {
-          &quot;parameters&quot;: parameters
-        }
-      })
-    return ok
+          parameters: parameters,
+        },
+      },
+    );
+    return ok;
   }
 
   protected async defaultValues(): Promise&lt;object&gt; {
-
-    return {}
+    return {};
   }
-
 }
 </code></pre>
     </div>

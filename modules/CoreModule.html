@@ -364,8 +364,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">src/core/core.module.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">src/core/core.module.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -400,7 +400,16 @@ import { TasksModule } from &#x27;./tasks/tasks.module&#x27;;
 import { FilestorageModule } from &#x27;./filestorage/filestorage.module&#x27;;
 
 @Module({
-  imports: [AuthModule, BackendsModule, LoggerModule, KeyringsModule, AgentsModule, JobsModule, TasksModule, FilestorageModule],
+  imports: [
+    AuthModule,
+    BackendsModule,
+    LoggerModule,
+    KeyringsModule,
+    AgentsModule,
+    JobsModule,
+    TasksModule,
+    FilestorageModule,
+  ],
   providers: [CoreService],
   controllers: [CoreController],
 })

@@ -610,7 +610,7 @@ export class AuthController extends AbstractController {
 
   //TODO: change any
   @Post(&#x27;refresh&#x27;)
-  @ApiOperation({ summary: &#x27;Récupère un nouveau jeton d\&#x27;authentification&#x27; })
+  @ApiOperation({ summary: &quot;Récupère un nouveau jeton d&#x27;authentification&quot; })
   public async refresh(@Res() res: Response, @Body() body: { refresh_token: string }): Promise&lt;Response&gt; {
     const tokens &#x3D; await this.service.renewTokens(body.refresh_token);
     return res.status(HttpStatus.OK).json({
@@ -620,7 +620,7 @@ export class AuthController extends AbstractController {
   }
 
   @Post(&#x27;logout&#x27;)
-  @ApiOperation({ summary: &#x27;Supprime le jeton d\&#x27;authentification utilisateur&#x27; })
+  @ApiOperation({ summary: &quot;Supprime le jeton d&#x27;authentification utilisateur&quot; })
   public async logout(@Res() res: Response, @Headers(&#x27;Authorization&#x27;) jwt: string): Promise&lt;Response&gt; {
     await this.service.clearSession(jwt.replace(/^Bearer\s/, &#x27;&#x27;));
     return res.status(HttpStatus.OK).send();

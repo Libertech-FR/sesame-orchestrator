@@ -373,8 +373,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="203"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:203</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="205"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:205</a></div>
                         </td>
                     </tr>
 
@@ -463,8 +463,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="297"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:297</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="299"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:299</a></div>
                         </td>
                     </tr>
 
@@ -635,7 +635,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:192</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:194</a></code>
 </div>
                         </td>
                     </tr>
@@ -725,8 +725,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="222"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:222</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="224"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:224</a></div>
                         </td>
                     </tr>
 
@@ -814,8 +814,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="269"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:269</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="271"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:271</a></div>
                         </td>
                     </tr>
 
@@ -908,8 +908,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="247"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:247</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="249"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:249</a></div>
                         </td>
                     </tr>
 
@@ -984,7 +984,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:117</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:119</a></code>
 </div>
                         </td>
                     </tr>
@@ -1085,8 +1085,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="160"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:160</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="162"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:162</a></div>
                         </td>
                     </tr>
 
@@ -1186,8 +1186,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="169"
-                                    class="link-to-prism">src/management/identities/identities.service.ts:169</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">src/management/identities/identities.service.ts:171</a></div>
                         </td>
                     </tr>
 
@@ -2208,7 +2208,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     filters: FilterQuery&lt;T&gt;,
     data?: IdentitiesUpsertDto,
     options?: QueryOptions&lt;T&gt;,
-  ): Promise&lt;[(HttpStatus.OK | HttpStatus.CREATED), ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;]&gt; {
+  ): Promise&lt;[HttpStatus.OK | HttpStatus.CREATED, ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;]&gt; {
     const identity &#x3D; await this.model.findOne(filters).exec();
     this.logger.log(&#x60;Upserting identity with filters ${JSON.stringify(filters)}&#x60;);
 
@@ -2221,13 +2221,15 @@ export class IdentitiesService extends AbstractServiceSchema {
       }),
       ...crushedUpdate,
       &#x27;additionalFields.objectClasses&#x27;: unique([
-        ...data.additionalFields?.objectClasses || [],
-        ...(identity as any)?.additionalFields?.objectClasses || [],
+        ...(data.additionalFields?.objectClasses || []),
+        ...((identity as any)?.additionalFields?.objectClasses || []),
       ]),
     });
 
     if (!data?.inetOrgPerson?.employeeNumber || !data?.inetOrgPerson?.employeeType) {
-      throw new BadRequestException(&#x27;inetOrgPerson.employeeNumber and inetOrgPerson.employeeType are required for create identity.&#x27;);
+      throw new BadRequestException(
+        &#x27;inetOrgPerson.employeeNumber and inetOrgPerson.employeeType are required for create identity.&#x27;,
+      );
     }
 
     await this.checkInetOrgPersonJpegPhoto(data);
@@ -2263,7 +2265,7 @@ export class IdentitiesService extends AbstractServiceSchema {
         $set: {
           ...crushedUpdate,
           &#x27;additionalFields.objectClasses&#x27;: data.additionalFields.objectClasses,
-          &#x27;lastSync&#x27;: new Date(),
+          lastSync: new Date(),
         },
       },
       options,

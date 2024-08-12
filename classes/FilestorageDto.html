@@ -287,7 +287,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:68</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">src/core/filestorage/_dto/filestorage.dto.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -333,7 +333,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:62</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:72</a></code>
 </div>
                         </td>
                     </tr>
@@ -380,7 +380,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:42</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:52</a></code>
 </div>
                         </td>
                     </tr>
@@ -427,7 +427,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:32</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:42</a></code>
 </div>
                         </td>
                     </tr>
@@ -474,7 +474,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:52</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:62</a></code>
 </div>
                         </td>
                     </tr>
@@ -521,7 +521,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:37</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:47</a></code>
 </div>
                         </td>
                     </tr>
@@ -568,7 +568,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:47</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:57</a></code>
 </div>
                         </td>
                     </tr>
@@ -614,7 +614,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:21</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:31</a></code>
 </div>
                         </td>
                     </tr>
@@ -661,7 +661,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:27</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:37</a></code>
 </div>
                         </td>
                     </tr>
@@ -708,7 +708,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:57</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:67</a></code>
 </div>
                         </td>
                     </tr>
@@ -754,7 +754,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:16</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/FilestorageCreateDto.html#source" target="_self" >FilestorageCreateDto:26</a></code>
 </div>
                         </td>
                     </tr>
@@ -821,63 +821,73 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;
-import { CustomFieldsDto } from &#x27;~/_common/abstracts/dto/custom-fields.dto&#x27;
-import { IsMongoId, IsString, IsEnum, IsOptional, IsObject, IsBoolean, IsNotEmpty, IsMimeType, Matches } from &#x27;class-validator&#x27;
-import { FsType, FsTypeList } from &#x27;~/core/filestorage/_enum/fs-type.enum&#x27;
-import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;;
+import { CustomFieldsDto } from &#x27;~/_common/abstracts/dto/custom-fields.dto&#x27;;
+import {
+  IsMongoId,
+  IsString,
+  IsEnum,
+  IsOptional,
+  IsObject,
+  IsBoolean,
+  IsNotEmpty,
+  IsMimeType,
+  Matches,
+} from &#x27;class-validator&#x27;;
+import { FsType, FsTypeList } from &#x27;~/core/filestorage/_enum/fs-type.enum&#x27;;
+import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
 
 export class FileUploadDto {
   @ApiProperty({ type: &#x27;string&#x27;, format: &#x27;binary&#x27; })
-  public file: string
+  public file: string;
 }
 
 export class FilestorageCreateDto extends CustomFieldsDto {
   @IsEnum(FsTypeList)
   @IsNotEmpty()
-  @ApiProperty({ enum: FsTypeList, default: FsType.FILE, })
-  public type: FsType
+  @ApiProperty({ enum: FsTypeList, default: FsType.FILE })
+  public type: FsType;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ type: String, required: true })
-  public namespace: string
+  public namespace: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ type: String, default: &#x27;/&#x27; })
   @Matches(/^\/(\.?[^\/\0]+\/?)+$/, { message: &#x27;Path must be a valid path&#x27; })
-  public path: string
+  public path: string;
 
   @IsOptional()
   @IsString()
   @ApiProperty({ type: String, required: false })
-  public fingerprint?: string
+  public fingerprint?: string;
 
   @IsOptional()
   @IsMongoId()
   @ApiProperty({ type: String, required: false })
-  public linkedTo?: string
+  public linkedTo?: string;
 
   @IsOptional()
   @IsString()
   @ApiProperty({ type: String, required: false })
-  public comments?: string
+  public comments?: string;
 
   @IsOptional()
   @IsMimeType()
   @ApiProperty({ type: String, required: false })
-  public mime?: string
+  public mime?: string;
 
   @IsOptional()
   @IsBoolean()
   @ApiProperty({ type: Boolean, required: false })
-  public hidden?: boolean
+  public hidden?: boolean;
 
   @IsOptional()
   @IsObject()
   @ApiProperty({ type: String, required: false, nullable: true })
-  public tags?: { [key: string]: MixedValue }
+  public tags?: { [key: string]: MixedValue };
 
   @IsOptional()
   @IsObject()
@@ -888,10 +898,10 @@ export class FilestorageCreateDto extends CustomFieldsDto {
 export class FilestorageDto extends FilestorageCreateDto {
   @IsMongoId()
   @ApiProperty({ type: String })
-  public _id: string
+  public _id: string;
 }
 
-export class FilestorageUpdateDto extends PartialType(FilestorageCreateDto) { }
+export class FilestorageUpdateDto extends PartialType(FilestorageCreateDto) {}
 </code></pre>
     </div>
 </div>

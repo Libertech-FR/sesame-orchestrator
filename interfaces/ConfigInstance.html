@@ -619,16 +619,16 @@ export interface ConfigInstance {
   };
   factorydrive: {
     options:
-    | StorageManagerConfig
-    | {
-      disks: {
-        [key: string]: {
-          driver: &#x27;s3&#x27;
-          config: AmazonWebServicesS3StorageConfig
-        }
-      }
-    }
-  }
+      | StorageManagerConfig
+      | {
+          disks: {
+            [key: string]: {
+              driver: &#x27;s3&#x27;;
+              config: AmazonWebServicesS3StorageConfig;
+            };
+          };
+        };
+  };
   passport: {
     options: IAuthModuleOptions;
   };
@@ -641,12 +641,12 @@ export interface ConfigInstance {
     sender: string;
   };
   sms: {
-    host: string,
-    systemId: string,
-    password: string,
-    sourceAddr: string,
-    regionCode: string
-  },
+    host: string;
+    systemId: string;
+    password: string;
+    sourceAddr: string;
+    regionCode: string;
+  };
   frontPwd: {
     url: string;
     identityMailAttribute: string;
@@ -741,21 +741,20 @@ export default (): ConfigInstance &#x3D;&gt; ({
   mailer: {
     host: process.env[&#x27;SESAME_SMTP_SERVER&#x27;],
     port: parseInt(process.env[&#x27;SESAME_SMTP_PORT&#x27;]) || 25,
-    sender: process.env[&#x27;SESAME_MDP_SENDER&#x27;] || &#x27;noreply@mydomain.com&#x27;
+    sender: process.env[&#x27;SESAME_MDP_SENDER&#x27;] || &#x27;noreply@mydomain.com&#x27;,
   },
   frontPwd: {
     url: process.env[&#x27;SESAME_FRONT_MDP&#x27;],
     identityMailAttribute: process.env[&#x27;SESAME_RESET_PWD_MAIL&#x27;] || &#x27;&#x27;,
-    identityMobileAttribute: process.env[&#x27;SESAME_RESET_PWD_MOBILE&#x27;] || &#x27;&#x27;
+    identityMobileAttribute: process.env[&#x27;SESAME_RESET_PWD_MOBILE&#x27;] || &#x27;&#x27;,
   },
   sms: {
     host: process.env[&#x27;SESAME_SMPP_SERVER&#x27;] || &#x27;&#x27;,
     systemId: process.env[&#x27;SESAME_SMPP_SYSTEMID&#x27;] || &#x27;&#x27;,
     password: process.env[&#x27;SESAME_SMPP_PASSWORD&#x27;] || &#x27;&#x27;,
     sourceAddr: process.env[&#x27;SESAME_SMPP_SOURCEADDR&#x27;] || &#x27;&#x27;,
-    regionCode: process.env[&#x27;SESAME_SMPP_REGIONCODE&#x27;] || &#x27;FR&#x27;
-  }
-
+    regionCode: process.env[&#x27;SESAME_SMPP_REGIONCODE&#x27;] || &#x27;FR&#x27;,
+  },
 });
 </code></pre>
     </div>

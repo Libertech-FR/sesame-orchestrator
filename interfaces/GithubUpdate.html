@@ -400,7 +400,7 @@ interface GithubUpdate {
   node_id?: string;
 }
 
-const storage &#x3D; new LRU({ ttl: 60 * 60 * 1000 })
+const storage &#x3D; new LRU({ ttl: 60 * 60 * 1000 });
 
 @Public()
 @Controller()
@@ -427,36 +427,36 @@ export class AppController extends AbstractController {
     @Param(&#x27;project&#x27;) project?: string,
     @Query(&#x27;current&#x27;) current?: string,
   ): Promise&lt;Response&gt; {
-    let data: GithubUpdate[] | object &#x3D; {}
+    let data: GithubUpdate[] | object &#x3D; {};
     // console.log(&#x27;this.storage&#x27;, storage.get(project))
     if (storage.has(project)) {
-      this.logger.log(&#x60;Fetching ${project} tags from cache&#x60;)
-      data &#x3D; storage.get(project) as GithubUpdate[] | object
+      this.logger.log(&#x60;Fetching ${project} tags from cache&#x60;);
+      data &#x3D; storage.get(project) as GithubUpdate[] | object;
     } else {
-      this.logger.log(&#x60;Fetching ${project} tags&#x60;)
+      this.logger.log(&#x60;Fetching ${project} tags&#x60;);
       const update &#x3D; await fetch(&#x60;https://api.github.com/repos/Libertech-FR/${project}/tags&#x60;, {
         signal: AbortSignal.timeout(1000),
-      })
-      data &#x3D; await update.json()
-      storage.set(project, data)
+      });
+      data &#x3D; await update.json();
+      storage.set(project, data);
       // console.log(&#x27;this.storage&#x27;, storage.get(project))
     }
     if (!Array.isArray(data)) {
-      throw new BadRequestException(&#x60;Invalid data from Github &lt;${JSON.stringify(data)}&gt;&#x60;)
+      throw new BadRequestException(&#x60;Invalid data from Github &lt;${JSON.stringify(data)}&gt;&#x60;);
     }
-    const lastVersion &#x3D; data[0].name.replace(/^v/, &#x27;&#x27;)
-    const pkgInfo &#x3D; this.appService.getInfo()
-    const currentVersion &#x3D; current || pkgInfo.version
+    const lastVersion &#x3D; data[0].name.replace(/^v/, &#x27;&#x27;);
+    const pkgInfo &#x3D; this.appService.getInfo();
+    const currentVersion &#x3D; current || pkgInfo.version;
 
     if (project !&#x3D;&#x3D; pkgInfo.name || current) {
       if (!/[0-9]+\.[0-9]+\.[0-9]+/.test(current)) {
-        throw new BadRequestException(&#x27;Invalid version for current parameter&#x27;)
+        throw new BadRequestException(&#x27;Invalid version for current parameter&#x27;);
       }
     }
 
-    const [currentMajor, currentMinor, currentPatch] &#x3D; lastVersion.split(&#x27;.&#x27;).map(Number)
-    const [lastMajor, lastMinor, lastPatch] &#x3D; currentVersion.split(&#x27;.&#x27;).map(Number)
-    const updateAvailable &#x3D; currentMajor &gt; lastMajor || currentMinor &gt; lastMinor || currentPatch &gt; lastPatch
+    const [currentMajor, currentMinor, currentPatch] &#x3D; lastVersion.split(&#x27;.&#x27;).map(Number);
+    const [lastMajor, lastMinor, lastPatch] &#x3D; currentVersion.split(&#x27;.&#x27;).map(Number);
+    const updateAvailable &#x3D; currentMajor &gt; lastMajor || currentMinor &gt; lastMinor || currentPatch &gt; lastPatch;
 
     return res.json({
       data: {

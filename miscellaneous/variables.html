@@ -480,7 +480,7 @@
       schema: {
         $ref: getSchemaPath(model),
       },
-      description: &#x27;Corps de création de l\&#x27;enregistrement&#x27;,
+      description: &quot;Corps de création de l&#x27;enregistrement&quot;,
       ...options,
     }),
   );
@@ -511,9 +511,9 @@
   bodyModel: TModel,
   responseModel: TModel,
   options?: {
-    bodyOptions?: ApiBodyOptions | null | undefined,
-    responseOptions?: ApiResponseOptions | null | undefined,
-    operationOptions?: ApiOperationOptions | null | undefined,
+    bodyOptions?: ApiBodyOptions | null | undefined;
+    responseOptions?: ApiResponseOptions | null | undefined;
+    operationOptions?: ApiOperationOptions | null | undefined;
   },
 ) &#x3D;&gt; {
   return applyDecorators(
@@ -549,9 +549,9 @@
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   model: TModel,
   options?: {
-    responseOptions?: ApiResponseOptions | null | undefined,
-    operationOptions?: ApiOperationOptions | null | undefined,
-  }
+    responseOptions?: ApiResponseOptions | null | undefined;
+    operationOptions?: ApiOperationOptions | null | undefined;
+  },
 ) &#x3D;&gt; {
   return applyDecorators(
     ApiExtraModels(model),
@@ -568,7 +568,7 @@
           },
         },
       },
-      description: &#x27;L\&#x27;enregistrement a été créé avec succès&#x27;,
+      description: &quot;L&#x27;enregistrement a été créé avec succès&quot;,
       ...options?.responseOptions,
     }),
     ApiBadRequestResponse({
@@ -577,7 +577,10 @@
         $ref: getSchemaPath(ErrorSchemaDto),
       },
     }),
-    ApiOperation({ summary: &#x60;Création d&#x27;une nouvelle entrée &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt;&#x60;, ...options?.operationOptions }),
+    ApiOperation({
+      summary: &#x60;Création d&#x27;une nouvelle entrée &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt;&#x60;,
+      ...options?.operationOptions,
+    }),
   );
 }</code>
                     </td>
@@ -605,9 +608,9 @@
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   model: TModel,
   options?: {
-    responseOptions?: ApiResponseOptions | null | undefined,
-    notFoundOptions?: ApiResponseOptions | null | undefined,
-    operationOptions?: ApiOperationOptions | null | undefined,
+    responseOptions?: ApiResponseOptions | null | undefined;
+    notFoundOptions?: ApiResponseOptions | null | undefined;
+    operationOptions?: ApiOperationOptions | null | undefined;
   },
 ) &#x3D;&gt; {
   return applyDecorators(
@@ -625,17 +628,20 @@
           },
         },
       },
-      description: &#x27;L\&#x27;enregistrement a été supprimé avec succès&#x27;,
+      description: &quot;L&#x27;enregistrement a été supprimé avec succès&quot;,
       ...options?.responseOptions,
     }),
     ApiNotFoundResponse({
-      description: &#x27;Impossible de trouver l\&#x27;entrée ciblée&#x27;,
+      description: &quot;Impossible de trouver l&#x27;entrée ciblée&quot;,
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },
       ...options?.notFoundOptions,
     }),
-    ApiOperation({ summary: &#x60;Suppression d&#x27;une entrée &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt;&#x60;, ...options?.operationOptions }),
+    ApiOperation({
+      summary: &#x60;Suppression d&#x27;une entrée &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt;&#x60;,
+      ...options?.operationOptions,
+    }),
   );
 }</code>
                     </td>
@@ -665,10 +671,10 @@
   bodyModel: TModel,
   responseModel: TModel,
   options?: {
-    bodyOptions?: ApiBodyOptions | null | undefined,
-    responseOptions?: ApiResponseOptions | null | undefined,
-    operationOptions?: ApiOperationOptions | null | undefined,
-    consumesOptions?: string[],
+    bodyOptions?: ApiBodyOptions | null | undefined;
+    responseOptions?: ApiResponseOptions | null | undefined;
+    operationOptions?: ApiOperationOptions | null | undefined;
+    consumesOptions?: string[];
   },
 ) &#x3D;&gt; {
   const consumes &#x3D; options?.consumesOptions || [&#x27;multipart/form-data&#x27;];
@@ -679,10 +685,7 @@
     ApiBody({
       schema: {
         type: &#x27;object&#x27;,
-        allOf: [
-          { $ref: getSchemaPath(bodyModel) },
-          { $ref: getSchemaPath(uploadModel) },
-        ],
+        allOf: [{ $ref: getSchemaPath(bodyModel) }, { $ref: getSchemaPath(uploadModel) }],
         // properties: {
         //   // comment: { type: &#x27;string&#x27; },
         //   // outletId: { type: &#x27;integer&#x27; },
@@ -693,7 +696,7 @@
         //   },
         // },
       },
-      description: &#x27;Corps de création de l\&#x27;enregistrement&#x27;,
+      description: &quot;Corps de création de l&#x27;enregistrement&quot;,
       ...options?.bodyOptions,
     }),
     ApiCreatedResponseDecorator(responseModel, {
@@ -728,7 +731,7 @@
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   model: TModel,
   options?: {
-    responseOptions?: ApiResponseOptions | null | undefined,
+    responseOptions?: ApiResponseOptions | null | undefined;
   },
 ) &#x3D;&gt; {
   return applyDecorators(
@@ -736,7 +739,7 @@
       name: &#x27;limit&#x27;,
       type: Number,
       required: false,
-      description: &#x27;Limite le nombre d\&#x27;éléments retournés&#x27;,
+      description: &quot;Limite le nombre d&#x27;éléments retournés&quot;,
     }),
     ApiQuery({
       name: &#x27;skip&#x27;,
@@ -790,8 +793,8 @@
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;any&gt;&gt;(
   model: TModel,
   options?: {
-    responseOptions?: ApiResponseOptions | null | undefined,
-    operationOptions?: ApiOperationOptions | null | undefined,
+    responseOptions?: ApiResponseOptions | null | undefined;
+    operationOptions?: ApiOperationOptions | null | undefined;
   },
 ) &#x3D;&gt; {
   return applyDecorators(
@@ -817,7 +820,10 @@
       description: &#x60;Liste les entrées &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt; avec pagination et filtres&#x60;,
       ...options?.responseOptions,
     }),
-    ApiOperation({ summary: &#x60;Liste les entrées &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt; avec pagination et filtres&#x60;, ...options?.operationOptions }),
+    ApiOperation({
+      summary: &#x60;Liste les entrées &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt; avec pagination et filtres&#x60;,
+      ...options?.operationOptions,
+    }),
   );
 }</code>
                     </td>
@@ -845,9 +851,9 @@
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   model: TModel,
   options?: {
-    responseOptions?: ApiResponseOptions | null | undefined,
-    notFoundOptions?: ApiResponseOptions | null | undefined,
-    operationOptions?: ApiOperationOptions | null | undefined,
+    responseOptions?: ApiResponseOptions | null | undefined;
+    notFoundOptions?: ApiResponseOptions | null | undefined;
+    operationOptions?: ApiOperationOptions | null | undefined;
   },
 ) &#x3D;&gt; {
   return applyDecorators(
@@ -865,17 +871,20 @@
           },
         },
       },
-      description: &#x27;L\&#x27;enregistrement a été récupéré avec succès&#x27;,
+      description: &quot;L&#x27;enregistrement a été récupéré avec succès&quot;,
       ...options?.responseOptions,
     }),
     ApiNotFoundResponse({
-      description: &#x27;Impossible de trouver l\&#x27;entrée ciblée&#x27;,
+      description: &quot;Impossible de trouver l&#x27;entrée ciblée&quot;,
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },
       ...options?.notFoundOptions,
     }),
-    ApiOperation({ summary: &#x60;Récupère l&#x27;entrée &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt; ciblée&#x60;, ...options?.operationOptions }),
+    ApiOperation({
+      summary: &#x60;Récupère l&#x27;entrée &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt; ciblée&#x60;,
+      ...options?.operationOptions,
+    }),
   );
 }</code>
                     </td>
@@ -904,8 +913,8 @@
   bodyModel: TModel,
   responseModel: TModel,
   options?: {
-    bodyOptions?: ApiBodyOptions | null | undefined,
-    responseOptions?: ApiResponseOptions | null | undefined,
+    bodyOptions?: ApiBodyOptions | null | undefined;
+    responseOptions?: ApiResponseOptions | null | undefined;
   },
 ) &#x3D;&gt; {
   return applyDecorators(
@@ -938,10 +947,10 @@
                         <i>Default value : </i><code>&lt;TModel extends Type&lt;NonNullable&lt;unknown&gt;&gt;&gt;(
   model: TModel,
   options?: {
-    responseOptions?: ApiResponseOptions | null | undefined,
-    badRequestOptions?: ApiResponseOptions | null | undefined,
-    notFoundOptions?: ApiResponseOptions | null | undefined,
-    operationOptions?: ApiOperationOptions | null | undefined,
+    responseOptions?: ApiResponseOptions | null | undefined;
+    badRequestOptions?: ApiResponseOptions | null | undefined;
+    notFoundOptions?: ApiResponseOptions | null | undefined;
+    operationOptions?: ApiOperationOptions | null | undefined;
   },
 ) &#x3D;&gt; {
   return applyDecorators(
@@ -960,7 +969,7 @@
           },
         },
       },
-      description: &#x27;L\&#x27;enregistrement a été mis à jour avec succès&#x27;,
+      description: &quot;L&#x27;enregistrement a été mis à jour avec succès&quot;,
       ...options?.responseOptions,
     }),
     ApiBadRequestResponse({
@@ -971,13 +980,16 @@
       ...options?.badRequestOptions,
     }),
     ApiNotFoundResponse({
-      description: &#x27;Impossible de trouver l\&#x27;entrée ciblée&#x27;,
+      description: &quot;Impossible de trouver l&#x27;entrée ciblée&quot;,
       schema: {
         $ref: getSchemaPath(NotFoundDto),
       },
       ...options?.notFoundOptions,
     }),
-    ApiOperation({ summary: &#x60;Mise à jour d&#x27;une entrée &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt;&#x60;, ...options?.operationOptions }),
+    ApiOperation({
+      summary: &#x60;Mise à jour d&#x27;une entrée &lt;${model.name.replace(/Dto$/, &#x27;&#x27;)}&gt;&#x60;,
+      ...options?.operationOptions,
+    }),
   );
 }</code>
                     </td>
@@ -1403,7 +1415,10 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>SchemaFactory.createForClass(Filestorage).index({ namespace: 1, path: 1 }, { unique: true })</code>
+                        <i>Default value : </i><code>SchemaFactory.createForClass(Filestorage).index(
+  { namespace: 1, path: 1 },
+  { unique: true },
+)</code>
                     </td>
                 </tr>
 

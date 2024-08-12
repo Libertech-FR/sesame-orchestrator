@@ -117,13 +117,13 @@
 <title>cluster_FilestorageModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 494,-268 494,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_FilestorageModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 486,-130 486,-78 16,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_FilestorageModule_exports</title>
 <polygon fill="none" stroke="black" points="53,-208 53,-260 410,-260 410,-208 53,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_FilestorageModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 486,-130 486,-78 16,-78"/>
 </g>
 <!-- FilestorageService  -->
 <g id="node1" class="node">
@@ -267,12 +267,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;
-import { MongooseModule } from &#x27;@nestjs/mongoose&#x27;
-import { Filestorage, FilestorageSchema } from &#x27;./_schemas/filestorage.schema&#x27;
-import { FilestorageService } from &#x27;./filestorage.service&#x27;
-import { FilestorageController } from &#x27;./filestorage.controller&#x27;
-import { TransformersFilestorageService } from &#x27;~/core/filestorage/_services/transformers-filestorage.service&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
+import { MongooseModule } from &#x27;@nestjs/mongoose&#x27;;
+import { Filestorage, FilestorageSchema } from &#x27;./_schemas/filestorage.schema&#x27;;
+import { FilestorageService } from &#x27;./filestorage.service&#x27;;
+import { FilestorageController } from &#x27;./filestorage.controller&#x27;;
+import { TransformersFilestorageService } from &#x27;~/core/filestorage/_services/transformers-filestorage.service&#x27;;
 
 @Module({
   imports: [
@@ -287,7 +287,7 @@ import { TransformersFilestorageService } from &#x27;~/core/filestorage/_service
   providers: [FilestorageService, TransformersFilestorageService],
   exports: [FilestorageService, TransformersFilestorageService],
 })
-export class FilestorageModule { }
+export class FilestorageModule {}
 </code></pre>
     </div>
 </div>

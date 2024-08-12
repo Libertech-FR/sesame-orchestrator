@@ -24,13 +24,13 @@
 <title>cluster_FilestorageModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 494,-268 494,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_FilestorageModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 486,-130 486,-78 16,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_FilestorageModule_exports</title>
 <polygon fill="none" stroke="black" points="53,-208 53,-260 410,-260 410,-208 53,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_FilestorageModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 486,-130 486,-78 16,-78"/>
 </g>
 <!-- FilestorageService  -->
 <g id="node1" class="node">

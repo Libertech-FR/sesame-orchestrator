@@ -296,8 +296,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">src/settings/passwdadm/passwdadm.service.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">src/settings/passwdadm/passwdadm.service.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -372,7 +372,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractSettingsService.html#source" target="_self" >AbstractSettingsService:76</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractSettingsService.html#source" target="_self" >AbstractSettingsService:74</a></code>
 </div>
                         </td>
                     </tr>
@@ -412,8 +412,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">src/settings/passwdadm/passwdadm.service.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="11"
+                                    class="link-to-prism">src/settings/passwdadm/passwdadm.service.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -452,8 +452,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">src/settings/passwdadm/passwdadm.service.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">src/settings/passwdadm/passwdadm.service.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -1813,30 +1813,28 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {Document, Model} from &quot;mongoose&quot;;
-import {InjectModel} from &quot;@nestjs/mongoose&quot;;
-import stringEntropy from &#x27;fast-password-entropy&#x27;
-import {pwnedPassword} from &quot;hibp&quot;;
-import {PasswordPoliciesDto} from &quot;~/settings/passwdadm/_dto/password-policy.dto&quot;;
-import {AbstractSettingsService} from &quot;~/_common/abstracts/abstract-settings.service&quot;;
-import {Injectable} from &quot;@nestjs/common&quot;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Document, Model } from &#x27;mongoose&#x27;;
+import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
+import stringEntropy from &#x27;fast-password-entropy&#x27;;
+import { pwnedPassword } from &#x27;hibp&#x27;;
+import { PasswordPoliciesDto } from &#x27;~/settings/passwdadm/_dto/password-policy.dto&#x27;;
+import { AbstractSettingsService } from &#x27;~/_common/abstracts/abstract-settings.service&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 
 @Injectable()
 export class PasswdadmService extends AbstractSettingsService {
-
-
   public async getPolicies(): Promise&lt;object&gt; {
-    const parameters&#x3D;this.getParameter(&#x27;passwordpolicies&#x27;)
-    return parameters
+    const parameters &#x3D; this.getParameter(&#x27;passwordpolicies&#x27;);
+    return parameters;
   }
 
-  public async  setPolicies(policies: PasswordPoliciesDto):Promise&lt;any&gt;{
-    return this.setParameter(&#x27;passwordpolicies&#x27;,policies)
+  public async setPolicies(policies: PasswordPoliciesDto): Promise&lt;any&gt; {
+    return this.setParameter(&#x27;passwordpolicies&#x27;, policies);
   }
   public async checkPolicies(password: string): Promise&lt;boolean&gt; {
-     return true
+    return true;
   }
-/*
+  /*
   public async checkPolicies(password: string): Promise&lt;boolean&gt; {
     const policies &#x3D; await this.getPolicies()
     if (password.length &lt; policies.len) {
@@ -1889,12 +1887,8 @@ export class PasswdadmService extends AbstractSettingsService {
 
  */
   protected async defaultValues(): Promise&lt;object&gt; {
-    return new PasswordPoliciesDto()
+    return new PasswordPoliciesDto();
   }
-
-
-
-
 }
 </code></pre>
     </div>

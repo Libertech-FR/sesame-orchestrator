@@ -12,6 +12,7 @@ import { VerifyTokenDto } from './_dto/verify-token.dto';
 import { ResetPasswordDto } from './_dto/reset-password.dto';
 import { omit } from 'radash';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { PasswdadmService } from '~/settings/passwdadm.service';
 import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
 import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
@@ -50,6 +51,23 @@ import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
 import crypto from 'crypto';
 import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code-dto';
 >>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
+=======
+import { PasswdadmService } from '~/settings/passwdadm.service';
+import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
+import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
+import crypto from 'crypto';
+import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
+import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
+import {
+  FilterOptions,
+  FilterSchema,
+  SearchFilterOptions,
+  SearchFilterSchema,
+} from '@the-software-compagny/nestjs_module_restools';
+import { Document } from 'mongoose';
+import { Identities } from '~/management/identities/_schemas/identities.schema';
+import { MixedValue } from '~/_common/types/mixed-value.type';
+>>>>>>> 0e4700b (chore: Update filestorage configuration for identities module)
 
 @Controller('passwd')
 @ApiTags('management/passwd')

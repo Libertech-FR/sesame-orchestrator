@@ -12,11 +12,14 @@ import { PasswdadmService } from '~/settings/passwdadm.service';
 import { PasswdadmController } from '~/settings/passwdadm.controller';
 import { MailadmService } from '~/settings/mailadm.service';
 import { MailadmController } from '~/settings/mailadm.controller';
+<<<<<<< HEAD
 =======
 import {PasswdadmModule} from "~/settings/passwdadm/passwdadm.module";
 import {SettingsController} from "~/settings/settings.controller";
 import {SettingsService} from "~/settings/settings.service";
 >>>>>>> 85a4ce7 (save)
+=======
+>>>>>>> 0e4700b (chore: Update filestorage configuration for identities module)
 @Module({
   exports: [SmsadmService, PasswdadmService, MailadmService],
   imports: [

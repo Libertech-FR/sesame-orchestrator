@@ -23,6 +23,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { MjmlAdapter } from '@nestjs-modules/mailer/dist/adapters/mjml.adapter';
 import { MailadmService } from '~/settings/mailadm.service';
 import { SettingsService } from '~/settings/settings.service';
+<<<<<<< HEAD
 =======
 import { SettingstModule } from "~/settings/settings.module";
 import { MailerModule } from "@nestjs-modules/mailer";
@@ -37,6 +38,9 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 >>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
 import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factorydrive';
 >>>>>>> 84c012f (chore: Add @the-software-compagny/nestjs_module_factorydrive and @the-software-compagny/nestjs_module_factorydrive-s3 dependencies)
+=======
+import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factorydrive';
+>>>>>>> 0e4700b (chore: Update filestorage configuration for identities module)
 
 @Module({
   imports: [

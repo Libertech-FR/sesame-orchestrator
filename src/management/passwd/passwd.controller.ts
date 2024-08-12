@@ -20,7 +20,7 @@ export class PasswdController {
   public constructor(
     private passwdService: PasswdService,
     private passwdadmService: PasswdadmService,
-  ) { }
+  ) {}
 
   @Post('change')
   @ApiOperation({ summary: 'Execute un job de changement de mot de passe sur le/les backends' })

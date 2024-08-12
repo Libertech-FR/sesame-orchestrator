@@ -67,4 +67,4 @@ import { AuthModule } from '~/core/auth/auth.module';
     KeyringsCreateQuestions,
   ],
 })
-export class CliModule { }
+export class CliModule {}

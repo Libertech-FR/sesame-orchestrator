@@ -14,7 +14,7 @@ export class IdentitiesValidationController extends AbstractController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Effectue la validation des schémas personnalisés d\'identités' })
+  @ApiOperation({ summary: "Effectue la validation des schémas personnalisés d'identités" })
   public async validate(
     @Res()
     res: Response,
@@ -46,7 +46,7 @@ export class IdentitiesValidationController extends AbstractController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Liste les schémas personnalisés d\'identités' })
+  @ApiOperation({ summary: "Liste les schémas personnalisés d'identités" })
   async searchAll(@Res() res: Response): Promise<any> {
     const [result] = await this._service.findAll();
     return res.status(HttpStatus.OK).json({
@@ -56,7 +56,7 @@ export class IdentitiesValidationController extends AbstractController {
   }
 
   @Get(':schema')
-  @ApiOperation({ summary: 'Récupère un schéma personnalisé d\'identités' })
+  @ApiOperation({ summary: "Récupère un schéma personnalisé d'identités" })
   async search(@Res() res: Response, @Param('schema') schema): Promise<any> {
     const result = await this._service.findOne(schema);
     return res.status(HttpStatus.OK).json({

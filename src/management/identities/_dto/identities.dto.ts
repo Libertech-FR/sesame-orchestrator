@@ -6,7 +6,7 @@ import { IdentityLifecycle } from '../_enums/lifecycle.enum';
 import { Type } from 'class-transformer';
 import { additionalFieldsPartDto } from './_parts/additionalFields.dto';
 import { MetadataDto } from '~/_common/abstracts/dto/metadata.dto';
-import {InitStatesEnum} from "~/management/identities/_enums/init-state.enum";
+import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
 
 export class IdentitiesCreateDto extends MetadataDto {
   @IsNumber()
@@ -50,9 +50,9 @@ export class IdentitiesCreateDto extends MetadataDto {
   additionalFields?: additionalFieldsPartDto;
 }
 
-export class IdentitiesDto extends IdentitiesCreateDto { }
+export class IdentitiesDto extends IdentitiesCreateDto {}
 
-export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) { }
+export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) {}
 
 export class IdentitiesUpsertDto extends PartialType(IdentitiesUpdateDto) {
   $setOnInsert?: Partial<IdentitiesUpdateDto>;

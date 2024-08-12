@@ -89,6 +89,6 @@ export class inetOrgPersonCreateDto {
   userPassword?: string;
 }
 
-export class inetOrgPersonDto extends inetOrgPersonCreateDto { }
+export class inetOrgPersonDto extends inetOrgPersonCreateDto {}
 
-export class inetOrgPersonUpdateDto extends PartialType(inetOrgPersonCreateDto) { }
+export class inetOrgPersonUpdateDto extends PartialType(inetOrgPersonCreateDto) {}

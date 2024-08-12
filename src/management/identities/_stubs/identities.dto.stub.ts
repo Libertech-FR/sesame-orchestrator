@@ -1,10 +1,10 @@
-import {IdentitiesUpdateDto} from './../_dto/identities.dto';
-import {IdentitiesDto} from '~/management/identities/_dto/identities.dto';
-import {IdentityLifecycle} from '~/management/identities/_enums/lifecycle.enum';
-import {IdentityState} from '~/management/identities/_enums/states.enum';
-import {additionalFieldsPartDtoStub} from './_parts/addtionalFields.dto.stub';
-import {inetOrgPersonDtoStub} from './_parts/inetOrgPerson.dto.stub';
-import {InitStatesEnum} from "~/management/identities/_enums/init-state.enum";
+import { IdentitiesUpdateDto } from './../_dto/identities.dto';
+import { IdentitiesDto } from '~/management/identities/_dto/identities.dto';
+import { IdentityLifecycle } from '~/management/identities/_enums/lifecycle.enum';
+import { IdentityState } from '~/management/identities/_enums/states.enum';
+import { additionalFieldsPartDtoStub } from './_parts/addtionalFields.dto.stub';
+import { inetOrgPersonDtoStub } from './_parts/inetOrgPerson.dto.stub';
+import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
 
 export const IdentitiesDtoStub = (): IdentitiesDto => {
   return {
@@ -12,7 +12,7 @@ export const IdentitiesDtoStub = (): IdentitiesDto => {
     lifecycle: IdentityLifecycle.INACTIVE,
     inetOrgPerson: inetOrgPersonDtoStub(),
     additionalFields: additionalFieldsPartDtoStub(),
-    initState:InitStatesEnum.NOSENT
+    initState: InitStatesEnum.NOSENT,
   };
 };
 
@@ -22,10 +22,8 @@ export const IdentitiesUpdateDtoStub = (): IdentitiesUpdateDto => {
   return {
     state: IdentityState.TO_COMPLETE,
     lifecycle: IdentityLifecycle.INACTIVE,
-    initState:InitStatesEnum.NOSENT,
+    initState: InitStatesEnum.NOSENT,
     inetOrgPerson,
     additionalFields: additionalFieldsPartDtoStub(),
   };
-
-
 };

@@ -43,4 +43,4 @@ export class JobsDto extends JobsCreateDto {
   public _id: string;
 }
 
-export class JobsUpdateDto extends PartialType(JobsCreateDto) { }
+export class JobsUpdateDto extends PartialType(JobsCreateDto) {}

@@ -238,11 +238,13 @@ export class BackendsService extends AbstractQueueProcessor {
         jobId: job.id,
         action: actionType,
         params: payload,
-        concernedTo: identity ? {
-          $ref: 'identities',
-          id: concernedTo,
-          name: [identity?.inetOrgPerson?.cn, identity?.inetOrgPerson?.givenName].join(' '),
-        } : null,
+        concernedTo: identity
+          ? {
+              $ref: 'identities',
+              id: concernedTo,
+              name: [identity?.inetOrgPerson?.cn, identity?.inetOrgPerson?.givenName].join(' '),
+            }
+          : null,
         comment: options?.comment,
         task: options?.task,
         state: JobState.CREATED,

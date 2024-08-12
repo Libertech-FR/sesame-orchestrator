@@ -44,7 +44,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     filters: FilterQuery<T>,
     data?: IdentitiesUpsertDto,
     options?: QueryOptions<T>,
-  ): Promise<[(HttpStatus.OK | HttpStatus.CREATED), ModifyResult<Query<T, T, any, T>>]> {
+  ): Promise<[HttpStatus.OK | HttpStatus.CREATED, ModifyResult<Query<T, T, any, T>>]> {
     const identity = await this.model.findOne(filters).exec();
     this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
 
@@ -57,13 +57,15 @@ export class IdentitiesService extends AbstractServiceSchema {
       }),
       ...crushedUpdate,
       'additionalFields.objectClasses': unique([
-        ...data.additionalFields?.objectClasses || [],
-        ...(identity as any)?.additionalFields?.objectClasses || [],
+        ...(data.additionalFields?.objectClasses || []),
+        ...((identity as any)?.additionalFields?.objectClasses || []),
       ]),
     });
 
     if (!data?.inetOrgPerson?.employeeNumber || !data?.inetOrgPerson?.employeeType) {
-      throw new BadRequestException('inetOrgPerson.employeeNumber and inetOrgPerson.employeeType are required for create identity.');
+      throw new BadRequestException(
+        'inetOrgPerson.employeeNumber and inetOrgPerson.employeeType are required for create identity.',
+      );
     }
 
     const logPrefix = `Validation [${data?.inetOrgPerson?.employeeType}:${data?.inetOrgPerson?.employeeNumber}]:`;
@@ -97,7 +99,7 @@ export class IdentitiesService extends AbstractServiceSchema {
         $set: {
           ...crushedUpdate,
           'additionalFields.objectClasses': data.additionalFields.objectClasses,
-          'lastSync': new Date(),
+          lastSync: new Date(),
         },
       },
       options,

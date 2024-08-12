@@ -9,10 +9,15 @@ import {
   Patch,
   Post,
   Query,
-  Res
+  Res,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@the-software-compagny/nestjs_module_restools';
+import {
+  FilterOptions,
+  FilterSchema,
+  SearchFilterOptions,
+  SearchFilterSchema,
+} from '@the-software-compagny/nestjs_module_restools';
 import { Response } from 'express';
 import { Document, Types, isValidObjectId } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
@@ -44,7 +49,7 @@ export class IdentitiesController extends AbstractController {
   }
   protected static readonly projection: PartialProjectionType<IdentitiesDto> = {
     state: 1,
-    initState:1,
+    initState: 1,
     inetOrgPerson: 1,
     additionalFields: 1,
   };
@@ -194,7 +199,7 @@ export class IdentitiesController extends AbstractController {
   }
 
   @Get('count')
-  @ApiOperation({ summary: 'Compte le nombre d\'identitées en fonctions des filtres fournis' })
+  @ApiOperation({ summary: "Compte le nombre d'identitées en fonctions des filtres fournis" })
   public async count(
     @Res() res: Response,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
@@ -245,7 +250,7 @@ export class IdentitiesController extends AbstractController {
   }
 
   @Patch('state')
-  @ApiOperation({ summary: 'Met à jour l\'état d\'une ou plusieurs <Identitées> en masse' })
+  @ApiOperation({ summary: "Met à jour l'état d'une ou plusieurs <Identitées> en masse" })
   public async updateStateMany(
     @Res() res: Response,
     @Body()
@@ -283,5 +288,4 @@ export class IdentitiesController extends AbstractController {
       });
     }
   }
-
 }

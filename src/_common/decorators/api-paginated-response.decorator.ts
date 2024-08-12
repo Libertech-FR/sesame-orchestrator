@@ -7,8 +7,8 @@ import { PaginatedResponseDto } from '~/_common/dto/paginated-response.dto';
 export const ApiPaginatedResponseDecorator = <TModel extends Type<any>>(
   model: TModel,
   options?: {
-    responseOptions?: ApiResponseOptions | null | undefined,
-    operationOptions?: ApiOperationOptions | null | undefined,
+    responseOptions?: ApiResponseOptions | null | undefined;
+    operationOptions?: ApiOperationOptions | null | undefined;
   },
 ) => {
   return applyDecorators(
@@ -34,6 +34,9 @@ export const ApiPaginatedResponseDecorator = <TModel extends Type<any>>(
       description: `Liste les entrées <${model.name.replace(/Dto$/, '')}> avec pagination et filtres`,
       ...options?.responseOptions,
     }),
-    ApiOperation({ summary: `Liste les entrées <${model.name.replace(/Dto$/, '')}> avec pagination et filtres`, ...options?.operationOptions }),
+    ApiOperation({
+      summary: `Liste les entrées <${model.name.replace(/Dto$/, '')}> avec pagination et filtres`,
+      ...options?.operationOptions,
+    }),
   );
 };

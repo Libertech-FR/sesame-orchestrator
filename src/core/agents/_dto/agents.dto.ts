@@ -78,4 +78,4 @@ export class AgentsDto extends AgentsCreateDto {
   public _id: string;
 }
 
-export class AgentsUpdateDto extends PartialType(AgentsCreateDto) { }
+export class AgentsUpdateDto extends PartialType(AgentsCreateDto) {}

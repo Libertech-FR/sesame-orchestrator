@@ -1,36 +1,47 @@
 // noinspection ExceptionCaughtLocallyJS
 
-import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Filestorage } from './_schemas/filestorage.schema'
-import { Document, FilterQuery, Model, ModifyResult, ProjectionType, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose'
-import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema'
-import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
-import { FactorydriveService } from '@the-software-compagny/nestjs_module_factorydrive'
-import { FilestorageCreateDto } from '~/core/filestorage/_dto/filestorage.dto'
-import { FsType } from '~/core/filestorage/_enum/fs-type.enum'
-import { omit } from 'radash'
-import { ModuleRef } from '@nestjs/core'
-import { createHash } from 'node:crypto'
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Filestorage } from './_schemas/filestorage.schema';
+import {
+  Document,
+  FilterQuery,
+  Model,
+  ModifyResult,
+  ProjectionType,
+  Query,
+  QueryOptions,
+  SaveOptions,
+  Types,
+  UpdateQuery,
+} from 'mongoose';
+import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
+import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
+import { FactorydriveService } from '@the-software-compagny/nestjs_module_factorydrive';
+import { FilestorageCreateDto } from '~/core/filestorage/_dto/filestorage.dto';
+import { FsType } from '~/core/filestorage/_enum/fs-type.enum';
+import { omit } from 'radash';
+import { ModuleRef } from '@nestjs/core';
+import { createHash } from 'node:crypto';
 
-export const EMBED_SEPARATOR = '#'
+export const EMBED_SEPARATOR = '#';
 
 function hasFileExtension(path: string): boolean {
-  const regex = /\.\w+$/
-  return regex.test(path)
+  const regex = /\.\w+$/;
+  return regex.test(path);
 }
 
 @Injectable(/*{ scope: Scope.REQUEST }*/)
 export class FilestorageService extends AbstractServiceSchema {
-  protected readonly reservedChars = ['\\', '?', '%', '*', ':', '|', '"', '<', '>', '#']
+  protected readonly reservedChars = ['\\', '?', '%', '*', ':', '|', '"', '<', '>', '#'];
 
   public constructor(
     protected readonly moduleRef: ModuleRef,
     @InjectModel(Filestorage.name) protected _model: Model<Filestorage & Document>,
     protected readonly storage: FactorydriveService,
-  ) // @Inject(REQUEST) protected req?: Request & { user?: Express.User },
-  {
-    super({ moduleRef /*, req*/ })
+  ) {
+    // @Inject(REQUEST) protected req?: Request & { user?: Express.User },
+    super({ moduleRef /*, req*/ });
   }
 
   /* eslint-disable */

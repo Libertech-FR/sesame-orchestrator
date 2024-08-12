@@ -32,16 +32,16 @@ export interface ConfigInstance {
   };
   factorydrive: {
     options:
-    | StorageManagerConfig
-    | {
-      disks: {
-        [key: string]: {
-          driver: 's3'
-          config: AmazonWebServicesS3StorageConfig
-        }
-      }
-    }
-  }
+      | StorageManagerConfig
+      | {
+          disks: {
+            [key: string]: {
+              driver: 's3';
+              config: AmazonWebServicesS3StorageConfig;
+            };
+          };
+        };
+  };
   passport: {
     options: IAuthModuleOptions;
   };
@@ -55,12 +55,16 @@ export interface ConfigInstance {
   };
   sms: {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
     host: string;
     systemId: string;
     password: string;
     sourceAddr: string;
     regionCode: string;
   };
+<<<<<<< HEAD
 =======
     host: string,
     systemId: string,
@@ -69,6 +73,8 @@ export interface ConfigInstance {
     regionCode: string
   },
 >>>>>>> 84c012f (chore: Add @the-software-compagny/nestjs_module_factorydrive and @the-software-compagny/nestjs_module_factorydrive-s3 dependencies)
+=======
+>>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
   frontPwd: {
     url: string;
     identityMailAttribute: string;

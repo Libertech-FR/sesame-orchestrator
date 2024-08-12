@@ -16,6 +16,7 @@ import { AuthGuard } from './_common/guards/auth.guard';
 import { MongooseValidationFilter } from './_common/filters/mongoose-validation.filter';
 import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { SettingsModule } from '~/settings/settings.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
@@ -29,6 +30,11 @@ import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handleba
 <<<<<<< HEAD
 >>>>>>> e7a3ec2 (chore: Remove unused MjmlAdapter import in app.module.ts)
 =======
+=======
+import { SettingstModule } from '~/settings/settings.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+>>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
 import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factorydrive';
 >>>>>>> 84c012f (chore: Add @the-software-compagny/nestjs_module_factorydrive and @the-software-compagny/nestjs_module_factorydrive-s3 dependencies)
 
@@ -102,7 +108,11 @@ import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factory
     RequestContextModule,
     CoreModule.register(),
     ManagementModule.register(),
+<<<<<<< HEAD
     SettingsModule.register(),
+=======
+    SettingstModule.register(),
+>>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
   ],
   controllers: [AppController],
   providers: [
@@ -125,4 +135,4 @@ import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factory
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

@@ -22,11 +22,20 @@ import {
 } from '@the-software-compagny/nestjs_module_restools';
 =======
   UploadedFile,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags, PartialType } from '@nestjs/swagger';
+<<<<<<< HEAD
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '@the-software-compagny/nestjs_module_restools';
 >>>>>>> f73fe12 (chore: Update filestorage configuration for identities module)
+=======
+import {
+  FilterOptions,
+  FilterSchema,
+  SearchFilterOptions,
+  SearchFilterSchema,
+} from '@the-software-compagny/nestjs_module_restools';
+>>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
 import { Response } from 'express';
 import { Document, Types, isValidObjectId } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
@@ -318,27 +327,25 @@ export class IdentitiesController extends AbstractController {
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) file?: Express.Multer.File,
   ): Promise<Response> {
-    const identity = await this._service.findOne<Identities>(searchFilterSchema)
+    const identity = await this._service.findOne<Identities>(searchFilterSchema);
     const filter = {
       namespace: 'identities',
-      path: join([
-        identity.inetOrgPerson?.employeeType,
-        identity.inetOrgPerson?.employeeNumber,
-        'jpegPhoto.jpg',
-      ].join('/')),
-    }
+      path: join(
+        [identity.inetOrgPerson?.employeeType, identity.inetOrgPerson?.employeeNumber, 'jpegPhoto.jpg'].join('/'),
+      ),
+    };
 
     const data = await this.filestorage.upsertFile(filter, {
       ...filter,
       type: FsType.FILE,
       file,
       ...omit(body, ['namespace', 'path', 'type', 'file'] as any),
-    })
+    });
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,
-    })
+    });
   }
 
   @Public()
@@ -349,15 +356,13 @@ export class IdentitiesController extends AbstractController {
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @Query('mime') mime: string = '',
   ): Promise<void> {
-    const identity = await this._service.findOne<Identities>(searchFilterSchema)
+    const identity = await this._service.findOne<Identities>(searchFilterSchema);
     const [data, stream, parent] = await this.filestorage.findOneWithRawData({
       namespace: 'identities',
-      path: join([
-        identity.inetOrgPerson?.employeeType,
-        identity.inetOrgPerson?.employeeNumber,
-        'jpegPhoto.jpg',
-      ].join('/')),
-    })
-    await this.transformerService.transform(mime, res, data, stream, parent)
+      path: join(
+        [identity.inetOrgPerson?.employeeType, identity.inetOrgPerson?.employeeNumber, 'jpegPhoto.jpg'].join('/'),
+      ),
+    });
+    await this.transformerService.transform(mime, res, data, stream, parent);
   }
 }

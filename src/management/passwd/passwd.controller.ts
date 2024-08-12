@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
 import { Controller, Post, Body, Res, Logger, HttpStatus, Get } from '@nestjs/common';
 import { PasswdService } from './passwd.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -8,6 +11,7 @@ import { AskTokenDto } from './_dto/ask-token.dto';
 import { VerifyTokenDto } from './_dto/verify-token.dto';
 import { ResetPasswordDto } from './_dto/reset-password.dto';
 import { omit } from 'radash';
+<<<<<<< HEAD
 import { PasswdadmService } from '~/settings/passwdadm.service';
 import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
 import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
@@ -39,6 +43,13 @@ import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
 import crypto from "crypto";
 import {ResetByCodeDto} from "~/management/passwd/_dto/reset-by-code-dto";
 >>>>>>> 85a4ce7 (save)
+=======
+import { PasswdadmService } from '~/settings/passwdadm/passwdadm.service';
+import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
+import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
+import crypto from 'crypto';
+import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code-dto';
+>>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
 
 @Controller('passwd')
 @ApiTags('management/passwd')
@@ -168,6 +179,7 @@ export class PasswdController {
       ...debug,
     });
   }
+<<<<<<< HEAD
   @Get('ioutdated')
   @ApiOperation({ summary: 'Compte donc l invitation d init n a pas été repondue dans les temps' })
   public async search(@Res() res: Response): Promise<
@@ -186,4 +198,6 @@ export class PasswdController {
       data,
     });
   }
+=======
+>>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
 }

@@ -1,10 +1,10 @@
-import {AbstractServiceSchema} from "~/_common/abstracts/abstract.service.schema";
-import {InjectModel} from "@nestjs/mongoose";
-import {Model} from "mongoose";
-import {Settings, SettingsSchema} from "~/settings/_schemas/settings.schema";
+import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Settings, SettingsSchema } from '~/settings/_schemas/settings.schema';
 
 export class AbstractSettingsService extends AbstractServiceSchema {
-  protected settingsName: string
+  protected settingsName: string;
 
   constructor(@InjectModel(Settings.name) protected _model: Model<Settings>) {
     super();
@@ -12,34 +12,33 @@ export class AbstractSettingsService extends AbstractServiceSchema {
 
   protected async getParameter(settingName: string): Promise<object | null> {
     try {
-      const enr=  await this.findOne<Settings>({name: settingName})
-      return enr.parameters
+      const enr = await this.findOne<Settings>({ name: settingName });
+      return enr.parameters;
     } catch (e) {
-      return this.defaultValues()
+      return this.defaultValues();
     }
   }
 
   protected async setParameter(settingName: string, parameters: object): Promise<any> {
     const enr = new this._model({
-      name: settingName
-      , parameters: parameters
-    })
-    const ok= await this.upsert(
-      {name: settingName},
+      name: settingName,
+      parameters: parameters,
+    });
+    const ok = await this.upsert(
+      { name: settingName },
       {
         $setOnInsert: {
-          name: settingName
+          name: settingName,
         },
         $set: {
-          "parameters": parameters
-        }
-      })
-    return ok
+          parameters: parameters,
+        },
+      },
+    );
+    return ok;
   }
 
   protected async defaultValues(): Promise<object> {
-
-    return {}
+    return {};
   }
-
 }

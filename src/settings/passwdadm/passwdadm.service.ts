@@ -1,27 +1,25 @@
-import {Document, Model} from "mongoose";
-import {InjectModel} from "@nestjs/mongoose";
-import stringEntropy from 'fast-password-entropy'
-import {pwnedPassword} from "hibp";
-import {PasswordPoliciesDto} from "~/settings/passwdadm/_dto/password-policy.dto";
-import {AbstractSettingsService} from "~/_common/abstracts/abstract-settings.service";
-import {Injectable} from "@nestjs/common";
+import { Document, Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import stringEntropy from 'fast-password-entropy';
+import { pwnedPassword } from 'hibp';
+import { PasswordPoliciesDto } from '~/settings/passwdadm/_dto/password-policy.dto';
+import { AbstractSettingsService } from '~/_common/abstracts/abstract-settings.service';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PasswdadmService extends AbstractSettingsService {
-
-
   public async getPolicies(): Promise<object> {
-    const parameters=this.getParameter('passwordpolicies')
-    return parameters
+    const parameters = this.getParameter('passwordpolicies');
+    return parameters;
   }
 
-  public async  setPolicies(policies: PasswordPoliciesDto):Promise<any>{
-    return this.setParameter('passwordpolicies',policies)
+  public async setPolicies(policies: PasswordPoliciesDto): Promise<any> {
+    return this.setParameter('passwordpolicies', policies);
   }
   public async checkPolicies(password: string): Promise<boolean> {
-     return true
+    return true;
   }
-/*
+  /*
   public async checkPolicies(password: string): Promise<boolean> {
     const policies = await this.getPolicies()
     if (password.length < policies.len) {
@@ -74,10 +72,6 @@ export class PasswdadmService extends AbstractSettingsService {
 
  */
   protected async defaultValues(): Promise<object> {
-    return new PasswordPoliciesDto()
+    return new PasswordPoliciesDto();
   }
-
-
-
-
 }

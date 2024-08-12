@@ -1,6 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { SettingsController } from '~/settings/settings.controller';
 import { SettingsService } from '~/settings/settings.service';
 import { SmsadmService } from '~/settings/smsadm.service';
@@ -28,6 +29,15 @@ import {SettingsService} from "~/settings/settings.service";
   ],
   providers: [SettingsService, SmsadmService, PasswdadmService, MailadmService],
   controllers: [SettingsController, SmsadmController, PasswdadmController, MailadmController],
+=======
+import { PasswdadmModule } from '~/settings/passwdadm/passwdadm.module';
+import { SettingsController } from '~/settings/settings.controller';
+import { SettingsService } from '~/settings/settings.service';
+@Module({
+  imports: [PasswdadmModule],
+  providers: [SettingsService],
+  controllers: [SettingsController],
+>>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
 })
 export class SettingsModule {
   public static register(): DynamicModule {

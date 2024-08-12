@@ -1,73 +1,16 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
 import { Controller, Post, Body, Res, Logger, HttpStatus, Get } from '@nestjs/common';
 import { PasswdService } from './passwd.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ChangePasswordDto } from './_dto/change-password.dto';
-import { AskTokenDto } from './_dto/ask-token.dto';
-import { VerifyTokenDto } from './_dto/verify-token.dto';
 import { ResetPasswordDto } from './_dto/reset-password.dto';
-import { omit } from 'radash';
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { PasswdadmService } from '~/settings/passwdadm.service';
 import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
 import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
-import crypto from 'crypto';
 import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
 import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
-import {
-  FilterOptions,
-  FilterSchema,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '@the-software-compagny/nestjs_module_restools';
 import { Document } from 'mongoose';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
-import { MixedValue } from '~/_common/types/mixed-value.type';
-=======
-import {Controller, Post, Body, Res, Logger, HttpStatus, Get} from '@nestjs/common';
-import {PasswdService} from './passwd.service';
-import {ApiTags, ApiOperation, ApiResponse} from '@nestjs/swagger';
-import {Response} from 'express';
-import {ChangePasswordDto} from './_dto/change-password.dto';
-import {AskTokenDto} from './_dto/ask-token.dto';
-import {VerifyTokenDto} from './_dto/verify-token.dto';
-import {ResetPasswordDto} from './_dto/reset-password.dto';
-import {omit} from "radash";
-import {PasswdadmService} from "~/settings/passwdadm/passwdadm.service";
-import {InitAccountDto} from "~/management/passwd/_dto/init-account.dto";
-import {InitResetDto} from "~/management/passwd/_dto/init-reset.dto";
-import crypto from "crypto";
-import {ResetByCodeDto} from "~/management/passwd/_dto/reset-by-code-dto";
->>>>>>> 85a4ce7 (save)
-=======
-import { PasswdadmService } from '~/settings/passwdadm/passwdadm.service';
-import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
-import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
-import crypto from 'crypto';
-import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code-dto';
->>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
-=======
-import { PasswdadmService } from '~/settings/passwdadm.service';
-import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
-import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
-import crypto from 'crypto';
-import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
-import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
-import {
-  FilterOptions,
-  FilterSchema,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '@the-software-compagny/nestjs_module_restools';
-import { Document } from 'mongoose';
-import { Identities } from '~/management/identities/_schemas/identities.schema';
-import { MixedValue } from '~/_common/types/mixed-value.type';
->>>>>>> 0e4700b (chore: Update filestorage configuration for identities module)
 
 @Controller('passwd')
 @ApiTags('management/passwd')
@@ -77,7 +20,7 @@ export class PasswdController {
   public constructor(
     private passwdService: PasswdService,
     private passwdadmService: PasswdadmService,
-  ) {}
+  ) { }
 
   @Post('change')
   @ApiOperation({ summary: 'Execute un job de changement de mot de passe sur le/les backends' })
@@ -99,28 +42,6 @@ export class PasswdController {
     });
   }
 
-  /*
-  @Post('gettoken')
-  @ApiOperation({summary: 'Récupère un jeton de réinitialisation de mot de passe'})
-  @ApiResponse({status: HttpStatus.OK, description: 'Retourne un jeton de réinitialisation de mot de passe'})
-  public async gettoken(@Body() asktoken: AskTokenDto, @Res() res: Response): Promise<Response> {
-    this.logger.log('GetToken for : ' + asktoken.uid);
-    const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
-    const token = await this.passwdService.askToken(asktoken, k, PasswdService.TOKEN_EXPIRATION);
-
-    return res.status(HttpStatus.OK).json({data: {token}});
-  }
-
-  @Post('verifytoken')
-  @ApiOperation({summary: 'Vérifie un jeton de réinitilisation de mot de passe'})
-  @ApiResponse({status: HttpStatus.OK})
-  public async verifyToken(@Body() body: VerifyTokenDto, @Res() res: Response): Promise<Response> {
-    this.logger.log('Verify token : ' + body.token);
-    const data = await this.passwdService.decryptToken(body.token);
-
-    return res.status(HttpStatus.OK).json({data});
-  }
-*/
   @Post('resetbycode')
   @ApiOperation({ summary: 'reinitialise le mot de passe avec le code reçu' })
   @ApiResponse({ status: HttpStatus.OK })
@@ -175,6 +96,7 @@ export class PasswdController {
       ...debug,
     });
   }
+
   @Post('initmany')
   @ApiOperation({ summary: "Initialise plusieurs identités. envoi un jeton par mail à l'identité" })
   @ApiResponse({ status: HttpStatus.OK })
@@ -184,6 +106,7 @@ export class PasswdController {
       message: 'identités initialisées',
     });
   }
+
   @Post('initreset')
   @ApiOperation({ summary: 'Demande l envoi de mail pour le reset' })
   @ApiResponse({ status: HttpStatus.OK })
@@ -197,7 +120,7 @@ export class PasswdController {
       ...debug,
     });
   }
-<<<<<<< HEAD
+
   @Get('ioutdated')
   @ApiOperation({ summary: 'Compte donc l invitation d init n a pas été repondue dans les temps' })
   public async search(@Res() res: Response): Promise<
@@ -216,6 +139,4 @@ export class PasswdController {
       data,
     });
   }
-=======
->>>>>>> 0cb4493 (chore: Update filestorage configuration for identities module)
 }

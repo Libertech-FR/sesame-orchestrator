@@ -143,11 +143,6 @@
                             <li>
                                     <span class="modifier">Static</span>
                                     <span class="modifier">Readonly</span>
-                                <a href="#CODE_EXPIRATION" >CODE_EXPIRATION</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Static</span>
-                                    <span class="modifier">Readonly</span>
                                 <a href="#RANDOM_BYTES_IV" >RANDOM_BYTES_IV</a>
                             </li>
                             <li>
@@ -159,11 +154,6 @@
                                     <span class="modifier">Static</span>
                                     <span class="modifier">Readonly</span>
                                 <a href="#TOKEN_ALGORITHM" >TOKEN_ALGORITHM</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Static</span>
-                                    <span class="modifier">Readonly</span>
-                                <a href="#TOKEN_EXPIRATION" >TOKEN_EXPIRATION</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -209,6 +199,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#checkInitOutDated" >checkInitOutDated</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#decryptToken" >decryptToken</a>
                             </li>
                             <li>
@@ -229,6 +224,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#initMany" >initMany</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#initReset" >initReset</a>
                             </li>
                             <li>
@@ -240,6 +240,11 @@
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#resetByCode" >resetByCode</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#setInitState" >setInitState</a>
                             </li>
                         </ul>
                     </td>
@@ -260,12 +265,12 @@
                 <tr>
                     <td class="col-md-4">
                                 <span class="modifier">Public</span>
-                        <code>constructor(backends: <a href="../injectables/BackendsService.html" target="_self">BackendsService</a>, identities: <a href="../injectables/IdentitiesService.html" target="_self">IdentitiesService</a>, mailer: MailerService, config: ConfigService, passwdadmService: <a href="../injectables/PasswdadmService.html" target="_self">PasswdadmService</a>, smsService: <a href="../injectables/SmsService.html" target="_self">SmsService</a>, redis: Redis)</code>
+                        <code>constructor(backends: <a href="../injectables/BackendsService.html" target="_self">BackendsService</a>, identities: <a href="../injectables/IdentitiesService.html" target="_self">IdentitiesService</a>, mailer: MailerService, config: ConfigService, passwdadmService: <a href="../injectables/PasswdadmService.html" target="_self">PasswdadmService</a>, smsadmService: <a href="../injectables/SmsadmService.html" target="_self">SmsadmService</a>, mailadmService: <a href="../injectables/MailadmService.html" target="_self">MailadmService</a>, redis: Redis)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/management/passwd/passwd.service.ts:51</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">src/management/passwd/passwd.service.ts:52</a></div>
                             </td>
                         </tr>
 
@@ -343,10 +348,22 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>smsService</td>
+                                                        <td>smsadmService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SmsService.html" target="_self" >SmsService</a></code>
+                                                                        <code><a href="../injectables/SmsadmService.html" target="_self" >SmsadmService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mailadmService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MailadmService.html" target="_self" >MailadmService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -403,8 +420,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="234"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:234</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="240"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:240</a></div>
                         </td>
                     </tr>
 
@@ -496,8 +513,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="180"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:180</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="186"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:186</a></div>
                         </td>
                     </tr>
 
@@ -547,6 +564,46 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkInitOutDated"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkInitOutDated</b></span>
+                        <a href="#checkInitOutDated"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkInitOutDated()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="433"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:433</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="decryptToken"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -566,8 +623,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="293"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:293</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="299"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:299</a></div>
                         </td>
                     </tr>
 
@@ -636,8 +693,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="271"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:271</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="277"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:277</a></div>
                         </td>
                     </tr>
 
@@ -718,8 +775,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="390"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:390</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="411"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:411</a></div>
                         </td>
                     </tr>
 
@@ -758,8 +815,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="134"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:134</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -809,6 +866,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="initMany"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>initMany</b></span>
+                        <a href="#initMany"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>initMany(ids: <a href="../classes/InitManyDto.html" target="_self">InitManyDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="397"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:397</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ids</td>
+                                            <td>
+                                                            <code><a href="../classes/InitManyDto.html" target="_self" >InitManyDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="initReset"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -828,8 +955,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="65"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:65</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="68"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:68</a></div>
                         </td>
                     </tr>
 
@@ -898,8 +1025,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="355"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:355</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="361"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:361</a></div>
                         </td>
                     </tr>
 
@@ -968,8 +1095,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="314"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:314</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="320"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:320</a></div>
                         </td>
                     </tr>
 
@@ -1015,45 +1142,94 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setInitState"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>setInitState</b></span>
+                        <a href="#setInitState"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setInitState(identity: <a href="../classes/Identities.html" target="_self">Identities</a>, state: <a href="../undefineds/InitStatesEnum.html" target="_self">InitStatesEnum</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="421"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:421</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>identity</td>
+                                            <td>
+                                                            <code><a href="../classes/Identities.html" target="_self" >Identities</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>state</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#InitStatesEnum" target="_self" >InitStatesEnum</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
             <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
     </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="CODE_EXPIRATION"></a>
-                    <span class="name">
-                            <span class="modifier">Static</span>
-                            <span class="modifier">Readonly</span>
-                        <span ><b>CODE_EXPIRATION</b></span>
-                        <a href="#CODE_EXPIRATION"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>1900</code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/management/passwd/passwd.service.ts:51</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -1080,7 +1256,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/management/passwd/passwd.service.ts:46</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">src/management/passwd/passwd.service.ts:50</a></div>
                         </td>
                     </tr>
 
@@ -1113,7 +1289,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/management/passwd/passwd.service.ts:45</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">src/management/passwd/passwd.service.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -1146,40 +1322,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/management/passwd/passwd.service.ts:48</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="TOKEN_EXPIRATION"></a>
-                    <span class="name">
-                            <span class="modifier">Static</span>
-                            <span class="modifier">Readonly</span>
-                        <span ><b>TOKEN_EXPIRATION</b></span>
-                        <a href="#TOKEN_EXPIRATION"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>604800</code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">src/management/passwd/passwd.service.ts:50</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">src/management/passwd/passwd.service.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -1328,12 +1471,14 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { InjectRedis } from &#x27;@nestjs-modules/ioredis&#x27;;
 import {
   BadRequestException,
+  HttpException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from &#x27;@nestjs/common&#x27;;
 import * as crypto from &#x27;crypto&#x27;;
+import { randomInt } from &#x27;crypto&#x27;;
 import Redis from &#x27;ioredis&#x27;;
 import { AbstractService } from &#x27;~/_common/abstracts/abstract.service&#x27;;
 import { ActionType } from &#x27;~/core/backends/_enum/action-type.enum&#x27;;
@@ -1343,18 +1488,20 @@ import { AskTokenDto } from &#x27;./_dto/ask-token.dto&#x27;;
 import { ChangePasswordDto } from &#x27;./_dto/change-password.dto&#x27;;
 import { ResetPasswordDto } from &#x27;./_dto/reset-password.dto&#x27;;
 import { IdentitiesService } from &#x27;../identities/identities.service&#x27;;
-import { pick, get } from &#x27;radash&#x27;;
+import { get, pick } from &#x27;radash&#x27;;
 import { Identities } from &#x27;../identities/_schemas/identities.schema&#x27;;
-import { MailerModule, MailerService } from &#x27;@nestjs-modules/mailer&#x27;;
+import { MailerService } from &#x27;@nestjs-modules/mailer&#x27;;
 import { InitAccountDto } from &#x27;~/management/passwd/_dto/init-account.dto&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { randomInt } from &#x27;crypto&#x27;;
-import { ResetByCodeDto } from &#x27;~/management/passwd/_dto/reset-by-code-dto&#x27;;
-import { PasswdadmService } from &#x27;~/settings/passwdadm/passwdadm.service&#x27;;
+import { ResetByCodeDto } from &#x27;~/management/passwd/_dto/reset-by-code.dto&#x27;;
+import { PasswdadmService } from &#x27;~/settings/passwdadm.service&#x27;;
 import { IdentityState } from &#x27;~/management/identities/_enums/states.enum&#x27;;
 import { InitResetDto } from &#x27;~/management/passwd/_dto/init-reset.dto&#x27;;
-import { SmsService } from &#x27;~/management/passwd/sms-service&#x27;;
-import { PasswordPoliciesDto } from &#x27;~/settings/passwdadm/_dto/password-policy.dto&#x27;;
+import { PasswordPoliciesDto } from &#x27;~/settings/_dto/password-policy.dto&#x27;;
+import { SmsadmService } from &#x27;~/settings/smsadm.service&#x27;;
+import { InitManyDto } from &#x27;~/management/passwd/_dto/init-many.dto&#x27;;
+import { InitStatesEnum } from &#x27;~/management/identities/_enums/init-state.enum&#x27;;
+import { MailadmService } from &#x27;~/settings/mailadm.service&#x27;;
 
 interface TokenData {
   k: string;
@@ -1374,15 +1521,14 @@ export class PasswdService extends AbstractService {
 
   public static readonly TOKEN_ALGORITHM &#x3D; &#x27;aes-256-gcm&#x27;;
 
-  public static readonly TOKEN_EXPIRATION &#x3D; 604800;
-  public static readonly CODE_EXPIRATION &#x3D; 1900;
   public constructor(
     protected readonly backends: BackendsService,
     protected readonly identities: IdentitiesService,
     protected mailer: MailerService,
     protected config: ConfigService,
     private passwdadmService: PasswdadmService,
-    private smsService: SmsService,
+    private smsadmService: SmsadmService,
+    private mailadmService: MailadmService,
     @InjectRedis() private readonly redis: Redis,
   ) {
     super();
@@ -1393,24 +1539,23 @@ export class PasswdService extends AbstractService {
     //envoi du mail
     try {
       const identity &#x3D; (await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: initDto.uid })) as Identities;
+      //prise des parametres
+      const params &#x3D; await this.passwdadmService.getPolicies();
       const k &#x3D; randomInt(100000, 999999);
       //asking for padding
       const padd &#x3D; await this.getPaddingForCode();
-      const mailAttribute &#x3D; this.config.get(&#x27;frontPwd.identityMailAttribute&#x27;);
+      const mailAttribute &#x3D; params.emailAttribute;
       const mail &#x3D; &lt;string&gt;get(identity.toObject(), mailAttribute);
-      const token &#x3D; await this.askToken(
-        { mail: mail, uid: initDto.uid },
-        padd + k.toString(16),
-        PasswdService.CODE_EXPIRATION,
-      );
+      const token &#x3D; await this.askToken({ mail: mail, uid: initDto.uid }, padd + k.toString(16), params.resetCodeTTL);
       this.logger.log(&#x27;Token :&#x27; + token + &#x27;  int : &#x27; + k.toString(10));
       if (initDto.type &#x3D;&#x3D;&#x3D; 0) {
         this.logger.log(&#x27;Reset password asked by mail for  : &#x27; + initDto.uid);
+        const smtpParams &#x3D; await this.mailadmService.getParams();
         if (mailAttribute !&#x3D;&#x3D; &#x27;&#x27;) {
           const displayName &#x3D; identity.inetOrgPerson.displayName;
           this.mailer
             .sendMail({
-              from: this.config.get(&#x27;mailer.sender&#x27;),
+              from: smtpParams.sender,
               to: mail,
               subject: &#x27;Reinitialisation de votre mot de passe&#x27;,
               template: &#x27;resetaccount&#x27;,
@@ -1439,10 +1584,10 @@ export class PasswdService extends AbstractService {
         const policies &#x3D; new PasswordPoliciesDto();
         if (policies.resetBySms &#x3D;&#x3D;&#x3D; true) {
           this.logger.log(&#x27;Reset password asked by SMS for  : &#x27; + initDto.uid);
-          const smsAttribute &#x3D; this.config.get(&#x27;frontPwd.identityMobileAttribute&#x27;);
+          const smsAttribute &#x3D; params.mobileAttribute;
           if (smsAttribute !&#x3D;&#x3D; &#x27;&#x27;) {
             const numTel &#x3D; &lt;string&gt;get(identity.toObject(), smsAttribute);
-            this.smsService.send(numTel, &#x27;Votre code de reinitialisation : &#x27; + k.toString(10));
+            await this.smsadmService.send(numTel, &#x27;Votre code de reinitialisation : &#x27; + k.toString(10));
           }
           return token;
         } else {
@@ -1463,17 +1608,19 @@ export class PasswdService extends AbstractService {
     try {
       const identity &#x3D; (await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: initDto.uid })) as Identities;
       //envoi du mail
-      const mailAttribute &#x3D; this.config.get(&#x27;frontPwd.identityMailAttribute&#x27;);
+      const params &#x3D; await this.passwdadmService.getPolicies();
+      const mailAttribute &#x3D; params.emailAttribute;
       this.logger.log(&#x27;mailer.identityMailAttribute : &#x27; + mailAttribute);
       if (mailAttribute !&#x3D;&#x3D; &#x27;&#x27;) {
         const mail &#x3D; &lt;string&gt;get(identity.toObject(), mailAttribute);
+        const smtpParams &#x3D; await this.mailadmService.getParams();
         //demande du token
         const k &#x3D; crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString(&#x27;hex&#x27;);
-        const token &#x3D; await this.askToken({ mail: mail, uid: initDto.uid }, k, PasswdService.TOKEN_EXPIRATION);
+        const token &#x3D; await this.askToken({ mail: mail, uid: initDto.uid }, k, params.initTokenTTL);
         //envoi du token
         this.mailer
           .sendMail({
-            from: this.config.get(&#x27;mailer.sender&#x27;),
+            from: smtpParams.sender,
             to: mail,
             subject: &#x27;Activation de votre compte&#x27;,
             template: &#x27;initaccount&#x27;,
@@ -1484,10 +1631,12 @@ export class PasswdService extends AbstractService {
           })
           .then(() &#x3D;&gt; {
             this.logger.log(&#x27;Init compte envoyé  pour uid&#x27; + initDto.uid + &#x27; à &#x27; + mail);
+            this.setInitState(identity, InitStatesEnum.SENT);
           })
           .catch((e) &#x3D;&gt; {
+            this.logger.error(&#x27;Erreur serveur lors de l envoi du mail&#x27; + e);
             throw new BadRequestException({
-              message: &#x27;Erreur serveur lors de l envoi du mail&#x27;,
+              message: &#x27;Erreur serveur lors de l envoi du mail&#x27; + e,
               error: &#x27;Bad Request&#x27;,
               statusCode: 400,
             });
@@ -1495,7 +1644,7 @@ export class PasswdService extends AbstractService {
 
         return true;
       } else {
-        this.logger.error(&#x27;Error while initAccount identityMailAttribute nor defined&#x27;);
+        this.logger.error(&#x27;Error while initAccount identityMailAttribute not defined&#x27;);
         return false;
       }
     } catch (e) {
@@ -1702,6 +1851,7 @@ export class PasswdService extends AbstractService {
 
       if (response?.status &#x3D;&#x3D;&#x3D; 0) {
         await this.redis.del(data.token);
+        await this.setInitState(identity, InitStatesEnum.INITIALIZED);
         return [_, response];
       }
 
@@ -1713,6 +1863,20 @@ export class PasswdService extends AbstractService {
       );
     }
   }
+  //Envoi le message d init à plusieurs identités
+  public async initMany(ids: InitManyDto): Promise&lt;any&gt; {
+    const identities &#x3D; await this.identities.find({ _id: { $in: ids.ids }, state: IdentityState.SYNCED });
+    if (identities.length &#x3D;&#x3D;&#x3D; 0) {
+      throw new HttpException(&#x27;Aucune identité trouvée.&#x27;, 404);
+    }
+    const updated &#x3D; await Promise.all(
+      identities.map((identity) &#x3D;&gt; {
+        this.logger.verbose(&#x27;send To :&#x27; + identity.get(&#x27;inetOrgPerson.uid&#x27;));
+        return this.initAccount({ uid: identity.get(&#x27;inetOrgPerson.uid&#x27;) });
+      }),
+    );
+    return updated as any;
+  }
   // genere des octect pour completer le code qui est de 4 octets et demi
   private async getPaddingForCode(): Promise&lt;string&gt; {
     let code &#x3D; &#x27;&#x27;;
@@ -1723,6 +1887,29 @@ export class PasswdService extends AbstractService {
       await this.redis.set(&#x27;CODEPADDING&#x27;, code);
     }
     return code;
+  }
+  private async setInitState(identity: Identities, state: InitStatesEnum): Promise&lt;any&gt; {
+    identity.initState &#x3D; state;
+    if (state &#x3D;&#x3D;&#x3D; InitStatesEnum.SENT) {
+      identity.initInfo.initDate &#x3D; new Date();
+      identity.initInfo.sentDate &#x3D; null;
+    } else if (state &#x3D;&#x3D;&#x3D; InitStatesEnum.INITIALIZED) {
+      identity.initInfo.sentDate &#x3D; new Date();
+    }
+    const ok &#x3D; await identity.save();
+    return ok;
+  }
+  // sort les identites qui n ont pas repondu dans le delai à l init de leurs comptes
+  public async checkInitOutDated(): Promise&lt;any&gt; {
+    const date &#x3D; new Date();
+    const params &#x3D; await this.passwdadmService.getPolicies();
+    date.setTime(date.getTime() - params.initTokenTTL * 1000);
+    console.log(&#x27;modifié:&#x27; + date);
+    const identities &#x3D; await this.identities.find({
+      initState: InitStatesEnum.SENT,
+      &#x27;initInfo.initDate&#x27;: { $lt: date },
+    });
+    return identities;
   }
 }
 </code></pre>

@@ -91,7 +91,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >PasswdadmService</li>
+  <li class="breadcrumb-item" >SmsadmService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -115,7 +115,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/settings/passwdadm.service.ts</code>
+            <code>src/settings/smsadm.service.ts</code>
         </p>
 
 
@@ -183,22 +183,22 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#checkPolicies" >checkPolicies</a>
+                                <a href="#getParams" >getParams</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#send" >send</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#setParams" >setParams</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
                                     <span class="modifier">Async</span>
                                 <a href="#defaultValues" >defaultValues</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getPolicies" >getPolicies</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#setPolicies" >setPolicies</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
@@ -277,27 +277,67 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="checkPolicies"></a>
+                    <a name="getParams"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>checkPolicies</b></span>
-                        <a href="#checkPolicies"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getParams</b></span>
+                        <a href="#getParams"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkPolicies(password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>getParams()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">src/settings/passwdadm.service.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="8"
+                                    class="link-to-prism">src/settings/smsadm.service.ts:8</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;SmsSettingsDto | null&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="send"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>send</b></span>
+                        <a href="#send"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>send(telNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, message: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">src/settings/smsadm.service.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -318,7 +358,19 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>password</td>
+                                                <td>telNumber</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>message</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
@@ -333,7 +385,77 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setParams"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>setParams</b></span>
+                        <a href="#setParams"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setParams(params: <a href="../classes/SmsSettingsDto.html" target="_self">SmsSettingsDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="12"
+                                    class="link-to-prism">src/settings/smsadm.service.ts:12</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>params</td>
+                                            <td>
+                                                            <code><a href="../classes/SmsSettingsDto.html" target="_self" >SmsSettingsDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -372,137 +494,19 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractSettingsService.html#source" target="_self" >AbstractSettingsService:71</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractSettingsService.html#source" target="_self" >AbstractSettingsService:41</a></code>
 </div>
                         </td>
                     </tr>
 
-                    <tr>
-                        <td class="col-md-4">
-                            <b>Type parameters :</b>
-                            <ul class="type-parameters">
-                                    <li>T</li>
-                            </ul>
-                        </td>
-                    </tr>
 
             <tr>
                 <td class="col-md-4">
 
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;T&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;object&gt;</code>
 
                         </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getPolicies"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>getPolicies</b></span>
-                        <a href="#getPolicies"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getPolicies()</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">src/settings/passwdadm.service.ts:12</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;PasswordPoliciesDto&gt;</code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="setPolicies"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>setPolicies</b></span>
-                        <a href="#setPolicies"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>setPolicies(policies: <a href="../classes/PasswordPoliciesDto.html" target="_self">PasswordPoliciesDto</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">src/settings/passwdadm.service.ts:17</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>policies</td>
-                                            <td>
-                                                            <code><a href="../classes/PasswordPoliciesDto.html" target="_self" >PasswordPoliciesDto</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
@@ -1821,78 +1825,85 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Document, Model } from &#x27;mongoose&#x27;;
-import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
-import stringEntropy from &#x27;fast-password-entropy&#x27;;
-import { pwnedPassword } from &#x27;hibp&#x27;;
-import { PasswordPoliciesDto } from &#x27;~/settings/_dto/password-policy.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { AbstractSettingsService } from &#x27;~/settings/_abstracts/abstract-settings.service&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { SmsSettingsDto } from &#x27;~/settings/_dto/sms.settings.dto&#x27;;
+import { parsePhoneNumber } from &#x27;awesome-phonenumber&#x27;;
 
 @Injectable()
-export class PasswdadmService extends AbstractSettingsService {
-  public async getPolicies(): Promise&lt;PasswordPoliciesDto&gt; {
-    const parameters &#x3D; this.getParameter&lt;PasswordPoliciesDto&gt;(&#x27;passwordpolicies&#x27;);
-    return parameters;
+export class SmsadmService extends AbstractSettingsService {
+  public async getParams(): Promise&lt;SmsSettingsDto | null&gt; {
+    const data &#x3D; await this.getParameter&lt;SmsSettingsDto&gt;(&#x27;smsServer&#x27;);
+    return data;
   }
-
-  public async setPolicies(policies: PasswordPoliciesDto): Promise&lt;any&gt; {
-    return this.setParameter(&#x27;passwordpolicies&#x27;, policies);
+  public async setParams(params: SmsSettingsDto): Promise&lt;any&gt; {
+    return await this.setParameter(&#x27;smsServer&#x27;, params);
   }
-
-  public async checkPolicies(password: string): Promise&lt;boolean&gt; {
-    const policies &#x3D; await this.getPolicies();
-    if (password.length &lt; policies.len) {
-      this.logger.error(&#x27;Password too short&#x27;);
-      return false;
+  public async send(telNumber: string, message: string) {
+    this.logger.verbose(&#x27;Envoi SMS : &#x27; + telNumber + &#x27; message :&#x27; + message);
+    const params &#x3D; await this.getParams();
+    const host &#x3D; params.host;
+    const systemId &#x3D; params.systemId;
+    const password &#x3D; params.password;
+    const sourceAddr &#x3D; params.sourceAddr;
+    const smpp &#x3D; require(&#x27;smpp&#x27;);
+    const logger &#x3D; this.logger;
+    //normalisation du numero de telephone
+    const pTelNumber &#x3D; parsePhoneNumber(telNumber, { regionCode: params.regionCode });
+    this.logger.verbose(&#x27;phone number parsed :&#x27; + pTelNumber.number.e164);
+    if (pTelNumber.valid &#x3D;&#x3D;&#x3D; true) {
+      const session &#x3D; smpp.connect(
+        {
+          url: host,
+          debug: false,
+        },
+        function () {
+          session.bind_transmitter(
+            {
+              system_id: systemId,
+              password: password,
+            },
+            function (pdu) {
+              if (pdu.command_status &#x3D;&#x3D;&#x3D; 0) {
+                // Successfully bound
+                session.submit_sm(
+                  {
+                    source_addr_ton: 5,
+                    source_addr_npi: 0,
+                    source_addr: sourceAddr,
+                    destination_addr: pTelNumber.number.e164,
+                    dest_addr_ton: 1,
+                    dest_addr_npi: 1,
+                    data_coding: &#x27;GSM 03.38&#x27;,
+                    short_message: message,
+                  },
+                  function (pdu) {
+                    if (pdu.command_status &#x3D;&#x3D;&#x3D; 0) {
+                      // Message successfully sent
+                      console.log(&#x27;SUCCESS : &#x27; + pdu.message_id);
+                      logger.log(&#x27;SMS SUCCESS &#x27;);
+                      session.unbind();
+                      session.close();
+                    } else {
+                      console.error(&#x27;FAIL : &#x27; + pdu.command_status);
+                      session.unbind();
+                      session.close();
+                    }
+                  },
+                );
+              }
+              session.on(&#x27;error&#x27;, function (error) {
+                logger.error(&#x27;SMS ERREUR &#x27; + error);
+                session.unbind();
+                session.close();
+              });
+            },
+          );
+        },
+      );
+    } else {
+      this.logger.error(&#x27;Numero invalide :&#x27; + telNumber);
     }
-    //tes caracteres speciaux
-    if (policies.hasSpecialChars &gt; 0) {
-      if (/[!@#\$%\^\&amp;*\)\(+&#x3D;._-]/.test(password) &#x3D;&#x3D;&#x3D; false) {
-        this.logger.error(&#x27;must have special characters&#x27;);
-        return false;
-      }
-    }
-    if (policies.hasLowerCase &gt; 0) {
-      if (/[a-z]/.test(password) &#x3D;&#x3D;&#x3D; false) {
-        this.logger.error(&#x27;must have lower case characters&#x27;);
-        return false;
-      }
-    }
-    if (policies.hasUpperCase &gt; 0) {
-      if (/[A-Z]/.test(password) &#x3D;&#x3D;&#x3D; false) {
-        this.logger.error(&#x27;must have upper case characters&#x27;);
-        return false;
-      }
-    }
-    if (policies.hasNumbers &gt; 0) {
-      if (/[A-Z]/.test(password) &#x3D;&#x3D;&#x3D; false) {
-        this.logger.error(&#x27;must have number&#x27;);
-        return false;
-      }
-    }
-    //calcul de l&#x27;entropie
-    if (policies.minComplexity &gt; 0) {
-      const c &#x3D; stringEntropy(password);
-      if (c &lt; policies.minComplexity) {
-        this.logger.error(&#x27;entropie trop faible&#x27;);
-        return false;
-      }
-    }
-
-    // check si le mdp est pwned
-    if (policies.checkPwned &#x3D;&#x3D;&#x3D; true) {
-      const numPwns &#x3D; await pwnedPassword(password);
-      if (numPwns &gt; 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  protected async defaultValues&lt;T &#x3D; PasswordPoliciesDto&gt;(): Promise&lt;T&gt; {
-    return &lt;T&gt;new PasswordPoliciesDto();
   }
 }
 </code></pre>
@@ -1938,7 +1949,7 @@ export class PasswdadmService extends AbstractSettingsService {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'PasswdadmService.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SmsadmService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

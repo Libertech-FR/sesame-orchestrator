@@ -232,6 +232,9 @@
                             <a href="#inetOrgPersonSchema" title="src/management/identities/_schemas/_parts/inetOrgPerson.part.ts" ><b>inetOrgPersonSchema</b>&nbsp;&nbsp;&nbsp;(src/.../inetOrgPerson.part.ts)</a>
                         </li>
                         <li>
+                            <a href="#InitInfoPartSchema" title="src/management/identities/_schemas/_parts/init-info.part.schema.ts" ><b>InitInfoPartSchema</b>&nbsp;&nbsp;&nbsp;(src/.../init-info.part.schema.ts)</a>
+                        </li>
+                        <li>
                             <a href="#invalidObjectClassAdditionalFieldsStub" title="src/management/identities/validations/_stubs/identities.validation.stub.ts" ><b>invalidObjectClassAdditionalFieldsStub</b>&nbsp;&nbsp;&nbsp;(src/.../identities.validation.stub.ts)</a>
                         </li>
                         <li>
@@ -1580,6 +1583,7 @@
     lifecycle: IdentityLifecycle.INACTIVE,
     inetOrgPerson: inetOrgPersonDtoStub(),
     additionalFields: additionalFieldsPartDtoStub(),
+    initState: InitStatesEnum.NOSENT,
   };
 }</code>
                     </td>
@@ -1607,6 +1611,7 @@
   return {
     state: IdentityState.TO_COMPLETE,
     lifecycle: IdentityLifecycle.INACTIVE,
+    initState: InitStatesEnum.NOSENT,
     inetOrgPerson,
     additionalFields: additionalFieldsPartDtoStub(),
   };
@@ -1704,6 +1709,29 @@
   { employeeNumber: 1, employeeType: 1 },
   { unique: true },
 )</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/management/identities/_schemas/_parts/init-info.part.schema.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="InitInfoPartSchema"></a>
+                    <span class="name">
+                        <span ><b>InitInfoPartSchema</b></span>
+                        <a href="#InitInfoPartSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SchemaFactory.createForClass(InitInfoPart)</code>
                     </td>
                 </tr>
 

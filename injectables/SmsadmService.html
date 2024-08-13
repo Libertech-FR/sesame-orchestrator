@@ -1846,7 +1846,7 @@ export class SmsadmService extends AbstractSettingsService {
     const systemId &#x3D; params.systemId;
     const password &#x3D; params.password;
     const sourceAddr &#x3D; params.sourceAddr;
-    const smpp &#x3D; require(&#x27;smpp&#x27;);
+    const smpp &#x3D; await import(&#x27;smpp&#x27;);
     const logger &#x3D; this.logger;
     //normalisation du numero de telephone
     const pTelNumber &#x3D; parsePhoneNumber(telNumber, { regionCode: params.regionCode });

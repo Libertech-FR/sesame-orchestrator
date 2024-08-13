@@ -206,8 +206,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">src/settings/passwdadm.controller.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">src/settings/passwdadm.controller.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -286,8 +286,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">src/settings/passwdadm.controller.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">src/settings/passwdadm.controller.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -349,13 +349,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Post, Body, Res, Logger, HttpStatus, Get } from &#x27;@nestjs/common&#x27;;
-import { PasswdadmService } from &#x27;./passwdadm.service&#x27;;
-import { ApiTags, ApiOperation, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, HttpStatus, Logger, Post, Res } from &#x27;@nestjs/common&#x27;;
+import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { Response } from &#x27;express&#x27;;
-import { omit } from &#x27;radash&#x27;;
-import { InitAccountDto } from &#x27;~/management/passwd/_dto/init-account.dto&#x27;;
 import { PasswordPoliciesDto } from &#x27;~/settings/_dto/password-policy.dto&#x27;;
+import { PasswdadmService } from &#x27;./passwdadm.service&#x27;;
 
 @Controller(&#x27;settings/passwdadm&#x27;)
 @ApiTags(&#x27;settings&#x27;)

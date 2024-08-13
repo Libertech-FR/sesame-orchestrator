@@ -286,8 +286,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">src/settings/smsadm.controller.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">src/settings/smsadm.controller.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -358,20 +358,23 @@ import { SmsSettingsDto } from &#x27;~/settings/_dto/sms.settings.dto&#x27;;
 @Controller(&#x27;settings/sms&#x27;)
 @ApiTags(&#x27;settings&#x27;)
 export class SmsadmController {
-  private readonly logger &#x3D; new Logger(SmsadmController.name);
-  public constructor(private smsadmService: SmsadmService) {}
+  public constructor(private smsadmService: SmsadmService) { }
+
   @Get(&#x27;get&#x27;)
   @ApiOperation({ summary: &#x27;Retourne les parametres pour l envoi SMS&#x27; })
   @ApiResponse({ status: HttpStatus.OK })
   public async get(@Res() res: Response): Promise&lt;Response&gt; {
     const data &#x3D; await this.smsadmService.getParams();
+
     return res.status(HttpStatus.OK).json({ data });
   }
+
   @Post(&#x27;set&#x27;)
   @ApiOperation({ summary: &#x27;Enregistre les parametres&#x27; })
   @ApiResponse({ status: HttpStatus.OK })
   public async set(@Body() body: SmsSettingsDto, @Res() res: Response): Promise&lt;Response&gt; {
     const data &#x3D; await this.smsadmService.setParams(body);
+
     return res.status(HttpStatus.OK).json({ data });
   }
 }

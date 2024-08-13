@@ -142,11 +142,13 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#mail" >mail</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#uid" >uid</a>
                             </li>
                         </ul>
@@ -176,6 +178,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>mail</b></span>
                         <a href="#mail"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -213,6 +216,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>uid</b></span>
                         <a href="#uid"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -260,11 +264,11 @@ import { IsString } from &#x27;class-validator&#x27;;
 export class AskTokenDto {
   @IsString()
   @ApiProperty({ example: &#x27;paul.bismuth&#x27;, description: &#x27;User id&#x27; })
-  uid: string;
+  public uid: string;
 
   @ApiProperty({ example: &#x27;monemail@mondomaine.com&#x27;, description: &#x27;secondary mail&#x27; })
   @IsString()
-  mail: string;
+  public mail: string;
 }
 </code></pre>
     </div>

@@ -142,16 +142,19 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#code" >code</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#newpassword" >newpassword</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#token" >token</a>
                             </li>
                         </ul>
@@ -181,6 +184,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>code</b></span>
                         <a href="#code"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -218,6 +222,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>newpassword</b></span>
                         <a href="#newpassword"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -240,7 +245,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/management/passwd/_dto/reset-by-code.dto.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/management/passwd/_dto/reset-by-code.dto.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -255,6 +260,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>token</b></span>
                         <a href="#token"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -302,14 +308,15 @@ import { IsNumber, IsString } from &#x27;class-validator&#x27;;
 export class ResetByCodeDto {
   @IsString()
   @ApiProperty({ example: &#x27;3F4AC...&#x27;, description: &#x27;Token received by initreset&#x27; })
-  token: string;
+  public token: string;
 
   @IsNumber()
   @ApiProperty({ example: &#x27;123456&#x27;, description: &#x27;Code received by email or Sms&#x27; })
-  code: number;
+  public code: number;
+
   @IsString()
   @ApiProperty({ example: &#x27;hdfddyf18A&#x27;, description: &#x27;new password&#x27; })
-  newpassword: string;
+  public newpassword: string;
 }
 </code></pre>
     </div>

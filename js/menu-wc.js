@@ -572,13 +572,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/PasswdModule.html" data-type="entity-link" >PasswdModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-PasswdModule-35d8c442e2fea21309a8fd9dbbbd6e31901d880bd20ab75eae29c47582d2c4130ea81897492227fec761539b94d277bff246f8782bfb35b8a80099fe1b6fe64d"' : 'data-bs-target="#xs-controllers-links-module-PasswdModule-35d8c442e2fea21309a8fd9dbbbd6e31901d880bd20ab75eae29c47582d2c4130ea81897492227fec761539b94d277bff246f8782bfb35b8a80099fe1b6fe64d"' }>
+                                            'data-bs-target="#controllers-links-module-PasswdModule-06e6d2c738c75d287477e441850e32cb0703c1da8de11a97fdd900e550ff447eca132a4cdab6f500725af9ae69da8702581fdfc8c2b1507dedda86afb23f3c2b"' : 'data-bs-target="#xs-controllers-links-module-PasswdModule-06e6d2c738c75d287477e441850e32cb0703c1da8de11a97fdd900e550ff447eca132a4cdab6f500725af9ae69da8702581fdfc8c2b1507dedda86afb23f3c2b"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-PasswdModule-35d8c442e2fea21309a8fd9dbbbd6e31901d880bd20ab75eae29c47582d2c4130ea81897492227fec761539b94d277bff246f8782bfb35b8a80099fe1b6fe64d"' :
-                                            'id="xs-controllers-links-module-PasswdModule-35d8c442e2fea21309a8fd9dbbbd6e31901d880bd20ab75eae29c47582d2c4130ea81897492227fec761539b94d277bff246f8782bfb35b8a80099fe1b6fe64d"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-PasswdModule-06e6d2c738c75d287477e441850e32cb0703c1da8de11a97fdd900e550ff447eca132a4cdab6f500725af9ae69da8702581fdfc8c2b1507dedda86afb23f3c2b"' :
+                                            'id="xs-controllers-links-module-PasswdModule-06e6d2c738c75d287477e441850e32cb0703c1da8de11a97fdd900e550ff447eca132a4cdab6f500725af9ae69da8702581fdfc8c2b1507dedda86afb23f3c2b"' }>
                                             <li class="link">
                                                 <a href="controllers/PasswdController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >PasswdController</a>
                                             </li>
@@ -586,13 +586,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-PasswdModule-35d8c442e2fea21309a8fd9dbbbd6e31901d880bd20ab75eae29c47582d2c4130ea81897492227fec761539b94d277bff246f8782bfb35b8a80099fe1b6fe64d"' : 'data-bs-target="#xs-injectables-links-module-PasswdModule-35d8c442e2fea21309a8fd9dbbbd6e31901d880bd20ab75eae29c47582d2c4130ea81897492227fec761539b94d277bff246f8782bfb35b8a80099fe1b6fe64d"' }>
+                                        'data-bs-target="#injectables-links-module-PasswdModule-06e6d2c738c75d287477e441850e32cb0703c1da8de11a97fdd900e550ff447eca132a4cdab6f500725af9ae69da8702581fdfc8c2b1507dedda86afb23f3c2b"' : 'data-bs-target="#xs-injectables-links-module-PasswdModule-06e6d2c738c75d287477e441850e32cb0703c1da8de11a97fdd900e550ff447eca132a4cdab6f500725af9ae69da8702581fdfc8c2b1507dedda86afb23f3c2b"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-PasswdModule-35d8c442e2fea21309a8fd9dbbbd6e31901d880bd20ab75eae29c47582d2c4130ea81897492227fec761539b94d277bff246f8782bfb35b8a80099fe1b6fe64d"' :
-                                        'id="xs-injectables-links-module-PasswdModule-35d8c442e2fea21309a8fd9dbbbd6e31901d880bd20ab75eae29c47582d2c4130ea81897492227fec761539b94d277bff246f8782bfb35b8a80099fe1b6fe64d"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-PasswdModule-06e6d2c738c75d287477e441850e32cb0703c1da8de11a97fdd900e550ff447eca132a4cdab6f500725af9ae69da8702581fdfc8c2b1507dedda86afb23f3c2b"' :
+                                        'id="xs-injectables-links-module-PasswdModule-06e6d2c738c75d287477e441850e32cb0703c1da8de11a97fdd900e550ff447eca132a4cdab6f500725af9ae69da8702581fdfc8c2b1507dedda86afb23f3c2b"' }>
                                         <li class="link">
                                             <a href="injectables/PasswdService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >PasswdService</a>
                                         </li>
@@ -944,9 +944,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/PasswordPoliciesDto.html" data-type="entity-link" >PasswordPoliciesDto</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/PasswordPoliciesDto-1.html" data-type="entity-link" >PasswordPoliciesDto</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ResetByCodeDto.html" data-type="entity-link" >ResetByCodeDto</a>

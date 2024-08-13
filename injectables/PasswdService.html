@@ -420,8 +420,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="240"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:240</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="241"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:241</a></div>
                         </td>
                     </tr>
 
@@ -513,8 +513,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="186"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:186</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="187"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:187</a></div>
                         </td>
                     </tr>
 
@@ -583,8 +583,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="433"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:433</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="442"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:442</a></div>
                         </td>
                     </tr>
 
@@ -623,8 +623,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="299"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:299</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="302"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:302</a></div>
                         </td>
                     </tr>
 
@@ -693,8 +693,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="277"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:277</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="279"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:279</a></div>
                         </td>
                     </tr>
 
@@ -775,8 +775,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="411"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:411</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="418"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:418</a></div>
                         </td>
                     </tr>
 
@@ -885,8 +885,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="397"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:397</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="403"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:403</a></div>
                         </td>
                     </tr>
 
@@ -1025,8 +1025,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="361"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:361</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="366"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:366</a></div>
                         </td>
                     </tr>
 
@@ -1095,8 +1095,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="320"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:320</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="324"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:324</a></div>
                         </td>
                     </tr>
 
@@ -1165,8 +1165,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="421"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:421</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="429"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:429</a></div>
                         </td>
                     </tr>
 
@@ -1652,6 +1652,7 @@ export class PasswdService extends AbstractService {
       return false;
     }
   }
+  
   //Changement du password
   public async change(passwdDto: ChangePasswordDto): Promise&lt;[Jobs, any]&gt; {
     try {
@@ -1743,6 +1744,7 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException(&#x27;Impossible de générer un token, une erreur est survenue&#x27;);
     }
   }
+
   // decrypte le token à l aide du code
   public async decryptTokenWithCode(token: string, code: number): Promise&lt;CipherData&gt; {
     try {
@@ -1765,6 +1767,7 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException(&#x27;Invalid token xx&#x27;);
     }
   }
+
   // decrypte le token d&#x27;initialisation du compte
   public async decryptToken(token: string): Promise&lt;CipherData&gt; {
     try {
@@ -1786,6 +1789,7 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException(&#x27;Invalid token&#x27;);
     }
   }
+
   // reset du password
   public async resetByCode(data: ResetByCodeDto): Promise&lt;[Jobs, any]&gt; {
     this.logger.log(&#x27;resetByCode : &#x27; + data.token + &#x27; &#x27; + data.code);
@@ -1827,6 +1831,7 @@ export class PasswdService extends AbstractService {
       );
     }
   }
+
   // methode pour le reset par token (pour l initialisation du compte)
   public async reset(data: ResetPasswordDto): Promise&lt;[Jobs, any]&gt; {
     const tokenData &#x3D; await this.decryptToken(data.token);
@@ -1863,6 +1868,7 @@ export class PasswdService extends AbstractService {
       );
     }
   }
+
   //Envoi le message d init à plusieurs identités
   public async initMany(ids: InitManyDto): Promise&lt;any&gt; {
     const identities &#x3D; await this.identities.find({ _id: { $in: ids.ids }, state: IdentityState.SYNCED });
@@ -1877,6 +1883,7 @@ export class PasswdService extends AbstractService {
     );
     return updated as any;
   }
+
   // genere des octect pour completer le code qui est de 4 octets et demi
   private async getPaddingForCode(): Promise&lt;string&gt; {
     let code &#x3D; &#x27;&#x27;;
@@ -1888,6 +1895,7 @@ export class PasswdService extends AbstractService {
     }
     return code;
   }
+
   private async setInitState(identity: Identities, state: InitStatesEnum): Promise&lt;any&gt; {
     identity.initState &#x3D; state;
     if (state &#x3D;&#x3D;&#x3D; InitStatesEnum.SENT) {
@@ -1899,6 +1907,7 @@ export class PasswdService extends AbstractService {
     const ok &#x3D; await identity.save();
     return ok;
   }
+
   // sort les identites qui n ont pas repondu dans le delai à l init de leurs comptes
   public async checkInitOutDated(): Promise&lt;any&gt; {
     const date &#x3D; new Date();

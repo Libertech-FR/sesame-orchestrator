@@ -204,6 +204,11 @@
                 </tr>
                 <tr>
                     <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;smtp://localhost:25&#x27;</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
                         <b>Decorators : </b>
                         <br />
                         <code>
@@ -251,7 +256,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/settings/_dto/mail.settings.dto.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/settings/_dto/mail.settings.dto.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -289,7 +294,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/settings/_dto/mail.settings.dto.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/settings/_dto/mail.settings.dto.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -327,7 +332,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/settings/_dto/mail.settings.dto.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/settings/_dto/mail.settings.dto.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -352,13 +357,16 @@ import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 export class MailSettingsDto {
   @IsUrl({ protocols: [&#x27;smtp&#x27;, &#x27;smtps&#x27;], require_protocol: true })
   @ApiProperty({ example: &#x27;smtp://smscsim.smpp.org:25&#x27;, description: &#x27;Serveur SMTP&#x27;, type: String })
-  public host: string;
+  public host: string &#x3D; &#x27;smtp://localhost:25&#x27;;
+
   @IsEmail()
   @ApiProperty({ example: &#x27;no-reply@mondomaine&#x27;, description: &#x27;Emetteur&#x27;, type: String })
   public sender: string;
+
   @IsString()
   @ApiProperty({ example: &#x27;monlogin@mondomaine&#x27;, description: &#x27;username&#x27;, type: String })
   public username: string;
+
   @IsString()
   @ApiProperty({ example: &#x27;myPassword&#x27;, description: &#x27;password&#x27;, type: String })
   public password: string;

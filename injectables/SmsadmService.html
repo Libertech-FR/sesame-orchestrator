@@ -336,8 +336,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">src/settings/smsadm.service.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">src/settings/smsadm.service.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -418,8 +418,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">src/settings/smsadm.service.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">src/settings/smsadm.service.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -1836,9 +1836,11 @@ export class SmsadmService extends AbstractSettingsService {
     const data &#x3D; await this.getParameter&lt;SmsSettingsDto&gt;(&#x27;smsServer&#x27;);
     return data;
   }
+  
   public async setParams(params: SmsSettingsDto): Promise&lt;any&gt; {
     return await this.setParameter(&#x27;smsServer&#x27;, params);
   }
+
   public async send(telNumber: string, message: string) {
     this.logger.verbose(&#x27;Envoi SMS : &#x27; + telNumber + &#x27; message :&#x27; + message);
     const params &#x3D; await this.getParams();

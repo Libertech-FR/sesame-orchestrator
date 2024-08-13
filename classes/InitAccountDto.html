@@ -142,6 +142,7 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#uid" >uid</a>
                             </li>
                         </ul>
@@ -171,6 +172,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>uid</b></span>
                         <a href="#uid"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -218,7 +220,7 @@ import { IsString } from &#x27;class-validator&#x27;;
 export class InitAccountDto {
   @ApiProperty({ example: &#x27;uid&#x27;, description: &#x27;paul.smith&#x27; })
   @IsString()
-  uid: string;
+  public uid: string;
 }
 </code></pre>
     </div>

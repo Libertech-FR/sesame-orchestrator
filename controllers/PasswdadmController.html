@@ -206,8 +206,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">src/settings/passwdadm.controller.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">src/settings/passwdadm.controller.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -286,8 +286,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">src/settings/passwdadm.controller.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">src/settings/passwdadm.controller.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -358,23 +358,23 @@ import { PasswdadmService } from &#x27;./passwdadm.service&#x27;;
 @Controller(&#x27;settings/passwdadm&#x27;)
 @ApiTags(&#x27;settings&#x27;)
 export class PasswdadmController {
-  private readonly logger &#x3D; new Logger(PasswdadmController.name);
-
-  public constructor(private passwdadmService: PasswdadmService) {}
+  public constructor(private passwdadmService: PasswdadmService) { }
 
   @Post(&#x27;setpolicies&#x27;)
   @ApiOperation({ summary: &#x27;enregistre la police de mdp&#x27; })
   @ApiResponse({ status: HttpStatus.OK })
   public async setPolicies(@Body() body: PasswordPoliciesDto, @Res() res: Response): Promise&lt;Response&gt; {
     const data &#x3D; await this.passwdadmService.setPolicies(body);
-    //const datax&#x3D;omit(data.toObject,[&#x27;_id&#x27;])
+
     return res.status(HttpStatus.OK).json({ data });
   }
+
   @Get(&#x27;getpolicies&#x27;)
   @ApiOperation({ summary: &#x27;Retourne la police de mot de passe&#x27; })
   @ApiResponse({ status: HttpStatus.OK })
   public async getPolicies(@Res() res: Response): Promise&lt;Response&gt; {
     const data &#x3D; await this.passwdadmService.getPolicies();
+
     return res.status(HttpStatus.OK).json({ data });
   }
 }

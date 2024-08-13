@@ -297,7 +297,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractSettingsService.html#source" target="_self" >AbstractSettingsService:15</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractSettingsService.html#source" target="_self" >AbstractSettingsService:16</a></code>
 </div>
                         </td>
                     </tr>
@@ -345,8 +345,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="8"
-                                    class="link-to-prism">src/settings/mailadm.service.ts:8</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="7"
+                                    class="link-to-prism">src/settings/mailadm.service.ts:7</a></div>
                         </td>
                     </tr>
 
@@ -1748,7 +1748,6 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AbstractSettingsService } from &#x27;~/settings/_abstracts/abstract-settings.service&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-
 import { MailSettingsDto } from &#x27;~/settings/_dto/mail.settings.dto&#x27;;
 
 @Injectable()
@@ -1757,9 +1756,11 @@ export class MailadmService extends AbstractSettingsService {
     const data &#x3D; await this.getParameter&lt;MailSettingsDto&gt;(&#x27;smtpServer&#x27;);
     return data;
   }
+
   public async setParams(params: MailSettingsDto): Promise&lt;any&gt; {
     return await this.setParameter(&#x27;smtpServer&#x27;, params);
   }
+
   protected async defaultValues&lt;T &#x3D; MailSettingsDto&gt;(): Promise&lt;T&gt; {
     return &lt;T&gt;new MailSettingsDto();
   }

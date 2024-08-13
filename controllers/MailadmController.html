@@ -286,8 +286,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">src/settings/mailadm.controller.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">src/settings/mailadm.controller.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -358,20 +358,23 @@ import { MailSettingsDto } from &#x27;~/settings/_dto/mail.settings.dto&#x27;;
 @Controller(&#x27;settings/mail&#x27;)
 @ApiTags(&#x27;settings&#x27;)
 export class MailadmController {
-  private readonly logger &#x3D; new Logger(MailadmController.name);
-  public constructor(private mailadmService: MailadmService) {}
+  public constructor(private mailadmService: MailadmService) { }
+
   @Get(&#x27;get&#x27;)
   @ApiOperation({ summary: &#x27;Retourne les parametres pour l envoi Mail&#x27; })
   @ApiResponse({ status: HttpStatus.OK })
   public async get(@Res() res: Response): Promise&lt;Response&gt; {
     const data &#x3D; await this.mailadmService.getParams();
+
     return res.status(HttpStatus.OK).json({ data });
   }
+
   @Post(&#x27;set&#x27;)
   @ApiOperation({ summary: &#x27;Enregistre les parametres&#x27; })
   @ApiResponse({ status: HttpStatus.OK })
   public async set(@Body() body: MailSettingsDto, @Res() res: Response): Promise&lt;Response&gt; {
     const data &#x3D; await this.mailadmService.setParams(body);
+
     return res.status(HttpStatus.OK).json({ data });
   }
 }

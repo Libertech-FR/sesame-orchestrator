@@ -9,7 +9,7 @@ import { IdentitiesValidationService } from './identities.validation.service';
 @ApiTags('management/identities/validation')
 @Controller('management/identities/validation')
 export class IdentitiesValidationController extends AbstractController {
-  constructor(protected readonly _service: IdentitiesValidationService) {
+  public constructor(protected readonly _service: IdentitiesValidationService) {
     super();
   }
 

@@ -21,7 +21,7 @@ export class TransformersFilestorageService extends AbstractService {
     res: Response,
     data: Filestorage,
     stream: NodeJS.ReadableStream,
-    parent?: Filestorage,
+    _parent?: Filestorage,
   ): Promise<void> {
     const mimeType = mime || data.mime || 'application/octet-stream';
     const hasTransformer = TransformersFilestorageService.TRANSFORMERS.hasOwnProperty(mimeType);

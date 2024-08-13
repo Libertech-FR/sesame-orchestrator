@@ -7,13 +7,13 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 @ApiTags('management/identities/jsonforms')
 @Controller('management/identities/jsonforms')
 export class IdentitiesJsonFormsController extends AbstractController {
-  constructor(private readonly _service: IdentitiesJsonformsService) {
+  public constructor(private readonly _service: IdentitiesJsonformsService) {
     super();
   }
 
   @Post('generateAll')
   @ApiOperation({ summary: 'Génère tous les JSON Forms liés aux schémas personnalisés' })
-  async generateAll(@Res() res: Response): Promise<any> {
+  public async generateAll(@Res() res: Response): Promise<any> {
     const result = await this._service.generateAll();
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -23,7 +23,7 @@ export class IdentitiesJsonFormsController extends AbstractController {
 
   @Post('generate')
   @ApiOperation({ summary: "Génère un JSON Forms d'un schéma personnalisé" })
-  async generate(@Res() res: Response, @Body('schema') schema: string | null = null): Promise<any> {
+  public async generate(@Res() res: Response, @Body('schema') schema: string | null = null): Promise<any> {
     const result = await this._service.generate({ schema, path: './configs/identities/jsonforms' });
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -33,7 +33,7 @@ export class IdentitiesJsonFormsController extends AbstractController {
 
   @Get()
   @ApiOperation({ summary: 'Liste les JSON Forms de schémas personnalisés' })
-  async searchAll(@Res() res: Response): Promise<any> {
+  public async searchAll(@Res() res: Response): Promise<any> {
     const result = await this._service.findAll();
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -43,7 +43,11 @@ export class IdentitiesJsonFormsController extends AbstractController {
 
   @Get(':schema')
   @ApiOperation({ summary: "Récupère un JSON Forms d'un schéma personnalisé" })
-  async search(@Res() res: Response, @Param('schema') schema, @Query('mode') mode: 'create' | 'update'): Promise<any> {
+  public async search(
+    @Res() res: Response,
+    @Param('schema') schema,
+    @Query('mode') mode: 'create' | 'update',
+  ): Promise<any> {
     const result = await this._service.findOne(schema, { mode });
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

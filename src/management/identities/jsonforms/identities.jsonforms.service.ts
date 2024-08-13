@@ -2,17 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { AbstractService } from '~/_common/abstracts/abstract.service';
 import { parse, stringify } from 'yaml';
 import { existsSync, readFileSync, writeFileSync, readdirSync } from 'fs';
-import Ajv from 'ajv';
+// import Ajv from 'ajv';
 import { ValidationConfigException } from '~/_common/errors/ValidationException';
 
 @Injectable()
 export class IdentitiesJsonformsService extends AbstractService {
-  private ajv: Ajv = new Ajv({ allErrors: true });
-  private validateSchema;
+  // private ajv: Ajv = new Ajv({ allErrors: true });
+  // private validateSchema;
 
-  constructor() {
+  public constructor() {
     super();
-    //this.validateSchema = this.ajv.compile(validSchema);
   }
 
   private resolveJsonFormPath(schema: string): string | null {
@@ -28,7 +27,7 @@ export class IdentitiesJsonformsService extends AbstractService {
     return null;
   }
 
-  async generate({ schema, path }): Promise<any> {
+  public async generate({ schema, path }): Promise<any> {
     if (schema) {
       console.log(`Generating jsonforms for schema: ${schema}`);
       if (!schema.endsWith('.yml')) schema += '.yml';
@@ -93,7 +92,7 @@ export class IdentitiesJsonformsService extends AbstractService {
     }
   }
 
-  async generateAll(): Promise<any> {
+  public async generateAll(): Promise<any> {
     const hardConfigPath = './src/management/identities/validations/_config';
     const dynamicConfigPath = './configs/identities/validations';
 
@@ -125,7 +124,7 @@ export class IdentitiesJsonformsService extends AbstractService {
     return files.length;
   }
 
-  async findAll(): Promise<any> {
+  public async findAll(): Promise<any> {
     const hardConfigPath = './src/management/identities/jsonforms/_config';
     const dynamicConfigPath = './configs/identities/jsonforms';
 

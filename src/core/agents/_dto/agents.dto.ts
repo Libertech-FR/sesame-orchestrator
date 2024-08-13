@@ -1,14 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import {
-  IsString,
-  IsNotEmpty,
-  ValidateNested,
-  IsEmail,
-  IsBoolean,
-  IsArray,
-  IsMongoId,
-  IsOptional,
-} from 'class-validator';
+import { IsString, IsNotEmpty, ValidateNested, IsEmail, IsBoolean, IsMongoId, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 import { StatePartDTO } from './parts/state.part.dto';
 import { SecurityPartDTO } from './parts/security.part.dto';

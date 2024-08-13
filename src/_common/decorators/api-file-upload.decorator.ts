@@ -8,7 +8,6 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { ApiResponseOptions } from '@nestjs/swagger/dist/decorators/api-response.decorator';
-import { ApiBodyDecorator } from '~/_common/decorators/api-body.decorator';
 import { ApiCreatedResponseDecorator } from '~/_common/decorators/api-created-response.decorator';
 
 export const ApiFileUploadDecorator = <TModel extends Type<NonNullable<unknown>>>(

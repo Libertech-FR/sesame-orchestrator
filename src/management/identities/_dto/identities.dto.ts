@@ -12,23 +12,23 @@ export class IdentitiesCreateDto extends MetadataDto {
   @IsNumber()
   @IsEnum(IdentityState)
   @ApiProperty({ enum: IdentityState })
-  state: IdentityState;
+  public state: IdentityState;
 
   @IsNumber()
   @IsEnum(InitStatesEnum)
   @ApiProperty({ enum: InitStatesEnum })
-  initState: InitStatesEnum;
+  public initState: InitStatesEnum;
 
   @IsNumber()
   @IsOptional()
   @IsEnum(IdentityLifecycle)
   @ApiProperty({ enum: IdentityLifecycle })
-  lifecycle: number;
+  public lifecycle: number;
 
   @IsObject()
   @Type(() => inetOrgPersonDto)
   @ApiProperty({ type: inetOrgPersonDto })
-  inetOrgPerson: inetOrgPersonDto;
+  public inetOrgPerson: inetOrgPersonDto;
 
   @IsOptional()
   @Type(() => additionalFieldsPartDto)
@@ -47,7 +47,7 @@ export class IdentitiesCreateDto extends MetadataDto {
       },
     },
   })
-  additionalFields?: additionalFieldsPartDto;
+  public additionalFields?: additionalFieldsPartDto;
 }
 
 export class IdentitiesDto extends IdentitiesCreateDto {}
@@ -55,5 +55,5 @@ export class IdentitiesDto extends IdentitiesCreateDto {}
 export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) {}
 
 export class IdentitiesUpsertDto extends PartialType(IdentitiesUpdateDto) {
-  $setOnInsert?: Partial<IdentitiesUpdateDto>;
+  public $setOnInsert?: Partial<IdentitiesUpdateDto>;
 }

@@ -13,28 +13,28 @@ export type IdentitiesDocument = Identities & Document;
 @Schema({ versionKey: false })
 export class Identities extends AbstractSchema {
   @Prop({ type: Number, enum: IdentityState, default: IdentityState.UNKNOWN })
-  state: IdentityState;
+  public state: IdentityState;
 
   @Prop({ type: Number, enum: IdentityLifecycle, default: IdentityLifecycle.INACTIVE })
-  lifecycle: IdentityLifecycle;
+  public lifecycle: IdentityLifecycle;
 
   @Prop({ type: inetOrgPersonSchema, required: true })
-  inetOrgPerson: inetOrgPerson;
+  public inetOrgPerson: inetOrgPerson;
 
   @Prop({ type: AdditionalFieldsPartSchema, required: false, default: {} })
-  additionalFields: AdditionalFieldsPart;
+  public additionalFields: AdditionalFieldsPart;
 
   @Prop({ type: String })
-  fingerprint: string;
+  public fingerprint: string;
 
   @Prop({ type: Date })
-  lastSync?: Date;
+  public lastSync?: Date;
 
   @Prop({ type: Number, enum: InitStatesEnum, default: InitStatesEnum.NOSENT })
-  initState: InitStatesEnum;
+  public initState: InitStatesEnum;
 
   @Prop({ type: InitInfoPartSchema, default: {} })
-  initInfo: InitInfoPart;
+  public initInfo: InitInfoPart;
 }
 
 export const IdentitiesSchema = SchemaFactory.createForClass(Identities);

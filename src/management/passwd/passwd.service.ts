@@ -98,7 +98,7 @@ export class PasswdService extends AbstractService {
             .then(() => {
               this.logger.log('reset compte envoyé  pour uid' + initDto.uid + ' à ' + mail);
             })
-            .catch((e) => {
+            .catch(() => {
               throw new BadRequestException({
                 message: 'Erreur serveur lors de l envoi du mail',
                 error: 'Bad Request',
@@ -182,7 +182,7 @@ export class PasswdService extends AbstractService {
       return false;
     }
   }
-  
+
   //Changement du password
   public async change(passwdDto: ChangePasswordDto): Promise<[Jobs, any]> {
     try {

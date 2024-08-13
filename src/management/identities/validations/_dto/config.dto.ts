@@ -4,36 +4,36 @@ import { ConfigObjectType } from '../_enums/config.object';
 
 export class ConfigObjectAttributeDTO {
   @IsString()
-  name: string;
+  public name: string;
 
   @IsString()
-  desc: string;
+  public desc: string;
 
   @IsString()
   @IsEnum(ConfigObjectType)
-  type: ConfigObjectType;
+  public type: ConfigObjectType;
 
   @IsBoolean()
-  required: boolean;
+  public required: boolean;
 }
 
 export class ConfigObjectObjectClassDTO {
   @IsString()
-  name: string;
+  public name: string;
 
   @IsString()
-  desc: string;
+  public desc: string;
 
   @ArrayNotEmpty()
-  attributes: string[];
+  public attributes: string[];
 }
 
 export class ConfigObjectSchemaDTO {
   @ValidateNested({ each: true })
   @Type(() => ConfigObjectObjectClassDTO)
-  objectClasses: ConfigObjectObjectClassDTO[];
+  public objectClasses: ConfigObjectObjectClassDTO[];
 
   @ValidateNested({ each: true })
   @Type(() => ConfigObjectAttributeDTO)
-  attributes: ConfigObjectAttributeDTO[];
+  public attributes: ConfigObjectAttributeDTO[];
 }

@@ -25,7 +25,7 @@ import { FactorydriveService } from '@the-software-compagny/nestjs_module_factor
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
-  constructor(
+  public constructor(
     @InjectModel(Identities.name) protected _model: Model<Identities>,
     protected readonly _validation: IdentitiesValidationService,
     protected readonly storage: FactorydriveService,

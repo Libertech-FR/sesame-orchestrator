@@ -10,4 +10,4 @@ import { SettingsModule } from '~/settings/settings.module';
   controllers: [PasswdController],
   providers: [PasswdService],
 })
-export class PasswdModule { }
+export class PasswdModule {}

@@ -4,61 +4,61 @@ import { Document } from 'mongoose';
 @Schema({ _id: false })
 export class inetOrgPerson extends Document {
   @Prop({ type: String, required: true })
-  cn: string;
+  public cn: string;
 
   @Prop({ type: String, default: null })
-  displayName?: string;
+  public displayName?: string;
 
   @Prop({ type: String, default: null })
-  facsimileTelephoneNumber?: string;
+  public facsimileTelephoneNumber?: string;
 
   @Prop({ type: String, default: null })
-  givenName?: string;
+  public givenName?: string;
 
   @Prop({ type: String, default: null })
-  labeledURI?: string;
+  public labeledURI?: string;
 
   @Prop({ type: String, default: null })
-  mail?: string;
+  public mail?: string;
 
   @Prop({ type: String, default: null })
-  mobile?: string;
+  public mobile?: string;
 
   @Prop({ type: String, default: null })
-  postalAddress?: string;
+  public postalAddress?: string;
 
   @Prop({ type: String, default: null })
-  preferredLanguage?: string;
+  public preferredLanguage?: string;
 
   @Prop({ type: String, required: true })
   sn: string;
 
   @Prop({ type: String, default: null })
-  telephoneNumber?: string;
+  public telephoneNumber?: string;
 
   @Prop({ type: String, default: null })
-  title?: string;
+  public title?: string;
 
   @Prop({ type: String, required: true })
-  uid: string;
+  public uid: string;
 
   @Prop({ type: String, required: true })
-  employeeNumber: string;
+  public employeeNumber: string;
 
   @Prop({ type: String, required: true })
-  employeeType: string;
+  public employeeType: string;
 
   @Prop({ type: String, required: true })
-  departmentNumber: string;
+  public departmentNumber: string;
 
   @Prop({ type: String, default: null })
-  jpegPhoto?: string;
+  public jpegPhoto?: string;
 
   @Prop({ type: String, default: null })
-  userCertificate?: string;
+  public userCertificate?: string;
 
   @Prop({ type: String, default: null })
-  userPassword?: string;
+  public userPassword?: string;
 }
 
 export const inetOrgPersonSchema = SchemaFactory.createForClass(inetOrgPerson).index(

@@ -5,7 +5,6 @@ import {
   Get,
   HttpStatus,
   Param,
-  ParseBoolPipe,
   ParseFilePipe,
   Patch,
   Post,
@@ -15,7 +14,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiProduces, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 import {
   FilterOptions,
   FilterSchema,
@@ -26,8 +25,8 @@ import {
 import { Response } from 'express';
 import { Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
-import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator';
 import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-response.decorator';
+import { ApiFileUploadDecorator } from '~/_common/decorators/api-file-upload.decorator';
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
 import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator';
 import { ApiUpdateDecorator } from '~/_common/decorators/api-update.decorator';
@@ -36,7 +35,6 @@ import { PartialProjectionType } from '~/_common/types/partial-projection.type';
 import { FilestorageCreateDto, FilestorageDto, FilestorageUpdateDto, FileUploadDto } from './_dto/filestorage.dto';
 import { TransformersFilestorageService } from './_services/transformers-filestorage.service';
 import { FilestorageService } from './filestorage.service';
-import { ApiFileUploadDecorator } from '~/_common/decorators/api-file-upload.decorator';
 
 @ApiTags('core/filestorage')
 @Controller('filestorage')

@@ -8,18 +8,18 @@ export class additionalFieldsPartDto {
       type: 'string',
     },
   })
-  objectClasses: string[];
+  public objectClasses: string[] = [];
 
   @ApiProperty({
     type: 'object',
     name: 'attributes',
   })
   @IsOptional()
-  attributes: { [key: string]: any };
+  public attributes: { [key: string]: any } = {};
 
   @ApiProperty({
     type: 'object',
     name: 'validations',
   })
-  validations?: { [key: string]: { [key: string]: string } };
+  public validations?: { [key: string]: { [key: string]: string } };
 }

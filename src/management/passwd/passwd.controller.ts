@@ -1,27 +1,16 @@
-import { Controller, Post, Body, Res, Logger, HttpStatus, Get } from '@nestjs/common';
-import { PasswdService } from './passwd.service';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpStatus, Logger, Post, Res } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { ChangePasswordDto } from './_dto/change-password.dto';
-import { AskTokenDto } from './_dto/ask-token.dto';
-import { VerifyTokenDto } from './_dto/verify-token.dto';
-import { ResetPasswordDto } from './_dto/reset-password.dto';
-import { omit } from 'radash';
-import { PasswdadmService } from '~/settings/passwdadm.service';
-import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
-import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
-import crypto from 'crypto';
-import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
-import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
-import {
-  FilterOptions,
-  FilterSchema,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '@the-software-compagny/nestjs_module_restools';
 import { Document } from 'mongoose';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
-import { MixedValue } from '~/_common/types/mixed-value.type';
+import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
+import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
+import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
+import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
+import { PasswdadmService } from '~/settings/passwdadm.service';
+import { ChangePasswordDto } from './_dto/change-password.dto';
+import { ResetPasswordDto } from './_dto/reset-password.dto';
+import { PasswdService } from './passwd.service';
 
 @Controller('passwd')
 @ApiTags('management/passwd')
@@ -53,28 +42,6 @@ export class PasswdController {
     });
   }
 
-  /*
-  @Post('gettoken')
-  @ApiOperation({summary: 'Récupère un jeton de réinitialisation de mot de passe'})
-  @ApiResponse({status: HttpStatus.OK, description: 'Retourne un jeton de réinitialisation de mot de passe'})
-  public async gettoken(@Body() asktoken: AskTokenDto, @Res() res: Response): Promise<Response> {
-    this.logger.log('GetToken for : ' + asktoken.uid);
-    const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
-    const token = await this.passwdService.askToken(asktoken, k, PasswdService.TOKEN_EXPIRATION);
-
-    return res.status(HttpStatus.OK).json({data: {token}});
-  }
-
-  @Post('verifytoken')
-  @ApiOperation({summary: 'Vérifie un jeton de réinitilisation de mot de passe'})
-  @ApiResponse({status: HttpStatus.OK})
-  public async verifyToken(@Body() body: VerifyTokenDto, @Res() res: Response): Promise<Response> {
-    this.logger.log('Verify token : ' + body.token);
-    const data = await this.passwdService.decryptToken(body.token);
-
-    return res.status(HttpStatus.OK).json({data});
-  }
-*/
   @Post('resetbycode')
   @ApiOperation({ summary: 'reinitialise le mot de passe avec le code reçu' })
   @ApiResponse({ status: HttpStatus.OK })

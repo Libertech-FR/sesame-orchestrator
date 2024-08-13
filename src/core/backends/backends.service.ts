@@ -13,7 +13,6 @@ import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { IdentitiesService } from '~/management/identities/identities.service';
 import { JobState } from '../jobs/_enums/state.enum';
-import { JobState as StateOfJob } from 'bullmq';
 import { Jobs } from '../jobs/_schemas/jobs.schema';
 import { JobsService } from '../jobs/jobs.service';
 import { Tasks } from '../tasks/_schemas/tasks.schema';

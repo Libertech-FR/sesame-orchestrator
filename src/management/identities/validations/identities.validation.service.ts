@@ -20,7 +20,7 @@ export class IdentitiesValidationService {
   private validateSchema;
   private logger: Logger;
 
-  constructor() {
+  public constructor() {
     ajvErrors(this.ajv);
     this.validateSchema = this.ajv.compile(validSchema);
     this.logger = new Logger();
@@ -43,7 +43,7 @@ export class IdentitiesValidationService {
    * @param data - The additional fields data to validate.
    * @returns A promise that resolves if validation succeeds, or rejects with validation errors.
    */
-  async validate(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise<object> {
+  public async validate(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise<object> {
     if (!data.objectClasses) {
       data.objectClasses = [];
     }
@@ -135,8 +135,8 @@ export class IdentitiesValidationService {
     }
   }
 
-  async findAll(): Promise<any> {
-    this.logger.debug(['findAll', JSON.stringify(Object.values(arguments))].join(' '));
+  public async findAll(): Promise<any> {
+    this.logger.debug(['findAll', JSON.stringify(Object.values({ ...arguments }))].join(' '));
     const hardConfigPath = './src/management/identities/validations/_config';
     const dynamicConfigPath = './configs/identities/validations';
     // Retrieve files from each directory and tag them with their source
@@ -177,7 +177,7 @@ export class IdentitiesValidationService {
     return [result, files.length];
   }
 
-  async findOne(schema): Promise<any> {
+  public async findOne(schema): Promise<any> {
     this.logger.debug(['findOne', JSON.stringify(Object.values(arguments))].join(' '));
     const filePath = this.resolveConfigPath(schema);
     if (!existsSync(filePath)) {

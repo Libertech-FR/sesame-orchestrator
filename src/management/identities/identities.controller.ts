@@ -47,13 +47,11 @@ import { join } from 'node:path';
 import { omit } from 'radash';
 import { TransformersFilestorageService } from '~/core/filestorage/_services/transformers-filestorage.service';
 import { Public } from '~/_common/decorators/public.decorator';
-// import { IdentitiesValidationFilter } from '~/_common/filters/identities-validation.filter';
 
-// @UseFilters(new IdentitiesValidationFilter())
 @ApiTags('management/identities')
 @Controller('identities')
 export class IdentitiesController extends AbstractController {
-  constructor(
+  public constructor(
     protected readonly _service: IdentitiesService,
     protected readonly _validation: IdentitiesValidationService,
     protected readonly filestorage: FilestorageService,

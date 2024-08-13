@@ -1,11 +1,8 @@
-import { Document, Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
+import { Injectable } from '@nestjs/common';
 import stringEntropy from 'fast-password-entropy';
 import { pwnedPassword } from 'hibp';
-import { PasswordPoliciesDto } from '~/settings/_dto/password-policy.dto';
 import { AbstractSettingsService } from '~/settings/_abstracts/abstract-settings.service';
-import { Injectable } from '@nestjs/common';
-import { SmsSettingsDto } from '~/settings/_dto/sms.settings.dto';
+import { PasswordPoliciesDto } from '~/settings/_dto/password-policy.dto';
 
 @Injectable()
 export class PasswdadmService extends AbstractSettingsService {

@@ -116,4 +116,4 @@ import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factory
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

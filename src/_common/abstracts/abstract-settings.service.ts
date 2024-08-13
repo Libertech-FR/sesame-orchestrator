@@ -1,7 +1,7 @@
-import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Settings, SettingsSchema } from '~/settings/_schemas/settings.schema';
+import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
+import { Settings } from '~/settings/_schemas/settings.schema';
 
 export class AbstractSettingsService extends AbstractServiceSchema {
   protected settingsName: string;
@@ -20,10 +20,10 @@ export class AbstractSettingsService extends AbstractServiceSchema {
   }
 
   protected async setParameter(settingName: string, parameters: object): Promise<any> {
-    const enr = new this._model({
-      name: settingName,
-      parameters: parameters,
-    });
+    // const enr = new this._model({
+    //   name: settingName,
+    //   parameters: parameters,
+    // });
     const ok = await this.upsert(
       { name: settingName },
       {

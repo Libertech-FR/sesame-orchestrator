@@ -1,10 +1,8 @@
-import { Controller, Post, Body, Res, Logger, HttpStatus, Get } from '@nestjs/common';
-import { PasswdadmService } from './passwdadm.service';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpStatus, Logger, Post, Res } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { omit } from 'radash';
-import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
 import { PasswordPoliciesDto } from '~/settings/_dto/password-policy.dto';
+import { PasswdadmService } from './passwdadm.service';
 
 @Controller('settings/passwdadm')
 @ApiTags('settings')

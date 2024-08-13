@@ -19,7 +19,7 @@ export class SmsadmService extends AbstractSettingsService {
     const systemId = params.systemId;
     const password = params.password;
     const sourceAddr = params.sourceAddr;
-    const smpp = require('smpp');
+    const smpp = await import('smpp');
     const logger = this.logger;
     //normalisation du numero de telephone
     const pTelNumber = parsePhoneNumber(telNumber, { regionCode: params.regionCode });

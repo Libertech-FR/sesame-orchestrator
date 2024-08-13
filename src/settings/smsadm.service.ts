@@ -9,9 +9,11 @@ export class SmsadmService extends AbstractSettingsService {
     const data = await this.getParameter<SmsSettingsDto>('smsServer');
     return data;
   }
+  
   public async setParams(params: SmsSettingsDto): Promise<any> {
     return await this.setParameter('smsServer', params);
   }
+
   public async send(telNumber: string, message: string) {
     this.logger.verbose('Envoi SMS : ' + telNumber + ' message :' + message);
     const params = await this.getParams();

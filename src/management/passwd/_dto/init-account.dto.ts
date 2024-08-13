@@ -4,5 +4,5 @@ import { IsString } from 'class-validator';
 export class InitAccountDto {
   @ApiProperty({ example: 'uid', description: 'paul.smith' })
   @IsString()
-  uid: string;
+  public uid: string;
 }

@@ -7,5 +7,5 @@ export class VerifyTokenDto {
     description: 'token received by getToken',
   })
   @IsString()
-  token: string;
+  public token: string;
 }

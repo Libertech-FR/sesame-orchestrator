@@ -182,6 +182,7 @@ export class PasswdService extends AbstractService {
       return false;
     }
   }
+  
   //Changement du password
   public async change(passwdDto: ChangePasswordDto): Promise<[Jobs, any]> {
     try {
@@ -273,6 +274,7 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException('Impossible de générer un token, une erreur est survenue');
     }
   }
+
   // decrypte le token à l aide du code
   public async decryptTokenWithCode(token: string, code: number): Promise<CipherData> {
     try {
@@ -295,6 +297,7 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException('Invalid token xx');
     }
   }
+
   // decrypte le token d'initialisation du compte
   public async decryptToken(token: string): Promise<CipherData> {
     try {
@@ -316,6 +319,7 @@ export class PasswdService extends AbstractService {
       throw new BadRequestException('Invalid token');
     }
   }
+
   // reset du password
   public async resetByCode(data: ResetByCodeDto): Promise<[Jobs, any]> {
     this.logger.log('resetByCode : ' + data.token + ' ' + data.code);
@@ -357,6 +361,7 @@ export class PasswdService extends AbstractService {
       );
     }
   }
+
   // methode pour le reset par token (pour l initialisation du compte)
   public async reset(data: ResetPasswordDto): Promise<[Jobs, any]> {
     const tokenData = await this.decryptToken(data.token);
@@ -393,6 +398,7 @@ export class PasswdService extends AbstractService {
       );
     }
   }
+
   //Envoi le message d init à plusieurs identités
   public async initMany(ids: InitManyDto): Promise<any> {
     const identities = await this.identities.find({ _id: { $in: ids.ids }, state: IdentityState.SYNCED });
@@ -407,6 +413,7 @@ export class PasswdService extends AbstractService {
     );
     return updated as any;
   }
+
   // genere des octect pour completer le code qui est de 4 octets et demi
   private async getPaddingForCode(): Promise<string> {
     let code = '';
@@ -418,6 +425,7 @@ export class PasswdService extends AbstractService {
     }
     return code;
   }
+
   private async setInitState(identity: Identities, state: InitStatesEnum): Promise<any> {
     identity.initState = state;
     if (state === InitStatesEnum.SENT) {
@@ -429,6 +437,7 @@ export class PasswdService extends AbstractService {
     const ok = await identity.save();
     return ok;
   }
+
   // sort les identites qui n ont pas repondu dans le delai à l init de leurs comptes
   public async checkInitOutDated(): Promise<any> {
     const date = new Date();

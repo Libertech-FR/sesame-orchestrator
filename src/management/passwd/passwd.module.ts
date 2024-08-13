@@ -3,13 +3,11 @@ import { PasswdService } from './passwd.service';
 import { PasswdController } from './passwd.controller';
 import { BackendsModule } from '~/core/backends/backends.module';
 import { IdentitiesModule } from '../identities/identities.module';
-import { PasswdadmModule } from '~/settings/passwdadm/passwdadm.module';
-import { PasswdadmService } from '~/settings/passwdadm/passwdadm.service';
-import { SmsService } from '~/management/passwd/sms-service';
+import { SettingsModule } from '~/settings/settings.module';
 
 @Module({
-  imports: [BackendsModule, IdentitiesModule, PasswdadmModule],
+  imports: [BackendsModule, IdentitiesModule, SettingsModule],
   controllers: [PasswdController],
-  providers: [PasswdService, SmsService],
+  providers: [PasswdService],
 })
-export class PasswdModule {}
+export class PasswdModule { }

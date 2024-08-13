@@ -1,27 +1,16 @@
-import { Controller, Post, Body, Res, Logger, HttpStatus, Get } from '@nestjs/common';
-import { PasswdService } from './passwd.service';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpStatus, Logger, Post, Res } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { ChangePasswordDto } from './_dto/change-password.dto';
-import { AskTokenDto } from './_dto/ask-token.dto';
-import { VerifyTokenDto } from './_dto/verify-token.dto';
-import { ResetPasswordDto } from './_dto/reset-password.dto';
-import { omit } from 'radash';
-import { PasswdadmService } from '~/settings/passwdadm.service';
-import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
-import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
-import crypto from 'crypto';
-import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
-import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
-import {
-  FilterOptions,
-  FilterSchema,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '@the-software-compagny/nestjs_module_restools';
 import { Document } from 'mongoose';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
-import { MixedValue } from '~/_common/types/mixed-value.type';
+import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
+import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
+import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
+import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
+import { PasswdadmService } from '~/settings/passwdadm.service';
+import { ChangePasswordDto } from './_dto/change-password.dto';
+import { ResetPasswordDto } from './_dto/reset-password.dto';
+import { PasswdService } from './passwd.service';
 
 @Controller('passwd')
 @ApiTags('management/passwd')
@@ -31,7 +20,7 @@ export class PasswdController {
   public constructor(
     private passwdService: PasswdService,
     private passwdadmService: PasswdadmService,
-  ) {}
+  ) { }
 
   @Post('change')
   @ApiOperation({ summary: 'Execute un job de changement de mot de passe sur le/les backends' })

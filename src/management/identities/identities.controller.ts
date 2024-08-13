@@ -6,12 +6,15 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseFilePipe,
   Patch,
   Post,
   Query,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiTags, PartialType } from '@nestjs/swagger';
 import {
   FilterOptions,
   FilterSchema,
@@ -35,6 +38,15 @@ import { IdentityState } from './_enums/states.enum';
 import { Identities } from './_schemas/identities.schema';
 import { IdentitiesService } from './identities.service';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiFileUploadDecorator } from '~/_common/decorators/api-file-upload.decorator';
+import { FilestorageCreateDto, FilestorageDto, FileUploadDto } from '~/core/filestorage/_dto/filestorage.dto';
+import { FilestorageService } from '~/core/filestorage/filestorage.service';
+import { FsType } from '~/core/filestorage/_enum/fs-type.enum';
+import { join } from 'node:path';
+import { omit } from 'radash';
+import { TransformersFilestorageService } from '~/core/filestorage/_services/transformers-filestorage.service';
+import { Public } from '~/_common/decorators/public.decorator';
 // import { IdentitiesValidationFilter } from '~/_common/filters/identities-validation.filter';
 
 // @UseFilters(new IdentitiesValidationFilter())
@@ -44,6 +56,8 @@ export class IdentitiesController extends AbstractController {
   constructor(
     protected readonly _service: IdentitiesService,
     protected readonly _validation: IdentitiesValidationService,
+    protected readonly filestorage: FilestorageService,
+    private readonly transformerService: TransformersFilestorageService,
   ) {
     super();
   }
@@ -287,5 +301,53 @@ export class IdentitiesController extends AbstractController {
         validations: error.validations,
       });
     }
+  }
+
+  @Post('upsert/photo')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiFileUploadDecorator(FileUploadDto, PartialType(FilestorageCreateDto), FilestorageDto)
+  public async upsertInetOrgPersonJpegPhoto(
+    @Res() res: Response,
+    @Body() body: Partial<FilestorageCreateDto>,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) file?: Express.Multer.File,
+  ): Promise<Response> {
+    const identity = await this._service.findOne<Identities>(searchFilterSchema);
+    const filter = {
+      namespace: 'identities',
+      path: join(
+        [identity.inetOrgPerson?.employeeType, identity.inetOrgPerson?.employeeNumber, 'jpegPhoto.jpg'].join('/'),
+      ),
+    };
+
+    const data = await this.filestorage.upsertFile(filter, {
+      ...filter,
+      type: FsType.FILE,
+      file,
+      ...omit(body, ['namespace', 'path', 'type', 'file'] as any),
+    });
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
+  @Public()
+  @Get('photo/raw')
+  @ApiReadResponseDecorator(FilestorageDto)
+  public async readPhotoRaw(
+    @Res() res: Response,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @Query('mime') mime: string = '',
+  ): Promise<void> {
+    const identity = await this._service.findOne<Identities>(searchFilterSchema);
+    const [data, stream, parent] = await this.filestorage.findOneWithRawData({
+      namespace: 'identities',
+      path: join(
+        [identity.inetOrgPerson?.employeeType, identity.inetOrgPerson?.employeeNumber, 'jpegPhoto.jpg'].join('/'),
+      ),
+    });
+    await this.transformerService.transform(mime, res, data, stream, parent);
   }
 }

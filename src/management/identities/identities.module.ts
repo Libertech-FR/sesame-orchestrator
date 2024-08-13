@@ -9,6 +9,7 @@ import { IdentitiesJsonformsService } from './jsonforms/identities.jsonforms.ser
 import { IdentitiesJsonformsModule } from './jsonforms/identities.jsonforms.module';
 import { APP_FILTER } from '@nestjs/core';
 import { IdentitiesValidationFilter } from '~/_common/filters/identities-validation.filter';
+import { FilestorageModule } from '~/core/filestorage/filestorage.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { IdentitiesValidationFilter } from '~/_common/filters/identities-validat
         useFactory: () => IdentitiesSchema,
       },
     ]),
+    FilestorageModule,
   ],
   providers: [
     IdentitiesService,

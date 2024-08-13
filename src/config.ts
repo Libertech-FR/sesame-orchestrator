@@ -4,6 +4,8 @@ import { HelmetOptions } from 'helmet';
 import { SwaggerCustomOptions } from '@nestjs/swagger';
 import { IAuthModuleOptions } from '@nestjs/passport';
 import { JwtModuleOptions } from '@nestjs/jwt';
+import { StorageManagerConfig } from '@the-software-compagny/nestjs_module_factorydrive';
+import { AmazonWebServicesS3StorageConfig } from '@the-software-compagny/nestjs_module_factorydrive-s3';
 
 export interface MongoosePlugin {
   package: string;
@@ -27,6 +29,18 @@ export interface ConfigInstance {
   ioredis: {
     uri: string;
     options: RedisOptions;
+  };
+  factorydrive: {
+    options:
+      | StorageManagerConfig
+      | {
+          disks: {
+            [key: string]: {
+              driver: 's3';
+              config: AmazonWebServicesS3StorageConfig;
+            };
+          };
+        };
   };
   passport: {
     options: IAuthModuleOptions;
@@ -92,6 +106,25 @@ export default (): ConfigInstance => ({
       directConnection: true,
     },
     plugins: [],
+  },
+  factorydrive: {
+    options: {
+      default: 'local',
+      disks: {
+        local: {
+          driver: 'local',
+          config: {
+            root: process.cwd() + '/storage',
+          },
+        },
+        identities: {
+          driver: 'local',
+          config: {
+            root: process.cwd() + '/storage/identities',
+          },
+        },
+      },
+    },
   },
   passport: {
     options: {

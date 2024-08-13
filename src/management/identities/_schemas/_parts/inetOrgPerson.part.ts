@@ -3,61 +3,61 @@ import { Document } from 'mongoose';
 
 @Schema({ _id: false })
 export class inetOrgPerson extends Document {
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   cn: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   displayName?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   facsimileTelephoneNumber?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   givenName?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   labeledURI?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   mail?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   mobile?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   postalAddress?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   preferredLanguage?: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   sn: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   telephoneNumber?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   title?: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   uid: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   employeeNumber: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   employeeType: string;
 
-  @Prop()
+  @Prop({ type: String, required: true })
   departmentNumber: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   jpegPhoto?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   userCertificate?: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   userPassword?: string;
 }
 

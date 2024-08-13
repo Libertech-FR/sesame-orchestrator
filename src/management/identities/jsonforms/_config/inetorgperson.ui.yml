@@ -69,3 +69,12 @@ elements:
   - type: Control
     label: Titre
     scope: "#/properties/title"
+
+- type: HorizontalLayout
+  elements:
+  - type: Control
+    label: Photo
+    scope: "#/properties/jpegPhoto"
+    options:
+      format: file
+      storage: picture

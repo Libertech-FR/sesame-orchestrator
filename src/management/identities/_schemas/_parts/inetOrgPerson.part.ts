@@ -21,7 +21,7 @@ export class inetOrgPerson extends Document {
   @Prop({ type: String, default: null })
   public mail?: string;
 
-  @Prop({ type: String, default: null })
+  @Prop({ type: String, default: "" })
   public mobile?: string;
 
   @Prop({ type: String, default: null })

@@ -33,6 +33,8 @@ WORKDIR /data
 
 ADD package.json .
 ADD *.lock .
+RUN mkdir ./templates
+COPY ./templates/* ./templates
 
 RUN apt clean -y \
   && apt update -y \

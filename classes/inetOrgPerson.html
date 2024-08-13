@@ -666,7 +666,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop({type: String, default: &#x27;&#x27;})<br />
+                            @Prop({type: String, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -1015,7 +1015,7 @@ export class inetOrgPerson extends Document {
   @Prop({ type: String, default: null })
   public mail?: string;
 
-  @Prop({ type: String, default: &quot;&quot; })
+  @Prop({ type: String, default: null })
   public mobile?: string;
 
   @Prop({ type: String, default: null })

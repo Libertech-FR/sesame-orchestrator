@@ -63,6 +63,7 @@ export class IdentitiesController extends AbstractController {
   }
   protected static readonly projection: PartialProjectionType<IdentitiesDto> = {
     state: 1,
+    initState: 1,
     inetOrgPerson: 1,
     additionalFields: 1,
   };

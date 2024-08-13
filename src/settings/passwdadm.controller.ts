@@ -4,10 +4,10 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
 import { omit } from 'radash';
 import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
-import { PasswordPoliciesDto } from '~/settings/passwdadm/_dto/password-policy.dto';
+import { PasswordPoliciesDto } from '~/settings/_dto/password-policy.dto';
 
-@Controller('passwd')
-@ApiTags('settings/passwd')
+@Controller('settings/passwdadm')
+@ApiTags('settings')
 export class PasswdadmController {
   private readonly logger = new Logger(PasswdadmController.name);
 

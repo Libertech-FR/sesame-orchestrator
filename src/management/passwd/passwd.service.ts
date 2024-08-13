@@ -1,12 +1,14 @@
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import {
   BadRequestException,
+  HttpException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import * as crypto from 'crypto';
+import { randomInt } from 'crypto';
 import Redis from 'ioredis';
 import { AbstractService } from '~/_common/abstracts/abstract.service';
 import { ActionType } from '~/core/backends/_enum/action-type.enum';
@@ -16,18 +18,20 @@ import { AskTokenDto } from './_dto/ask-token.dto';
 import { ChangePasswordDto } from './_dto/change-password.dto';
 import { ResetPasswordDto } from './_dto/reset-password.dto';
 import { IdentitiesService } from '../identities/identities.service';
-import { pick, get } from 'radash';
+import { get, pick } from 'radash';
 import { Identities } from '../identities/_schemas/identities.schema';
-import { MailerModule, MailerService } from '@nestjs-modules/mailer';
+import { MailerService } from '@nestjs-modules/mailer';
 import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
 import { ConfigService } from '@nestjs/config';
-import { randomInt } from 'crypto';
-import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code-dto';
-import { PasswdadmService } from '~/settings/passwdadm/passwdadm.service';
+import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
+import { PasswdadmService } from '~/settings/passwdadm.service';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
-import { SmsService } from '~/management/passwd/sms-service';
-import { PasswordPoliciesDto } from '~/settings/passwdadm/_dto/password-policy.dto';
+import { PasswordPoliciesDto } from '~/settings/_dto/password-policy.dto';
+import { SmsadmService } from '~/settings/smsadm.service';
+import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
+import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
+import { MailadmService } from '~/settings/mailadm.service';
 
 interface TokenData {
   k: string;
@@ -47,15 +51,14 @@ export class PasswdService extends AbstractService {
 
   public static readonly TOKEN_ALGORITHM = 'aes-256-gcm';
 
-  public static readonly TOKEN_EXPIRATION = 604800;
-  public static readonly CODE_EXPIRATION = 1900;
   public constructor(
     protected readonly backends: BackendsService,
     protected readonly identities: IdentitiesService,
     protected mailer: MailerService,
     protected config: ConfigService,
     private passwdadmService: PasswdadmService,
-    private smsService: SmsService,
+    private smsadmService: SmsadmService,
+    private mailadmService: MailadmService,
     @InjectRedis() private readonly redis: Redis,
   ) {
     super();
@@ -66,24 +69,23 @@ export class PasswdService extends AbstractService {
     //envoi du mail
     try {
       const identity = (await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid })) as Identities;
+      //prise des parametres
+      const params = await this.passwdadmService.getPolicies();
       const k = randomInt(100000, 999999);
       //asking for padding
       const padd = await this.getPaddingForCode();
-      const mailAttribute = this.config.get('frontPwd.identityMailAttribute');
+      const mailAttribute = params.emailAttribute;
       const mail = <string>get(identity.toObject(), mailAttribute);
-      const token = await this.askToken(
-        { mail: mail, uid: initDto.uid },
-        padd + k.toString(16),
-        PasswdService.CODE_EXPIRATION,
-      );
+      const token = await this.askToken({ mail: mail, uid: initDto.uid }, padd + k.toString(16), params.resetCodeTTL);
       this.logger.log('Token :' + token + '  int : ' + k.toString(10));
       if (initDto.type === 0) {
         this.logger.log('Reset password asked by mail for  : ' + initDto.uid);
+        const smtpParams = await this.mailadmService.getParams();
         if (mailAttribute !== '') {
           const displayName = identity.inetOrgPerson.displayName;
           this.mailer
             .sendMail({
-              from: this.config.get('mailer.sender'),
+              from: smtpParams.sender,
               to: mail,
               subject: 'Reinitialisation de votre mot de passe',
               template: 'resetaccount',
@@ -112,10 +114,10 @@ export class PasswdService extends AbstractService {
         const policies = new PasswordPoliciesDto();
         if (policies.resetBySms === true) {
           this.logger.log('Reset password asked by SMS for  : ' + initDto.uid);
-          const smsAttribute = this.config.get('frontPwd.identityMobileAttribute');
+          const smsAttribute = params.mobileAttribute;
           if (smsAttribute !== '') {
             const numTel = <string>get(identity.toObject(), smsAttribute);
-            this.smsService.send(numTel, 'Votre code de reinitialisation : ' + k.toString(10));
+            await this.smsadmService.send(numTel, 'Votre code de reinitialisation : ' + k.toString(10));
           }
           return token;
         } else {
@@ -136,17 +138,19 @@ export class PasswdService extends AbstractService {
     try {
       const identity = (await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid })) as Identities;
       //envoi du mail
-      const mailAttribute = this.config.get('frontPwd.identityMailAttribute');
+      const params = await this.passwdadmService.getPolicies();
+      const mailAttribute = params.emailAttribute;
       this.logger.log('mailer.identityMailAttribute : ' + mailAttribute);
       if (mailAttribute !== '') {
         const mail = <string>get(identity.toObject(), mailAttribute);
+        const smtpParams = await this.mailadmService.getParams();
         //demande du token
         const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
-        const token = await this.askToken({ mail: mail, uid: initDto.uid }, k, PasswdService.TOKEN_EXPIRATION);
+        const token = await this.askToken({ mail: mail, uid: initDto.uid }, k, params.initTokenTTL);
         //envoi du token
         this.mailer
           .sendMail({
-            from: this.config.get('mailer.sender'),
+            from: smtpParams.sender,
             to: mail,
             subject: 'Activation de votre compte',
             template: 'initaccount',
@@ -157,10 +161,12 @@ export class PasswdService extends AbstractService {
           })
           .then(() => {
             this.logger.log('Init compte envoyé  pour uid' + initDto.uid + ' à ' + mail);
+            this.setInitState(identity, InitStatesEnum.SENT);
           })
           .catch((e) => {
+            this.logger.error('Erreur serveur lors de l envoi du mail' + e);
             throw new BadRequestException({
-              message: 'Erreur serveur lors de l envoi du mail',
+              message: 'Erreur serveur lors de l envoi du mail' + e,
               error: 'Bad Request',
               statusCode: 400,
             });
@@ -168,7 +174,7 @@ export class PasswdService extends AbstractService {
 
         return true;
       } else {
-        this.logger.error('Error while initAccount identityMailAttribute nor defined');
+        this.logger.error('Error while initAccount identityMailAttribute not defined');
         return false;
       }
     } catch (e) {
@@ -375,6 +381,7 @@ export class PasswdService extends AbstractService {
 
       if (response?.status === 0) {
         await this.redis.del(data.token);
+        await this.setInitState(identity, InitStatesEnum.INITIALIZED);
         return [_, response];
       }
 
@@ -386,6 +393,20 @@ export class PasswdService extends AbstractService {
       );
     }
   }
+  //Envoi le message d init à plusieurs identités
+  public async initMany(ids: InitManyDto): Promise<any> {
+    const identities = await this.identities.find({ _id: { $in: ids.ids }, state: IdentityState.SYNCED });
+    if (identities.length === 0) {
+      throw new HttpException('Aucune identité trouvée.', 404);
+    }
+    const updated = await Promise.all(
+      identities.map((identity) => {
+        this.logger.verbose('send To :' + identity.get('inetOrgPerson.uid'));
+        return this.initAccount({ uid: identity.get('inetOrgPerson.uid') });
+      }),
+    );
+    return updated as any;
+  }
   // genere des octect pour completer le code qui est de 4 octets et demi
   private async getPaddingForCode(): Promise<string> {
     let code = '';
@@ -396,5 +417,28 @@ export class PasswdService extends AbstractService {
       await this.redis.set('CODEPADDING', code);
     }
     return code;
+  }
+  private async setInitState(identity: Identities, state: InitStatesEnum): Promise<any> {
+    identity.initState = state;
+    if (state === InitStatesEnum.SENT) {
+      identity.initInfo.initDate = new Date();
+      identity.initInfo.sentDate = null;
+    } else if (state === InitStatesEnum.INITIALIZED) {
+      identity.initInfo.sentDate = new Date();
+    }
+    const ok = await identity.save();
+    return ok;
+  }
+  // sort les identites qui n ont pas repondu dans le delai à l init de leurs comptes
+  public async checkInitOutDated(): Promise<any> {
+    const date = new Date();
+    const params = await this.passwdadmService.getPolicies();
+    date.setTime(date.getTime() - params.initTokenTTL * 1000);
+    console.log('modifié:' + date);
+    const identities = await this.identities.find({
+      initState: InitStatesEnum.SENT,
+      'initInfo.initDate': { $lt: date },
+    });
+    return identities;
   }
 }

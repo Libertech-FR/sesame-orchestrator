@@ -6,12 +6,18 @@ import { IdentityLifecycle } from '../_enums/lifecycle.enum';
 import { Type } from 'class-transformer';
 import { additionalFieldsPartDto } from './_parts/additionalFields.dto';
 import { MetadataDto } from '~/_common/abstracts/dto/metadata.dto';
+import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
 
 export class IdentitiesCreateDto extends MetadataDto {
   @IsNumber()
   @IsEnum(IdentityState)
   @ApiProperty({ enum: IdentityState })
   state: IdentityState;
+
+  @IsNumber()
+  @IsEnum(InitStatesEnum)
+  @ApiProperty({ enum: InitStatesEnum })
+  initState: InitStatesEnum;
 
   @IsNumber()
   @IsOptional()

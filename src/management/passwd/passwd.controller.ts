@@ -7,11 +7,21 @@ import { AskTokenDto } from './_dto/ask-token.dto';
 import { VerifyTokenDto } from './_dto/verify-token.dto';
 import { ResetPasswordDto } from './_dto/reset-password.dto';
 import { omit } from 'radash';
-import { PasswdadmService } from '~/settings/passwdadm/passwdadm.service';
+import { PasswdadmService } from '~/settings/passwdadm.service';
 import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
 import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
 import crypto from 'crypto';
-import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code-dto';
+import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
+import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
+import {
+  FilterOptions,
+  FilterSchema,
+  SearchFilterOptions,
+  SearchFilterSchema,
+} from '@the-software-compagny/nestjs_module_restools';
+import { Document } from 'mongoose';
+import { Identities } from '~/management/identities/_schemas/identities.schema';
+import { MixedValue } from '~/_common/types/mixed-value.type';
 
 @Controller('passwd')
 @ApiTags('management/passwd')
@@ -21,7 +31,7 @@ export class PasswdController {
   public constructor(
     private passwdService: PasswdService,
     private passwdadmService: PasswdadmService,
-  ) {}
+  ) { }
 
   @Post('change')
   @ApiOperation({ summary: 'Execute un job de changement de mot de passe sur le/les backends' })
@@ -119,7 +129,15 @@ export class PasswdController {
       ...debug,
     });
   }
-
+  @Post('initmany')
+  @ApiOperation({ summary: "Initialise plusieurs identités. envoi un jeton par mail à l'identité" })
+  @ApiResponse({ status: HttpStatus.OK })
+  public async initMany(@Body() body: InitManyDto, @Res() res: Response): Promise<Response> {
+    const result = await this.passwdService.initMany(body);
+    return res.status(HttpStatus.OK).json({
+      message: 'identités initialisées',
+    });
+  }
   @Post('initreset')
   @ApiOperation({ summary: 'Demande l envoi de mail pour le reset' })
   @ApiResponse({ status: HttpStatus.OK })
@@ -131,6 +149,24 @@ export class PasswdController {
       message: 'Email envoyé verifiez votre boite mail alternative et vos spam',
       token: data,
       ...debug,
+    });
+  }
+  @Get('ioutdated')
+  @ApiOperation({ summary: 'Compte donc l invitation d init n a pas été repondue dans les temps' })
+  public async search(@Res() res: Response): Promise<
+    Response<
+      {
+        data?: Document<Identities, any, Identities>;
+      },
+      any
+    >
+  > {
+    const data = await this.passwdService.checkInitOutDated();
+    const total = data.length;
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      total,
+      data,
     });
   }
 }

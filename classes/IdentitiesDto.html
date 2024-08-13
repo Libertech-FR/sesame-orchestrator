@@ -327,6 +327,11 @@
                 </tr>
                 <tr>
                     <td class="col-md-4">
+                        <i>Default value : </i><code>InitStatesEnum.NOSENT</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
                         <b>Decorators : </b>
                         <br />
                         <code>
@@ -523,7 +528,7 @@ export class IdentitiesCreateDto extends MetadataDto {
   @IsNumber()
   @IsEnum(InitStatesEnum)
   @ApiProperty({ enum: InitStatesEnum })
-  public initState: InitStatesEnum;
+  public initState: InitStatesEnum &#x3D; InitStatesEnum.NOSENT;
 
   @IsNumber()
   @IsOptional()

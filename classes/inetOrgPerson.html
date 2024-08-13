@@ -326,7 +326,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Prop({type: String, required: true})<br />
+                            @Prop({type: String, default: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -1042,7 +1042,7 @@ export class inetOrgPerson extends Document {
   @Prop({ type: String, required: true })
   public employeeType: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, default: null })
   public departmentNumber: string;
 
   @Prop({ type: String, default: null })

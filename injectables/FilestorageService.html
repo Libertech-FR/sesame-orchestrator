@@ -270,7 +270,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/core/filestorage/filestorage.service.ts:36</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/core/filestorage/filestorage.service.ts:34</a></div>
                             </td>
                         </tr>
 
@@ -360,8 +360,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="214"
-                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:214</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="212"
+                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:212</a></div>
                         </td>
                     </tr>
 
@@ -456,7 +456,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:48</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:46</a></code>
 </div>
                         </td>
                     </tr>
@@ -545,7 +545,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:91</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:89</a></code>
 </div>
                         </td>
                     </tr>
@@ -647,8 +647,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="108"
-                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:108</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="106"
+                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -755,7 +755,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:121</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:119</a></code>
 </div>
                         </td>
                     </tr>
@@ -857,8 +857,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="138"
-                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:138</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -965,7 +965,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:151</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:149</a></code>
 </div>
                         </td>
                     </tr>
@@ -1066,8 +1066,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="181"
-                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:181</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="179"
+                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:179</a></div>
                         </td>
                     </tr>
 
@@ -1691,7 +1691,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/core/filestorage/filestorage.service.ts:36</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/core/filestorage/filestorage.service.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -1872,9 +1872,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, Scope } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, HttpException, HttpStatus, Injectable } from &#x27;@nestjs/common&#x27;;
+import { ModuleRef } from &#x27;@nestjs/core&#x27;;
 import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
-import { Filestorage } from &#x27;./_schemas/filestorage.schema&#x27;;
+import { FactorydriveService } from &#x27;@the-software-compagny/nestjs_module_factorydrive&#x27;;
 import {
   Document,
   FilterQuery,
@@ -1887,14 +1888,13 @@ import {
   Types,
   UpdateQuery,
 } from &#x27;mongoose&#x27;;
+import { createHash } from &#x27;node:crypto&#x27;;
+import { omit } from &#x27;radash&#x27;;
 import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
 import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
-import { FactorydriveService } from &#x27;@the-software-compagny/nestjs_module_factorydrive&#x27;;
 import { FilestorageCreateDto } from &#x27;~/core/filestorage/_dto/filestorage.dto&#x27;;
 import { FsType } from &#x27;~/core/filestorage/_enum/fs-type.enum&#x27;;
-import { omit } from &#x27;radash&#x27;;
-import { ModuleRef } from &#x27;@nestjs/core&#x27;;
-import { createHash } from &#x27;node:crypto&#x27;;
+import { Filestorage } from &#x27;./_schemas/filestorage.schema&#x27;;
 
 export const EMBED_SEPARATOR &#x3D; &#x27;#&#x27;;
 

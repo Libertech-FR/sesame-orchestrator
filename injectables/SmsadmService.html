@@ -1836,7 +1836,7 @@ export class SmsadmService extends AbstractSettingsService {
     const data &#x3D; await this.getParameter&lt;SmsSettingsDto&gt;(&#x27;smsServer&#x27;);
     return data;
   }
-  
+
   public async setParams(params: SmsSettingsDto): Promise&lt;any&gt; {
     return await this.setParameter(&#x27;smsServer&#x27;, params);
   }

@@ -141,14 +141,17 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#attributes" >attributes</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#desc" >desc</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#name" >name</a>
                             </li>
                         </ul>
@@ -177,6 +180,7 @@
                     <a name="attributes"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>attributes</b></span>
                         <a href="#attributes"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -213,6 +217,7 @@
                     <a name="desc"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>desc</b></span>
                         <a href="#desc"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -249,6 +254,7 @@
                     <a name="name"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>name</b></span>
                         <a href="#name"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -296,38 +302,38 @@ import { ConfigObjectType } from &#x27;../_enums/config.object&#x27;;
 
 export class ConfigObjectAttributeDTO {
   @IsString()
-  name: string;
+  public name: string;
 
   @IsString()
-  desc: string;
+  public desc: string;
 
   @IsString()
   @IsEnum(ConfigObjectType)
-  type: ConfigObjectType;
+  public type: ConfigObjectType;
 
   @IsBoolean()
-  required: boolean;
+  public required: boolean;
 }
 
 export class ConfigObjectObjectClassDTO {
   @IsString()
-  name: string;
+  public name: string;
 
   @IsString()
-  desc: string;
+  public desc: string;
 
   @ArrayNotEmpty()
-  attributes: string[];
+  public attributes: string[];
 }
 
 export class ConfigObjectSchemaDTO {
   @ValidateNested({ each: true })
   @Type(() &#x3D;&gt; ConfigObjectObjectClassDTO)
-  objectClasses: ConfigObjectObjectClassDTO[];
+  public objectClasses: ConfigObjectObjectClassDTO[];
 
   @ValidateNested({ each: true })
   @Type(() &#x3D;&gt; ConfigObjectAttributeDTO)
-  attributes: ConfigObjectAttributeDTO[];
+  public attributes: ConfigObjectAttributeDTO[];
 }
 </code></pre>
     </div>

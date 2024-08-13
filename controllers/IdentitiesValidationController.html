@@ -454,7 +454,7 @@ import { IdentitiesValidationService } from &#x27;./identities.validation.servic
 @ApiTags(&#x27;management/identities/validation&#x27;)
 @Controller(&#x27;management/identities/validation&#x27;)
 export class IdentitiesValidationController extends AbstractController {
-  constructor(protected readonly _service: IdentitiesValidationService) {
+  public constructor(protected readonly _service: IdentitiesValidationService) {
     super();
   }
 

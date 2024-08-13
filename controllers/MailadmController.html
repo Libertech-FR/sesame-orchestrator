@@ -358,7 +358,7 @@ import { MailSettingsDto } from &#x27;~/settings/_dto/mail.settings.dto&#x27;;
 @Controller(&#x27;settings/mail&#x27;)
 @ApiTags(&#x27;settings&#x27;)
 export class MailadmController {
-  public constructor(private mailadmService: MailadmService) { }
+  public constructor(private mailadmService: MailadmService) {}
 
   @Get(&#x27;get&#x27;)
   @ApiOperation({ summary: &#x27;Retourne les parametres pour l envoi Mail&#x27; })

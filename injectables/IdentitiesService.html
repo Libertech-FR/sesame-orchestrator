@@ -278,7 +278,8 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(_model: <a href="../classes/Identities.html" target="_self">Model&lt;Identities&gt;</a>, _validation: <a href="../injectables/IdentitiesValidationService.html" target="_self">IdentitiesValidationService</a>, storage: FactorydriveService)</code>
+                                <span class="modifier">Public</span>
+                        <code>constructor(_model: <a href="../classes/Identities.html" target="_self">Model&lt;Identities&gt;</a>, _validation: <a href="../injectables/IdentitiesValidationService.html" target="_self">IdentitiesValidationService</a>, storage: FactorydriveService)</code>
                     </td>
                 </tr>
                         <tr>
@@ -2186,7 +2187,7 @@ import { FactorydriveService } from &#x27;@the-software-compagny/nestjs_module_f
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
-  constructor(
+  public constructor(
     @InjectModel(Identities.name) protected _model: Model&lt;Identities&gt;,
     protected readonly _validation: IdentitiesValidationService,
     protected readonly storage: FactorydriveService,

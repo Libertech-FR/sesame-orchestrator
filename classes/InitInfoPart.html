@@ -141,11 +141,13 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Optional</span>
                                 <a href="#initDate" >initDate</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Optional</span>
                                 <a href="#sentDate" >sentDate</a>
                             </li>
@@ -175,6 +177,7 @@
                     <a name="initDate"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Optional</span>
                         <span ><b>initDate</b></span>
                         <a href="#initDate"><span class="icon ion-ios-link"></span></a>
@@ -212,6 +215,7 @@
                     <a name="sentDate"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Optional</span>
                         <span ><b>sentDate</b></span>
                         <a href="#sentDate"><span class="icon ion-ios-link"></span></a>
@@ -235,7 +239,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">src/management/identities/_schemas/_parts/init-info.part.schema.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">src/management/identities/_schemas/_parts/init-info.part.schema.ts:7</a></div>
                         </td>
                     </tr>
 
@@ -256,14 +260,14 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Prop, Schema, SchemaFactory } from &#x27;@nestjs/mongoose&#x27;;
 import { Document } from &#x27;mongoose&#x27;;
-import { Identities } from &#x27;~/management/identities/_schemas/identities.schema&#x27;;
 
 @Schema({ _id: false })
 export class InitInfoPart extends Document {
   @Prop({ type: Date })
-  sentDate?: Date;
+  public sentDate?: Date;
+
   @Prop({ type: Date })
-  initDate?: Date;
+  public initDate?: Date;
 }
 export const InitInfoPartSchema &#x3D; SchemaFactory.createForClass(InitInfoPart);
 </code></pre>

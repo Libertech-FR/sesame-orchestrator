@@ -141,14 +141,17 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#attributes" >attributes</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#objectClasses" >objectClasses</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Optional</span>
                                 <a href="#validations" >validations</a>
                             </li>
@@ -178,6 +181,7 @@
                     <a name="attributes"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>attributes</b></span>
                         <a href="#attributes"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -214,6 +218,7 @@
                     <a name="objectClasses"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>objectClasses</b></span>
                         <a href="#objectClasses"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -250,6 +255,7 @@
                     <a name="validations"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Optional</span>
                         <span ><b>validations</b></span>
                         <a href="#validations"><span class="icon ion-ios-link"></span></a>
@@ -299,13 +305,13 @@ import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
 @Schema({ _id: false })
 export class AdditionalFieldsPart extends Document {
   @Prop({ type: Array, of: String, required: true, default: [] })
-  objectClasses: string[];
+  public objectClasses: string[];
 
   @Prop({ type: Object, default: {} })
-  attributes: Record&lt;string, MixedValue&gt;;
+  public attributes: Record&lt;string, MixedValue&gt;;
 
   @Prop({ type: Object, required: false })
-  validations?: Record&lt;string, string&gt;;
+  public validations?: Record&lt;string, string&gt;;
 }
 
 export const AdditionalFieldsPartSchema &#x3D; SchemaFactory.createForClass(AdditionalFieldsPart);

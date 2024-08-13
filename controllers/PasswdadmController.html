@@ -358,7 +358,7 @@ import { PasswdadmService } from &#x27;./passwdadm.service&#x27;;
 @Controller(&#x27;settings/passwdadm&#x27;)
 @ApiTags(&#x27;settings&#x27;)
 export class PasswdadmController {
-  public constructor(private passwdadmService: PasswdadmService) { }
+  public constructor(private passwdadmService: PasswdadmService) {}
 
   @Post(&#x27;setpolicies&#x27;)
   @ApiOperation({ summary: &#x27;enregistre la police de mdp&#x27; })

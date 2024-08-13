@@ -148,24 +148,28 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#generate" >generate</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#generateAll" >generateAll</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#search" >search</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#searchAll" >searchAll</a>
                             </li>
@@ -194,6 +198,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>generate</b></span>
                         <a href="#generate"><span class="icon ion-ios-link"></span></a>
@@ -290,6 +295,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>generateAll</b></span>
                         <a href="#generateAll"><span class="icon ion-ios-link"></span></a>
@@ -368,6 +374,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>search</b></span>
                         <a href="#search"><span class="icon ion-ios-link"></span></a>
@@ -469,6 +476,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>searchAll</b></span>
                         <a href="#searchAll"><span class="icon ion-ios-link"></span></a>
@@ -552,13 +560,13 @@ import { ApiOperation, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 @ApiTags(&#x27;management/identities/jsonforms&#x27;)
 @Controller(&#x27;management/identities/jsonforms&#x27;)
 export class IdentitiesJsonFormsController extends AbstractController {
-  constructor(private readonly _service: IdentitiesJsonformsService) {
+  public constructor(private readonly _service: IdentitiesJsonformsService) {
     super();
   }
 
   @Post(&#x27;generateAll&#x27;)
   @ApiOperation({ summary: &#x27;Génère tous les JSON Forms liés aux schémas personnalisés&#x27; })
-  async generateAll(@Res() res: Response): Promise&lt;any&gt; {
+  public async generateAll(@Res() res: Response): Promise&lt;any&gt; {
     const result &#x3D; await this._service.generateAll();
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -568,7 +576,7 @@ export class IdentitiesJsonFormsController extends AbstractController {
 
   @Post(&#x27;generate&#x27;)
   @ApiOperation({ summary: &quot;Génère un JSON Forms d&#x27;un schéma personnalisé&quot; })
-  async generate(@Res() res: Response, @Body(&#x27;schema&#x27;) schema: string | null &#x3D; null): Promise&lt;any&gt; {
+  public async generate(@Res() res: Response, @Body(&#x27;schema&#x27;) schema: string | null &#x3D; null): Promise&lt;any&gt; {
     const result &#x3D; await this._service.generate({ schema, path: &#x27;./configs/identities/jsonforms&#x27; });
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -578,7 +586,7 @@ export class IdentitiesJsonFormsController extends AbstractController {
 
   @Get()
   @ApiOperation({ summary: &#x27;Liste les JSON Forms de schémas personnalisés&#x27; })
-  async searchAll(@Res() res: Response): Promise&lt;any&gt; {
+  public async searchAll(@Res() res: Response): Promise&lt;any&gt; {
     const result &#x3D; await this._service.findAll();
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -588,7 +596,11 @@ export class IdentitiesJsonFormsController extends AbstractController {
 
   @Get(&#x27;:schema&#x27;)
   @ApiOperation({ summary: &quot;Récupère un JSON Forms d&#x27;un schéma personnalisé&quot; })
-  async search(@Res() res: Response, @Param(&#x27;schema&#x27;) schema, @Query(&#x27;mode&#x27;) mode: &#x27;create&#x27; | &#x27;update&#x27;): Promise&lt;any&gt; {
+  public async search(
+    @Res() res: Response,
+    @Param(&#x27;schema&#x27;) schema,
+    @Query(&#x27;mode&#x27;) mode: &#x27;create&#x27; | &#x27;update&#x27;,
+  ): Promise&lt;any&gt; {
     const result &#x3D; await this._service.findOne(schema, { mode });
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

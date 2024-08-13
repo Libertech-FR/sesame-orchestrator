@@ -141,35 +141,43 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#additionalFields" >additionalFields</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#fingerprint" >fingerprint</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#inetOrgPerson" >inetOrgPerson</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#initInfo" >initInfo</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#initState" >initState</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Optional</span>
                                 <a href="#lastSync" >lastSync</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#lifecycle" >lifecycle</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#state" >state</a>
                             </li>
                         </ul>
@@ -198,6 +206,7 @@
                     <a name="additionalFields"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>additionalFields</b></span>
                         <a href="#additionalFields"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -234,6 +243,7 @@
                     <a name="fingerprint"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>fingerprint</b></span>
                         <a href="#fingerprint"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -270,6 +280,7 @@
                     <a name="inetOrgPerson"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>inetOrgPerson</b></span>
                         <a href="#inetOrgPerson"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -306,6 +317,7 @@
                     <a name="initInfo"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>initInfo</b></span>
                         <a href="#initInfo"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -342,6 +354,7 @@
                     <a name="initState"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>initState</b></span>
                         <a href="#initState"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -378,6 +391,7 @@
                     <a name="lastSync"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Optional</span>
                         <span ><b>lastSync</b></span>
                         <a href="#lastSync"><span class="icon ion-ios-link"></span></a>
@@ -415,6 +429,7 @@
                     <a name="lifecycle"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>lifecycle</b></span>
                         <a href="#lifecycle"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -451,6 +466,7 @@
                     <a name="state"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                         <span ><b>state</b></span>
                         <a href="#state"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -507,28 +523,28 @@ export type IdentitiesDocument &#x3D; Identities &amp; Document;
 @Schema({ versionKey: false })
 export class Identities extends AbstractSchema {
   @Prop({ type: Number, enum: IdentityState, default: IdentityState.UNKNOWN })
-  state: IdentityState;
+  public state: IdentityState;
 
   @Prop({ type: Number, enum: IdentityLifecycle, default: IdentityLifecycle.INACTIVE })
-  lifecycle: IdentityLifecycle;
+  public lifecycle: IdentityLifecycle;
 
   @Prop({ type: inetOrgPersonSchema, required: true })
-  inetOrgPerson: inetOrgPerson;
+  public inetOrgPerson: inetOrgPerson;
 
   @Prop({ type: AdditionalFieldsPartSchema, required: false, default: {} })
-  additionalFields: AdditionalFieldsPart;
+  public additionalFields: AdditionalFieldsPart;
 
   @Prop({ type: String })
-  fingerprint: string;
+  public fingerprint: string;
 
   @Prop({ type: Date })
-  lastSync?: Date;
+  public lastSync?: Date;
 
   @Prop({ type: Number, enum: InitStatesEnum, default: InitStatesEnum.NOSENT })
-  initState: InitStatesEnum;
+  public initState: InitStatesEnum;
 
   @Prop({ type: InitInfoPartSchema, default: {} })
-  initInfo: InitInfoPart;
+  public initInfo: InitInfoPart;
 }
 
 export const IdentitiesSchema &#x3D; SchemaFactory.createForClass(Identities);

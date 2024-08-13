@@ -331,7 +331,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>transform(mime: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, res: Response, data: <a href="../classes/Filestorage.html" target="_self">Filestorage</a>, stream: NodeJS.ReadableStream, parent?: <a href="../classes/Filestorage.html" target="_self">Filestorage</a>)</code>
+                    <code>transform(mime: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, res: Response, data: <a href="../classes/Filestorage.html" target="_self">Filestorage</a>, stream: NodeJS.ReadableStream, _parent?: <a href="../classes/Filestorage.html" target="_self">Filestorage</a>)</code>
                 </td>
             </tr>
 
@@ -408,7 +408,7 @@
 
                                         </tr>
                                         <tr>
-                                                <td>parent</td>
+                                                <td>_parent</td>
                                             <td>
                                                             <code><a href="../classes/Filestorage.html" target="_self" >Filestorage</a></code>
                                             </td>
@@ -1063,7 +1063,7 @@ export class TransformersFilestorageService extends AbstractService {
     res: Response,
     data: Filestorage,
     stream: NodeJS.ReadableStream,
-    parent?: Filestorage,
+    _parent?: Filestorage,
   ): Promise&lt;void&gt; {
     const mimeType &#x3D; mime || data.mime || &#x27;application/octet-stream&#x27;;
     const hasTransformer &#x3D; TransformersFilestorageService.TRANSFORMERS.hasOwnProperty(mimeType);

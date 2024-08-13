@@ -256,8 +256,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -360,8 +360,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="104"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:104</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -451,8 +451,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="117"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:117</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:115</a></div>
                         </td>
                     </tr>
 
@@ -554,8 +554,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="143"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:143</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="141"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:141</a></div>
                         </td>
                     </tr>
 
@@ -680,8 +680,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="132"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:132</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="130"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:130</a></div>
                         </td>
                     </tr>
 
@@ -792,8 +792,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="171"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:171</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="169"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:169</a></div>
                         </td>
                     </tr>
 
@@ -883,8 +883,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -999,8 +999,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="156"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:156</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="154"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:154</a></div>
                         </td>
                     </tr>
 
@@ -1081,7 +1081,6 @@
   Get,
   HttpStatus,
   Param,
-  ParseBoolPipe,
   ParseFilePipe,
   Patch,
   Post,
@@ -1091,7 +1090,7 @@
   UseInterceptors,
 } from &#x27;@nestjs/common&#x27;;
 import { FileInterceptor } from &#x27;@nestjs/platform-express&#x27;;
-import { ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiProduces, ApiTags, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
+import { ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import {
   FilterOptions,
   FilterSchema,
@@ -1102,8 +1101,8 @@ import {
 import { Response } from &#x27;express&#x27;;
 import { Types } from &#x27;mongoose&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
-import { ApiCreateDecorator } from &#x27;~/_common/decorators/api-create.decorator&#x27;;
 import { ApiDeletedResponseDecorator } from &#x27;~/_common/decorators/api-deleted-response.decorator&#x27;;
+import { ApiFileUploadDecorator } from &#x27;~/_common/decorators/api-file-upload.decorator&#x27;;
 import { ApiPaginatedDecorator } from &#x27;~/_common/decorators/api-paginated.decorator&#x27;;
 import { ApiReadResponseDecorator } from &#x27;~/_common/decorators/api-read-response.decorator&#x27;;
 import { ApiUpdateDecorator } from &#x27;~/_common/decorators/api-update.decorator&#x27;;
@@ -1112,7 +1111,6 @@ import { PartialProjectionType } from &#x27;~/_common/types/partial-projection.t
 import { FilestorageCreateDto, FilestorageDto, FilestorageUpdateDto, FileUploadDto } from &#x27;./_dto/filestorage.dto&#x27;;
 import { TransformersFilestorageService } from &#x27;./_services/transformers-filestorage.service&#x27;;
 import { FilestorageService } from &#x27;./filestorage.service&#x27;;
-import { ApiFileUploadDecorator } from &#x27;~/_common/decorators/api-file-upload.decorator&#x27;;
 
 @ApiTags(&#x27;core/filestorage&#x27;)
 @Controller(&#x27;filestorage&#x27;)

@@ -253,8 +253,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -345,8 +345,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="115"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:115</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -425,8 +425,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="124"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:124</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -517,8 +517,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="135"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:135</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -609,8 +609,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="144"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:144</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="111"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:111</a></div>
                         </td>
                     </tr>
 
@@ -701,8 +701,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="98"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:98</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -793,8 +793,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="81"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:81</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -884,8 +884,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="156"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:156</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="123"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:123</a></div>
                         </td>
                     </tr>
 
@@ -935,30 +935,19 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Post, Body, Res, Logger, HttpStatus, Get } from &#x27;@nestjs/common&#x27;;
-import { PasswdService } from &#x27;./passwd.service&#x27;;
-import { ApiTags, ApiOperation, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, HttpStatus, Logger, Post, Res } from &#x27;@nestjs/common&#x27;;
+import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { Response } from &#x27;express&#x27;;
-import { ChangePasswordDto } from &#x27;./_dto/change-password.dto&#x27;;
-import { AskTokenDto } from &#x27;./_dto/ask-token.dto&#x27;;
-import { VerifyTokenDto } from &#x27;./_dto/verify-token.dto&#x27;;
-import { ResetPasswordDto } from &#x27;./_dto/reset-password.dto&#x27;;
-import { omit } from &#x27;radash&#x27;;
-import { PasswdadmService } from &#x27;~/settings/passwdadm.service&#x27;;
-import { InitAccountDto } from &#x27;~/management/passwd/_dto/init-account.dto&#x27;;
-import { InitResetDto } from &#x27;~/management/passwd/_dto/init-reset.dto&#x27;;
-import crypto from &#x27;crypto&#x27;;
-import { ResetByCodeDto } from &#x27;~/management/passwd/_dto/reset-by-code.dto&#x27;;
-import { InitManyDto } from &#x27;~/management/passwd/_dto/init-many.dto&#x27;;
-import {
-  FilterOptions,
-  FilterSchema,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from &#x27;@the-software-compagny/nestjs_module_restools&#x27;;
 import { Document } from &#x27;mongoose&#x27;;
 import { Identities } from &#x27;~/management/identities/_schemas/identities.schema&#x27;;
-import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
+import { InitAccountDto } from &#x27;~/management/passwd/_dto/init-account.dto&#x27;;
+import { InitManyDto } from &#x27;~/management/passwd/_dto/init-many.dto&#x27;;
+import { InitResetDto } from &#x27;~/management/passwd/_dto/init-reset.dto&#x27;;
+import { ResetByCodeDto } from &#x27;~/management/passwd/_dto/reset-by-code.dto&#x27;;
+import { PasswdadmService } from &#x27;~/settings/passwdadm.service&#x27;;
+import { ChangePasswordDto } from &#x27;./_dto/change-password.dto&#x27;;
+import { ResetPasswordDto } from &#x27;./_dto/reset-password.dto&#x27;;
+import { PasswdService } from &#x27;./passwd.service&#x27;;
 
 @Controller(&#x27;passwd&#x27;)
 @ApiTags(&#x27;management/passwd&#x27;)
@@ -990,28 +979,6 @@ export class PasswdController {
     });
   }
 
-  /*
-  @Post(&#x27;gettoken&#x27;)
-  @ApiOperation({summary: &#x27;Récupère un jeton de réinitialisation de mot de passe&#x27;})
-  @ApiResponse({status: HttpStatus.OK, description: &#x27;Retourne un jeton de réinitialisation de mot de passe&#x27;})
-  public async gettoken(@Body() asktoken: AskTokenDto, @Res() res: Response): Promise&lt;Response&gt; {
-    this.logger.log(&#x27;GetToken for : &#x27; + asktoken.uid);
-    const k &#x3D; crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString(&#x27;hex&#x27;);
-    const token &#x3D; await this.passwdService.askToken(asktoken, k, PasswdService.TOKEN_EXPIRATION);
-
-    return res.status(HttpStatus.OK).json({data: {token}});
-  }
-
-  @Post(&#x27;verifytoken&#x27;)
-  @ApiOperation({summary: &#x27;Vérifie un jeton de réinitilisation de mot de passe&#x27;})
-  @ApiResponse({status: HttpStatus.OK})
-  public async verifyToken(@Body() body: VerifyTokenDto, @Res() res: Response): Promise&lt;Response&gt; {
-    this.logger.log(&#x27;Verify token : &#x27; + body.token);
-    const data &#x3D; await this.passwdService.decryptToken(body.token);
-
-    return res.status(HttpStatus.OK).json({data});
-  }
-*/
   @Post(&#x27;resetbycode&#x27;)
   @ApiOperation({ summary: &#x27;reinitialise le mot de passe avec le code reçu&#x27; })
   @ApiResponse({ status: HttpStatus.OK })

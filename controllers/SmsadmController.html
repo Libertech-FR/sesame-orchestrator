@@ -358,7 +358,7 @@ import { SmsSettingsDto } from &#x27;~/settings/_dto/sms.settings.dto&#x27;;
 @Controller(&#x27;settings/sms&#x27;)
 @ApiTags(&#x27;settings&#x27;)
 export class SmsadmController {
-  public constructor(private smsadmService: SmsadmService) { }
+  public constructor(private smsadmService: SmsadmService) {}
 
   @Get(&#x27;get&#x27;)
   @ApiOperation({ summary: &#x27;Retourne les parametres pour l envoi SMS&#x27; })

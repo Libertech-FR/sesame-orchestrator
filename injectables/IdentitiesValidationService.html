@@ -166,10 +166,12 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findAll" >findAll</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findOne" >findOne</a>
                             </li>
@@ -178,6 +180,7 @@
                                 <a href="#resolveConfigPath" >resolveConfigPath</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#validate" >validate</a>
                             </li>
@@ -204,7 +207,8 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor()</code>
+                                <span class="modifier">Public</span>
+                        <code>constructor()</code>
                     </td>
                 </tr>
                         <tr>
@@ -228,6 +232,7 @@
                 <td class="col-md-4">
                     <a name="findAll"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findAll</b></span>
                         <a href="#findAll"><span class="icon ion-ios-link"></span></a>
@@ -267,6 +272,7 @@
                 <td class="col-md-4">
                     <a name="findOne"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findOne</b></span>
                         <a href="#findOne"><span class="icon ion-ios-link"></span></a>
@@ -401,6 +407,7 @@
                 <td class="col-md-4">
                     <a name="validate"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>validate</b></span>
                         <a href="#validate"><span class="icon ion-ios-link"></span></a>
@@ -686,7 +693,7 @@ export class IdentitiesValidationService {
   private validateSchema;
   private logger: Logger;
 
-  constructor() {
+  public constructor() {
     ajvErrors(this.ajv);
     this.validateSchema &#x3D; this.ajv.compile(validSchema);
     this.logger &#x3D; new Logger();
@@ -709,7 +716,7 @@ export class IdentitiesValidationService {
    * @param data - The additional fields data to validate.
    * @returns A promise that resolves if validation succeeds, or rejects with validation errors.
    */
-  async validate(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise&lt;object&gt; {
+  public async validate(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise&lt;object&gt; {
     if (!data.objectClasses) {
       data.objectClasses &#x3D; [];
     }
@@ -801,8 +808,8 @@ export class IdentitiesValidationService {
     }
   }
 
-  async findAll(): Promise&lt;any&gt; {
-    this.logger.debug([&#x27;findAll&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;));
+  public async findAll(): Promise&lt;any&gt; {
+    this.logger.debug([&#x27;findAll&#x27;, JSON.stringify(Object.values({ ...arguments }))].join(&#x27; &#x27;));
     const hardConfigPath &#x3D; &#x27;./src/management/identities/validations/_config&#x27;;
     const dynamicConfigPath &#x3D; &#x27;./configs/identities/validations&#x27;;
     // Retrieve files from each directory and tag them with their source
@@ -843,7 +850,7 @@ export class IdentitiesValidationService {
     return [result, files.length];
   }
 
-  async findOne(schema): Promise&lt;any&gt; {
+  public async findOne(schema): Promise&lt;any&gt; {
     this.logger.debug([&#x27;findOne&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;));
     const filePath &#x3D; this.resolveConfigPath(schema);
     if (!existsSync(filePath)) {

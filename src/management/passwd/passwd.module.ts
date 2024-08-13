@@ -12,4 +12,4 @@ import { SmsService } from '~/management/passwd/sms-service';
   controllers: [PasswdController],
   providers: [PasswdService, SmsService],
 })
-export class PasswdModule { }
+export class PasswdModule {}

@@ -17,7 +17,7 @@ export class IdentitiesCreateDto extends MetadataDto {
   @IsNumber()
   @IsEnum(InitStatesEnum)
   @ApiProperty({ enum: InitStatesEnum })
-  public initState: InitStatesEnum;
+  public initState: InitStatesEnum = InitStatesEnum.NOSENT;
 
   @IsNumber()
   @IsOptional()

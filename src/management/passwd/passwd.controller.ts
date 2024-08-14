@@ -48,15 +48,23 @@ export class PasswdController {
   public async resetbycode(@Body() body: ResetByCodeDto, @Res() res: Response): Promise<Response> {
     const debug = {};
     this.logger.log('Reset by code : ' + body.token + ' code : ' + body.code);
-    const [_, data] = await this.passwdService.resetByCode(body);
-    if (process.env.NODE_ENV === 'development') {
-      debug['_debug'] = data;
+    try{
+      const [_, data] = await this.passwdService.resetByCode(body);
+      if (process.env.NODE_ENV === 'development') {
+        debug['_debug'] = data;
+      }
+
+      return res.status(HttpStatus.OK).json({
+        message: 'Password changed',
+        ...debug,
+      });
+    }catch(e){
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Erreur serveur',
+        ...debug,
+      });
     }
 
-    return res.status(HttpStatus.OK).json({
-      message: 'Password changed',
-      ...debug,
-    });
   }
 
   @Post('reset')

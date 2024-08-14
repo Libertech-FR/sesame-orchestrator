@@ -98,7 +98,7 @@ export class IdentitiesValidationService {
 
     // Validate each attribute
     for (const key of attributesKeys) {
-      const validationError = await this.validateAttribute(key, attributes[key]);
+      const validationError = await this.validateAttribute(key, attributes[key], attributes);
       if (validationError) {
         validations[key] = validationError;
         reject = true;
@@ -119,9 +119,33 @@ export class IdentitiesValidationService {
    * @param attribute - The attribute value to validate.
    * @returns A promise that resolves with an error message if validation fails, otherwise null.
    */
-  public async validateAttribute(key: string, attribute: any): Promise<string | null> {
+  public async validateAttribute(key: string, attribute: any, data: any): Promise<string | null> {
     const path = this.resolveConfigPath(key);
-    const schema: ConfigObjectSchemaDTO = parse(readFileSync(path, 'utf8'));
+    const schema: any = parse(readFileSync(path, 'utf8'));
+
+    for (const [index, def] of Object.entries(schema?.properties || {})) {
+      if (typeof data[key][index] === 'undefined' || data[key][index] === null) {
+        switch ((def as any).type) {
+          case 'array':
+            data[key][index] = [];
+            break;
+
+          case 'object':
+            data[key][index] = {};
+            break;
+
+          case 'number':
+            data[key][index] = 0;
+            break;
+
+          default:
+            data[key][index] = '';
+            break;
+        }
+      }
+    }
+
+    console.log(data[key]);
 
     const yupSchema = buildYup(schema, { noSortEdges: true });
     try {

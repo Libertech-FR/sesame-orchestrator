@@ -213,8 +213,8 @@ export class PasswdService extends AbstractService {
         ActionType.IDENTITY_PASSWORD_CHANGE,
         identity._id,
         {
-          ...passwdDto,
-          ...pick(identity.toJSON(), ['inetOrgPerson']),
+          passwdDto,
+          ...identity.toJSON()
         },
         {
           async: false,
@@ -348,7 +348,7 @@ export class PasswdService extends AbstractService {
       const [_, response] = await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_RESET,
         identity._id,
-        { uid: tokenData.uid, newPassword: data.newpassword, ...pick(identity, ['inetOrgPerson']) },
+        { newPassword: data.newpassword, ...identity.toJSON() },
         {
           async: false,
           timeoutDiscard: true,

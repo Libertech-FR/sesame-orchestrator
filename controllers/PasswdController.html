@@ -345,8 +345,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -425,8 +425,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="91"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:91</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="99"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:99</a></div>
                         </td>
                     </tr>
 
@@ -517,8 +517,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="110"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:110</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:118</a></div>
                         </td>
                     </tr>
 
@@ -609,8 +609,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="119"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:119</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="127"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:127</a></div>
                         </td>
                     </tr>
 
@@ -701,8 +701,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="65"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:65</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -884,8 +884,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="131"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:131</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="139"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:139</a></div>
                         </td>
                     </tr>
 
@@ -985,15 +985,23 @@ export class PasswdController {
   public async resetbycode(@Body() body: ResetByCodeDto, @Res() res: Response): Promise&lt;Response&gt; {
     const debug &#x3D; {};
     this.logger.log(&#x27;Reset by code : &#x27; + body.token + &#x27; code : &#x27; + body.code);
-    const [_, data] &#x3D; await this.passwdService.resetByCode(body);
-    if (process.env.NODE_ENV &#x3D;&#x3D;&#x3D; &#x27;development&#x27;) {
-      debug[&#x27;_debug&#x27;] &#x3D; data;
+    try{
+      const [_, data] &#x3D; await this.passwdService.resetByCode(body);
+      if (process.env.NODE_ENV &#x3D;&#x3D;&#x3D; &#x27;development&#x27;) {
+        debug[&#x27;_debug&#x27;] &#x3D; data;
+      }
+
+      return res.status(HttpStatus.OK).json({
+        message: &#x27;Password changed&#x27;,
+        ...debug,
+      });
+    }catch(e){
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: &#x27;Erreur serveur&#x27;,
+        ...debug,
+      });
     }
 
-    return res.status(HttpStatus.OK).json({
-      message: &#x27;Password changed&#x27;,
-      ...debug,
-    });
   }
 
   @Post(&#x27;reset&#x27;)

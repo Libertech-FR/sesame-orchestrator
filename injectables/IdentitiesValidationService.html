@@ -249,8 +249,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="138"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:138</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="162"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:162</a></div>
                         </td>
                     </tr>
 
@@ -289,8 +289,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="180"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:180</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="204"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:204</a></div>
                         </td>
                     </tr>
 
@@ -497,7 +497,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validateAttribute(key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, attribute: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                    <code>validateAttribute(key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, attribute: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>, data: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
                 </td>
             </tr>
 
@@ -562,6 +562,20 @@
 <li>The attribute value to validate.</li>
 </ul>
 
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -771,7 +785,7 @@ export class IdentitiesValidationService {
 
     // Validate each attribute
     for (const key of attributesKeys) {
-      const validationError &#x3D; await this.validateAttribute(key, attributes[key]);
+      const validationError &#x3D; await this.validateAttribute(key, attributes[key], attributes);
       if (validationError) {
         validations[key] &#x3D; validationError;
         reject &#x3D; true;
@@ -792,9 +806,33 @@ export class IdentitiesValidationService {
    * @param attribute - The attribute value to validate.
    * @returns A promise that resolves with an error message if validation fails, otherwise null.
    */
-  public async validateAttribute(key: string, attribute: any): Promise&lt;string | null&gt; {
+  public async validateAttribute(key: string, attribute: any, data: any): Promise&lt;string | null&gt; {
     const path &#x3D; this.resolveConfigPath(key);
-    const schema: ConfigObjectSchemaDTO &#x3D; parse(readFileSync(path, &#x27;utf8&#x27;));
+    const schema: any &#x3D; parse(readFileSync(path, &#x27;utf8&#x27;));
+
+    for (const [index, def] of Object.entries(schema?.properties || {})) {
+      if (typeof data[key][index] &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27; || data[key][index] &#x3D;&#x3D;&#x3D; null) {
+        switch ((def as any).type) {
+          case &#x27;array&#x27;:
+            data[key][index] &#x3D; [];
+            break;
+
+          case &#x27;object&#x27;:
+            data[key][index] &#x3D; {};
+            break;
+
+          case &#x27;number&#x27;:
+            data[key][index] &#x3D; 0;
+            break;
+
+          default:
+            data[key][index] &#x3D; &#x27;&#x27;;
+            break;
+        }
+      }
+    }
+
+    console.log(data[key]);
 
     const yupSchema &#x3D; buildYup(schema, { noSortEdges: true });
     try {

@@ -351,54 +351,58 @@ export class PasswdService extends AbstractService {
       const padd &#x3D; await this.getPaddingForCode();
       const mailAttribute &#x3D; params.emailAttribute;
       const mail &#x3D; &lt;string&gt;get(identity.toObject(), mailAttribute);
-      const token &#x3D; await this.askToken({ mail: mail, uid: initDto.uid }, padd + k.toString(16), params.resetCodeTTL);
-      this.logger.log(&#x27;Token :&#x27; + token + &#x27;  int : &#x27; + k.toString(10));
-      if (initDto.type &#x3D;&#x3D;&#x3D; 0) {
-        this.logger.log(&#x27;Reset password asked by mail for  : &#x27; + initDto.uid);
-        const smtpParams &#x3D; await this.mailadmService.getParams();
-        if (mailAttribute !&#x3D;&#x3D; &#x27;&#x27;) {
-          const displayName &#x3D; identity.inetOrgPerson.displayName;
-          this.mailer
-            .sendMail({
-              from: smtpParams.sender,
-              to: mail,
-              subject: &#x27;Reinitialisation de votre mot de passe&#x27;,
-              template: &#x27;resetaccount&#x27;,
-              context: {
-                uid: identity.inetOrgPerson.uid,
-                displayName: displayName,
-                code: k,
-              },
-            })
-            .then(() &#x3D;&gt; {
-              this.logger.log(&#x27;reset compte envoyé  pour uid&#x27; + initDto.uid + &#x27; à &#x27; + mail);
-            })
-            .catch(() &#x3D;&gt; {
-              throw new BadRequestException({
-                message: &#x27;Erreur serveur lors de l envoi du mail&#x27;,
-                error: &#x27;Bad Request&#x27;,
-                statusCode: 400,
+      if (mail){
+        const token &#x3D; await this.askToken({ mail: mail, uid: initDto.uid }, padd + k.toString(16), params.resetCodeTTL);
+        this.logger.log(&#x27;Token :&#x27; + token + &#x27;  int : &#x27; + k.toString(10));
+        if (initDto.type &#x3D;&#x3D;&#x3D; 0) {
+          this.logger.log(&#x27;Reset password asked by mail for  : &#x27; + initDto.uid);
+          const smtpParams &#x3D; await this.mailadmService.getParams();
+          if (mailAttribute !&#x3D;&#x3D; &#x27;&#x27;) {
+            this.mailer
+              .sendMail({
+                from: smtpParams.sender,
+                to: mail,
+                subject: &#x27;Reinitialisation de votre mot de passe&#x27;,
+                template: &#x27;resetaccount&#x27;,
+                context: {
+                  uid: identity.inetOrgPerson.uid,
+                  displayName: identity.inetOrgPerson.displayName,
+                  code: k,
+                },
+              })
+              .then(() &#x3D;&gt; {
+                this.logger.log(&#x27;reset compte envoyé  pour uid&#x27; + initDto.uid + &#x27; à &#x27; + mail);
+              })
+              .catch(() &#x3D;&gt; {
+                throw new BadRequestException({
+                  message: &#x27;Erreur serveur lors de l envoi du mail&#x27;,
+                  error: &#x27;Bad Request&#x27;,
+                  statusCode: 400,
+                });
               });
-            });
-          return token;
-        } else {
-          return false;
-        }
-      } else {
-        //envoi par SMS si c est possible
-        const policies &#x3D; new PasswordPoliciesDto();
-        if (policies.resetBySms &#x3D;&#x3D;&#x3D; true) {
-          this.logger.log(&#x27;Reset password asked by SMS for  : &#x27; + initDto.uid);
-          const smsAttribute &#x3D; params.mobileAttribute;
-          if (smsAttribute !&#x3D;&#x3D; &#x27;&#x27;) {
-            const numTel &#x3D; &lt;string&gt;get(identity.toObject(), smsAttribute);
-            await this.smsadmService.send(numTel, &#x27;Votre code de reinitialisation : &#x27; + k.toString(10));
+            return token;
+          } else {
+            return false;
           }
-          return token;
         } else {
-          return false;
+          //envoi par SMS si c est possible
+          const policies &#x3D; new PasswordPoliciesDto();
+          if (policies.resetBySms &#x3D;&#x3D;&#x3D; true) {
+            this.logger.log(&#x27;Reset password asked by SMS for  : &#x27; + initDto.uid);
+            const smsAttribute &#x3D; params.mobileAttribute;
+            if (smsAttribute !&#x3D;&#x3D; &#x27;&#x27;) {
+              const numTel &#x3D; &lt;string&gt;get(identity.toObject(), smsAttribute);
+              await this.smsadmService.send(numTel, &#x27;Votre code de reinitialisation : &#x27; + k.toString(10));
+            }
+            return token;
+          } else {
+            return false;
+          }
         }
+      }else{
+        this.logger.error(&#x27;Error while reset identityMailAttribute Empty&#x27;);
       }
+
     } catch (e) {
       this.logger.error(&#x27;Error while reseting password. &#x27; + e + &#x60; (uid&#x3D;${initDto?.uid})&#x60;);
       //on retoune un token qui ne sert à rien pour ne pas divulguer que l uid n existe pas
@@ -418,36 +422,42 @@ export class PasswdService extends AbstractService {
       this.logger.log(&#x27;mailer.identityMailAttribute : &#x27; + mailAttribute);
       if (mailAttribute !&#x3D;&#x3D; &#x27;&#x27;) {
         const mail &#x3D; &lt;string&gt;get(identity.toObject(), mailAttribute);
-        const smtpParams &#x3D; await this.mailadmService.getParams();
-        //demande du token
-        const k &#x3D; crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString(&#x27;hex&#x27;);
-        const token &#x3D; await this.askToken({ mail: mail, uid: initDto.uid }, k, params.initTokenTTL);
-        //envoi du token
-        this.mailer
-          .sendMail({
-            from: smtpParams.sender,
-            to: mail,
-            subject: &#x27;Activation de votre compte&#x27;,
-            template: &#x27;initaccount&#x27;,
-            context: {
-              uid: initDto.uid,
-              url: this.config.get(&#x27;frontPwd.url&#x27;) + &#x27;/initaccount/&#x27; + token,
-            },
-          })
-          .then(() &#x3D;&gt; {
-            this.logger.log(&#x27;Init compte envoyé  pour uid&#x27; + initDto.uid + &#x27; à &#x27; + mail);
-            this.setInitState(identity, InitStatesEnum.SENT);
-          })
-          .catch((e) &#x3D;&gt; {
-            this.logger.error(&#x27;Erreur serveur lors de l envoi du mail&#x27; + e);
-            throw new BadRequestException({
-              message: &#x27;Erreur serveur lors de l envoi du mail&#x27; + e,
-              error: &#x27;Bad Request&#x27;,
-              statusCode: 400,
+        if (mail){
+          const smtpParams &#x3D; await this.mailadmService.getParams();
+          //demande du token
+          const k &#x3D; crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString(&#x27;hex&#x27;);
+          const token &#x3D; await this.askToken({ mail: mail, uid: initDto.uid }, k, params.initTokenTTL);
+          //envoi du token
+          this.mailer
+            .sendMail({
+              from: smtpParams.sender,
+              to: mail,
+              subject: &#x27;Activation de votre compte&#x27;,
+              template: &#x27;initaccount&#x27;,
+              context: {
+                displayName: identity.inetOrgPerson.displayName,
+                uid: initDto.uid,
+                url: this.config.get(&#x27;frontPwd.url&#x27;) + &#x27;/initaccount/&#x27; + token,
+              },
+            })
+            .then(() &#x3D;&gt; {
+              this.logger.log(&#x27;Init compte envoyé  pour uid&#x27; + initDto.uid + &#x27; à &#x27; + mail);
+              this.setInitState(identity, InitStatesEnum.SENT);
+            })
+            .catch((e) &#x3D;&gt; {
+              this.logger.error(&#x27;Erreur serveur lors de l envoi du mail&#x27; + e);
+              throw new BadRequestException({
+                message: &#x27;Erreur serveur lors de l envoi du mail&#x27; + e,
+                error: &#x27;Bad Request&#x27;,
+                statusCode: 400,
+              });
             });
-          });
 
-        return true;
+          return true;
+        }else{
+          this.logger.error(&#x27;Error while initAccount identityMailAttribute Empty&#x27;);
+          return false
+        }
       } else {
         this.logger.error(&#x27;Error while initAccount identityMailAttribute not defined&#x27;);
         return false;

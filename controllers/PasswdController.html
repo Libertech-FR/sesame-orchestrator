@@ -517,8 +517,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="102"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:102</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="110"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:110</a></div>
                         </td>
                     </tr>
 
@@ -609,8 +609,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="111"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:111</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:119</a></div>
                         </td>
                     </tr>
 
@@ -884,8 +884,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="123"
-                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:123</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="131"
+                                    class="link-to-prism">src/management/passwd/passwd.controller.ts:131</a></div>
                         </td>
                     </tr>
 
@@ -1028,10 +1028,18 @@ export class PasswdController {
   public async init(@Body() body: InitAccountDto, @Res() res: Response): Promise&lt;Response&gt; {
     const debug &#x3D; {};
     const ok &#x3D; await this.passwdService.initAccount(body);
-    return res.status(HttpStatus.OK).json({
-      message: &#x27;Email envoyé verifiez votre boite mail alternative et vos spam&#x27;,
-      ...debug,
-    });
+    if (ok){
+      return res.status(HttpStatus.OK).json({
+        message: &#x27;Email envoyé verifiez votre boite mail alternative et vos spam&#x27;,
+        ...debug,
+      });
+    }else{
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: &#x27;Erreur serveur impossible d\&#x27;envoyer le mail&#x27;,
+        ...debug,
+      });
+    }
+
   }
   @Post(&#x27;initmany&#x27;)
   @ApiOperation({ summary: &quot;Initialise plusieurs identités. envoi un jeton par mail à l&#x27;identité&quot; })

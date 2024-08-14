@@ -91,10 +91,18 @@ export class PasswdController {
   public async init(@Body() body: InitAccountDto, @Res() res: Response): Promise<Response> {
     const debug = {};
     const ok = await this.passwdService.initAccount(body);
-    return res.status(HttpStatus.OK).json({
-      message: 'Email envoyé verifiez votre boite mail alternative et vos spam',
-      ...debug,
-    });
+    if (ok){
+      return res.status(HttpStatus.OK).json({
+        message: 'Email envoyé verifiez votre boite mail alternative et vos spam',
+        ...debug,
+      });
+    }else{
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Erreur serveur impossible d\'envoyer le mail',
+        ...debug,
+      });
+    }
+
   }
   @Post('initmany')
   @ApiOperation({ summary: "Initialise plusieurs identités. envoi un jeton par mail à l'identité" })

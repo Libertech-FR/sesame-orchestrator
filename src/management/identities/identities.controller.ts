@@ -64,6 +64,7 @@ export class IdentitiesController extends AbstractController {
     initState: 1,
     inetOrgPerson: 1,
     additionalFields: 1,
+    metadata: 1,
   };
 
   @Post()

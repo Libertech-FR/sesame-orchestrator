@@ -27,6 +27,7 @@ export class JobsController extends AbstractController {
     metadata: 1,
     params: 1,
     result: 1,
+    state: 1,
   };
 
   public constructor(private readonly _service: JobsService) {

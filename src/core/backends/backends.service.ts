@@ -6,19 +6,19 @@ import {
   RequestTimeoutException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
-import { Document, ModifyResult, Query, Types } from 'mongoose';
-import { AbstractQueueProcessor } from '~/_common/abstracts/abstract.queue.processor';
-import { IdentityState } from '~/management/identities/_enums/states.enum';
-import { Identities } from '~/management/identities/_schemas/identities.schema';
-import { IdentitiesService } from '~/management/identities/identities.service';
-import { JobState } from '../jobs/_enums/state.enum';
-import { Jobs } from '../jobs/_schemas/jobs.schema';
-import { JobsService } from '../jobs/jobs.service';
-import { Tasks } from '../tasks/_schemas/tasks.schema';
-import { TasksService } from '../tasks/tasks.service';
-import { ActionType } from './_enum/action-type.enum';
-import { ExecuteJobOptions } from './_interfaces/execute-job-options.interface';
+import {ModuleRef} from '@nestjs/core';
+import {Document, ModifyResult, Query, Types} from 'mongoose';
+import {AbstractQueueProcessor} from '~/_common/abstracts/abstract.queue.processor';
+import {IdentityState} from '~/management/identities/_enums/states.enum';
+import {Identities} from '~/management/identities/_schemas/identities.schema';
+import {IdentitiesService} from '~/management/identities/identities.service';
+import {JobState} from '../jobs/_enums/state.enum';
+import {Jobs} from '../jobs/_schemas/jobs.schema';
+import {JobsService} from '../jobs/jobs.service';
+import {Tasks} from '../tasks/_schemas/tasks.schema';
+import {TasksService} from '../tasks/tasks.service';
+import {ActionType} from './_enum/action-type.enum';
+import {ExecuteJobOptions} from './_interfaces/execute-job-options.interface';
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
 
@@ -45,7 +45,7 @@ export class BackendsService extends AbstractQueueProcessor {
     const jobsCompleted = await this._queue.getCompleted();
     for (const job of jobsCompleted) {
       const isSyncedJob = await this.jobsService.model.findOneAndUpdate<Jobs>(
-        { jobId: job.id, state: { $ne: JobState.COMPLETED } },
+        { jobId: job.id, state: { $nin: [JobState.COMPLETED, JobState.FAILED] } },
         {
           $set: {
             state: JobState.COMPLETED,
@@ -105,11 +105,17 @@ export class BackendsService extends AbstractQueueProcessor {
     });
 
     this.queueEvents.on('completed', async (payload) => {
+      let jState = JobState.COMPLETED;
+      let iState = IdentityState.SYNCED;
+      if (payload.returnvalue.status !== 0) {
+        jState = JobState.FAILED;
+        iState = IdentityState.ON_ERROR;
+      }
       const completedJob = await this.jobsService.model.findOneAndUpdate<Jobs>(
-        { jobId: payload.jobId, state: { $ne: JobState.COMPLETED } },
+        { jobId: payload.jobId },
         {
           $set: {
-            state: JobState.COMPLETED,
+            state: jState,
             finishedAt: new Date(),
             result: payload.returnvalue,
           },
@@ -119,10 +125,14 @@ export class BackendsService extends AbstractQueueProcessor {
 
       await this.identitiesService.model.findByIdAndUpdate(completedJob?.concernedTo?.id, {
         $set: {
-          state: IdentityState.SYNCED,
+          state: iState,
         },
       });
-      this.logger.log(`Job completed... Syncing [${payload.jobId}]`);
+      if (jState === JobState.COMPLETED) {
+        this.logger.log(`Job completed... Syncing [${payload.jobId}]`);
+      } else {
+        this.logger.error(`Job FAILED... Syncing [${payload.jobId}]`);
+      }
     });
   }
 

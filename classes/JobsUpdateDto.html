@@ -148,10 +148,11 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;;
 import { Type } from &#x27;class-transformer&#x27;;
-import { IsMongoId, IsNotEmpty, IsObject, IsString, ValidateNested } from &#x27;class-validator&#x27;;
+import {IsMongoId, IsNotEmpty, IsNumber, IsObject, IsString, ValidateNested} from &#x27;class-validator&#x27;;
 import { Types } from &#x27;mongoose&#x27;;
 import { CustomFieldsDto } from &#x27;~/_common/abstracts/dto/custom-fields.dto&#x27;;
 import { ConcernedToPartDTO } from &#x27;./_parts/concerned-to.part.dto&#x27;;
+import {JobState} from &quot;~/core/jobs/_enums/state.enum&quot;;
 
 export class JobsCreateDto extends CustomFieldsDto {
   @IsString()
@@ -183,6 +184,10 @@ export class JobsCreateDto extends CustomFieldsDto {
   @IsObject()
   @ApiProperty()
   public result: object;
+
+  @IsNumber()
+  @ApiProperty()
+  public state: number;
 }
 
 export class JobsDto extends JobsCreateDto {

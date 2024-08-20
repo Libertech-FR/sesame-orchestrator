@@ -6,19 +6,21 @@ import {
   RequestTimeoutException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import {ModuleRef} from '@nestjs/core';
-import {Document, ModifyResult, Query, Types} from 'mongoose';
-import {AbstractQueueProcessor} from '~/_common/abstracts/abstract.queue.processor';
-import {IdentityState} from '~/management/identities/_enums/states.enum';
-import {Identities} from '~/management/identities/_schemas/identities.schema';
-import {IdentitiesService} from '~/management/identities/identities.service';
-import {JobState} from '../jobs/_enums/state.enum';
-import {Jobs} from '../jobs/_schemas/jobs.schema';
-import {JobsService} from '../jobs/jobs.service';
-import {Tasks} from '../tasks/_schemas/tasks.schema';
-import {TasksService} from '../tasks/tasks.service';
-import {ActionType} from './_enum/action-type.enum';
-import {ExecuteJobOptions} from './_interfaces/execute-job-options.interface';
+import { ModuleRef } from '@nestjs/core';
+import { Document, ModifyResult, Query, Types } from 'mongoose';
+import { AbstractQueueProcessor } from '~/_common/abstracts/abstract.queue.processor';
+import { IdentityState } from '~/management/identities/_enums/states.enum';
+import { Identities } from '~/management/identities/_schemas/identities.schema';
+import { IdentitiesService } from '~/management/identities/identities.service';
+import { JobState } from '../jobs/_enums/state.enum';
+import { Jobs } from '../jobs/_schemas/jobs.schema';
+import { JobsService } from '../jobs/jobs.service';
+import { Tasks } from '../tasks/_schemas/tasks.schema';
+import { TasksService } from '../tasks/tasks.service';
+import { ActionType } from './_enum/action-type.enum';
+import { ExecuteJobOptions } from './_interfaces/execute-job-options.interface';
+import {BackendResultInterface} from "~/core/backends/_interfaces/backend-result.interface";
+import {WorkerResultInterface} from "~/core/backends/_interfaces/worker-result.interface";
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
 
@@ -107,7 +109,8 @@ export class BackendsService extends AbstractQueueProcessor {
     this.queueEvents.on('completed', async (payload) => {
       let jState = JobState.COMPLETED;
       let iState = IdentityState.SYNCED;
-      if (payload.returnvalue.status !== 0) {
+      const result = <WorkerResultInterface>(<unknown>payload.returnvalue);
+      if (result.status !== 0) {
         jState = JobState.FAILED;
         iState = IdentityState.ON_ERROR;
       }

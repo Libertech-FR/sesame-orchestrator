@@ -383,7 +383,7 @@ export class PasswdService extends AbstractService {
       this.logger.log(&#x27;mailer.identityMailAttribute : &#x27; + mailAttribute);
       if (mailAttribute !&#x3D;&#x3D; &#x27;&#x27;) {
         const mail &#x3D; &lt;string&gt;get(identity.toObject(), mailAttribute);
-        if (mail){
+        if (mail) {
           const smtpParams &#x3D; await this.mailadmService.getParams();
           //demande du token
           const k &#x3D; crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString(&#x27;hex&#x27;);
@@ -415,9 +415,9 @@ export class PasswdService extends AbstractService {
             });
 
           return true;
-        }else{
+        } else {
           this.logger.error(&#x27;Error while initAccount identityMailAttribute Empty&#x27;);
-          return false
+          return false;
         }
       } else {
         this.logger.error(&#x27;Error while initAccount identityMailAttribute not defined&#x27;);
@@ -450,7 +450,7 @@ export class PasswdService extends AbstractService {
         identity._id,
         {
           passwdDto,
-          ...identity.toJSON()
+          ...identity.toJSON(),
         },
         {
           async: false,
@@ -621,7 +621,7 @@ export class PasswdService extends AbstractService {
       const [_, response] &#x3D; await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_RESET,
         identity._id,
-        { uid: tokenData.uid, newPassword: data.newPassword, ...pick(identity, [&#x27;inetOrgPerson&#x27;]) },
+        { uid: tokenData.uid, newPassword: data.newPassword, ...identity.toJSON() },
         {
           async: false,
           timeoutDiscard: true,

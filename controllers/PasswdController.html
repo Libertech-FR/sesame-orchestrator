@@ -995,7 +995,7 @@ export class PasswdController {
         message: &#x27;Password changed&#x27;,
         ...debug,
       });
-    }catch(e){
+    } catch (e) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: &#x27;Erreur serveur&#x27;,
         ...debug,

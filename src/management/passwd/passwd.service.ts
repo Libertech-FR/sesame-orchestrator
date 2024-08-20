@@ -147,7 +147,7 @@ export class PasswdService extends AbstractService {
       this.logger.log('mailer.identityMailAttribute : ' + mailAttribute);
       if (mailAttribute !== '') {
         const mail = <string>get(identity.toObject(), mailAttribute);
-        if (mail){
+        if (mail) {
           const smtpParams = await this.mailadmService.getParams();
           //demande du token
           const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
@@ -179,9 +179,9 @@ export class PasswdService extends AbstractService {
             });
 
           return true;
-        }else{
+        } else {
           this.logger.error('Error while initAccount identityMailAttribute Empty');
-          return false
+          return false;
         }
       } else {
         this.logger.error('Error while initAccount identityMailAttribute not defined');
@@ -214,7 +214,7 @@ export class PasswdService extends AbstractService {
         identity._id,
         {
           passwdDto,
-          ...identity.toJSON()
+          ...identity.toJSON(),
         },
         {
           async: false,
@@ -385,7 +385,7 @@ export class PasswdService extends AbstractService {
       const [_, response] = await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_RESET,
         identity._id,
-        { uid: tokenData.uid, newPassword: data.newPassword, ...pick(identity, ['inetOrgPerson']) },
+        { uid: tokenData.uid, newPassword: data.newPassword, ...identity.toJSON() },
         {
           async: false,
           timeoutDiscard: true,

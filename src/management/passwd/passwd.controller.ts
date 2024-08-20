@@ -58,7 +58,7 @@ export class PasswdController {
         message: 'Password changed',
         ...debug,
       });
-    }catch(e){
+    } catch (e) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Erreur serveur',
         ...debug,

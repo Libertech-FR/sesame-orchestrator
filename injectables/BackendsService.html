@@ -231,7 +231,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/core/backends/backends.service.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/core/backends/backends.service.ts:28</a></div>
                             </td>
                         </tr>
 
@@ -333,8 +333,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="219"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:219</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="222"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:222</a></div>
                         </td>
                     </tr>
 
@@ -445,7 +445,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:36</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractQueueProcessor.html#source" target="_self" >AbstractQueueProcessor:38</a></code>
 </div>
                         </td>
                     </tr>
@@ -485,8 +485,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="139"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:139</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="142"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:142</a></div>
                         </td>
                     </tr>
 
@@ -555,8 +555,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="180"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:180</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="183"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:183</a></div>
                         </td>
                     </tr>
 
@@ -903,19 +903,21 @@
   RequestTimeoutException,
   UnprocessableEntityException,
 } from &#x27;@nestjs/common&#x27;;
-import {ModuleRef} from &#x27;@nestjs/core&#x27;;
-import {Document, ModifyResult, Query, Types} from &#x27;mongoose&#x27;;
-import {AbstractQueueProcessor} from &#x27;~/_common/abstracts/abstract.queue.processor&#x27;;
-import {IdentityState} from &#x27;~/management/identities/_enums/states.enum&#x27;;
-import {Identities} from &#x27;~/management/identities/_schemas/identities.schema&#x27;;
-import {IdentitiesService} from &#x27;~/management/identities/identities.service&#x27;;
-import {JobState} from &#x27;../jobs/_enums/state.enum&#x27;;
-import {Jobs} from &#x27;../jobs/_schemas/jobs.schema&#x27;;
-import {JobsService} from &#x27;../jobs/jobs.service&#x27;;
-import {Tasks} from &#x27;../tasks/_schemas/tasks.schema&#x27;;
-import {TasksService} from &#x27;../tasks/tasks.service&#x27;;
-import {ActionType} from &#x27;./_enum/action-type.enum&#x27;;
-import {ExecuteJobOptions} from &#x27;./_interfaces/execute-job-options.interface&#x27;;
+import { ModuleRef } from &#x27;@nestjs/core&#x27;;
+import { Document, ModifyResult, Query, Types } from &#x27;mongoose&#x27;;
+import { AbstractQueueProcessor } from &#x27;~/_common/abstracts/abstract.queue.processor&#x27;;
+import { IdentityState } from &#x27;~/management/identities/_enums/states.enum&#x27;;
+import { Identities } from &#x27;~/management/identities/_schemas/identities.schema&#x27;;
+import { IdentitiesService } from &#x27;~/management/identities/identities.service&#x27;;
+import { JobState } from &#x27;../jobs/_enums/state.enum&#x27;;
+import { Jobs } from &#x27;../jobs/_schemas/jobs.schema&#x27;;
+import { JobsService } from &#x27;../jobs/jobs.service&#x27;;
+import { Tasks } from &#x27;../tasks/_schemas/tasks.schema&#x27;;
+import { TasksService } from &#x27;../tasks/tasks.service&#x27;;
+import { ActionType } from &#x27;./_enum/action-type.enum&#x27;;
+import { ExecuteJobOptions } from &#x27;./_interfaces/execute-job-options.interface&#x27;;
+import {BackendResultInterface} from &quot;~/core/backends/_interfaces/backend-result.interface&quot;;
+import {WorkerResultInterface} from &quot;~/core/backends/_interfaces/worker-result.interface&quot;;
 
 const DEFAULT_SYNC_TIMEOUT &#x3D; 30_000;
 
@@ -1004,7 +1006,8 @@ export class BackendsService extends AbstractQueueProcessor {
     this.queueEvents.on(&#x27;completed&#x27;, async (payload) &#x3D;&gt; {
       let jState &#x3D; JobState.COMPLETED;
       let iState &#x3D; IdentityState.SYNCED;
-      if (payload.returnvalue.status !&#x3D;&#x3D; 0) {
+      const result &#x3D; &lt;WorkerResultInterface&gt;(&lt;unknown&gt;payload.returnvalue);
+      if (result.status !&#x3D;&#x3D; 0) {
         jState &#x3D; JobState.FAILED;
         iState &#x3D; IdentityState.ON_ERROR;
       }

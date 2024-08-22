@@ -916,8 +916,8 @@ import { Tasks } from &#x27;../tasks/_schemas/tasks.schema&#x27;;
 import { TasksService } from &#x27;../tasks/tasks.service&#x27;;
 import { ActionType } from &#x27;./_enum/action-type.enum&#x27;;
 import { ExecuteJobOptions } from &#x27;./_interfaces/execute-job-options.interface&#x27;;
-import {BackendResultInterface} from &quot;~/core/backends/_interfaces/backend-result.interface&quot;;
-import {WorkerResultInterface} from &quot;~/core/backends/_interfaces/worker-result.interface&quot;;
+import { BackendResultInterface } from &quot;~/core/backends/_interfaces/backend-result.interface&quot;;
+import { WorkerResultInterface } from &quot;~/core/backends/_interfaces/worker-result.interface&quot;;
 
 const DEFAULT_SYNC_TIMEOUT &#x3D; 30_000;
 
@@ -1131,6 +1131,7 @@ export class BackendsService extends AbstractQueueProcessor {
       },
       {
         ...options?.job,
+        jobId: (new Types.ObjectId()).toHexString(),
         attempts: 1,
       },
     );
@@ -1149,10 +1150,10 @@ export class BackendsService extends AbstractQueueProcessor {
         params: payload,
         concernedTo: identity
           ? {
-              $ref: &#x27;identities&#x27;,
-              id: concernedTo,
-              name: [identity?.inetOrgPerson?.cn, identity?.inetOrgPerson?.givenName].join(&#x27; &#x27;),
-            }
+            $ref: &#x27;identities&#x27;,
+            id: concernedTo,
+            name: [identity?.inetOrgPerson?.cn, identity?.inetOrgPerson?.givenName].join(&#x27; &#x27;),
+          }
           : null,
         comment: options?.comment,
         task: options?.task,

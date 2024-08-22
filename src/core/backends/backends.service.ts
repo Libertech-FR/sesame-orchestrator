@@ -19,8 +19,8 @@ import { Tasks } from '../tasks/_schemas/tasks.schema';
 import { TasksService } from '../tasks/tasks.service';
 import { ActionType } from './_enum/action-type.enum';
 import { ExecuteJobOptions } from './_interfaces/execute-job-options.interface';
-import {BackendResultInterface} from "~/core/backends/_interfaces/backend-result.interface";
-import {WorkerResultInterface} from "~/core/backends/_interfaces/worker-result.interface";
+import { BackendResultInterface } from "~/core/backends/_interfaces/backend-result.interface";
+import { WorkerResultInterface } from "~/core/backends/_interfaces/worker-result.interface";
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
 
@@ -234,6 +234,7 @@ export class BackendsService extends AbstractQueueProcessor {
       },
       {
         ...options?.job,
+        jobId: (new Types.ObjectId()).toHexString(),
         attempts: 1,
       },
     );
@@ -252,10 +253,10 @@ export class BackendsService extends AbstractQueueProcessor {
         params: payload,
         concernedTo: identity
           ? {
-              $ref: 'identities',
-              id: concernedTo,
-              name: [identity?.inetOrgPerson?.cn, identity?.inetOrgPerson?.givenName].join(' '),
-            }
+            $ref: 'identities',
+            id: concernedTo,
+            name: [identity?.inetOrgPerson?.cn, identity?.inetOrgPerson?.givenName].join(' '),
+          }
           : null,
         comment: options?.comment,
         task: options?.task,

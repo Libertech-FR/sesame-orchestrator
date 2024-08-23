@@ -38,6 +38,7 @@ elements:
     options:
       suggestion:
         - TAIGA
+        - LOCAL
 - type: HorizontalLayout
   elements:
   - type: Control

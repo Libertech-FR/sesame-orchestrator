@@ -288,7 +288,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findOne(schema, options?: literal type)</code>
+                    <code>findOne(schema: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: literal type)</code>
                 </td>
             </tr>
 
@@ -319,6 +319,7 @@
                                         <tr>
                                                 <td>schema</td>
                                             <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
 
                                             <td>
@@ -827,25 +828,34 @@ export class IdentitiesJsonformsService extends AbstractService {
     return [result, files.length];
   }
 
-  public async findOne(schema, options?: { mode: string }): Promise&lt;any&gt; {
-    options &#x3D; {
-      mode: &#x27;create&#x27;,
-      ...options,
-    };
-
+  public async findOne(
+    schema: string,
+    options?: { mode?: string; employeeType?: string }
+  ): Promise&lt;any&gt; {
+    const { mode &#x3D; &#x27;create&#x27;, employeeType &#x3D; &#x27;&#x27; } &#x3D; options || {};
     if (schema.endsWith(&#x27;.yml&#x27;)) schema &#x3D; schema.replace(&#x27;.yml&#x27;, &#x27;&#x27;);
 
-    let filePath &#x3D; this.resolveJsonFormPath(schema + &#x27;.&#x27; + options?.mode + &#x27;.ui&#x27;);
+    const filePaths &#x3D; [
+      &#x60;${schema}.${mode}.${employeeType.toLowerCase()}.ui&#x60;,
+      &#x60;${schema}.${mode}.ui&#x60;,
+      &#x60;${schema}.${employeeType.toLowerCase()}.ui&#x60;,
+      &#x60;${schema}.ui&#x60;,
+    ];
 
-    if (!filePath) {
-      filePath &#x3D; this.resolveJsonFormPath(schema + &#x27;.ui&#x27;);
-    }
+    let finalPath &#x3D; null;
+    const filePath &#x3D; filePaths.find((path) &#x3D;&gt; {
+      const resolved &#x3D; this.resolveJsonFormPath(path)
+      if (!resolved) return null;
+      finalPath &#x3D; resolved;
+
+      return resolved;
+    });
 
     if (!filePath) {
       throw new ValidationConfigException({ message: &#x60;File not found: ${schema}.ui.yml&#x60; });
     }
 
-    return parse(readFileSync(filePath, &#x27;utf-8&#x27;));
+    return parse(readFileSync(finalPath, &#x27;utf-8&#x27;));
   }
 }
 </code></pre>

@@ -41,7 +41,8 @@ export class IdentitiesJsonFormsController extends AbstractController {
     });
   }
 
-  @Get(':schema')
+  // @Get(':schema')
+  @Post(':schema')
   @ApiOperation({ summary: "Récupère un JSON Forms d'un schéma personnalisé" })
   public async search(
     @Res() res: Response,

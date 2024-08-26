@@ -392,14 +392,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;:schema&#x27;)<br />@ApiOperation({summary: &#x27;Récupère un JSON Forms d&#x27;un schéma personnalisé&#x27;})<br /></code>
+                    <code>@Post(&#x27;:schema&#x27;)<br />@ApiOperation({summary: &#x27;Récupère un JSON Forms d&#x27;un schéma personnalisé&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -594,7 +594,8 @@ export class IdentitiesJsonFormsController extends AbstractController {
     });
   }
 
-  @Get(&#x27;:schema&#x27;)
+  // @Get(&#x27;:schema&#x27;)
+  @Post(&#x27;:schema&#x27;)
   @ApiOperation({ summary: &quot;Récupère un JSON Forms d&#x27;un schéma personnalisé&quot; })
   public async search(
     @Res() res: Response,

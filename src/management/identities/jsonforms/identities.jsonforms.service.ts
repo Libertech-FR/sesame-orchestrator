@@ -153,24 +153,33 @@ export class IdentitiesJsonformsService extends AbstractService {
     return [result, files.length];
   }
 
-  public async findOne(schema, options?: { mode: string }): Promise<any> {
-    options = {
-      mode: 'create',
-      ...options,
-    };
-
+  public async findOne(
+    schema: string,
+    options?: { mode?: string; employeeType?: string }
+  ): Promise<any> {
+    const { mode = 'create', employeeType = '' } = options || {};
     if (schema.endsWith('.yml')) schema = schema.replace('.yml', '');
 
-    let filePath = this.resolveJsonFormPath(schema + '.' + options?.mode + '.ui');
+    const filePaths = [
+      `${schema}.${mode}.${employeeType.toLowerCase()}.ui`,
+      `${schema}.${mode}.ui`,
+      `${schema}.${employeeType.toLowerCase()}.ui`,
+      `${schema}.ui`,
+    ];
 
-    if (!filePath) {
-      filePath = this.resolveJsonFormPath(schema + '.ui');
-    }
+    let finalPath = null;
+    const filePath = filePaths.find((path) => {
+      const resolved = this.resolveJsonFormPath(path)
+      if (!resolved) return null;
+      finalPath = resolved;
+
+      return resolved;
+    });
 
     if (!filePath) {
       throw new ValidationConfigException({ message: `File not found: ${schema}.ui.yml` });
     }
 
-    return parse(readFileSync(filePath, 'utf-8'));
+    return parse(readFileSync(finalPath, 'utf-8'));
   }
 }

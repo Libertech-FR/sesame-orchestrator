@@ -73,6 +73,10 @@
     },
     "jpegPhoto": {
       "type": "string",
+      "description": "User jpeg photo of the inetOrgPerson."
+    },
+    "photo": {
+      "type": "string",
       "description": "User photo of the inetOrgPerson."
     }
   },

@@ -31,7 +31,7 @@ export class inetOrgPerson extends Document {
   public preferredLanguage?: string;
 
   @Prop({ type: String, required: true })
-  sn: string;
+  public sn: string;
 
   @Prop({ type: String, default: null })
   public telephoneNumber?: string;
@@ -53,6 +53,9 @@ export class inetOrgPerson extends Document {
 
   @Prop({ type: String, default: null })
   public jpegPhoto?: string;
+
+  @Prop({ type: String, default: null })
+  public photo?: string;
 
   @Prop({ type: String, default: null })
   public userCertificate?: string;

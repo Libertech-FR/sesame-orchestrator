@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { AutoIncrementPluginOptions } from '~/_common/plugins/mongoose/auto-increment.interface';
+import { AutoIncrementPlugin } from '~/_common/plugins/mongoose/auto-increment.plugin';
 
 @Schema({ _id: false })
 export class inetOrgPerson extends Document {
@@ -42,7 +44,10 @@ export class inetOrgPerson extends Document {
   @Prop({ type: String, required: true })
   public uid: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({
+    type: String,
+    validate: [(employeeNumber: string) => /[A-Za-z0-9_-]+/.test(employeeNumber), 'EmployeeNumber invalide.'],
+  })
   public employeeNumber: string;
 
   @Prop({ type: String, required: true })

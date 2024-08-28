@@ -8,6 +8,8 @@ import { AdditionalFieldsPart, AdditionalFieldsPartSchema } from './_parts/addit
 import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
 import { InitInfoPart, InitInfoPartSchema } from '~/management/identities/_schemas/_parts/init-info.part.schema';
 import { MixedValue } from '~/_common/types/mixed-value.type';
+import { AutoIncrementPlugin } from '~/_common/plugins/mongoose/auto-increment.plugin';
+import { AutoIncrementPluginOptions } from '~/_common/plugins/mongoose/auto-increment.interface';
 
 export type IdentitiesDocument = Identities & Document;
 
@@ -43,4 +45,11 @@ export class Identities extends AbstractSchema {
   public customFields?: { [key: string]: MixedValue }
 }
 
-export const IdentitiesSchema = SchemaFactory.createForClass(Identities);
+export const IdentitiesSchema = SchemaFactory.createForClass(Identities).plugin(AutoIncrementPlugin, <AutoIncrementPluginOptions>{
+  incrementBy: 1,
+  field: 'inetOrgPerson.employeeNumber',
+  startAt: 1,
+  rules: (ctx) => {
+    return ctx.inetOrgPerson.employeeType === 'LOCAL';
+  },
+});

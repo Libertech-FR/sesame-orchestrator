@@ -33,6 +33,8 @@ export interface AutoIncrementPluginOptions {
    * Defaults to `document.constructor.modelName`
    */
   overwriteModelName?: string | OverwriteModelNameFunction;
+
+  rules?: Function;
 }
 
 /**

@@ -1,6 +1,7 @@
 import { Connection, Model, Schema } from 'mongoose';
 import { AutoIncrementPluginOptions, AutoIncrementPluginTrackerSpec } from './auto-increment.interface';
 import { logger } from './auto-increment.logger';
+import { set } from 'radash';
 
 const DEFAULT_INCREMENT = 1;
 
@@ -95,6 +96,15 @@ export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
       return;
     }
 
+
+    if (typeof opt.rules === 'function') {
+      const result = opt.rules(this);
+      if (!result) {
+        logger.info('Rule function returned false, not incrementing');
+        return next();
+      }
+    }
+
     const leandoc = await model
       .findOneAndUpdate(
         {
@@ -119,7 +129,9 @@ export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
     }
 
     logger.info('Setting "%s" to "%d"', opt.field, leandoc.count);
-    this[opt.field] = leandoc.count;
+
+    set(this, opt.field, leandoc.count);
+    // this[opt.field] = leandoc.count;
 
     return next();
   });

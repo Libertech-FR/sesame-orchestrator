@@ -22,12 +22,12 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty()
   @IsOptional()
-  public departmentNumber: string;
+  public departmentNumber: string = '';
 
   @IsString()
   @ApiProperty()
   @IsOptional()
-  public sn?: string;
+  public sn?: string = '';
 
   @IsString()
   @ApiProperty({ required: false })
@@ -37,7 +37,7 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public facsimileTelephoneNumber?: string;
+  public facsimileTelephoneNumber?: string = '';
 
   @IsString()
   @ApiProperty({ required: false })
@@ -47,11 +47,11 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public labeledURI?: string;
+  public labeledURI?: string = '';
 
   @IsEmail()
   @ApiProperty({ required: false })
-  public mail?: string;
+  public mail?: string = '';
 
   @IsOptional()
   @IsString()
@@ -72,7 +72,7 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public telephoneNumber?: string;
+  public telephoneNumber?: string = '';
 
   @IsString()
   @ApiProperty({ required: false })
@@ -82,17 +82,17 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public userCertificate?: string;
+  public userCertificate?: string = '';
 
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public userPassword?: string;
+  public userPassword?: string = '';
 
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public jpegPhoto?: string;
+  public jpegPhoto?: string = '';
 
   // @IsString()
   // @ApiProperty({ required: false })

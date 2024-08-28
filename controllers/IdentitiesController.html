@@ -277,8 +277,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="216"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:216</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="219"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:219</a></div>
                         </td>
                     </tr>
 
@@ -472,8 +472,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="193"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:193</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="196"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:196</a></div>
                         </td>
                     </tr>
 
@@ -564,8 +564,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="338"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:338</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="341"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:341</a></div>
                         </td>
                     </tr>
 
@@ -676,8 +676,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="286"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:286</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="289"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:289</a></div>
                         </td>
                     </tr>
 
@@ -767,8 +767,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="162"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:162</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="165"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:165</a></div>
                         </td>
                     </tr>
 
@@ -871,8 +871,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="231"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:231</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="234"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:234</a></div>
                         </td>
                     </tr>
 
@@ -975,8 +975,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="246"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:246</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="249"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:249</a></div>
                         </td>
                     </tr>
 
@@ -1078,8 +1078,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="267"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:267</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="270"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:270</a></div>
                         </td>
                     </tr>
 
@@ -1169,8 +1169,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="110"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:110</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -1311,8 +1311,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="308"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:308</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="311"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:311</a></div>
                         </td>
                     </tr>
 
@@ -1486,6 +1486,9 @@ export class IdentitiesController extends AbstractController {
   &gt; {
     let statusCode &#x3D; HttpStatus.CREATED;
     let message &#x3D; null;
+    if (!body.inetOrgPerson.employeeType) {
+      body.inetOrgPerson.employeeType &#x3D; &#x27;LOCAL&#x27;;
+    }
     const data &#x3D; await this._service.create&lt;Identities&gt;(body);
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
     // Else the state is TO_VALIDATE, we return a 201 status code

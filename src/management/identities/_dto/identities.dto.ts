@@ -1,4 +1,4 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger';
 import { IsOptional, IsObject, IsEnum, IsNumber } from 'class-validator';
 import { inetOrgPersonDto } from './_parts/inetOrgPerson.dto';
 import { IdentityState } from '../_enums/states.enum';
@@ -7,8 +7,9 @@ import { Type } from 'class-transformer';
 import { additionalFieldsPartDto } from './_parts/additionalFields.dto';
 import { MetadataDto } from '~/_common/abstracts/dto/metadata.dto';
 import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
+import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto';
 
-export class IdentitiesCreateDto extends MetadataDto {
+export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, MetadataDto) {
   @IsNumber()
   @IsEnum(IdentityState)
   @ApiProperty({ enum: IdentityState })
@@ -50,9 +51,9 @@ export class IdentitiesCreateDto extends MetadataDto {
   public additionalFields?: additionalFieldsPartDto;
 }
 
-export class IdentitiesDto extends IdentitiesCreateDto {}
+export class IdentitiesDto extends IdentitiesCreateDto { }
 
-export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) {}
+export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) { }
 
 export class IdentitiesUpsertDto extends PartialType(IdentitiesUpdateDto) {
   public $setOnInsert?: Partial<IdentitiesUpdateDto>;

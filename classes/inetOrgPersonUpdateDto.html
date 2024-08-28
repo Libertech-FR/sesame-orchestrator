@@ -170,12 +170,12 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty()
   @IsOptional()
-  public departmentNumber: string;
+  public departmentNumber: string &#x3D; &#x27;&#x27;;
 
   @IsString()
   @ApiProperty()
   @IsOptional()
-  public sn?: string;
+  public sn?: string &#x3D; &#x27;&#x27;;
 
   @IsString()
   @ApiProperty({ required: false })
@@ -185,7 +185,7 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public facsimileTelephoneNumber?: string;
+  public facsimileTelephoneNumber?: string &#x3D; &#x27;&#x27;;
 
   @IsString()
   @ApiProperty({ required: false })
@@ -195,11 +195,11 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public labeledURI?: string;
+  public labeledURI?: string &#x3D; &#x27;&#x27;;
 
   @IsEmail()
   @ApiProperty({ required: false })
-  public mail?: string;
+  public mail?: string &#x3D; &#x27;&#x27;;
 
   @IsOptional()
   @IsString()
@@ -220,7 +220,7 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public telephoneNumber?: string;
+  public telephoneNumber?: string &#x3D; &#x27;&#x27;;
 
   @IsString()
   @ApiProperty({ required: false })
@@ -230,17 +230,17 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public userCertificate?: string;
+  public userCertificate?: string &#x3D; &#x27;&#x27;;
 
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public userPassword?: string;
+  public userPassword?: string &#x3D; &#x27;&#x27;;
 
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public jpegPhoto?: string;
+  public jpegPhoto?: string &#x3D; &#x27;&#x27;;
 
   // @IsString()
   // @ApiProperty({ required: false })

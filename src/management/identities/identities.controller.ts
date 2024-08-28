@@ -86,6 +86,9 @@ export class IdentitiesController extends AbstractController {
   > {
     let statusCode = HttpStatus.CREATED;
     let message = null;
+    if (!body.inetOrgPerson.employeeType) {
+      body.inetOrgPerson.employeeType = 'LOCAL';
+    }
     const data = await this._service.create<Identities>(body);
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
     // Else the state is TO_VALIDATE, we return a 201 status code

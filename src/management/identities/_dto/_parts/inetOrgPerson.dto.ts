@@ -94,10 +94,10 @@ export class inetOrgPersonCreateDto {
   @IsOptional()
   public jpegPhoto?: string;
 
-  @IsString()
-  @ApiProperty({ required: false })
-  @IsOptional()
-  public photo?: string;
+  // @IsString()
+  // @ApiProperty({ required: false })
+  // @IsOptional()
+  // public photo?: string;
 }
 
 export class inetOrgPersonDto extends inetOrgPersonCreateDto { }

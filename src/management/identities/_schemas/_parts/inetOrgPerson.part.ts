@@ -59,8 +59,8 @@ export class inetOrgPerson extends Document {
   @Prop({ type: String, default: null })
   public jpegPhoto?: string;
 
-  @Prop({ type: String, default: null })
-  public photo?: string;
+  // @Prop({ type: String, default: null })
+  // public photo?: string;
 
   @Prop({ type: String, default: null })
   public userCertificate?: string;

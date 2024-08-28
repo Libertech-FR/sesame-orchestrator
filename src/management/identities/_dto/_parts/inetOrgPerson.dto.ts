@@ -32,7 +32,7 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public displayName?: string;
+  public displayName?: string = '';
 
   @IsString()
   @ApiProperty({ required: false })
@@ -42,7 +42,7 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public givenName?: string;
+  public givenName?: string = '';
 
   @IsString()
   @ApiProperty({ required: false })
@@ -57,17 +57,17 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public mobile?: string;
+  public mobile?: string = '';
 
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public postalAddress?: string;
+  public postalAddress?: string = '';
 
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public preferredLanguage?: string;
+  public preferredLanguage?: string = '';
 
   @IsString()
   @ApiProperty({ required: false })
@@ -77,7 +77,7 @@ export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty({ required: false })
   @IsOptional()
-  public title?: string;
+  public title?: string = '';
 
   @IsString()
   @ApiProperty({ required: false })

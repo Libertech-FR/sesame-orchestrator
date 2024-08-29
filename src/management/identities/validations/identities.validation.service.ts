@@ -186,8 +186,21 @@ export class IdentitiesValidationService {
       this.logger.error(`Error reading dynamic config files: ${error.message}`);
     }
 
-    // Combine the file arrays
-    const files = [...hardConfigFiles, ...dynamicConfigFiles];
+    // const files = [...hardConfigFiles, ...dynamicConfigFiles];
+    const filesMap = new Map();
+
+    for (const target of dynamicConfigFiles) {
+      filesMap.set(target.file, target);
+    }
+
+    for (const target of hardConfigFiles) {
+      if (filesMap.has(target.file)) {
+        continue;
+      }
+      filesMap.set(target.file, target);
+    }
+
+    const files = Array.from(filesMap.values());
 
     const result = [];
     for (const fileObj of files) {

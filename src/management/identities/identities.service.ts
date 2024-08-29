@@ -37,6 +37,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     data?: any,
     options?: SaveOptions,
   ): Promise<Document<T, any, T>> {
+    data = this.transformNullsToString(data);
     await this.checkInetOrgPersonJpegPhoto(data);
     const created: Document<T, any, T> = await super.create(data, options);
     return created;
@@ -48,6 +49,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     data?: IdentitiesUpsertDto,
     options?: QueryOptions<T>,
   ): Promise<[HttpStatus.OK | HttpStatus.CREATED, ModifyResult<Query<T, T, any, T>>]> {
+    data = this.transformNullsToString(data);
     const identity = await this.model.findOne(filters).exec();
     this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
 
@@ -64,6 +66,8 @@ export class IdentitiesService extends AbstractServiceSchema {
         ...((identity as any)?.additionalFields?.objectClasses || []),
       ]),
     });
+
+    console.log('data', data);
 
     if (!data?.inetOrgPerson?.employeeNumber || !data?.inetOrgPerson?.employeeType) {
       throw new BadRequestException(
@@ -121,6 +125,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     update: UpdateQuery<T>,
     options?: QueryOptions<T> & { rawResult: true },
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
+    update = this.transformNullsToString(update);
     // noinspection UnnecessaryLocalVariableJS
     //TODO : add validation logic here
     const logPrefix = `Validation [${update.inetOrgPerson.cn}]:`;
@@ -311,5 +316,27 @@ export class IdentitiesService extends AbstractServiceSchema {
         throw new BadRequestException(`Photo not found in storage: ${data.inetOrgPerson.jpegPhoto}`);
       }
     }
+  }
+
+  private transformNullsToString(obj) {
+    if (obj === null) {
+      return "";
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map(this.transformNullsToString);
+    }
+
+    if (typeof obj === 'object') {
+      for (const key in obj) {
+        if (obj[key] === null) {
+          obj[key] = "";
+        } else if (typeof obj[key] === 'object') {
+          obj[key] = this.transformNullsToString(obj[key]);
+        }
+      }
+    }
+
+    return obj;
   }
 }

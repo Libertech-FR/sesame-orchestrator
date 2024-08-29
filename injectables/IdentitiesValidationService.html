@@ -289,8 +289,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="204"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:204</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="217"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:217</a></div>
                         </td>
                     </tr>
 
@@ -873,8 +873,21 @@ export class IdentitiesValidationService {
       this.logger.error(&#x60;Error reading dynamic config files: ${error.message}&#x60;);
     }
 
-    // Combine the file arrays
-    const files &#x3D; [...hardConfigFiles, ...dynamicConfigFiles];
+    // const files &#x3D; [...hardConfigFiles, ...dynamicConfigFiles];
+    const filesMap &#x3D; new Map();
+
+    for (const target of dynamicConfigFiles) {
+      filesMap.set(target.file, target);
+    }
+
+    for (const target of hardConfigFiles) {
+      if (filesMap.has(target.file)) {
+        continue;
+      }
+      filesMap.set(target.file, target);
+    }
+
+    const files &#x3D; Array.from(filesMap.values());
 
     const result &#x3D; [];
     for (const fileObj of files) {

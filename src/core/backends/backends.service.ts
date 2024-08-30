@@ -46,6 +46,10 @@ export class BackendsService extends AbstractQueueProcessor {
 
     const jobsCompleted = await this._queue.getCompleted();
     for (const job of jobsCompleted) {
+      const result = <WorkerResultInterface>(<unknown>job.returnvalue);
+      if (result.jobName === ActionType.DUMP_PACKAGE_CONFIG || result?.options?.disableLogs === true) {
+        return;
+      }
       const isSyncedJob = await this.jobsService.model.findOneAndUpdate<Jobs>(
         { jobId: job.id, state: { $nin: [JobState.COMPLETED, JobState.FAILED] } },
         {
@@ -110,6 +114,9 @@ export class BackendsService extends AbstractQueueProcessor {
       let jState = JobState.COMPLETED;
       let iState = IdentityState.SYNCED;
       const result = <WorkerResultInterface>(<unknown>payload.returnvalue);
+      if (result.jobName === ActionType.DUMP_PACKAGE_CONFIG || result?.options?.disableLogs === true) {
+        return;
+      }
       if (result.status !== 0) {
         jState = JobState.FAILED;
         iState = IdentityState.ON_ERROR;
@@ -231,6 +238,7 @@ export class BackendsService extends AbstractQueueProcessor {
       {
         concernedTo,
         payload,
+        options,
       },
       {
         ...options?.job,

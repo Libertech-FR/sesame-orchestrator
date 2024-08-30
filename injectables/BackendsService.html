@@ -333,8 +333,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="222"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:222</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="229"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:229</a></div>
                         </td>
                     </tr>
 
@@ -485,8 +485,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="142"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:142</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="149"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:149</a></div>
                         </td>
                     </tr>
 
@@ -555,8 +555,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="183"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:183</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="190"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:190</a></div>
                         </td>
                     </tr>
 
@@ -943,6 +943,10 @@ export class BackendsService extends AbstractQueueProcessor {
 
     const jobsCompleted &#x3D; await this._queue.getCompleted();
     for (const job of jobsCompleted) {
+      const result &#x3D; &lt;WorkerResultInterface&gt;(&lt;unknown&gt;job.returnvalue);
+      if (result.jobName &#x3D;&#x3D;&#x3D; ActionType.DUMP_PACKAGE_CONFIG || result?.options?.disableLogs &#x3D;&#x3D;&#x3D; true) {
+        return;
+      }
       const isSyncedJob &#x3D; await this.jobsService.model.findOneAndUpdate&lt;Jobs&gt;(
         { jobId: job.id, state: { $nin: [JobState.COMPLETED, JobState.FAILED] } },
         {
@@ -1007,6 +1011,9 @@ export class BackendsService extends AbstractQueueProcessor {
       let jState &#x3D; JobState.COMPLETED;
       let iState &#x3D; IdentityState.SYNCED;
       const result &#x3D; &lt;WorkerResultInterface&gt;(&lt;unknown&gt;payload.returnvalue);
+      if (result.jobName &#x3D;&#x3D;&#x3D; ActionType.DUMP_PACKAGE_CONFIG || result?.options?.disableLogs &#x3D;&#x3D;&#x3D; true) {
+        return;
+      }
       if (result.status !&#x3D;&#x3D; 0) {
         jState &#x3D; JobState.FAILED;
         iState &#x3D; IdentityState.ON_ERROR;
@@ -1128,6 +1135,7 @@ export class BackendsService extends AbstractQueueProcessor {
       {
         concernedTo,
         payload,
+        options,
       },
       {
         ...options?.job,

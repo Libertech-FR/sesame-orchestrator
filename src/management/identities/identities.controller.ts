@@ -89,6 +89,12 @@ export class IdentitiesController extends AbstractController {
     if (!body.inetOrgPerson.employeeType) {
       body.inetOrgPerson.employeeType = 'LOCAL';
     }
+    if (!body.inetOrgPerson.cn) {
+      body.inetOrgPerson.cn = body.inetOrgPerson.sn.toUpperCase() + ' ' + body.inetOrgPerson.givenName;
+    }
+    if (!body.inetOrgPerson.displayName) {
+      body.inetOrgPerson.displayName = body.inetOrgPerson.givenName + ' ' + body.inetOrgPerson.sn.toUpperCase();
+    }
     const data = await this._service.create<Identities>(body);
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
     // Else the state is TO_VALIDATE, we return a 201 status code

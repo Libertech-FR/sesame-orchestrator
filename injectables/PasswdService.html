@@ -420,8 +420,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="251"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:251</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="253"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:253</a></div>
                         </td>
                     </tr>
 
@@ -583,8 +583,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="452"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:452</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="454"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:454</a></div>
                         </td>
                     </tr>
 
@@ -623,8 +623,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="312"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:312</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="314"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:314</a></div>
                         </td>
                     </tr>
 
@@ -693,8 +693,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="289"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:289</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="291"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:291</a></div>
                         </td>
                     </tr>
 
@@ -775,8 +775,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="428"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:428</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="430"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:430</a></div>
                         </td>
                     </tr>
 
@@ -885,8 +885,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="413"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:413</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="415"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:415</a></div>
                         </td>
                     </tr>
 
@@ -1025,8 +1025,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="376"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:376</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="378"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:378</a></div>
                         </td>
                     </tr>
 
@@ -1095,8 +1095,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="334"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:334</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="336"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:336</a></div>
                         </td>
                     </tr>
 
@@ -1165,8 +1165,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="439"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:439</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="441"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:441</a></div>
                         </td>
                     </tr>
 
@@ -1683,7 +1683,9 @@ export class PasswdService extends AbstractService {
         ActionType.IDENTITY_PASSWORD_CHANGE,
         identity._id,
         {
-          passwdDto,
+          uid: passwdDto.uid,
+          oldPassword: passwdDto.oldPassword,
+          newPassword: passwdDto.newPassword,
           ...identity.toJSON(),
         },
         {
@@ -1818,11 +1820,11 @@ export class PasswdService extends AbstractService {
       const [_, response] &#x3D; await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_RESET,
         identity._id,
-        { newPassword: data.newpassword, ...identity.toJSON() },
+        { uid: identity.inetOrgPerson.uid, newPassword: data.newpassword, ...identity.toJSON() },
         {
           async: false,
           timeoutDiscard: true,
-          disableLogs: true,
+          disableLogs: false,
           updateStatus: false,
         },
       );
@@ -1859,7 +1861,7 @@ export class PasswdService extends AbstractService {
         {
           async: false,
           timeoutDiscard: true,
-          disableLogs: true,
+          disableLogs: false,
           updateStatus: false,
         },
       );

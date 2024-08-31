@@ -23,7 +23,7 @@ properties:
     type: string
     description: Field corresponding to supannCodeINSEEVilleDeNaissance
   supannAutreMail:
-    type: array
+    type: string
     description: Field corresponding to supannAutreMail
     items:
       type: string

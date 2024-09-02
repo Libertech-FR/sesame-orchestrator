@@ -67,7 +67,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       ]),
     });
 
-    console.log('data', data);
+    // console.log('data', data);
 
     if (!data?.inetOrgPerson?.employeeNumber || !data?.inetOrgPerson?.employeeType) {
       throw new BadRequestException(
@@ -318,7 +318,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     }
   }
 
-  private transformNullsToString(obj) {
+  public transformNullsToString(obj) {
     if (obj === null) {
       return "";
     }
@@ -332,6 +332,7 @@ export class IdentitiesService extends AbstractServiceSchema {
         if (obj[key] === null) {
           obj[key] = "";
         } else if (typeof obj[key] === 'object') {
+          console.log('key', key);
           obj[key] = this.transformNullsToString(obj[key]);
         }
       }

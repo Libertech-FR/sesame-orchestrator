@@ -204,12 +204,14 @@ export class IdentitiesController extends AbstractController {
     @Res() res: Response,
   ): Promise<Response> {
     try {
-      const data = await this._service.findById(_id);
+      const identity = await this._service.findById(_id);
+      const data = this._service.transformNullsToString(JSON.parse(JSON.stringify(identity)));
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
         data,
       });
     } catch (error) {
+      console.log('error', error);
       let validations = error.validations;
       if (error instanceof BadRequestException) validations = error.getResponse();
       return res.status(HttpStatus.BAD_REQUEST).json({

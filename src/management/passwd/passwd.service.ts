@@ -76,7 +76,7 @@ export class PasswdService extends AbstractService {
       const padd = await this.getPaddingForCode();
       const mailAttribute = params.emailAttribute;
       const mail = <string>get(identity.toObject(), mailAttribute);
-      if (mail){
+      if (mail) {
         const token = await this.askToken({ mail: mail, uid: initDto.uid }, padd + k.toString(16), params.resetCodeTTL);
         this.logger.log('Token :' + token + '  int : ' + k.toString(10));
         if (initDto.type === 0) {
@@ -111,7 +111,7 @@ export class PasswdService extends AbstractService {
           }
         } else {
           //envoi par SMS si c est possible
-          const policies = new PasswordPoliciesDto();
+          const policies = await this.passwdadmService.getPolicies();
           if (policies.resetBySms === true) {
             this.logger.log('Reset password asked by SMS for  : ' + initDto.uid);
             const smsAttribute = params.mobileAttribute;
@@ -124,7 +124,7 @@ export class PasswdService extends AbstractService {
             return false;
           }
         }
-      }else{
+      } else {
         this.logger.error('Error while reset identityMailAttribute Empty');
       }
 

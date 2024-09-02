@@ -46,8 +46,16 @@ properties:
     type: string
     description: Field corresponding to supannParrainDN
   supannTypeEntiteAffectation:
+    type: array
+    items:
+      type: string
+  supannEntiteAffectation:
+    type: array
+    items:
+      type: string
+  supannEntiteAffectationPrincipale:
     type: string
-    description: Field corresponding to supannTypeEntiteAffectation
+    description: identifiant de l entité principale d affectation
   supannActivite:
     type: string
     description: Field corresponding to supannActivite

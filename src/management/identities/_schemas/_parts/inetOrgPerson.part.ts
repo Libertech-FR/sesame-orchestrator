@@ -53,8 +53,8 @@ export class inetOrgPerson extends Document {
   @Prop({ type: String, required: true })
   public employeeType: string;
 
-  @Prop({ type: String, default: null })
-  public departmentNumber: string;
+  @Prop({ type: Array, of: String, required: true, default: [] })
+  public departmentNumber: string[];
 
   @Prop({ type: String, default: null })
   public jpegPhoto?: string;

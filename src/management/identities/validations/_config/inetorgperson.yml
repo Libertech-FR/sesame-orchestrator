@@ -14,6 +14,13 @@
       "type": "string",
       "description": "UID of the inetOrgPerson."
     },
+    "departmentNumber":{
+      "type": "array",
+      "description": "type of identity",
+      "items":{
+        "type": "string"
+      }
+    },
     "employeeNumber": {
       "type": "string",
       "description": "EmployeeNumber of the inetOrgPerson."
@@ -74,10 +81,6 @@
     "jpegPhoto": {
       "type": "string",
       "description": "User jpeg photo of the inetOrgPerson."
-    },
-    "photo": {
-      "type": "string",
-      "description": "User photo of the inetOrgPerson."
     }
   },
   "required": ["uid", "employeeNumber", "employeeType"]

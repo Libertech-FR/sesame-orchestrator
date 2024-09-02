@@ -211,7 +211,7 @@
                                 <a href="#previewFingerprint" >previewFingerprint</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Public</span>
                                 <a href="#transformNullsToString" >transformNullsToString</a>
                             </li>
                             <li>
@@ -966,7 +966,7 @@
                 <td class="col-md-4">
                     <a name="transformNullsToString"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
+                            <span class="modifier">Public</span>
                         <span ><b>transformNullsToString</b></span>
                         <a href="#transformNullsToString"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -2298,7 +2298,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       ]),
     });
 
-    console.log(&#x27;data&#x27;, data);
+    // console.log(&#x27;data&#x27;, data);
 
     if (!data?.inetOrgPerson?.employeeNumber || !data?.inetOrgPerson?.employeeType) {
       throw new BadRequestException(
@@ -2549,7 +2549,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     }
   }
 
-  private transformNullsToString(obj) {
+  public transformNullsToString(obj) {
     if (obj &#x3D;&#x3D;&#x3D; null) {
       return &quot;&quot;;
     }
@@ -2563,6 +2563,7 @@ export class IdentitiesService extends AbstractServiceSchema {
         if (obj[key] &#x3D;&#x3D;&#x3D; null) {
           obj[key] &#x3D; &quot;&quot;;
         } else if (typeof obj[key] &#x3D;&#x3D;&#x3D; &#x27;object&#x27;) {
+          console.log(&#x27;key&#x27;, key);
           obj[key] &#x3D; this.transformNullsToString(obj[key]);
         }
       }

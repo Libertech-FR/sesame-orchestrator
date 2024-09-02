@@ -277,8 +277,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="225"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:225</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="227"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:227</a></div>
                         </td>
                     </tr>
 
@@ -564,8 +564,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="347"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:347</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="349"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:349</a></div>
                         </td>
                     </tr>
 
@@ -676,8 +676,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="295"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:295</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="297"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:297</a></div>
                         </td>
                     </tr>
 
@@ -871,8 +871,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="240"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:240</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="242"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:242</a></div>
                         </td>
                     </tr>
 
@@ -975,8 +975,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="255"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:255</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="257"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:257</a></div>
                         </td>
                     </tr>
 
@@ -1078,8 +1078,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="276"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:276</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="278"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:278</a></div>
                         </td>
                     </tr>
 
@@ -1311,8 +1311,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="317"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:317</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="319"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:319</a></div>
                         </td>
                     </tr>
 
@@ -1604,12 +1604,14 @@ export class IdentitiesController extends AbstractController {
     @Res() res: Response,
   ): Promise&lt;Response&gt; {
     try {
-      const data &#x3D; await this._service.findById(_id);
+      const identity &#x3D; await this._service.findById(_id);
+      const data &#x3D; this._service.transformNullsToString(JSON.parse(JSON.stringify(identity)));
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
         data,
       });
     } catch (error) {
+      console.log(&#x27;error&#x27;, error);
       let validations &#x3D; error.validations;
       if (error instanceof BadRequestException) validations &#x3D; error.getResponse();
       return res.status(HttpStatus.BAD_REQUEST).json({

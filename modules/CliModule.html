@@ -262,6 +262,7 @@ import { KeyringsModule } from &#x27;~/core/keyrings/keyrings.module&#x27;;
 import { BackendsCommand } from &#x27;./backends.command&#x27;;
 import { BackendsModule } from &#x27;~/core/backends/backends.module&#x27;;
 import { AuthModule } from &#x27;~/core/auth/auth.module&#x27;;
+import { FactorydriveModule } from &#x27;@the-software-compagny/nestjs_module_factorydrive&#x27;;
 
 @Module({
   imports: [
@@ -303,6 +304,13 @@ import { AuthModule } from &#x27;~/core/auth/auth.module&#x27;;
         },
       }),
     }),
+    FactorydriveModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) &#x3D;&gt; ({
+        ...config.get(&#x27;factorydrive.options&#x27;),
+      }),
+    }),
     AgentsModule,
     KeyringsModule,
     BackendsModule,
@@ -316,7 +324,7 @@ import { AuthModule } from &#x27;~/core/auth/auth.module&#x27;;
     KeyringsCreateQuestions,
   ],
 })
-export class CliModule {}
+export class CliModule { }
 </code></pre>
     </div>
 </div>

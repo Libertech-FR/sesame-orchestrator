@@ -156,7 +156,7 @@ export class IdentitiesJsonformsService extends AbstractService {
   public async findOne(
     schema: string,
     options?: { mode?: string; employeeType?: string }
-  ): Promise<any> {
+  ): Promise<[string, any]> {
     const { mode = 'create', employeeType = '' } = options || {};
     if (schema.endsWith('.yml')) schema = schema.replace('.yml', '');
 
@@ -180,6 +180,6 @@ export class IdentitiesJsonformsService extends AbstractService {
       throw new ValidationConfigException({ message: `File not found: ${schema}.ui.yml` });
     }
 
-    return parse(readFileSync(finalPath, 'utf-8'));
+    return [filePath, parse(readFileSync(finalPath, 'utf-8'))];
   }
 }

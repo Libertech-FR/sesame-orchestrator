@@ -3,7 +3,6 @@ import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { IdentitiesJsonformsService } from './identities.jsonforms.service';
 import { Response } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { IdentitiesUpdateDto } from '../_dto/identities.dto';
 
 @ApiTags('management/identities/jsonforms')
 @Controller('management/identities/jsonforms')
@@ -49,12 +48,13 @@ export class IdentitiesJsonFormsController extends AbstractController {
     @Res() res: Response,
     @Param('schema') schema,
     @Query('mode') mode: 'create' | 'update',
-    @Body() body: Partial<IdentitiesUpdateDto>,
+    @Body() body: Partial<{ employeeType?: string }>,
   ): Promise<any> {
-    const result = await this._service.findOne(schema, { mode, employeeType: body?.inetOrgPerson?.employeeType });
+    const [filePath, result] = await this._service.findOne(schema, { mode, employeeType: body?.employeeType });
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: result,
+      file: filePath,
     });
   }
 }

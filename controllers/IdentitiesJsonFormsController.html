@@ -222,8 +222,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -319,8 +319,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -384,7 +384,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>search(res: Response, schema, mode: "create" | "update", body: Partial<IdentitiesUpdateDto>)</code>
+                    <code>search(res: Response, schema, mode: "create" | "update", body: Partial<literal type>)</code>
                 </td>
             </tr>
 
@@ -398,8 +398,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -457,7 +457,7 @@
                                         <tr>
                                                 <td>body</td>
                                             <td>
-                                                        <code>Partial&lt;IdentitiesUpdateDto&gt;</code>
+                                                        <code>Partial&lt;literal type&gt;</code>
                                             </td>
 
                                             <td>
@@ -512,8 +512,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -568,7 +568,6 @@ import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller
 import { IdentitiesJsonformsService } from &#x27;./identities.jsonforms.service&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { ApiOperation, ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { IdentitiesUpdateDto } from &#x27;../_dto/identities.dto&#x27;;
 
 @ApiTags(&#x27;management/identities/jsonforms&#x27;)
 @Controller(&#x27;management/identities/jsonforms&#x27;)
@@ -614,12 +613,13 @@ export class IdentitiesJsonFormsController extends AbstractController {
     @Res() res: Response,
     @Param(&#x27;schema&#x27;) schema,
     @Query(&#x27;mode&#x27;) mode: &#x27;create&#x27; | &#x27;update&#x27;,
-    @Body() body: Partial&lt;IdentitiesUpdateDto&gt;,
+    @Body() body: Partial&lt;{ employeeType?: string }&gt;,
   ): Promise&lt;any&gt; {
-    const result &#x3D; await this._service.findOne(schema, { mode, employeeType: body?.inetOrgPerson?.employeeType });
+    const [filePath, result] &#x3D; await this._service.findOne(schema, { mode, employeeType: body?.employeeType });
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: result,
+      file: filePath,
     });
   }
 }

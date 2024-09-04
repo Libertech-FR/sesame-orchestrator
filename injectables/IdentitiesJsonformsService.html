@@ -344,7 +344,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -831,7 +831,7 @@ export class IdentitiesJsonformsService extends AbstractService {
   public async findOne(
     schema: string,
     options?: { mode?: string; employeeType?: string }
-  ): Promise&lt;any&gt; {
+  ): Promise&lt;[string, any]&gt; {
     const { mode &#x3D; &#x27;create&#x27;, employeeType &#x3D; &#x27;&#x27; } &#x3D; options || {};
     if (schema.endsWith(&#x27;.yml&#x27;)) schema &#x3D; schema.replace(&#x27;.yml&#x27;, &#x27;&#x27;);
 
@@ -855,7 +855,7 @@ export class IdentitiesJsonformsService extends AbstractService {
       throw new ValidationConfigException({ message: &#x60;File not found: ${schema}.ui.yml&#x60; });
     }
 
-    return parse(readFileSync(finalPath, &#x27;utf-8&#x27;));
+    return [filePath, parse(readFileSync(finalPath, &#x27;utf-8&#x27;))];
   }
 }
 </code></pre>

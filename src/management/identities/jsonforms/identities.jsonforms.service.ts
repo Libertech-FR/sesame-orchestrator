@@ -1,17 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
 import { AbstractService } from '~/_common/abstracts/abstract.service';
 import { parse, stringify } from 'yaml';
-import { existsSync, readFileSync, writeFileSync, readdirSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync, readdirSync, readdir } from 'fs';
 // import Ajv from 'ajv';
 import { ValidationConfigException } from '~/_common/errors/ValidationException';
 
 @Injectable()
-export class IdentitiesJsonformsService extends AbstractService {
+export class IdentitiesJsonformsService extends AbstractService implements OnApplicationBootstrap {
   // private ajv: Ajv = new Ajv({ allErrors: true });
   // private validateSchema;
 
   public constructor() {
     super();
+  }
+
+  public onApplicationBootstrap(): void {
+    const files = readdirSync(`${process.cwd()}/configs/identities/jsonforms`);
+    const defaultFiles = readdirSync(`${process.cwd()}/src/management/identities/jsonforms/_default`);
+
+    this.logger.log('Initializing identities jsonforms service');
+
+    for (const file of defaultFiles) {
+      if (!files.includes(file)) {
+        const defaultFile = readFileSync(`${process.cwd()}/src/management/identities/jsonforms/_default/${file}`, 'utf-8');
+        writeFileSync(`${process.cwd()}/configs/identities/jsonforms/${file}`, defaultFile);
+
+        this.logger.warn(`Copied default jsonform file: ${file}`);
+      }
+    }
+
+    this.logger.log('Identities jsonforms service initialized');
   }
 
   private resolveJsonFormPath(schema: string): string | null {

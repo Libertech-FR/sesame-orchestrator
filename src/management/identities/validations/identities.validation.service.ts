@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { parse } from 'yaml';
-import { existsSync, readFileSync, readdirSync } from 'fs';
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'fs';
 import { ConfigObjectSchemaDTO } from './_dto/config.dto';
 import { diff } from 'radash';
 import { AdditionalFieldsPart } from '../_schemas/_parts/additionalFields.part.schema';
@@ -15,7 +15,7 @@ import { additionalFieldsPartDto } from '../_dto/_parts/additionalFields.dto';
  * Service responsible for validating identities.
  */
 @Injectable()
-export class IdentitiesValidationService {
+export class IdentitiesValidationService implements OnApplicationBootstrap {
   private ajv: Ajv = new Ajv({ allErrors: true });
   private validateSchema;
   private logger: Logger;
@@ -24,6 +24,24 @@ export class IdentitiesValidationService {
     ajvErrors(this.ajv);
     this.validateSchema = this.ajv.compile(validSchema);
     this.logger = new Logger();
+  }
+
+  public onApplicationBootstrap(): void {
+    const files = readdirSync(`${process.cwd()}/configs/identities/validations`);
+    const defaultFiles = readdirSync(`${process.cwd()}/src/management/identities/validations/_default`);
+
+    this.logger.log('Initializing identities validations service');
+
+    for (const file of defaultFiles) {
+      if (!files.includes(file)) {
+        const defaultFile = readFileSync(`${process.cwd()}/src/management/identities/validations/_default/${file}`, 'utf-8');
+        writeFileSync(`${process.cwd()}/configs/identities/validations/${file}`, defaultFile);
+
+        this.logger.warn(`Copied default validation file: ${file}`);
+      }
+    }
+
+    this.logger.log('Identities validations service initialized');
   }
 
   private resolveConfigPath(key: string): string | null {

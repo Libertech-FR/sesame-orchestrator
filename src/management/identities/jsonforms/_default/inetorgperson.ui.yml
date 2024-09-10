@@ -1,0 +1,81 @@
+type: Group
+label: Identité
+elements:
+- type: HorizontalLayout
+  elements:
+  - type: Control
+    label: CN
+    scope: "#/properties/cn"
+    options:
+      required: true
+  - type: Control
+    label: Nom
+    scope: "#/properties/sn"
+    options:
+      required: true
+      readonly: true
+  - type: Control
+    label: UID
+    scope: "#/properties/uid"
+    options:
+      required: true
+- type: HorizontalLayout
+  elements:
+  - type: Control
+    label: Nom d'affichage
+    scope: "#/properties/displayName"
+  - type: Control
+    label: Prénom
+    scope: "#/properties/givenName"
+- type: HorizontalLayout
+  elements:
+  - type: Control
+    label: Employee Number
+    scope: "#/properties/employeeNumber"
+  - type: Control
+    label: Employee Type
+    scope: "#/properties/employeeType"
+    options:
+      suggestion:
+        - TAIGA
+        - LOCAL
+- type: HorizontalLayout
+  elements:
+  - type: Control
+    label: Email
+    scope: "#/properties/mail"
+    options:
+      format: email
+  - type: Control
+    label: Mobile
+    scope: "#/properties/mobile"
+  - type: Control
+    label: Adresse postale
+    scope: "#/properties/postalAddress"
+- type: HorizontalLayout
+  elements:
+  - type: Control
+    label: language préféré
+    scope: "#/properties/preferredLanguage"
+    options:
+      required: false
+      # suggestion:
+      #   - FR
+      #   - EN
+      #   - DE
+      #   - IT
+  - type: Control
+    label: Téléphone
+    scope: "#/properties/telephoneNumber"
+  - type: Control
+    label: Titre
+    scope: "#/properties/title"
+
+- type: HorizontalLayout
+  elements:
+  - type: Control
+    label: Photo
+    scope: "#/properties/jpegPhoto"
+    options:
+      format: file
+      storage: picture

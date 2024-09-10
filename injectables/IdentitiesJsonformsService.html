@@ -192,6 +192,10 @@
                                 <a href="#generateAll" >generateAll</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onApplicationBootstrap" >onApplicationBootstrap</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                 <a href="#resolveJsonFormPath" >resolveJsonFormPath</a>
                             </li>
@@ -255,8 +259,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="127"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:127</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="145"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:145</a></div>
                         </td>
                     </tr>
 
@@ -295,8 +299,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="156"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:156</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="174"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:174</a></div>
                         </td>
                     </tr>
 
@@ -377,8 +381,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -442,8 +446,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="95"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:95</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -453,6 +457,45 @@
 
                         <div class="io-description">
                             <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onApplicationBootstrap"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>onApplicationBootstrap</b></span>
+                        <a href="#onApplicationBootstrap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onApplicationBootstrap()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                         </div>
                 </td>
@@ -481,8 +524,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.service.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -673,20 +716,38 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, OnApplicationBootstrap, OnModuleInit } from &#x27;@nestjs/common&#x27;;
 import { AbstractService } from &#x27;~/_common/abstracts/abstract.service&#x27;;
 import { parse, stringify } from &#x27;yaml&#x27;;
-import { existsSync, readFileSync, writeFileSync, readdirSync } from &#x27;fs&#x27;;
+import { existsSync, readFileSync, writeFileSync, readdirSync, readdir } from &#x27;fs&#x27;;
 // import Ajv from &#x27;ajv&#x27;;
 import { ValidationConfigException } from &#x27;~/_common/errors/ValidationException&#x27;;
 
 @Injectable()
-export class IdentitiesJsonformsService extends AbstractService {
+export class IdentitiesJsonformsService extends AbstractService implements OnApplicationBootstrap {
   // private ajv: Ajv &#x3D; new Ajv({ allErrors: true });
   // private validateSchema;
 
   public constructor() {
     super();
+  }
+
+  public onApplicationBootstrap(): void {
+    const files &#x3D; readdirSync(&#x60;${process.cwd()}/configs/identities/jsonforms&#x60;);
+    const defaultFiles &#x3D; readdirSync(&#x60;${process.cwd()}/src/management/identities/jsonforms/_default&#x60;);
+
+    this.logger.log(&#x27;Initializing identities jsonforms service&#x27;);
+
+    for (const file of defaultFiles) {
+      if (!files.includes(file)) {
+        const defaultFile &#x3D; readFileSync(&#x60;${process.cwd()}/src/management/identities/jsonforms/_default/${file}&#x60;, &#x27;utf-8&#x27;);
+        writeFileSync(&#x60;${process.cwd()}/configs/identities/jsonforms/${file}&#x60;, defaultFile);
+
+        this.logger.warn(&#x60;Copied default jsonform file: ${file}&#x60;);
+      }
+    }
+
+    this.logger.log(&#x27;Identities jsonforms service initialized&#x27;);
   }
 
   private resolveJsonFormPath(schema: string): string | null {

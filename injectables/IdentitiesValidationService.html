@@ -176,6 +176,10 @@
                                 <a href="#findOne" >findOne</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onApplicationBootstrap" >onApplicationBootstrap</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                 <a href="#resolveConfigPath" >resolveConfigPath</a>
                             </li>
@@ -249,8 +253,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="162"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:162</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="180"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:180</a></div>
                         </td>
                     </tr>
 
@@ -289,8 +293,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="217"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:217</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="235"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:235</a></div>
                         </td>
                     </tr>
 
@@ -336,6 +340,45 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="onApplicationBootstrap"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>onApplicationBootstrap</b></span>
+                        <a href="#onApplicationBootstrap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onApplicationBootstrap()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:29</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="resolveConfigPath"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -354,8 +397,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -424,8 +467,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -504,8 +547,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="122"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:122</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="140"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:140</a></div>
                         </td>
                     </tr>
 
@@ -685,9 +728,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Logger } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Logger, OnApplicationBootstrap } from &#x27;@nestjs/common&#x27;;
 import { parse } from &#x27;yaml&#x27;;
-import { existsSync, readFileSync, readdirSync } from &#x27;fs&#x27;;
+import { existsSync, readFileSync, readdirSync, writeFileSync } from &#x27;fs&#x27;;
 import { ConfigObjectSchemaDTO } from &#x27;./_dto/config.dto&#x27;;
 import { diff } from &#x27;radash&#x27;;
 import { AdditionalFieldsPart } from &#x27;../_schemas/_parts/additionalFields.part.schema&#x27;;
@@ -702,7 +745,7 @@ import { additionalFieldsPartDto } from &#x27;../_dto/_parts/additionalFields.dt
  * Service responsible for validating identities.
  */
 @Injectable()
-export class IdentitiesValidationService {
+export class IdentitiesValidationService implements OnApplicationBootstrap {
   private ajv: Ajv &#x3D; new Ajv({ allErrors: true });
   private validateSchema;
   private logger: Logger;
@@ -711,6 +754,24 @@ export class IdentitiesValidationService {
     ajvErrors(this.ajv);
     this.validateSchema &#x3D; this.ajv.compile(validSchema);
     this.logger &#x3D; new Logger();
+  }
+
+  public onApplicationBootstrap(): void {
+    const files &#x3D; readdirSync(&#x60;${process.cwd()}/configs/identities/validations&#x60;);
+    const defaultFiles &#x3D; readdirSync(&#x60;${process.cwd()}/src/management/identities/validations/_default&#x60;);
+
+    this.logger.log(&#x27;Initializing identities validations service&#x27;);
+
+    for (const file of defaultFiles) {
+      if (!files.includes(file)) {
+        const defaultFile &#x3D; readFileSync(&#x60;${process.cwd()}/src/management/identities/validations/_default/${file}&#x60;, &#x27;utf-8&#x27;);
+        writeFileSync(&#x60;${process.cwd()}/configs/identities/validations/${file}&#x60;, defaultFile);
+
+        this.logger.warn(&#x60;Copied default validation file: ${file}&#x60;);
+      }
+    }
+
+    this.logger.log(&#x27;Identities validations service initialized&#x27;);
   }
 
   private resolveConfigPath(key: string): string | null {

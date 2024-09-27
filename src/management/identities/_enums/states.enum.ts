@@ -7,4 +7,5 @@ export enum IdentityState {
   TO_CREATE = -1,
   TO_COMPLETE = -2,
   ON_ERROR = -3,
+  DONT_SYNC = -99,
 }

@@ -340,4 +340,75 @@ export class IdentitiesService extends AbstractServiceSchema {
 
     return obj;
   }
+  public async searchDoubles() {
+    const agg1 = [
+      {
+        $addFields: {
+          test: {
+            $concat: [
+              '$additionalFields.attributes.supannPerson.supannOIDCDatedeNaissance',
+              '$inetOrgPerson.givenName',
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$test',
+          n: {
+            $sum: 1,
+          },
+          list: {
+            $addToSet: { _id: '$_id', uid: '$inetOrgPerson.uid', cn: '$inetOrgPerson.cn' },
+          },
+        },
+      },
+      {
+        $match: {
+          n: {
+            $gt: 1,
+          },
+        },
+      },
+    ];
+    const agg2 = [
+      {
+        $group: {
+          _id: '$inetOrgPerson.uid',
+          n: {
+            $sum: 1,
+          },
+          list: {
+            $addToSet: { _id: '$_id', uid: '$inetOrgPerson.uid', cn: '$inetOrgPerson.cn' },
+          },
+        },
+      },
+      {
+        $match: {
+          n: {
+            $gt: 1,
+          },
+        },
+      },
+    ];
+    const result1 = await this._model.aggregate(agg1);
+    const result2 = await this._model.aggregate(agg2);
+    const result3 = result1.map((x) => {
+      const k = x.list[0]._id + '/' + x.list[1]._id;
+      const k1 = x.list[1]._id + '/' + x.list[0]._id;
+      return { k1:k1, k: k, data: x.list };
+    });
+    const result4 = result2.map((x) => {
+      const k = x.list[0]._id + '/' + x.list[1]._id;
+      return { k: k, data: x.list };
+    });
+    result4.forEach((x) => {
+      const r = result3.find((o) => o.k === x.k);
+      const r1 = result3.find((o) => o.k1 === x.k);
+      if (r === undefined && r1 === undefined) {
+        result3.push(x);
+      }
+    });
+    return result3;
+  }
 }

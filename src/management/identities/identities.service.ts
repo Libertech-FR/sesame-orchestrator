@@ -320,7 +320,7 @@ export class IdentitiesService extends AbstractServiceSchema {
 
   public transformNullsToString(obj) {
     if (obj === null) {
-      return "";
+      return '';
     }
 
     if (Array.isArray(obj)) {
@@ -330,7 +330,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     if (typeof obj === 'object') {
       for (const key in obj) {
         if (obj[key] === null) {
-          obj[key] = "";
+          obj[key] = '';
         } else if (typeof obj[key] === 'object') {
           console.log('key', key);
           obj[key] = this.transformNullsToString(obj[key]);
@@ -359,7 +359,13 @@ export class IdentitiesService extends AbstractServiceSchema {
             $sum: 1,
           },
           list: {
-            $addToSet: { _id: '$_id', uid: '$inetOrgPerson.uid', cn: '$inetOrgPerson.cn' },
+            $addToSet: {
+              _id: '$_id',
+              uid: '$inetOrgPerson.uid',
+              cn: '$inetOrgPerson.cn',
+              employeeNumber: '$inetOrgPerson.employeeNumber',
+              departmentNumber: '$inetOrgPerson.departmentNumber',
+            },
           },
         },
       },
@@ -379,7 +385,13 @@ export class IdentitiesService extends AbstractServiceSchema {
             $sum: 1,
           },
           list: {
-            $addToSet: { _id: '$_id', uid: '$inetOrgPerson.uid', cn: '$inetOrgPerson.cn' },
+            $addToSet: {
+              _id: '$_id',
+              uid: '$inetOrgPerson.uid',
+              cn: '$inetOrgPerson.cn',
+              employeeNumber: '$inetOrgPerson.employeeNumber',
+              departmentNumber: '$inetOrgPerson.departmentNumber',
+            },
           },
         },
       },
@@ -396,11 +408,12 @@ export class IdentitiesService extends AbstractServiceSchema {
     const result3 = result1.map((x) => {
       const k = x.list[0]._id + '/' + x.list[1]._id;
       const k1 = x.list[1]._id + '/' + x.list[0]._id;
-      return { k1:k1, k: k, data: x.list };
+      return { k1: k1, k: k, data: x.list };
     });
     const result4 = result2.map((x) => {
       const k = x.list[0]._id + '/' + x.list[1]._id;
-      return { k: k, data: x.list };
+      const k1 = x.list[1]._id + '/' + x.list[0]._id;
+      return { k1: k1, k: k, data: x.list };
     });
     result4.forEach((x) => {
       const r = result3.find((o) => o.k === x.k);

@@ -1,7 +1,7 @@
 import { IdentityLifecycle } from './../_enums/lifecycle.enum';
 import { inetOrgPerson, inetOrgPersonSchema } from './_parts/inetOrgPerson.part';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import {Document, Types} from 'mongoose';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
 import { IdentityState } from '../_enums/states.enum';
 import { AdditionalFieldsPart, AdditionalFieldsPartSchema } from './_parts/additionalFields.part.schema';
@@ -42,7 +42,15 @@ export class Identities extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields?: { [key: string]: MixedValue }
+  public customFields?: { [key: string]: MixedValue };
+
+  //pour les identités fusionnées ont met les deux identités sources
+  @Prop({ type: Array, of: Types.ObjectId, required: true, default: [] })
+  public srcFusionId: Types.ObjectId[];
+
+  //pour les identités qui on servit à une fusion on met la destination (la nouvelle identité fusionnée)
+  @Prop({ type: Types.ObjectId, required: false })
+  public destFusionId: Types.ObjectId[];
 }
 
 export const IdentitiesSchema = SchemaFactory.createForClass(Identities).plugin(AutoIncrementPlugin, <AutoIncrementPluginOptions>{

@@ -22,6 +22,8 @@ import { IdentityState } from './_enums/states.enum';
 import { Identities } from './_schemas/identities.schema';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { FactorydriveService } from '@the-software-compagny/nestjs_module_factorydrive';
+import {ApiBadRequestResponse} from "@nestjs/swagger";
+import {InitStatesEnum} from "~/management/identities/_enums/init-state.enum";
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -343,6 +345,11 @@ export class IdentitiesService extends AbstractServiceSchema {
   public async searchDoubles() {
     const agg1 = [
       {
+        $match: {
+          state: { $ne: IdentityState.SYNCED },
+        },
+      },
+      {
         $addFields: {
           test: {
             $concat: [
@@ -379,6 +386,11 @@ export class IdentitiesService extends AbstractServiceSchema {
     ];
     const agg2 = [
       {
+        $match: {
+          state: { $ne: IdentityState.SYNCED },
+        },
+      },
+      {
         $group: {
           _id: '$inetOrgPerson.uid',
           n: {
@@ -408,12 +420,12 @@ export class IdentitiesService extends AbstractServiceSchema {
     const result3 = result1.map((x) => {
       const k = x.list[0]._id + '/' + x.list[1]._id;
       const k1 = x.list[1]._id + '/' + x.list[0]._id;
-      return { k1: k1, k: k, data: x.list };
+      return { k1: k1, k: k, key1: x.list[0]._id, key2: x.list[1]._id, data: x.list };
     });
     const result4 = result2.map((x) => {
       const k = x.list[0]._id + '/' + x.list[1]._id;
       const k1 = x.list[1]._id + '/' + x.list[0]._id;
-      return { k1: k1, k: k, data: x.list };
+      return { k1: k1, k: k, key1: x.list[0]._id, key2: x.list[1]._id, data: x.list };
     });
     result4.forEach((x) => {
       const r = result3.find((o) => o.k === x.k);
@@ -423,5 +435,46 @@ export class IdentitiesService extends AbstractServiceSchema {
       }
     });
     return result3;
+  }
+  //fusionne les deux identités id2 > id1 les champs presents dans id2 et non present dans id1 seront ajoutés
+  // retourne l'id de na nouvelle identité créée
+  public async fusion(id1, id2) {
+    let identity1 = null;
+    let identity2 = null;
+    try {
+      identity1 = await this.findById(id1);
+    } catch (error) {
+      throw new BadRequestException('Id1 not found');
+    }
+    try {
+      identity2 = await this.findById(id2);
+    } catch (error) {
+      throw new BadRequestException('Id2  not found');
+    }
+    const plainIdentity1 = toPlainAndCrush(identity1.toJSON(), {
+      excludePrefixes: ['_id', 'fingerprint', 'metadata'],
+    });
+    const plainIdentity2 = toPlainAndCrush(identity2.toJSON(), {
+      excludePrefixes: ['_id', 'fingerprint', 'metadata'],
+    });
+    const newObj = construct({ ...plainIdentity2, ...plainIdentity1 });
+    //const newIdentity = await this.create(newObj);
+    newObj.inetOrgPerson.employeeType = 'FUSION';
+    newObj.inetOrgPerson.employeeNumber =
+      identity1.inetOrgPerson.employeeNumber + '/' + identity2.inetOrgPerson.employeeNumber;
+    identity2.inetOrgPerson.departmentNumber.forEach((depN) => {
+      newObj.inetOrgPerson.departmentNumber.push(depN);
+    });
+    identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.forEach((depN) => {
+      newObj.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.push(depN);
+    });
+    newObj.state = IdentityState.TO_CREATE;
+    newObj.srcFusionId = [identity1._id, identity2._id];
+    const newIdentity = await this.create(newObj);
+    // modification identité1
+
+    return newIdentity._id;
+
+    //return newIdentity._id.toString();
   }
 }

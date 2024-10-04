@@ -329,7 +329,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       return obj.map(this.transformNullsToString);
     }
 
-    if (typeof obj === 'object') {
+    if (typeof obj === 'object' && !(obj instanceof Types.ObjectId)) {
       for (const key in obj) {
         if (obj[key] === null) {
           obj[key] = '';
@@ -347,6 +347,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       {
         $match: {
           state: { $ne: IdentityState.SYNCED },
+          destFusionId: { $eq: null },
         },
       },
       {
@@ -388,6 +389,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       {
         $match: {
           state: { $ne: IdentityState.SYNCED },
+          destFusionId: { $eq: null },
         },
       },
       {
@@ -451,6 +453,14 @@ export class IdentitiesService extends AbstractServiceSchema {
     } catch (error) {
       throw new BadRequestException('Id2  not found');
     }
+    //test si une ou les  deux entités ont deja été fusionnées
+    const x=identity1.destFusionId
+    if (identity1.destFusionId !== undefined && identity1.destFusionId !== null) {
+      throw new BadRequestException('Id1  already fusionned');
+    }
+    if (identity2.destFusionId !== undefined && identity2.destFusionId !== null) {
+      throw new BadRequestException('Id2  already fusionned');
+    }
     const plainIdentity1 = toPlainAndCrush(identity1.toJSON(), {
       excludePrefixes: ['_id', 'fingerprint', 'metadata'],
     });
@@ -465,16 +475,32 @@ export class IdentitiesService extends AbstractServiceSchema {
     identity2.inetOrgPerson.departmentNumber.forEach((depN) => {
       newObj.inetOrgPerson.departmentNumber.push(depN);
     });
-    identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.forEach((depN) => {
-      newObj.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.push(depN);
-    });
-    newObj.state = IdentityState.TO_CREATE;
+    // si supann est present
+    if (
+      identity1.additionalFields.objectClasses.includes('supannPerson') &&
+      identity2.additionalFields.objectClasses.includes('supannPerson')
+    ) {
+      identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.forEach((depN) => {
+        newObj.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.push(depN);
+      });
+      // supannRefId
+      identity2.additionalFields.attributes.supannPerson.supannRefId.forEach((depN) => {
+        newObj.additionalFields.attributes.supannPerson.supannRefId.push(depN);
+      });
+    }
+    newObj.state = IdentityState.TO_VALIDATE;
     newObj.srcFusionId = [identity1._id, identity2._id];
     const newIdentity = await this.create(newObj);
+    //MAJ identite1
+    identity1.destFusionId = newIdentity._id;
+    identity1.state = IdentityState.DONT_SYNC;
     // modification identité1
-
+    super.update(identity1._id, identity1);
+    //Maj Identity2
+    identity2.destFusionId = newIdentity._id;
+    identity2.state = IdentityState.DONT_SYNC;
+    // modification identité1
+    super.update(identity2._id, identity2);
     return newIdentity._id;
-
-    //return newIdentity._id.toString();
   }
 }

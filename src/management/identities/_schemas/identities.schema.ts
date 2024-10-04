@@ -50,7 +50,7 @@ export class Identities extends AbstractSchema {
 
   //pour les identités qui on servit à une fusion on met la destination (la nouvelle identité fusionnée)
   @Prop({ type: Types.ObjectId, required: false })
-  public destFusionId: Types.ObjectId[];
+  public destFusionId: Types.ObjectId;
 }
 
 export const IdentitiesSchema = SchemaFactory.createForClass(Identities).plugin(AutoIncrementPlugin, <AutoIncrementPluginOptions>{

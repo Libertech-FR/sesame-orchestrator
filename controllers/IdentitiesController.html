@@ -165,6 +165,21 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#fusion" >fusion</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getDoublons" >getDoublons</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#read" >read</a>
                             </li>
                             <li>
@@ -277,8 +292,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="227"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:227</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="228"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:228</a></div>
                         </td>
                     </tr>
 
@@ -380,8 +395,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -443,6 +458,177 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="fusion"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>fusion</b></span>
+                        <a href="#fusion"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fusion(body: <a href="../classes/FusionDto.html" target="_self">FusionDto</a>, res: Response)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;fusion&#x27;)<br />@ApiOperation({summary: &#x27;fusionne les deux identités&#x27;})<br />@ApiResponse({status: undefined})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="378"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:378</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../classes/FusionDto.html" target="_self" >FusionDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getDoublons"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getDoublons</b></span>
+                        <a href="#getDoublons"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getDoublons(res: Response)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;duplicates&#x27;)<br />@ApiOperation({summary: &#x27;Renvoie la liste des doublons supposés&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="366"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:366</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="read"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -472,8 +658,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="202"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:202</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="203"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:203</a></div>
                         </td>
                     </tr>
 
@@ -564,8 +750,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="349"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:349</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="350"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:350</a></div>
                         </td>
                     </tr>
 
@@ -676,8 +862,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="297"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:297</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="298"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:298</a></div>
                         </td>
                     </tr>
 
@@ -767,8 +953,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="171"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:171</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="172"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:172</a></div>
                         </td>
                     </tr>
 
@@ -871,8 +1057,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="242"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:242</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="243"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:243</a></div>
                         </td>
                     </tr>
 
@@ -975,8 +1161,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="257"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:257</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="258"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:258</a></div>
                         </td>
                     </tr>
 
@@ -1078,8 +1264,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="278"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:278</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="279"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:279</a></div>
                         </td>
                     </tr>
 
@@ -1169,8 +1355,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="119"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:119</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="120"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:120</a></div>
                         </td>
                     </tr>
 
@@ -1311,8 +1497,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="319"
-                                    class="link-to-prism">src/management/identities/identities.controller.ts:319</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="320"
+                                    class="link-to-prism">src/management/identities/identities.controller.ts:320</a></div>
                         </td>
                     </tr>
 
@@ -1414,7 +1600,7 @@
   UploadedFile,
   UseInterceptors,
 } from &#x27;@nestjs/common&#x27;;
-import { ApiOperation, ApiParam, ApiTags, PartialType } from &#x27;@nestjs/swagger&#x27;;
+import {ApiOperation, ApiParam, ApiResponse, ApiTags, PartialType} from &#x27;@nestjs/swagger&#x27;;
 import {
   FilterOptions,
   FilterSchema,
@@ -1447,6 +1633,7 @@ import { join } from &#x27;node:path&#x27;;
 import { omit } from &#x27;radash&#x27;;
 import { TransformersFilestorageService } from &#x27;~/core/filestorage/_services/transformers-filestorage.service&#x27;;
 import { Public } from &#x27;~/_common/decorators/public.decorator&#x27;;
+import {FusionDto} from &quot;~/management/identities/_dto/fusion.dto&quot;;
 
 @ApiTags(&#x27;management/identities&#x27;)
 @Controller(&#x27;identities&#x27;)
@@ -1759,6 +1946,30 @@ export class IdentitiesController extends AbstractController {
       ),
     });
     await this.transformerService.transform(mime, res, data, stream, parent);
+  }
+  @Get(&#x27;duplicates&#x27;)
+  @ApiOperation({ summary: &#x27;Renvoie la liste des doublons supposés&#x27; })
+  public async getDoublons(@Res() res: Response): Promise&lt;Response&gt; {
+    const data &#x3D; await this._service.searchDoubles();
+    const total &#x3D; data.length;
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+      total,
+    });
+  }
+  @Post(&#x27;fusion&#x27;)
+  @ApiOperation({ summary: &#x27;fusionne les deux identités&#x27; })
+  @ApiResponse({ status: HttpStatus.OK })
+  public async fusion(
+    @Body() body: FusionDto,
+    @Res() res: Response,
+  ): Promise&lt;Response&gt; {
+    const newId &#x3D; await this._service.fusion(body.id1, body.id2);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      newId,
+    });
   }
 }
 </code></pre>

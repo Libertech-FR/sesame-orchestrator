@@ -841,6 +841,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/FormUpdateDto.html" data-type="entity-link" >FormUpdateDto</a>
                             </li>
                             <li class="link">
+                                <a href="classes/FusionDto.html" data-type="entity-link" >FusionDto</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/Identities.html" data-type="entity-link" >Identities</a>
                             </li>
                             <li class="link">

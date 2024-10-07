@@ -14,7 +14,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags, PartialType } from '@nestjs/swagger';
+import {ApiOperation, ApiParam, ApiResponse, ApiTags, PartialType} from '@nestjs/swagger';
 import {
   FilterOptions,
   FilterSchema,
@@ -47,6 +47,7 @@ import { join } from 'node:path';
 import { omit } from 'radash';
 import { TransformersFilestorageService } from '~/core/filestorage/_services/transformers-filestorage.service';
 import { Public } from '~/_common/decorators/public.decorator';
+import {FusionDto} from "~/management/identities/_dto/fusion.dto";
 
 @ApiTags('management/identities')
 @Controller('identities')
@@ -359,5 +360,29 @@ export class IdentitiesController extends AbstractController {
       ),
     });
     await this.transformerService.transform(mime, res, data, stream, parent);
+  }
+  @Get('duplicates')
+  @ApiOperation({ summary: 'Renvoie la liste des doublons supposés' })
+  public async getDoublons(@Res() res: Response): Promise<Response> {
+    const data = await this._service.searchDoubles();
+    const total = data.length;
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+      total,
+    });
+  }
+  @Post('fusion')
+  @ApiOperation({ summary: 'fusionne les deux identités' })
+  @ApiResponse({ status: HttpStatus.OK })
+  public async fusion(
+    @Body() body: FusionDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const newId = await this._service.fusion(body.id1, body.id2);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      newId,
+    });
   }
 }

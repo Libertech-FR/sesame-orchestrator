@@ -10,5 +10,5 @@ export type MixedValue =
   | object
   | Array<MixedValue>
   | {
-    [key: string | number]: MixedValue;
+    [key: string | number | symbol]: MixedValue;
   };

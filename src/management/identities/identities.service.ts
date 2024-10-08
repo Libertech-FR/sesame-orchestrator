@@ -441,15 +441,15 @@ export class IdentitiesService extends AbstractServiceSchema {
   //fusionne les deux identités id2 > id1 les champs presents dans id2 et non present dans id1 seront ajoutés
   // retourne l'id de na nouvelle identité créée
   public async fusion(id1, id2) {
-    let identity1 = null;
-    let identity2 = null;
+    let identity1: Identities = null;
+    let identity2: Identities = null;
     try {
-      identity1 = await this.findById(id1);
+      identity1 = await this.findById<Identities>(id1);
     } catch (error) {
       throw new BadRequestException('Id1 not found');
     }
     try {
-      identity2 = await this.findById(id2);
+      identity2 = await this.findById<Identities>(id2);
     } catch (error) {
       throw new BadRequestException('Id2  not found');
     }
@@ -490,7 +490,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     }
     newObj.state = IdentityState.TO_VALIDATE;
     newObj.srcFusionId = [identity1._id, identity2._id];
-    const newIdentity = await this.create(newObj);
+    const newIdentity = await this.create(newObj) as Identities;
     //MAJ identite1
     identity1.destFusionId = newIdentity._id;
     identity1.state = IdentityState.DONT_SYNC;

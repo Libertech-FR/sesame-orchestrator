@@ -442,7 +442,7 @@ export class IdentitiesService extends AbstractServiceSchema {
   // retourne l'id de na nouvelle identité créée
   public async fusion(id1, id2) {
     let identity1: Identities = null;
-    let identity2: Identities = null;
+    let identity2: Identities & any = null;
     try {
       identity1 = await this.findById<Identities>(id1);
     } catch (error) {
@@ -467,7 +467,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     const plainIdentity2 = toPlainAndCrush(identity2.toJSON(), {
       excludePrefixes: ['_id', 'fingerprint', 'metadata'],
     });
-    const newObj: Partial<Identities> = construct({ ...plainIdentity2, ...plainIdentity1 });
+    const newObj: Partial<Identities> & any = construct({ ...plainIdentity2, ...plainIdentity1 });
     //const newIdentity = await this.create(newObj);
     newObj.inetOrgPerson.employeeType = 'FUSION';
     newObj.inetOrgPerson.employeeNumber =

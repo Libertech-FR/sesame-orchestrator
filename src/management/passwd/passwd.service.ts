@@ -222,6 +222,7 @@ export class PasswdService extends AbstractService {
           async: false,
           timeoutDiscard: true,
           disableLogs: true,
+          switchToProcessing: false,
           updateStatus: false,
         },
       );
@@ -355,6 +356,7 @@ export class PasswdService extends AbstractService {
           async: false,
           timeoutDiscard: true,
           disableLogs: false,
+          switchToProcessing: false,
           updateStatus: false,
         },
       );
@@ -392,6 +394,7 @@ export class PasswdService extends AbstractService {
           async: false,
           timeoutDiscard: true,
           disableLogs: false,
+          switchToProcessing: false,
           updateStatus: false,
         },
       );

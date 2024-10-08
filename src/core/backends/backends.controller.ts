@@ -21,6 +21,7 @@ import { BackendsService } from './backends.service';
 import { SyncIdentitiesDto } from './_dto/sync-identities.dto';
 import { Types } from 'mongoose';
 import { ActionType } from './_enum/action-type.enum';
+import { DeleteIdentitiesDto } from './_dto/delete-identities.dto';
 
 function fireMessage(observer: Subscriber<MessageEvent>, channel: string, message: any, loggername: string) {
   try {
@@ -41,7 +42,22 @@ export class BackendsController {
   constructor(
     private backendsService: BackendsService,
     @InjectRedis() protected readonly redis: Redis,
-  ) {}
+  ) { }
+
+  @Post('delete')
+  @ApiOperation({ summary: "Supprime une liste d'identitées" })
+  public async deleteIdentities(
+    @Res() res: Response,
+    @Body() body: DeleteIdentitiesDto,
+    @Query('async') asyncQuery: string,
+  ) {
+    const async = /true|on|yes|1/i.test(asyncQuery);
+    const data = await this.backendsService.deleteIdentities(body.payload, {
+      async,
+    });
+
+    return res.status(HttpStatus.ACCEPTED).json({ async, data });
+  }
 
   @Post('sync')
   @ApiOperation({ summary: "Synchronise une liste d'identitées" })

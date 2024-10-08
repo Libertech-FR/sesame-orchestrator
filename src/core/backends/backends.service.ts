@@ -226,6 +226,48 @@ export class BackendsService extends AbstractQueueProcessor {
     return result;
   }
 
+  public async deleteIdentities(payload: string[], options?: ExecuteJobOptions): Promise<any> {
+    const identities: {
+      action: ActionType;
+      identity: Identities;
+    }[] = [];
+
+    if (!payload.length) throw new BadRequestException('No identities to disable');
+
+    for (const key of payload) {
+      const identity = await this.identitiesService.findById<Identities>(key);
+      if (!identity.lastSync) {
+        throw new BadRequestException({
+          status: HttpStatus.BAD_REQUEST,
+          message: `Identity ${key} is not in state TO_DELETE`,
+          identity,
+        });
+      }
+      identities.push({
+        action: ActionType.IDENTITY_DELETE,
+        identity,
+      });
+    }
+
+    const task: Tasks = await this.tasksService.create<Tasks>({
+      jobs: identities.map((identity) => identity.identity._id),
+    });
+
+    const result = {};
+    for (const identity of identities) {
+      const [executedJob, res] = await this.executeJob(identity.action, identity.identity._id, identity.identity, {
+        ...options,
+        updateStatus: true,
+        switchToProcessing: false,
+        targetState: IdentityState.DONT_SYNC,
+        task: task._id,
+      });
+      result[identity.identity._id] = executedJob;
+      console.log(res);
+    }
+    return result;
+  }
+
   public async executeJob(
     actionType: ActionType,
     concernedTo?: Types.ObjectId,
@@ -261,10 +303,10 @@ export class BackendsService extends AbstractQueueProcessor {
         params: payload,
         concernedTo: identity
           ? {
-              $ref: 'identities',
-              id: concernedTo,
-              name: identity?.inetOrgPerson?.cn,
-            }
+            $ref: 'identities',
+            id: concernedTo,
+            name: identity?.inetOrgPerson?.cn,
+          }
           : null,
         comment: options?.comment,
         task: options?.task,
@@ -273,7 +315,7 @@ export class BackendsService extends AbstractQueueProcessor {
       });
     }
 
-    if (concernedTo && !!options?.updateStatus) {
+    if (concernedTo && !!options?.switchToProcessing) {
       await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
         $set: {
           state: IdentityState.PROCESSING,
@@ -310,7 +352,7 @@ export class BackendsService extends AbstractQueueProcessor {
         if (concernedTo && !!options?.updateStatus) {
           await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
             $set: {
-              state: IdentityState.SYNCED,
+              state: options?.targetState || IdentityState.SYNCED,
             },
           });
         }

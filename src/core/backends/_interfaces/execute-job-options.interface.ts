@@ -8,6 +8,8 @@ export interface ExecuteJobOptions {
   syncTimeout?: number;
   timeoutDiscard?: boolean;
   updateStatus?: boolean;
+  switchToProcessing?: boolean;
   comment?: string;
+  targetState?: any;
   task?: Types.ObjectId;
 }

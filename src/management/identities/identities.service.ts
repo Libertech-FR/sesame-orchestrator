@@ -456,10 +456,10 @@ export class IdentitiesService extends AbstractServiceSchema {
     //test si une ou les  deux entités ont deja été fusionnées
     const x = identity1.destFusionId
     if (identity1.destFusionId !== undefined && identity1.destFusionId !== null) {
-      throw new BadRequestException('Id1  already fusionned');
+      throw new BadRequestException('Id1 already fusionned');
     }
     if (identity2.destFusionId !== undefined && identity2.destFusionId !== null) {
-      throw new BadRequestException('Id2  already fusionned');
+      throw new BadRequestException('Id2 already fusionned');
     }
     const plainIdentity1 = toPlainAndCrush(identity1.toJSON(), {
       excludePrefixes: ['_id', 'fingerprint', 'metadata'],

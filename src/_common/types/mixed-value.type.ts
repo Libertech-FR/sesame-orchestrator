@@ -7,6 +7,7 @@ export type MixedValue =
   | number
   | boolean
   | null
+  | any
   | object
   | Array<MixedValue>
   | {

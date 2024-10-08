@@ -2378,8 +2378,8 @@ import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
 import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
 import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
 import { FactorydriveService } from &#x27;@the-software-compagny/nestjs_module_factorydrive&#x27;;
-import {ApiBadRequestResponse} from &quot;@nestjs/swagger&quot;;
-import {InitStatesEnum} from &quot;~/management/identities/_enums/init-state.enum&quot;;
+import { ApiBadRequestResponse } from &quot;@nestjs/swagger&quot;;
+import { InitStatesEnum } from &quot;~/management/identities/_enums/init-state.enum&quot;;
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -2810,7 +2810,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       throw new BadRequestException(&#x27;Id2  not found&#x27;);
     }
     //test si une ou les  deux entités ont deja été fusionnées
-    const x&#x3D;identity1.destFusionId
+    const x &#x3D; identity1.destFusionId
     if (identity1.destFusionId !&#x3D;&#x3D; undefined &amp;&amp; identity1.destFusionId !&#x3D;&#x3D; null) {
       throw new BadRequestException(&#x27;Id1  already fusionned&#x27;);
     }
@@ -2823,7 +2823,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     const plainIdentity2 &#x3D; toPlainAndCrush(identity2.toJSON(), {
       excludePrefixes: [&#x27;_id&#x27;, &#x27;fingerprint&#x27;, &#x27;metadata&#x27;],
     });
-    const newObj &#x3D; construct({ ...plainIdentity2, ...plainIdentity1 });
+    const newObj: Partial&lt;Identities&gt; &#x3D; construct({ ...plainIdentity2, ...plainIdentity1 });
     //const newIdentity &#x3D; await this.create(newObj);
     newObj.inetOrgPerson.employeeType &#x3D; &#x27;FUSION&#x27;;
     newObj.inetOrgPerson.employeeNumber &#x3D;

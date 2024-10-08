@@ -796,6 +796,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/DataPart.html" data-type="entity-link" >DataPart</a>
                             </li>
                             <li class="link">
+                                <a href="classes/DeleteIdentitiesDto.html" data-type="entity-link" >DeleteIdentitiesDto</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ErrorSchemaDto.html" data-type="entity-link" >ErrorSchemaDto</a>
                             </li>
                             <li class="link">

@@ -145,6 +145,13 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#deleteIdentities" >deleteIdentities</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#executeJob" >executeJob</a>
                             </li>
                             <li>
@@ -190,6 +197,109 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deleteIdentities"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteIdentities</b></span>
+                        <a href="#deleteIdentities"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteIdentities(res: Response, body: <a href="../classes/DeleteIdentitiesDto.html" target="_self">DeleteIdentitiesDto</a>, asyncQuery: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;delete&#x27;)<br />@ApiOperation({summary: &#x27;Supprime une liste d&#x27;identitées&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../classes/DeleteIdentitiesDto.html" target="_self" >DeleteIdentitiesDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>asyncQuery</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="executeJob"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -218,8 +328,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:89</a></div>
                         </td>
                     </tr>
 
@@ -370,8 +480,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="111"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:111</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="127"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:127</a></div>
                         </td>
                     </tr>
 
@@ -461,8 +571,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -552,8 +662,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">src/core/backends/backends.controller.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">src/core/backends/backends.controller.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -650,6 +760,7 @@ import { BackendsService } from &#x27;./backends.service&#x27;;
 import { SyncIdentitiesDto } from &#x27;./_dto/sync-identities.dto&#x27;;
 import { Types } from &#x27;mongoose&#x27;;
 import { ActionType } from &#x27;./_enum/action-type.enum&#x27;;
+import { DeleteIdentitiesDto } from &#x27;./_dto/delete-identities.dto&#x27;;
 
 function fireMessage(observer: Subscriber&lt;MessageEvent&gt;, channel: string, message: any, loggername: string) {
   try {
@@ -670,7 +781,22 @@ export class BackendsController {
   constructor(
     private backendsService: BackendsService,
     @InjectRedis() protected readonly redis: Redis,
-  ) {}
+  ) { }
+
+  @Post(&#x27;delete&#x27;)
+  @ApiOperation({ summary: &quot;Supprime une liste d&#x27;identitées&quot; })
+  public async deleteIdentities(
+    @Res() res: Response,
+    @Body() body: DeleteIdentitiesDto,
+    @Query(&#x27;async&#x27;) asyncQuery: string,
+  ) {
+    const async &#x3D; /true|on|yes|1/i.test(asyncQuery);
+    const data &#x3D; await this.backendsService.deleteIdentities(body.payload, {
+      async,
+    });
+
+    return res.status(HttpStatus.ACCEPTED).json({ async, data });
+  }
 
   @Post(&#x27;sync&#x27;)
   @ApiOperation({ summary: &quot;Synchronise une liste d&#x27;identitées&quot; })

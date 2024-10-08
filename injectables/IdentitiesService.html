@@ -2798,7 +2798,7 @@ export class IdentitiesService extends AbstractServiceSchema {
   // retourne l&#x27;id de na nouvelle identité créée
   public async fusion(id1, id2) {
     let identity1: Identities &#x3D; null;
-    let identity2: Identities &#x3D; null;
+    let identity2: Identities &amp; any &#x3D; null;
     try {
       identity1 &#x3D; await this.findById&lt;Identities&gt;(id1);
     } catch (error) {
@@ -2823,7 +2823,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     const plainIdentity2 &#x3D; toPlainAndCrush(identity2.toJSON(), {
       excludePrefixes: [&#x27;_id&#x27;, &#x27;fingerprint&#x27;, &#x27;metadata&#x27;],
     });
-    const newObj: Partial&lt;Identities&gt; &#x3D; construct({ ...plainIdentity2, ...plainIdentity1 });
+    const newObj: Partial&lt;Identities&gt; &amp; any &#x3D; construct({ ...plainIdentity2, ...plainIdentity1 });
     //const newIdentity &#x3D; await this.create(newObj);
     newObj.inetOrgPerson.employeeType &#x3D; &#x27;FUSION&#x27;;
     newObj.inetOrgPerson.employeeNumber &#x3D;

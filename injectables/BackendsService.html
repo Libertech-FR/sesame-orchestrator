@@ -190,6 +190,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#deleteIdentities" >deleteIdentities</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#executeJob" >executeJob</a>
                             </li>
                             <li>
@@ -314,6 +319,88 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deleteIdentities"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteIdentities</b></span>
+                        <a href="#deleteIdentities"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteIdentities(payload: string[], options?: <a href="../interfaces/ExecuteJobOptions.html" target="_self">ExecuteJobOptions</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="229"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:229</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>payload</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ExecuteJobOptions.html" target="_self" >ExecuteJobOptions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="executeJob"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -333,8 +420,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="229"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:229</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="271"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:271</a></div>
                         </td>
                     </tr>
 
@@ -1123,6 +1210,48 @@ export class BackendsService extends AbstractQueueProcessor {
     return result;
   }
 
+  public async deleteIdentities(payload: string[], options?: ExecuteJobOptions): Promise&lt;any&gt; {
+    const identities: {
+      action: ActionType;
+      identity: Identities;
+    }[] &#x3D; [];
+
+    if (!payload.length) throw new BadRequestException(&#x27;No identities to disable&#x27;);
+
+    for (const key of payload) {
+      const identity &#x3D; await this.identitiesService.findById&lt;Identities&gt;(key);
+      if (!identity.lastSync) {
+        throw new BadRequestException({
+          status: HttpStatus.BAD_REQUEST,
+          message: &#x60;Identity ${key} is not in state TO_DELETE&#x60;,
+          identity,
+        });
+      }
+      identities.push({
+        action: ActionType.IDENTITY_DELETE,
+        identity,
+      });
+    }
+
+    const task: Tasks &#x3D; await this.tasksService.create&lt;Tasks&gt;({
+      jobs: identities.map((identity) &#x3D;&gt; identity.identity._id),
+    });
+
+    const result &#x3D; {};
+    for (const identity of identities) {
+      const [executedJob, res] &#x3D; await this.executeJob(identity.action, identity.identity._id, identity.identity, {
+        ...options,
+        updateStatus: true,
+        switchToProcessing: false,
+        targetState: IdentityState.DONT_SYNC,
+        task: task._id,
+      });
+      result[identity.identity._id] &#x3D; executedJob;
+      console.log(res);
+    }
+    return result;
+  }
+
   public async executeJob(
     actionType: ActionType,
     concernedTo?: Types.ObjectId,
@@ -1158,10 +1287,10 @@ export class BackendsService extends AbstractQueueProcessor {
         params: payload,
         concernedTo: identity
           ? {
-              $ref: &#x27;identities&#x27;,
-              id: concernedTo,
-              name: identity?.inetOrgPerson?.cn,
-            }
+            $ref: &#x27;identities&#x27;,
+            id: concernedTo,
+            name: identity?.inetOrgPerson?.cn,
+          }
           : null,
         comment: options?.comment,
         task: options?.task,
@@ -1170,7 +1299,7 @@ export class BackendsService extends AbstractQueueProcessor {
       });
     }
 
-    if (concernedTo &amp;&amp; !!options?.updateStatus) {
+    if (concernedTo &amp;&amp; !!options?.switchToProcessing) {
       await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
         $set: {
           state: IdentityState.PROCESSING,
@@ -1207,7 +1336,7 @@ export class BackendsService extends AbstractQueueProcessor {
         if (concernedTo &amp;&amp; !!options?.updateStatus) {
           await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
             $set: {
-              state: IdentityState.SYNCED,
+              state: options?.targetState || IdentityState.SYNCED,
             },
           });
         }

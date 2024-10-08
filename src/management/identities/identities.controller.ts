@@ -361,6 +361,7 @@ export class IdentitiesController extends AbstractController {
     });
     await this.transformerService.transform(mime, res, data, stream, parent);
   }
+  
   @Get('duplicates')
   @ApiOperation({ summary: 'Renvoie la liste des doublons supposés' })
   public async getDoublons(@Res() res: Response): Promise<Response> {
@@ -372,6 +373,7 @@ export class IdentitiesController extends AbstractController {
       total,
     });
   }
+
   @Post('fusion')
   @ApiOperation({ summary: 'fusionne les deux identités' })
   @ApiResponse({ status: HttpStatus.OK })

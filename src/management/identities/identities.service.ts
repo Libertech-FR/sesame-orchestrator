@@ -334,7 +334,7 @@ export class IdentitiesService extends AbstractServiceSchema {
         if (obj[key] === null) {
           obj[key] = '';
         } else if (typeof obj[key] === 'object') {
-          console.log('key', key);
+          // console.log('key', key);
           obj[key] = this.transformNullsToString(obj[key]);
         }
       }

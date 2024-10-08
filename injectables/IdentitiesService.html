@@ -2690,7 +2690,7 @@ export class IdentitiesService extends AbstractServiceSchema {
         if (obj[key] &#x3D;&#x3D;&#x3D; null) {
           obj[key] &#x3D; &#x27;&#x27;;
         } else if (typeof obj[key] &#x3D;&#x3D;&#x3D; &#x27;object&#x27;) {
-          console.log(&#x27;key&#x27;, key);
+          // console.log(&#x27;key&#x27;, key);
           obj[key] &#x3D; this.transformNullsToString(obj[key]);
         }
       }

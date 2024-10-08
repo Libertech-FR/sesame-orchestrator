@@ -22,8 +22,8 @@ import { IdentityState } from './_enums/states.enum';
 import { Identities } from './_schemas/identities.schema';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { FactorydriveService } from '@the-software-compagny/nestjs_module_factorydrive';
-import {ApiBadRequestResponse} from "@nestjs/swagger";
-import {InitStatesEnum} from "~/management/identities/_enums/init-state.enum";
+import { ApiBadRequestResponse } from "@nestjs/swagger";
+import { InitStatesEnum } from "~/management/identities/_enums/init-state.enum";
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -454,7 +454,7 @@ export class IdentitiesService extends AbstractServiceSchema {
       throw new BadRequestException('Id2  not found');
     }
     //test si une ou les  deux entités ont deja été fusionnées
-    const x=identity1.destFusionId
+    const x = identity1.destFusionId
     if (identity1.destFusionId !== undefined && identity1.destFusionId !== null) {
       throw new BadRequestException('Id1  already fusionned');
     }
@@ -467,7 +467,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     const plainIdentity2 = toPlainAndCrush(identity2.toJSON(), {
       excludePrefixes: ['_id', 'fingerprint', 'metadata'],
     });
-    const newObj = construct({ ...plainIdentity2, ...plainIdentity1 });
+    const newObj: Partial<Identities> = construct({ ...plainIdentity2, ...plainIdentity1 });
     //const newIdentity = await this.create(newObj);
     newObj.inetOrgPerson.employeeType = 'FUSION';
     newObj.inetOrgPerson.employeeNumber =

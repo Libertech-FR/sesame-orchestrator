@@ -2812,10 +2812,10 @@ export class IdentitiesService extends AbstractServiceSchema {
     //test si une ou les  deux entités ont deja été fusionnées
     const x &#x3D; identity1.destFusionId
     if (identity1.destFusionId !&#x3D;&#x3D; undefined &amp;&amp; identity1.destFusionId !&#x3D;&#x3D; null) {
-      throw new BadRequestException(&#x27;Id1  already fusionned&#x27;);
+      throw new BadRequestException(&#x27;Id1 already fusionned&#x27;);
     }
     if (identity2.destFusionId !&#x3D;&#x3D; undefined &amp;&amp; identity2.destFusionId !&#x3D;&#x3D; null) {
-      throw new BadRequestException(&#x27;Id2  already fusionned&#x27;);
+      throw new BadRequestException(&#x27;Id2 already fusionned&#x27;);
     }
     const plainIdentity1 &#x3D; toPlainAndCrush(identity1.toJSON(), {
       excludePrefixes: [&#x27;_id&#x27;, &#x27;fingerprint&#x27;, &#x27;metadata&#x27;],

@@ -2702,7 +2702,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     const agg1 &#x3D; [
       {
         $match: {
-          state: { $ne: IdentityState.SYNCED },
+          lastSync: { $eq: null },
           destFusionId: { $eq: null },
         },
       },

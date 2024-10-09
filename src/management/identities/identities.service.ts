@@ -346,7 +346,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     const agg1 = [
       {
         $match: {
-          state: { $ne: IdentityState.SYNCED },
+          lastSync: { $eq: null },
           destFusionId: { $eq: null },
         },
       },

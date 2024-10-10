@@ -253,8 +253,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="180"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:180</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="184"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:184</a></div>
                         </td>
                     </tr>
 
@@ -293,8 +293,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="235"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:235</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="239"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:239</a></div>
                         </td>
                     </tr>
 
@@ -397,8 +397,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -467,8 +467,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="64"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:64</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="68"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:68</a></div>
                         </td>
                     </tr>
 
@@ -547,8 +547,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="140"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:140</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="144"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:144</a></div>
                         </td>
                     </tr>
 
@@ -764,10 +764,14 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
 
     for (const file of defaultFiles) {
       if (!files.includes(file)) {
-        const defaultFile &#x3D; readFileSync(&#x60;${process.cwd()}/src/management/identities/validations/_default/${file}&#x60;, &#x27;utf-8&#x27;);
-        writeFileSync(&#x60;${process.cwd()}/configs/identities/validations/${file}&#x60;, defaultFile);
+        try {
+          const defaultFile &#x3D; readFileSync(&#x60;${process.cwd()}/src/management/identities/validations/_default/${file}&#x60;, &#x27;utf-8&#x27;);
+          writeFileSync(&#x60;${process.cwd()}/configs/identities/validations/${file}&#x60;, defaultFile);
 
-        this.logger.warn(&#x60;Copied default validation file: ${file}&#x60;);
+          this.logger.warn(&#x60;Copied default validation file: ${file}&#x60;);
+        } catch (error) {
+          this.logger.error(&#x60;Error copying default validation file: ${file}&#x60;, error.message, error.stack);
+        }
       }
     }
 

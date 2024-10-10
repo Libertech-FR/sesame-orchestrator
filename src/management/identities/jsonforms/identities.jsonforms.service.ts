@@ -15,17 +15,28 @@ export class IdentitiesJsonformsService extends AbstractService implements OnApp
   }
 
   public onApplicationBootstrap(): void {
-    const files = readdirSync(`${process.cwd()}/configs/identities/jsonforms`);
-    const defaultFiles = readdirSync(`${process.cwd()}/src/management/identities/jsonforms/_default`);
+    let files = [];
+    let defaultFiles = [];
 
     this.logger.log('Initializing identities jsonforms service');
 
+    try {
+      files = readdirSync(`${process.cwd()}/configs/identities/jsonforms`);
+      defaultFiles = readdirSync(`${process.cwd()}/src/management/identities/jsonforms/_default`);
+    } catch (error) {
+      this.logger.error('Error reading identities jsonforms', error.message, error.stack);
+    }
+
     for (const file of defaultFiles) {
       if (!files.includes(file)) {
-        const defaultFile = readFileSync(`${process.cwd()}/src/management/identities/jsonforms/_default/${file}`, 'utf-8');
-        writeFileSync(`${process.cwd()}/configs/identities/jsonforms/${file}`, defaultFile);
+        try {
+          const defaultFile = readFileSync(`${process.cwd()}/src/management/identities/jsonforms/_default/${file}`, 'utf-8');
+          writeFileSync(`${process.cwd()}/configs/identities/jsonforms/${file}`, defaultFile);
 
-        this.logger.warn(`Copied default jsonform file: ${file}`);
+          this.logger.warn(`Copied default jsonform file: ${file}`);
+        } catch (error) {
+          this.logger.error(`Error copying default jsonform file: ${file}`, error.message, error.stack);
+        }
       }
     }
 

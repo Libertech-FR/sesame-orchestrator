@@ -30,14 +30,14 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     let files = [];
     let defaultFiles = [];
 
+    this.logger.log('Initializing identities validations service');
+
     try {
       files = readdirSync(`${process.cwd()}/configs/identities/validations`);
       defaultFiles = readdirSync(`${process.cwd()}/src/management/identities/validations/_default`);
     } catch (error) {
       this.logger.error('Error reading identities validations files', error.message, error.stack);
     }
-
-    this.logger.log('Initializing identities validations service');
 
     for (const file of defaultFiles) {
       if (!files.includes(file)) {

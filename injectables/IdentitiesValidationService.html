@@ -253,8 +253,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="184"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:184</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="191"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:191</a></div>
                         </td>
                     </tr>
 
@@ -293,8 +293,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="239"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:239</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="246"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:246</a></div>
                         </td>
                     </tr>
 
@@ -397,8 +397,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -467,8 +467,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -547,8 +547,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="144"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:144</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="151"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:151</a></div>
                         </td>
                     </tr>
 
@@ -757,8 +757,15 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
   }
 
   public onApplicationBootstrap(): void {
-    const files &#x3D; readdirSync(&#x60;${process.cwd()}/configs/identities/validations&#x60;);
-    const defaultFiles &#x3D; readdirSync(&#x60;${process.cwd()}/src/management/identities/validations/_default&#x60;);
+    let files &#x3D; [];
+    let defaultFiles &#x3D; [];
+
+    try {
+      files &#x3D; readdirSync(&#x60;${process.cwd()}/configs/identities/validations&#x60;);
+      defaultFiles &#x3D; readdirSync(&#x60;${process.cwd()}/src/management/identities/validations/_default&#x60;);
+    } catch (error) {
+      this.logger.error(&#x27;Error reading identities validations files&#x27;, error.message, error.stack);
+    }
 
     this.logger.log(&#x27;Initializing identities validations service&#x27;);
 

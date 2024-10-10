@@ -760,14 +760,14 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     let files &#x3D; [];
     let defaultFiles &#x3D; [];
 
+    this.logger.log(&#x27;Initializing identities validations service&#x27;);
+
     try {
       files &#x3D; readdirSync(&#x60;${process.cwd()}/configs/identities/validations&#x60;);
       defaultFiles &#x3D; readdirSync(&#x60;${process.cwd()}/src/management/identities/validations/_default&#x60;);
     } catch (error) {
       this.logger.error(&#x27;Error reading identities validations files&#x27;, error.message, error.stack);
     }
-
-    this.logger.log(&#x27;Initializing identities validations service&#x27;);
 
     for (const file of defaultFiles) {
       if (!files.includes(file)) {

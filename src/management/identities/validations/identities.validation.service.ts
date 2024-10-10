@@ -34,10 +34,14 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
 
     for (const file of defaultFiles) {
       if (!files.includes(file)) {
-        const defaultFile = readFileSync(`${process.cwd()}/src/management/identities/validations/_default/${file}`, 'utf-8');
-        writeFileSync(`${process.cwd()}/configs/identities/validations/${file}`, defaultFile);
+        try {
+          const defaultFile = readFileSync(`${process.cwd()}/src/management/identities/validations/_default/${file}`, 'utf-8');
+          writeFileSync(`${process.cwd()}/configs/identities/validations/${file}`, defaultFile);
 
-        this.logger.warn(`Copied default validation file: ${file}`);
+          this.logger.warn(`Copied default validation file: ${file}`);
+        } catch (error) {
+          this.logger.error(`Error copying default validation file: ${file}`, error.message, error.stack);
+        }
       }
     }
 

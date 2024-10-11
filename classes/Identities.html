@@ -639,7 +639,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IdentityLifecycle } from &#x27;./../_enums/lifecycle.enum&#x27;;
 import { inetOrgPerson, inetOrgPersonSchema } from &#x27;./_parts/inetOrgPerson.part&#x27;;
 import { Prop, Schema, SchemaFactory } from &#x27;@nestjs/mongoose&#x27;;
-import {Document, Types} from &#x27;mongoose&#x27;;
+import { Document, Types } from &#x27;mongoose&#x27;;
 import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
 import { IdentityState } from &#x27;../_enums/states.enum&#x27;;
 import { AdditionalFieldsPart, AdditionalFieldsPartSchema } from &#x27;./_parts/additionalFields.part.schema&#x27;;
@@ -691,14 +691,19 @@ export class Identities extends AbstractSchema {
   public destFusionId: Types.ObjectId;
 }
 
-export const IdentitiesSchema &#x3D; SchemaFactory.createForClass(Identities).plugin(AutoIncrementPlugin, &lt;AutoIncrementPluginOptions&gt;{
-  incrementBy: 1,
-  field: &#x27;inetOrgPerson.employeeNumber&#x27;,
-  startAt: 1,
-  rules: (ctx) &#x3D;&gt; {
-    return ctx.inetOrgPerson.employeeType &#x3D;&#x3D;&#x3D; &#x27;LOCAL&#x27;;
-  },
-});
+export const IdentitiesSchema &#x3D; SchemaFactory.createForClass(Identities)
+  .plugin(AutoIncrementPlugin, &lt;AutoIncrementPluginOptions&gt;{
+    incrementBy: 1,
+    field: &#x27;inetOrgPerson.employeeNumber&#x27;,
+    startAt: 1,
+    rules: (ctx) &#x3D;&gt; {
+      return ctx.inetOrgPerson.employeeType &#x3D;&#x3D;&#x3D; &#x27;LOCAL&#x27;;
+    },
+  })
+  .index(
+    { &#x27;inetOrgPerson.employeeNumber&#x27;: 1, &#x27;inetOrgPerson.employeeType&#x27;: 1 },
+    { unique: true },
+  );
 </code></pre>
     </div>
 </div>

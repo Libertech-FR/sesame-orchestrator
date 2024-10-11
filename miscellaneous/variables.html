@@ -1638,14 +1638,19 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>SchemaFactory.createForClass(Identities).plugin(AutoIncrementPlugin, &lt;AutoIncrementPluginOptions&gt;{
-  incrementBy: 1,
-  field: &#x27;inetOrgPerson.employeeNumber&#x27;,
-  startAt: 1,
-  rules: (ctx) &#x3D;&gt; {
-    return ctx.inetOrgPerson.employeeType &#x3D;&#x3D;&#x3D; &#x27;LOCAL&#x27;;
-  },
-})</code>
+                        <i>Default value : </i><code>SchemaFactory.createForClass(Identities)
+  .plugin(AutoIncrementPlugin, &lt;AutoIncrementPluginOptions&gt;{
+    incrementBy: 1,
+    field: &#x27;inetOrgPerson.employeeNumber&#x27;,
+    startAt: 1,
+    rules: (ctx) &#x3D;&gt; {
+      return ctx.inetOrgPerson.employeeType &#x3D;&#x3D;&#x3D; &#x27;LOCAL&#x27;;
+    },
+  })
+  .index(
+    { &#x27;inetOrgPerson.employeeNumber&#x27;: 1, &#x27;inetOrgPerson.employeeType&#x27;: 1 },
+    { unique: true },
+  )</code>
                     </td>
                 </tr>
 

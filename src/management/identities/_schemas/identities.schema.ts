@@ -1,7 +1,7 @@
 import { IdentityLifecycle } from './../_enums/lifecycle.enum';
 import { inetOrgPerson, inetOrgPersonSchema } from './_parts/inetOrgPerson.part';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import {Document, Types} from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
 import { IdentityState } from '../_enums/states.enum';
 import { AdditionalFieldsPart, AdditionalFieldsPartSchema } from './_parts/additionalFields.part.schema';
@@ -53,11 +53,16 @@ export class Identities extends AbstractSchema {
   public destFusionId: Types.ObjectId;
 }
 
-export const IdentitiesSchema = SchemaFactory.createForClass(Identities).plugin(AutoIncrementPlugin, <AutoIncrementPluginOptions>{
-  incrementBy: 1,
-  field: 'inetOrgPerson.employeeNumber',
-  startAt: 1,
-  rules: (ctx) => {
-    return ctx.inetOrgPerson.employeeType === 'LOCAL';
-  },
-});
+export const IdentitiesSchema = SchemaFactory.createForClass(Identities)
+  .plugin(AutoIncrementPlugin, <AutoIncrementPluginOptions>{
+    incrementBy: 1,
+    field: 'inetOrgPerson.employeeNumber',
+    startAt: 1,
+    rules: (ctx) => {
+      return ctx.inetOrgPerson.employeeType === 'LOCAL';
+    },
+  })
+  .index(
+    { 'inetOrgPerson.employeeNumber': 1, 'inetOrgPerson.employeeType': 1 },
+    { unique: true },
+  );

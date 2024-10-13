@@ -217,7 +217,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -358,8 +358,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -667,7 +667,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -694,7 +694,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -715,7 +715,7 @@
             </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -736,10 +736,11 @@ import { diff } from &#x27;radash&#x27;;
 import { AdditionalFieldsPart } from &#x27;../_schemas/_parts/additionalFields.part.schema&#x27;;
 import Ajv from &#x27;ajv&#x27;;
 import { buildYup } from &#x27;schema-to-yup&#x27;;
-import ajvErrors from &#x27;ajv-errors&#x27;;
 import validSchema from &#x27;./_config/validSchema&#x27;;
+import ajvErrors from &#x27;ajv-errors&#x27;;
 import { ValidationConfigException, ValidationSchemaException } from &#x27;~/_common/errors/ValidationException&#x27;;
 import { additionalFieldsPartDto } from &#x27;../_dto/_parts/additionalFields.dto&#x27;;
+
 
 /**
  * Service responsible for validating identities.
@@ -764,7 +765,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
 
     try {
       files &#x3D; readdirSync(&#x60;${process.cwd()}/configs/identities/validations&#x60;);
-      defaultFiles &#x3D; readdirSync(&#x60;${process.cwd()}/src/management/identities/validations/_default&#x60;);
+      defaultFiles &#x3D; readdirSync(&#x60;${process.cwd()}/configs/identities/default/validations&#x60;);
     } catch (error) {
       this.logger.error(&#x27;Error reading identities validations files&#x27;, error.message, error.stack);
     }
@@ -772,9 +773,8 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     for (const file of defaultFiles) {
       if (!files.includes(file)) {
         try {
-          const defaultFile &#x3D; readFileSync(&#x60;${process.cwd()}/src/management/identities/validations/_default/${file}&#x60;, &#x27;utf-8&#x27;);
+          const defaultFile &#x3D; readFileSync(&#x60;${process.cwd()}/configs/identities/default/validations/${file}&#x60;, &#x27;utf-8&#x27;);
           writeFileSync(&#x60;${process.cwd()}/configs/identities/validations/${file}&#x60;, defaultFile);
-
           this.logger.warn(&#x60;Copied default validation file: ${file}&#x60;);
         } catch (error) {
           this.logger.error(&#x60;Error copying default validation file: ${file}&#x60;, error.message, error.stack);

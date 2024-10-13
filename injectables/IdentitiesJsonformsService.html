@@ -740,7 +740,7 @@ export class IdentitiesJsonformsService extends AbstractService implements OnApp
 
     try {
       files &#x3D; readdirSync(&#x60;${process.cwd()}/configs/identities/jsonforms&#x60;);
-      defaultFiles &#x3D; readdirSync(&#x60;${process.cwd()}/src/management/identities/jsonforms/_default&#x60;);
+      defaultFiles &#x3D; readdirSync(&#x60;${process.cwd()}/configs/identities/default/jsonforms&#x60;);
     } catch (error) {
       this.logger.error(&#x27;Error reading identities jsonforms&#x27;, error.message, error.stack);
     }
@@ -748,7 +748,7 @@ export class IdentitiesJsonformsService extends AbstractService implements OnApp
     for (const file of defaultFiles) {
       if (!files.includes(file)) {
         try {
-          const defaultFile &#x3D; readFileSync(&#x60;${process.cwd()}/src/management/identities/jsonforms/_default/${file}&#x60;, &#x27;utf-8&#x27;);
+          const defaultFile &#x3D; readFileSync(&#x60;${process.cwd()}/configs/identities/default/jsonforms/${file}&#x60;, &#x27;utf-8&#x27;);
           writeFileSync(&#x60;${process.cwd()}/configs/identities/jsonforms/${file}&#x60;, defaultFile);
 
           this.logger.warn(&#x60;Copied default jsonform file: ${file}&#x60;);

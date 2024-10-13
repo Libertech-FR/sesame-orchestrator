@@ -6,10 +6,11 @@ import { diff } from 'radash';
 import { AdditionalFieldsPart } from '../_schemas/_parts/additionalFields.part.schema';
 import Ajv from 'ajv';
 import { buildYup } from 'schema-to-yup';
-import ajvErrors from 'ajv-errors';
 import validSchema from './_config/validSchema';
+import ajvErrors from 'ajv-errors';
 import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
 import { additionalFieldsPartDto } from '../_dto/_parts/additionalFields.dto';
+
 
 /**
  * Service responsible for validating identities.
@@ -34,7 +35,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
 
     try {
       files = readdirSync(`${process.cwd()}/configs/identities/validations`);
-      defaultFiles = readdirSync(`${process.cwd()}/src/management/identities/validations/_default`);
+      defaultFiles = readdirSync(`${process.cwd()}/configs/identities/default/validations`);
     } catch (error) {
       this.logger.error('Error reading identities validations files', error.message, error.stack);
     }
@@ -42,9 +43,8 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     for (const file of defaultFiles) {
       if (!files.includes(file)) {
         try {
-          const defaultFile = readFileSync(`${process.cwd()}/src/management/identities/validations/_default/${file}`, 'utf-8');
+          const defaultFile = readFileSync(`${process.cwd()}/configs/identities/default/validations/${file}`, 'utf-8');
           writeFileSync(`${process.cwd()}/configs/identities/validations/${file}`, defaultFile);
-
           this.logger.warn(`Copied default validation file: ${file}`);
         } catch (error) {
           this.logger.error(`Error copying default validation file: ${file}`, error.message, error.stack);

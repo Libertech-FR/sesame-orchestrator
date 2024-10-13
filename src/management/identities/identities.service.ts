@@ -22,8 +22,6 @@ import { IdentityState } from './_enums/states.enum';
 import { Identities } from './_schemas/identities.schema';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { FactorydriveService } from '@the-software-compagny/nestjs_module_factorydrive';
-import { ApiBadRequestResponse } from "@nestjs/swagger";
-import { InitStatesEnum } from "~/management/identities/_enums/init-state.enum";
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -346,7 +344,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     const agg1 = [
       {
         $match: {
-          lastSync: { $eq: null },
+          state: { $ne: IdentityState.DONT_SYNC },
           destFusionId: { $eq: null },
         },
       },
@@ -373,6 +371,8 @@ export class IdentitiesService extends AbstractServiceSchema {
               cn: '$inetOrgPerson.cn',
               employeeNumber: '$inetOrgPerson.employeeNumber',
               departmentNumber: '$inetOrgPerson.departmentNumber',
+              state: '$state',
+              lastSync: '$lastSync',
             },
           },
         },
@@ -388,7 +388,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     const agg2 = [
       {
         $match: {
-          state: { $ne: IdentityState.SYNCED },
+          state: { $ne: IdentityState.DONT_SYNC },
           destFusionId: { $eq: null },
         },
       },
@@ -405,6 +405,8 @@ export class IdentitiesService extends AbstractServiceSchema {
               cn: '$inetOrgPerson.cn',
               employeeNumber: '$inetOrgPerson.employeeNumber',
               departmentNumber: '$inetOrgPerson.departmentNumber',
+              state: '$state',
+              lastSync: '$lastSync',
             },
           },
         },
@@ -454,53 +456,40 @@ export class IdentitiesService extends AbstractServiceSchema {
       throw new BadRequestException('Id2  not found');
     }
     //test si une ou les  deux entités ont deja été fusionnées
-    const x = identity1.destFusionId
     if (identity1.destFusionId !== undefined && identity1.destFusionId !== null) {
-      throw new BadRequestException('Id1 already fusionned');
+      throw new BadRequestException('Id1 est déjà fusionnée');
     }
     if (identity2.destFusionId !== undefined && identity2.destFusionId !== null) {
-      throw new BadRequestException('Id2 already fusionned');
+      throw new BadRequestException('Id2 est déjà fusionnée');
     }
-    const plainIdentity1 = toPlainAndCrush(identity1.toJSON(), {
-      excludePrefixes: ['_id', 'fingerprint', 'metadata'],
-    });
-    const plainIdentity2 = toPlainAndCrush(identity2.toJSON(), {
-      excludePrefixes: ['_id', 'fingerprint', 'metadata'],
-    });
-    const newObj: Partial<Identities> & any = construct({ ...plainIdentity2, ...plainIdentity1 });
-    //const newIdentity = await this.create(newObj);
-    newObj.inetOrgPerson.employeeType = 'FUSION';
-    newObj.inetOrgPerson.employeeNumber =
-      identity1.inetOrgPerson.employeeNumber + '/' + identity2.inetOrgPerson.employeeNumber;
-    identity2.inetOrgPerson.departmentNumber.forEach((depN) => {
-      newObj.inetOrgPerson.departmentNumber.push(depN);
-    });
+    //pour savoir qu elle est l'identité maitre seule celle-ci sera mise à jour par taiga
+    identity1.primaryEmployeeNumber = identity1.inetOrgPerson.employeeNumber[0];
+
+    identity1.inetOrgPerson.employeeNumber = [
+      ...identity1.inetOrgPerson.employeeNumber,
+      ...identity2.inetOrgPerson.employeeNumber,
+    ];
     // si supann est present
     if (
       identity1.additionalFields.objectClasses.includes('supannPerson') &&
       identity2.additionalFields.objectClasses.includes('supannPerson')
     ) {
       identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.forEach((depN) => {
-        newObj.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.push(depN);
+        identity1.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.push(depN);
       });
       // supannRefId
       identity2.additionalFields.attributes.supannPerson.supannRefId.forEach((depN) => {
-        newObj.additionalFields.attributes.supannPerson.supannRefId.push(depN);
+        identity1.additionalFields.attributes.supannPerson.supannRefId.push(depN);
       });
     }
-    newObj.state = IdentityState.TO_VALIDATE;
-    newObj.srcFusionId = [identity1._id, identity2._id];
-    const newIdentity = await this.create(newObj) as Identities;
-    //MAJ identite1
-    identity1.destFusionId = newIdentity._id;
-    identity1.state = IdentityState.DONT_SYNC;
-    // modification identité1
-    super.update(identity1._id, identity1);
-    //Maj Identity2
-    identity2.destFusionId = newIdentity._id;
+    identity1.state = IdentityState.TO_VALIDATE;
+    identity1.srcFusionId = identity2._id;
+    identity2.destFusionId = identity1._id;
     identity2.state = IdentityState.DONT_SYNC;
     // modification identité1
+    super.update(identity1._id, identity1);
+    // modification identité1
     super.update(identity2._id, identity2);
-    return newIdentity._id;
+    return identity1._id;
   }
 }

@@ -45,10 +45,19 @@ export class inetOrgPerson extends Document {
   public uid: string;
 
   @Prop({
-    type: String,
-    validate: [(employeeNumber: string) => /[A-Za-z0-9_-]+/.test(employeeNumber), 'EmployeeNumber invalide.'],
+    type: Array,
+    of: String,
+    validate: [
+      {
+        validator: (employeeNumbers: string[]) => {
+          console.log(employeeNumbers);
+          employeeNumbers.every((employeeNumber) => /[A-Za-z0-9_-]+/.test(employeeNumber));
+        },
+        message: 'EmployeeNumber invalide.',
+      },
+    ],
   })
-  public employeeNumber: string;
+  public employeeNumber: string[];
 
   @Prop({ type: String, required: true })
   public employeeType: string;

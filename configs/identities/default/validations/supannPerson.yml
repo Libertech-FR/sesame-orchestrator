@@ -43,17 +43,6 @@ properties:
   supannParrainDN:
     type: string
     description: Field corresponding to supannParrainDN
-  supannTypeEntiteAffectation:
-    type: array
-    items:
-      type: string
-  supannEntiteAffectation:
-    type: array
-    items:
-      type: string
-  supannEntiteAffectationPrincipale:
-    type: string
-    description: identifiant de l entité principale d affectation
   supannActivite:
     type: string
     description: Field corresponding to supannActivite
@@ -63,17 +52,48 @@ properties:
   supannEtablissement:
     type: string
     description: etablissement
+  supannTypeEntiteAffectation:
+    type: array
+    items:
+      type: string 
+  supannRefId:
+    type: array
+    items:
+      type: string
+  supannEtuAnneeInscription:
+    type: string 
+    description: supannetuanneeinscription
+  supannEntiteAffectation:
+    type: array
+    items:
+      type: string
+  supannEntiteAffectationPrincipale:
+    type: string
+    description: identifiant de l entité principale d affectation
+  supannEtUid:
+    type: string
+    description: supannetuid
+  supannEtuCursusAnnee:
+    type: string
+    description: supannetucursusannee
+  supannEtuDiplome:
+    type: string
+    description: supannetudiplome
+  supannCodeIne:
+    type: string
+    description: supanncodeine
+
 required:
-- supanncivilite
+#- supanncivilite
 - supannAutreMail
 # - supannListeRouge
-- supannOIDCGenre
-- supannRessourceEtatDate
+#- supannOIDCGenre
+#- supannRessourceEtatDate
 # - supannCodeINSEEVilleDeNaissance
 # - supannMailPerso
 # - supannEntiteAffectationPrincipale
 #- supannCodeINSEEPaysDeNaissance
 - supannRefId
-- supannPrenomsEtatCivil
+#- supannPrenomsEtatCivil
 # - mailForwardingAddress
-- supannOIDCDatedeNaissance
+#- supannOIDCDatedeNaissance

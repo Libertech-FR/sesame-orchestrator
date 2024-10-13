@@ -45,12 +45,15 @@ export class Identities extends AbstractSchema {
   public customFields?: { [key: string]: MixedValue };
 
   //pour les identités fusionnées ont met les deux identités sources
-  @Prop({ type: Array, of: Types.ObjectId, required: true, default: [] })
-  public srcFusionId: Types.ObjectId[];
+  @Prop({ type: Types.ObjectId, required: false })
+  public srcFusionId: Types.ObjectId;
 
   //pour les identités qui on servit à une fusion on met la destination (la nouvelle identité fusionnée)
   @Prop({ type: Types.ObjectId, required: false })
   public destFusionId: Types.ObjectId;
+
+  @Prop({ type: String, required: false, default: null })
+  public primaryEmployeeNumber: string;
 }
 
 export const IdentitiesSchema = SchemaFactory.createForClass(Identities)

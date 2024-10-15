@@ -3638,11 +3638,12 @@
     fs-extra "^11.2.0"
     node-exceptions "^4.0.1"
 
-"@the-software-compagny/nestjs_module_restools@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@the-software-compagny/nestjs_module_restools/-/nestjs_module_restools-0.0.5.tgz#9af0a5861de4eeb17f2e10f0dcc1509349e68663"
-  integrity sha512-PyjZ21xNWk0WhLjC13LI4nrmvqMzXdOBpfSK/3Um8WLmmvhcO9GofhQn59OgE8bExZzhcI6T+ti9sGg8Ha6hQw==
+"@the-software-compagny/nestjs_module_restools@^0.0.11":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@the-software-compagny/nestjs_module_restools/-/nestjs_module_restools-0.0.11.tgz#0af24c877c0b3eb8ac5a687e5d63523ba09aa375"
+  integrity sha512-oPf9o8fk9Xiv6YKgiD4NvgFcRgEHLZmAGm25NQc7cXaHtFTUb8EIHwVW7UO6a4zl84jkG8sJJk4cnXkiCuiEKg==
   dependencies:
+    class-transformer "^0.5.1"
     dayjs "^1.11.11"
     deepmerge "^4.3.1"
     is-plain-object "^5.0.0"

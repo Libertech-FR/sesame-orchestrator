@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { readdir } from 'fs/promises'
 import { Model } from 'mongoose'
+import { glob } from 'glob'
 
 @Injectable()
 export class MigrationsService implements OnModuleInit {
@@ -18,20 +19,22 @@ export class MigrationsService implements OnModuleInit {
   }
 
   private async loadMigrationsFiles() {
-    let files: string[] = []
-    try {
-      console.log('Loading migrations files')
-      console.log(process.cwd())
-      console.log(__dirname)
-      console.log(__filename)
-      files = await readdir('./migrations')
-    } catch { }
-
-    console.log(files)
+    const files = await glob(`./migrations/*.js`, {
+      cwd: __dirname,
+      root: __dirname,
+    })
 
     for (const file of files) {
-      const migration = await import(`./migrations/${file}`)
-      console.log(migration)
+      console.log('file', file)
+      const migration = await import(`${__dirname}/${file}`)
+
+      if (migration.default) {
+        const instance = new migration.default()
+
+        if (typeof instance.up === 'function') {
+          await instance.up()
+        }
+      }
     }
   }
 }

@@ -72,6 +72,7 @@
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.6",
     "fast-password-entropy": "^1.1.1",
+    "glob": "^11.0.0",
     "handlebars": "^4.7.8",
     "helmet": "^7.1.0",
     "hibp": "^14.1.2",

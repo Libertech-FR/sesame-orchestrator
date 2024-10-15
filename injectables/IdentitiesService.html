@@ -2831,11 +2831,11 @@ export class IdentitiesService extends AbstractServiceSchema {
       identity2.additionalFields.objectClasses.includes(&#x27;supannPerson&#x27;)
     ) {
       identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.forEach((depN) &#x3D;&gt; {
-        identity1.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.push(depN);
+        (identity1.additionalFields.attributes.supannPerson as any).supannTypeEntiteAffectation.push(depN);
       });
       // supannRefId
       identity2.additionalFields.attributes.supannPerson.supannRefId.forEach((depN) &#x3D;&gt; {
-        identity1.additionalFields.attributes.supannPerson.supannRefId.push(depN);
+        (identity1.additionalFields.attributes.supannPerson as any).supannRefId.push(depN);
       });
     }
     identity1.state &#x3D; IdentityState.TO_VALIDATE;

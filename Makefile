@@ -14,7 +14,33 @@ help:
 build: ## Build the container
 	@docker build --platform $(PLATFORM) -t $(IMG_NAME) .
 
+prod: ## Start production environment
+	@docker run --rm -it \
+		-e NODE_ENV=development \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--platform $(PLATFORM) \
+		--network dev \
+		--name $(APP_NAME) \
+		-p $(APP_PORT):4000 \
+		-p 9229:9229 \
+		-v $(CURDIR):/data \
+		$(IMG_NAME) yarn start:prod
+
 dev: ## Start development environment
+	@docker run --rm -it \
+		-e NODE_ENV=development \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--platform $(PLATFORM) \
+		--network dev \
+		--name $(APP_NAME) \
+		-p $(APP_PORT):4000 \
+		-p 9229:9229 \
+		-v $(CURDIR):/data \
+		$(IMG_NAME) yarn start:dev
+
+debug: ## Start debug environment
 	@docker run --rm -it \
 		-e NODE_ENV=development \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \

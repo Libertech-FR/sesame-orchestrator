@@ -20,6 +20,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { MailadmService } from '~/settings/mailadm.service';
 import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factorydrive';
+import { MigrationsService } from './migrations.service';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factory
           },
           template: {
             dir: __dirname + '/../templates',
-            adapter: new HandlebarsAdapter(),
+            // adapter: new HandlebarsAdapter(),
             options: {
               strict: true,
             },
@@ -96,6 +97,7 @@ import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factory
   controllers: [AppController],
   providers: [
     AppService,
+    MigrationsService,
     {
       provide: APP_GUARD,
       useClass: AuthGuard('jwt'),
@@ -114,4 +116,4 @@ import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factory
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

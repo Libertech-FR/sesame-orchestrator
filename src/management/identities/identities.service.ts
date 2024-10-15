@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   Document,
@@ -22,6 +22,7 @@ import { IdentityState } from './_enums/states.enum';
 import { Identities } from './_schemas/identities.schema';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
 import { FactorydriveService } from '@the-software-compagny/nestjs_module_factorydrive';
+import { BackendsService } from '~/core/backends/backends.service';
 
 @Injectable()
 export class IdentitiesService extends AbstractServiceSchema {
@@ -29,6 +30,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     @InjectModel(Identities.name) protected _model: Model<Identities>,
     protected readonly _validation: IdentitiesValidationService,
     protected readonly storage: FactorydriveService,
+    @Inject(forwardRef(() => BackendsService)) protected readonly backends: BackendsService,
   ) {
     super();
   }

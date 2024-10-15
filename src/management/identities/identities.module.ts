@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Identities, IdentitiesSchema } from './_schemas/identities.schema';
 import { IdentitiesService } from './identities.service';
@@ -10,6 +10,7 @@ import { IdentitiesJsonformsModule } from './jsonforms/identities.jsonforms.modu
 import { APP_FILTER } from '@nestjs/core';
 import { IdentitiesValidationFilter } from '~/_common/filters/identities-validation.filter';
 import { FilestorageModule } from '~/core/filestorage/filestorage.module';
+import { BackendsModule } from '~/core/backends/backends.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { FilestorageModule } from '~/core/filestorage/filestorage.module';
       },
     ]),
     FilestorageModule,
+    forwardRef(() => BackendsModule),
   ],
   providers: [
     IdentitiesService,
@@ -35,4 +37,4 @@ import { FilestorageModule } from '~/core/filestorage/filestorage.module';
   controllers: [IdentitiesController],
   exports: [IdentitiesService],
 })
-export class IdentitiesModule {}
+export class IdentitiesModule { }

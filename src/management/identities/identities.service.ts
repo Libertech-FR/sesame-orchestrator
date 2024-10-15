@@ -475,11 +475,11 @@ export class IdentitiesService extends AbstractServiceSchema {
       identity2.additionalFields.objectClasses.includes('supannPerson')
     ) {
       identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.forEach((depN) => {
-        identity1.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.push(depN);
+        (identity1.additionalFields.attributes.supannPerson as any).supannTypeEntiteAffectation.push(depN);
       });
       // supannRefId
       identity2.additionalFields.attributes.supannPerson.supannRefId.forEach((depN) => {
-        identity1.additionalFields.attributes.supannPerson.supannRefId.push(depN);
+        (identity1.additionalFields.attributes.supannPerson as any).supannRefId.push(depN);
       });
     }
     identity1.state = IdentityState.TO_VALIDATE;

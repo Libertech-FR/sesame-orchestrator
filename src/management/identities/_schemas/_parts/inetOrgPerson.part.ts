@@ -50,8 +50,9 @@ export class inetOrgPerson extends Document {
     validate: [
       {
         validator: (employeeNumbers: string[]) => {
-          console.log(employeeNumbers);
-          employeeNumbers.every((employeeNumber) => /[A-Za-z0-9_-]+/.test(employeeNumber));
+          if (!Array.isArray(employeeNumbers)) return false;
+
+          return employeeNumbers.every((employeeNumber) => /[A-Za-z0-9_-]+/.test(employeeNumber));
         },
         message: 'EmployeeNumber invalide.',
       },

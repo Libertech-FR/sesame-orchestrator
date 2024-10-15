@@ -14,7 +14,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import {ApiOperation, ApiParam, ApiResponse, ApiTags, PartialType} from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags, PartialType } from '@nestjs/swagger';
 import {
   FilterOptions,
   FilterSchema,
@@ -47,7 +47,7 @@ import { join } from 'node:path';
 import { omit } from 'radash';
 import { TransformersFilestorageService } from '~/core/filestorage/_services/transformers-filestorage.service';
 import { Public } from '~/_common/decorators/public.decorator';
-import {FusionDto} from "~/management/identities/_dto/fusion.dto";
+import { FusionDto } from "~/management/identities/_dto/fusion.dto";
 
 @ApiTags('management/identities')
 @Controller('identities')
@@ -91,10 +91,10 @@ export class IdentitiesController extends AbstractController {
       body.inetOrgPerson.employeeType = 'LOCAL';
     }
     if (!body.inetOrgPerson.cn) {
-      body.inetOrgPerson.cn = body.inetOrgPerson.sn.toUpperCase() + ' ' + body.inetOrgPerson.givenName;
+      body.inetOrgPerson.cn = `${(body.inetOrgPerson.sn || '').toUpperCase()} ${body.inetOrgPerson.givenName}`;
     }
     if (!body.inetOrgPerson.displayName) {
-      body.inetOrgPerson.displayName = body.inetOrgPerson.givenName + ' ' + body.inetOrgPerson.sn.toUpperCase();
+      body.inetOrgPerson.displayName = body.inetOrgPerson.givenName + ' ' + (body.inetOrgPerson.sn || '').toUpperCase();
     }
     const data = await this._service.create<Identities>(body);
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
@@ -361,7 +361,7 @@ export class IdentitiesController extends AbstractController {
     });
     await this.transformerService.transform(mime, res, data, stream, parent);
   }
-  
+
   @Get('duplicates')
   @ApiOperation({ summary: 'Renvoie la liste des doublons supposés' })
   public async getDoublons(@Res() res: Response): Promise<Response> {

@@ -18,7 +18,7 @@ export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, Metad
   @IsNumber()
   @IsEnum(InitStatesEnum)
   @ApiProperty({ enum: InitStatesEnum })
-  public initState: InitStatesEnum = InitStatesEnum.NOSENT;
+  public initState: InitStatesEnum;
 
   @IsNumber()
   @IsOptional()
@@ -56,5 +56,7 @@ export class IdentitiesDto extends IdentitiesCreateDto { }
 export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) { }
 
 export class IdentitiesUpsertDto extends PartialType(IdentitiesUpdateDto) {
+  @IsOptional()
+  @Type(() => IdentitiesUpdateDto)
   public $setOnInsert?: Partial<IdentitiesUpdateDto>;
 }

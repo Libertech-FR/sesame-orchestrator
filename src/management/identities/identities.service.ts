@@ -51,6 +51,7 @@ export class IdentitiesService extends AbstractServiceSchema {
     data?: IdentitiesUpsertDto,
     options?: QueryOptions<T>,
   ): Promise<[HttpStatus.OK | HttpStatus.CREATED, ModifyResult<Query<T, T, any, T>>]> {
+    console.log('data', data);
     data = this.transformNullsToString(data);
     const identity = await this.model.findOne<Identities>(filters).exec();
     this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
@@ -68,13 +69,12 @@ export class IdentitiesService extends AbstractServiceSchema {
       ]),
     });
 
-    // console.log('data', data);
-
     if (!data?.inetOrgPerson?.employeeNumber || !data?.inetOrgPerson?.employeeType) {
       throw new BadRequestException(
         'inetOrgPerson.employeeNumber and inetOrgPerson.employeeType are required for create identity.',
       );
     }
+    console.log('data.inetOrgPerson?.employeeNumber', data.inetOrgPerson?.employeeNumber)
     if (data.inetOrgPerson?.employeeNumber.indexOf('174981') >= 0 || data.inetOrgPerson?.employeeNumber.indexOf('162982') >= 0) {
       console.log('test');
     }
@@ -107,6 +107,18 @@ export class IdentitiesService extends AbstractServiceSchema {
       }),
     );
     await this.checkFingerprint(filters, fingerprint);
+
+    console.log('insert', {
+      $setOnInsert: {
+        ...crushedSetOnInsert,
+        // 'state': IdentityState.TO_CREATE,
+      },
+      $set: {
+        ...crushedUpdate,
+        'additionalFields.objectClasses': data.additionalFields.objectClasses,
+        lastSync: new Date(),
+      },
+    })
 
     const upserted = await super.upsert(
       filters,

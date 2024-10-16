@@ -51,7 +51,6 @@ export class IdentitiesService extends AbstractServiceSchema {
     data?: IdentitiesUpsertDto,
     options?: QueryOptions<T>,
   ): Promise<[HttpStatus.OK | HttpStatus.CREATED, ModifyResult<Query<T, T, any, T>>]> {
-    console.log('data', data);
     data = this.transformNullsToString(data);
     const identity = await this.model.findOne<Identities>(filters).exec();
     this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
@@ -74,7 +73,6 @@ export class IdentitiesService extends AbstractServiceSchema {
         'inetOrgPerson.employeeNumber and inetOrgPerson.employeeType are required for create identity.',
       );
     }
-    console.log('data.inetOrgPerson?.employeeNumber', data.inetOrgPerson?.employeeNumber)
     if (data.inetOrgPerson?.employeeNumber.indexOf('174981') >= 0 || data.inetOrgPerson?.employeeNumber.indexOf('162982') >= 0) {
       console.log('test');
     }

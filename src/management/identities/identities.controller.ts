@@ -14,7 +14,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags, PartialType } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags, getSchemaPath, PartialType } from '@nestjs/swagger';
 import {
   FilterOptions,
   FilterSchema,
@@ -48,6 +48,7 @@ import { omit } from 'radash';
 import { TransformersFilestorageService } from '~/core/filestorage/_services/transformers-filestorage.service';
 import { Public } from '~/_common/decorators/public.decorator';
 import { FusionDto } from "~/management/identities/_dto/fusion.dto";
+import { PaginatedFilterDto } from '~/_common/dto/paginated-filter.dto';
 
 @ApiTags('management/identities')
 @Controller('identities')
@@ -347,6 +348,17 @@ export class IdentitiesController extends AbstractController {
   @Public()
   @Get('photo/raw')
   @ApiReadResponseDecorator(FilestorageDto)
+  @ApiQuery({
+    required: false,
+    name: 'filters',
+    style: 'deepObject',
+    explode: true,
+    type: 'object',
+    schema: {
+      $ref: getSchemaPath(PaginatedFilterDto),
+    },
+    description: 'Filtres de recherche, voir la documentation de chaque endpoint pour plus de détails',
+  })
   public async readPhotoRaw(
     @Res() res: Response,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,

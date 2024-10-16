@@ -73,9 +73,6 @@ export class IdentitiesService extends AbstractServiceSchema {
         'inetOrgPerson.employeeNumber and inetOrgPerson.employeeType are required for create identity.',
       );
     }
-    if (data.inetOrgPerson?.employeeNumber.indexOf('174981') >= 0 || data.inetOrgPerson?.employeeNumber.indexOf('162982') >= 0) {
-      console.log('test');
-    }
     //controle si l identité est fusionnée si c est la bonne à mettre à jour puisqu elle a 2 employeeNumber
     if (identity !== null && identity?.srcFusionId !== null) {
       if (identity.primaryEmployeeNumber !== data?.inetOrgPerson?.employeeNumber[0]) {

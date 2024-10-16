@@ -345,7 +345,6 @@ export class IdentitiesController extends AbstractController {
     });
   }
 
-  @Public()
   @Get('photo/raw')
   @ApiReadResponseDecorator(FilestorageDto)
   @ApiQuery({

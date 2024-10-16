@@ -51,10 +51,10 @@ export class IdentitiesService extends AbstractServiceSchema {
     data?: IdentitiesUpsertDto,
     options?: QueryOptions<T>,
   ): Promise<[HttpStatus.OK | HttpStatus.CREATED, ModifyResult<Query<T, T, any, T>>]> {
-    data = this.transformNullsToString(data);
-    const identity = await this.model.findOne(filters).exec();
-    this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
 
+    data = this.transformNullsToString(data);
+    const identity = await this.model.findOne<Identities>(filters).exec();
+    this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
     const crushedUpdate = toPlainAndCrush(omit(data || {}, ['$setOnInsert']));
     const crushedSetOnInsert = toPlainAndCrush(data.$setOnInsert || {});
     data = construct({
@@ -75,6 +75,15 @@ export class IdentitiesService extends AbstractServiceSchema {
       throw new BadRequestException(
         'inetOrgPerson.employeeNumber and inetOrgPerson.employeeType are required for create identity.',
       );
+    }
+    if ( data.inetOrgPerson?.employeeNumber.indexOf('174981') >= 0 || data.inetOrgPerson?.employeeNumber.indexOf('162982') >= 0 ){
+      console.log('test');
+    }
+    //controle si l identité est fusionnée si c est la bonne à mettre à jour puisqu elle a 2 employeeNumber
+    if (identity !== null && identity?.srcFusionId !== null) {
+      if (identity.primaryEmployeeNumber !== data?.inetOrgPerson?.employeeNumber[0]) {
+        throw new HttpException('Secondary identity', HttpStatus.SEE_OTHER);
+      }
     }
 
     await this.checkInetOrgPersonJpegPhoto(data);
@@ -487,11 +496,16 @@ export class IdentitiesService extends AbstractServiceSchema {
     identity1.state = IdentityState.TO_VALIDATE;
     identity1.srcFusionId = identity2._id;
     identity2.destFusionId = identity1._id;
+    identity2.inetOrgPerson.employeeNumber[0] = 'F' + identity2.inetOrgPerson.employeeNumber[0];
+    //delete identity2 si elle a deja été synchro ?
+    if (identity2.lastBackendSync !== null) {
+      await this.backends.deleteIdentities([identity2._id.toString()]);
+    }
     identity2.state = IdentityState.DONT_SYNC;
+    // modification identité2
+    await super.update(identity2._id, identity2);
     // modification identité1
-    super.update(identity1._id, identity1);
-    // modification identité1
-    super.update(identity2._id, identity2);
+    await super.update(identity1._id, identity1);
     return identity1._id;
   }
 }

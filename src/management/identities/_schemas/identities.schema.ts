@@ -33,6 +33,9 @@ export class Identities extends AbstractSchema {
   @Prop({ type: Date })
   public lastSync?: Date;
 
+  @Prop({ type: Date, default: null })
+  public lastBackendSync: Date;
+
   @Prop({ type: Number, enum: InitStatesEnum, default: InitStatesEnum.NOSENT })
   public initState: InitStatesEnum;
 
@@ -45,7 +48,7 @@ export class Identities extends AbstractSchema {
   public customFields?: { [key: string]: MixedValue };
 
   //pour les identités fusionnées ont met les deux identités sources
-  @Prop({ type: Types.ObjectId, required: false })
+  @Prop({ type: Types.ObjectId, required: false, default: null })
   public srcFusionId: Types.ObjectId;
 
   //pour les identités qui on servit à une fusion on met la destination (la nouvelle identité fusionnée)

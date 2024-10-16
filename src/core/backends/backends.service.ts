@@ -136,6 +136,7 @@ export class BackendsService extends AbstractQueueProcessor {
       await this.identitiesService.model.findByIdAndUpdate(completedJob?.concernedTo?.id, {
         $set: {
           state: iState,
+          lastBackendSync: jState === JobState.COMPLETED ? new Date() : null,
         },
       });
       if (jState === JobState.COMPLETED) {
@@ -196,13 +197,17 @@ export class BackendsService extends AbstractQueueProcessor {
     if (!payload.length) throw new BadRequestException('No identities to sync');
 
     for (const key of payload) {
-      const identity = await this.identitiesService.findById<Identities>(key);
+      const identity = await this.identitiesService.findById<any>(key);
       if (identity.state !== IdentityState.TO_SYNC) {
         throw new BadRequestException({
           status: HttpStatus.BAD_REQUEST,
           message: `Identity ${key} is not in state TO_SYNC`,
           identity,
         });
+      }
+      // cas des fusion l employeeNumber doit etre celui de l identite primaire
+      if (identity.primaryEmployeeNumber !== null) {
+        identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
       }
       identities.push({
         action: ActionType.IDENTITY_UPDATE,
@@ -236,7 +241,7 @@ export class BackendsService extends AbstractQueueProcessor {
 
     for (const key of payload) {
       const identity = await this.identitiesService.findById<Identities>(key);
-      if (!identity.lastSync) {
+      if (!identity.lastBackendSync) {
         throw new BadRequestException({
           status: HttpStatus.BAD_REQUEST,
           message: `Identity ${key} is not in state TO_DELETE`,

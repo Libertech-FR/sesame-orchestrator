@@ -16,5 +16,7 @@ export function startLoader(message) {
 export function stopLoader(loaderInterval) {
   clearInterval(loaderInterval);
   readline.cursorTo(process.stdout, 0);
-  process.stdout.clearLine(0);
+  if (process.stdout.isTTY) {
+    process.stdout.clearLine(0);
+  }
 }

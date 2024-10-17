@@ -10,6 +10,7 @@ import { InitInfoPart, InitInfoPartSchema } from '~/management/identities/_schem
 import { MixedValue } from '~/_common/types/mixed-value.type';
 import { AutoIncrementPlugin } from '~/_common/plugins/mongoose/auto-increment.plugin';
 import { AutoIncrementPluginOptions } from '~/_common/plugins/mongoose/auto-increment.interface';
+import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 
 export type IdentitiesDocument = Identities & Document;
 
@@ -20,6 +21,9 @@ export class Identities extends AbstractSchema {
 
   @Prop({ type: Number, enum: IdentityLifecycle, default: IdentityLifecycle.INACTIVE })
   public lifecycle: IdentityLifecycle;
+
+  @Prop({ type: Number, enum: DataStatusEnum, default: DataStatusEnum.ACTIVE })
+  public dataStatus: DataStatusEnum;
 
   @Prop({ type: inetOrgPersonSchema, required: true })
   public inetOrgPerson: inetOrgPerson;

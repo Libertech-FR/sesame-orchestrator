@@ -17,8 +17,8 @@ import { Jobs } from '~/core/jobs/_schemas/jobs.schema';
 import { AskTokenDto } from './_dto/ask-token.dto';
 import { ChangePasswordDto } from './_dto/change-password.dto';
 import { ResetPasswordDto } from './_dto/reset-password.dto';
-import { IdentitiesService } from '../identities/identities.service';
-import { get, pick } from 'radash';
+import { IdentitiesCrudService } from '../identities/identities-crud.service';
+import { get } from 'radash';
 import { Identities } from '../identities/_schemas/identities.schema';
 import { MailerService } from '@nestjs-modules/mailer';
 import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
@@ -27,7 +27,6 @@ import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
 import { PasswdadmService } from '~/settings/passwdadm.service';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
-import { PasswordPoliciesDto } from '~/settings/_dto/password-policy.dto';
 import { SmsadmService } from '~/settings/smsadm.service';
 import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
 import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
@@ -53,7 +52,7 @@ export class PasswdService extends AbstractService {
 
   public constructor(
     protected readonly backends: BackendsService,
-    protected readonly identities: IdentitiesService,
+    protected readonly identities: IdentitiesCrudService,
     protected mailer: MailerService,
     protected config: ConfigService,
     private passwdadmService: PasswdadmService,
@@ -127,7 +126,6 @@ export class PasswdService extends AbstractService {
       } else {
         this.logger.error('Error while reset identityMailAttribute Empty');
       }
-
     } catch (e) {
       this.logger.error('Error while reseting password. ' + e + ` (uid=${initDto?.uid})`);
       //on retoune un token qui ne sert à rien pour ne pas divulguer que l uid n existe pas

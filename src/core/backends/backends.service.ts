@@ -1,7 +1,7 @@
 import {
   BadRequestException,
-  HttpException,
   HttpStatus,
+  HttpException,
   Injectable,
   RequestTimeoutException,
   UnprocessableEntityException,
@@ -11,7 +11,7 @@ import { Document, ModifyResult, Query, Types } from 'mongoose';
 import { AbstractQueueProcessor } from '~/_common/abstracts/abstract.queue.processor';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
-import { IdentitiesService } from '~/management/identities/identities.service';
+import { IdentitiesCrudService } from '~/management/identities/identities-crud.service';
 import { JobState } from '../jobs/_enums/state.enum';
 import { Jobs } from '../jobs/_schemas/jobs.schema';
 import { JobsService } from '../jobs/jobs.service';
@@ -19,9 +19,8 @@ import { Tasks } from '../tasks/_schemas/tasks.schema';
 import { TasksService } from '../tasks/tasks.service';
 import { ActionType } from './_enum/action-type.enum';
 import { ExecuteJobOptions } from './_interfaces/execute-job-options.interface';
-import { BackendResultInterface } from "~/core/backends/_interfaces/backend-result.interface";
-import { WorkerResultInterface } from "~/core/backends/_interfaces/worker-result.interface";
-import {DataStatusEnum} from "~/management/identities/_enums/data-status";
+import { WorkerResultInterface } from '~/core/backends/_interfaces/worker-result.interface';
+import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
 
@@ -29,7 +28,7 @@ const DEFAULT_SYNC_TIMEOUT = 30_000;
 export class BackendsService extends AbstractQueueProcessor {
   public constructor(
     protected moduleRef: ModuleRef,
-    protected identitiesService: IdentitiesService,
+    protected identitiesService: IdentitiesCrudService,
     protected jobsService: JobsService,
     protected tasksService: TasksService,
   ) {
@@ -377,7 +376,7 @@ export class BackendsService extends AbstractQueueProcessor {
       },
       {
         ...options?.job,
-        jobId: (new Types.ObjectId()).toHexString(),
+        jobId: (new Types.ObjectId() ).toHexString(),
         attempts: 1,
       },
     );

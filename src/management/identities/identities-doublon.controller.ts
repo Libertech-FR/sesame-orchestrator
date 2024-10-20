@@ -9,6 +9,7 @@ import { IdentitiesDoublonService } from '~/management/identities/identities-dou
 
 @ApiTags('management/identities')
 @Controller('identities')
+
 export class IdentitiesDoublonController extends AbstractController {
   public constructor(protected readonly _service: IdentitiesDoublonService) {
     super();

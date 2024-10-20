@@ -54,6 +54,7 @@ export class IdentitiesCrudController extends AbstractController {
     inetOrgPerson: 1,
     additionalFields: 1,
     metadata: 1,
+    dataStatus: 1,
   };
 
   @Post()

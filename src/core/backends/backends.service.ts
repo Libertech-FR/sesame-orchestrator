@@ -287,7 +287,7 @@ export class BackendsService extends AbstractQueueProcessor {
       if (!identity.lastBackendSync) {
         throw new BadRequestException({
           status: HttpStatus.BAD_REQUEST,
-          message: `Identity ${key} is not in state TO_DELETE`,
+          message: `Identity ${key}  has never been synched`,
           identity,
         });
       }
@@ -330,7 +330,7 @@ export class BackendsService extends AbstractQueueProcessor {
       if (!identity.lastBackendSync) {
         throw new BadRequestException({
           status: HttpStatus.BAD_REQUEST,
-          message: `Identity ${key} is not in state TO_DELETE`,
+          message: `Identity ${key}  has never been synched`,
           identity,
         });
       }
@@ -359,7 +359,15 @@ export class BackendsService extends AbstractQueueProcessor {
     }
     return result;
   }
-
+  public async activationIdentity(payload: string, status: boolean, options?: ExecuteJobOptions) {
+    let result = null;
+    if (status === true) {
+      result = await this.enableIdentities([payload], options );
+    } else {
+      result = await this.disableIdentities([payload], options);
+    }
+    return result[0];
+  }
   public async executeJob(
     actionType: ActionType,
     concernedTo?: Types.ObjectId,

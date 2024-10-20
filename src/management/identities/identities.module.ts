@@ -15,6 +15,9 @@ import { IdentitiesDoublonService } from '~/management/identities/identities-dou
 import { IdentitiesCrudController } from '~/management/identities/identities-crud.controller';
 import { IdentitiesUpsertController } from '~/management/identities/identities-upsert.controller';
 import { IdentitiesPhotoController } from '~/management/identities/identities-photo.controller';
+import { IdentitiesActivationController } from '~/management/identities/identities-activation.controller';
+import { IdentitiesActivationService } from '~/management/identities/identities-activation.service';
+import { IdentitiesDoublonController } from '~/management/identities/identities-doublon.controller';
 
 @Module({
   imports: [
@@ -34,13 +37,20 @@ import { IdentitiesPhotoController } from '~/management/identities/identities-ph
     IdentitiesCrudService,
     IdentitiesDoublonService,
     IdentitiesValidationService,
+    IdentitiesActivationService,
     {
       provide: APP_FILTER,
       useClass: IdentitiesValidationFilter,
     },
     IdentitiesJsonformsService,
   ],
-  controllers: [IdentitiesCrudController, IdentitiesUpsertController, IdentitiesPhotoController],
+  controllers: [
+    IdentitiesCrudController,
+    IdentitiesUpsertController,
+    IdentitiesPhotoController,
+    IdentitiesDoublonController,
+    IdentitiesActivationController,
+  ],
   exports: [IdentitiesCrudService],
 })
 export class IdentitiesModule {}

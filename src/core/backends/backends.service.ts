@@ -1,7 +1,7 @@
 import {
   BadRequestException,
-  HttpException,
   HttpStatus,
+  HttpException,
   Injectable,
   RequestTimeoutException,
   UnprocessableEntityException,
@@ -11,7 +11,7 @@ import { Document, ModifyResult, Query, Types } from 'mongoose';
 import { AbstractQueueProcessor } from '~/_common/abstracts/abstract.queue.processor';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
-import { IdentitiesService } from '~/management/identities/identities.service';
+import { IdentitiesCrudService } from '~/management/identities/identities-crud.service';
 import { JobState } from '../jobs/_enums/state.enum';
 import { Jobs } from '../jobs/_schemas/jobs.schema';
 import { JobsService } from '../jobs/jobs.service';
@@ -19,8 +19,8 @@ import { Tasks } from '../tasks/_schemas/tasks.schema';
 import { TasksService } from '../tasks/tasks.service';
 import { ActionType } from './_enum/action-type.enum';
 import { ExecuteJobOptions } from './_interfaces/execute-job-options.interface';
-import { BackendResultInterface } from "~/core/backends/_interfaces/backend-result.interface";
-import { WorkerResultInterface } from "~/core/backends/_interfaces/worker-result.interface";
+import { WorkerResultInterface } from '~/core/backends/_interfaces/worker-result.interface';
+import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
 
@@ -28,7 +28,7 @@ const DEFAULT_SYNC_TIMEOUT = 30_000;
 export class BackendsService extends AbstractQueueProcessor {
   public constructor(
     protected moduleRef: ModuleRef,
-    protected identitiesService: IdentitiesService,
+    protected identitiesService: IdentitiesCrudService,
     protected jobsService: JobsService,
     protected tasksService: TasksService,
   ) {
@@ -265,6 +265,7 @@ export class BackendsService extends AbstractQueueProcessor {
         updateStatus: true,
         switchToProcessing: false,
         targetState: IdentityState.DONT_SYNC,
+        dataState: DataStatusEnum.DELETED,
         task: task._id,
       });
       result[identity.identity._id] = executedJob;
@@ -273,6 +274,100 @@ export class BackendsService extends AbstractQueueProcessor {
     return result;
   }
 
+  public async disableIdentities(payload: string[], options?: ExecuteJobOptions): Promise<any> {
+    const identities: {
+      action: ActionType;
+      identity: Identities;
+    }[] = [];
+
+    if (!payload.length) throw new BadRequestException('No identities to disable');
+
+    for (const key of payload) {
+      const identity = await this.identitiesService.findById<Identities>(key);
+      if (!identity.lastBackendSync) {
+        throw new BadRequestException({
+          status: HttpStatus.BAD_REQUEST,
+          message: `Identity ${key}  has never been synched`,
+          identity,
+        });
+      }
+      identities.push({
+        action: ActionType.IDENTITY_DISABLE,
+        identity,
+      });
+    }
+
+    const task: Tasks = await this.tasksService.create<Tasks>({
+      jobs: identities.map((identity) => identity.identity._id),
+    });
+
+    const result = {};
+    for (const identity of identities) {
+      const [executedJob, res] = await this.executeJob(identity.action, identity.identity._id, identity.identity, {
+        ...options,
+        updateStatus: true,
+        switchToProcessing: false,
+        targetState: IdentityState.SYNCED,
+        dataState: DataStatusEnum.INACTIVE,
+        task: task._id,
+      });
+      result[identity.identity._id] = executedJob;
+      console.log(res);
+    }
+    return result;
+  }
+
+  public async enableIdentities(payload: string[], options?: ExecuteJobOptions): Promise<any> {
+    const identities: {
+      action: ActionType;
+      identity: Identities;
+    }[] = [];
+
+    if (!payload.length) throw new BadRequestException('No identities to disable');
+
+    for (const key of payload) {
+      const identity = await this.identitiesService.findById<Identities>(key);
+      if (!identity.lastBackendSync) {
+        throw new BadRequestException({
+          status: HttpStatus.BAD_REQUEST,
+          message: `Identity ${key}  has never been synched`,
+          identity,
+        });
+      }
+      identities.push({
+        action: ActionType.IDENTITY_ENABLE,
+        identity,
+      });
+    }
+
+    const task: Tasks = await this.tasksService.create<Tasks>({
+      jobs: identities.map((identity) => identity.identity._id),
+    });
+
+    const result = {};
+    for (const identity of identities) {
+      const [executedJob, res] = await this.executeJob(identity.action, identity.identity._id, identity.identity, {
+        ...options,
+        updateStatus: true,
+        switchToProcessing: false,
+        targetState: IdentityState.SYNCED,
+        dataState: DataStatusEnum.ACTIVE,
+        task: task._id,
+      });
+      result[identity.identity._id] = executedJob;
+      console.log(res);
+    }
+    return result;
+  }
+  public async activationIdentity(payload: string, status: boolean, options?: ExecuteJobOptions) {
+    let result = null;
+    if (status === true) {
+      result = await this.enableIdentities([payload], options );
+    } else {
+      result = await this.disableIdentities([payload], options);
+    }
+    return result[payload];
+  }
   public async executeJob(
     actionType: ActionType,
     concernedTo?: Types.ObjectId,
@@ -289,7 +384,7 @@ export class BackendsService extends AbstractQueueProcessor {
       },
       {
         ...options?.job,
-        jobId: (new Types.ObjectId()).toHexString(),
+        jobId: (new Types.ObjectId() ).toHexString(),
         attempts: 1,
       },
     );

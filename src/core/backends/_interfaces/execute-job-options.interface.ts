@@ -11,5 +11,6 @@ export interface ExecuteJobOptions {
   switchToProcessing?: boolean;
   comment?: string;
   targetState?: any;
+  dataState?: any;
   task?: Types.ObjectId;
 }

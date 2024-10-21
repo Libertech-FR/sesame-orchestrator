@@ -29,6 +29,7 @@ import { omit } from 'radash';
 import { TransformersFilestorageService } from '~/core/filestorage/_services/transformers-filestorage.service';
 import { PaginatedFilterDto } from '~/_common/dto/paginated-filter.dto';
 import { IdentitiesCrudService } from '~/management/identities/identities-crud.service';
+import { Public } from '~/_common/decorators/public.decorator';
 
 @ApiTags('management/identities')
 @Controller('identities')
@@ -79,6 +80,7 @@ export class IdentitiesPhotoController extends AbstractController {
     });
   }
 
+  @Public()
   @Get('photo/raw')
   @ApiReadResponseDecorator(FilestorageDto)
   @ApiQuery({

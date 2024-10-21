@@ -94,7 +94,7 @@ import { MigrationsModule } from './migrations/migrations.module';
     CoreModule.register(),
     ManagementModule.register(),
     SettingsModule.register(),
-    // MigrationsModule.register(),
+    MigrationsModule.register(),
   ],
   controllers: [AppController],
   providers: [

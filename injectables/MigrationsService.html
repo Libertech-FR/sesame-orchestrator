@@ -177,7 +177,7 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#_validateMigration" >_validateMigration</a>
+                                <a href="#_writeMigrationLockFile" >_writeMigrationLockFile</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -433,27 +433,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="_validateMigration"></a>
+                    <a name="_writeMigrationLockFile"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>_validateMigration</b></span>
-                        <a href="#_validateMigration"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>_writeMigrationLockFile</b></span>
+                        <a href="#_writeMigrationLockFile"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>_validateMigration(migration: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                    <code>_writeMigrationLockFile(migrationKey: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, migrationTimestamp: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="173"
-                                    class="link-to-prism">src/migrations/migrations.service.ts:173</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="162"
+                                    class="link-to-prism">src/migrations/migrations.service.ts:162</a></div>
                         </td>
                     </tr>
 
@@ -474,9 +474,21 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>migration</td>
+                                                <td>migrationKey</td>
                                             <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>migrationTimestamp</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
 
                                             <td>
@@ -489,7 +501,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -782,34 +794,30 @@ export class MigrationsService implements OnModuleInit {
         await instance.up();
       } catch (e) {
         this.logger.error(chalk.red(&#x60;Error while running migration ${chalk.bold(&#x27;&lt;&#x27; + key + &#x27;&gt;&#x27;)} !&#x60;));
-        this.logger.error(e);
-        break;
+        this.logger.error(e.message, e.stack);
+        return;
       }
 
-      try {
-        await writeFile(this.lockLocation, migrationTimestamp);
-        await this.mongo.collection(&#x27;migrations&#x27;).insertOne({
-          timestamp: parseInt(migrationTimestamp),
-          comment: &#x60;Migration ${key} executed&#x60;,
-        })
-        this.logger.log(chalk.blue(&#x60;Migration ${chalk.bold(&#x27;&lt;&#x27; + key + &#x27;&gt;&#x27;)} done.&#x60;));
-      } catch (e) {
-        this.logger.error(chalk.red(&#x60;Error while updating migration lock file !&#x60;));
-        this.logger.error(e);
-        break
-      }
+      this._writeMigrationLockFile(key, migrationTimestamp);
     }
 
     this.logger.log(chalk.blue(&#x27;All migrations done.&#x27;));
   }
 
-  private async _validateMigration(migration: any) {
-    if (!migration.default) {
-      this.logger.log(chalk.yellow(&#x60;Migration ${chalk.bold(&#x27;&lt;&#x27; + migration + &#x27;&gt;&#x27;)} does not have a default export !&#x60;));
-      return false;
-    }
+  private async _writeMigrationLockFile(migrationKey: string, migrationTimestamp: string) {
+    try {
+      await writeFile(this.lockLocation, migrationTimestamp);
+      await this.mongo.collection(&#x27;migrations&#x27;).insertOne({
+        timestamp: parseInt(migrationTimestamp),
+        comment: &#x60;Migration ${migrationKey} executed&#x60;,
+      })
+      this.logger.log(chalk.blue(&#x60;Migration ${chalk.bold(&#x27;&lt;&#x27; + migrationKey + &#x27;&gt;&#x27;)} done.&#x60;));
+    } catch (e) {
+      this.logger.error(chalk.red(&#x60;Error while updating migration lock file !&#x60;));
+      this.logger.error(e);
 
-    return true;
+      throw new Error(&#x27;Error while updating migration lock file !&#x27;);
+    }
   }
 }
 </code></pre>

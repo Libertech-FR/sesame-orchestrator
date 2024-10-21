@@ -95,7 +95,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >EmployeeNumber1729092595</li>
+  <li class="breadcrumb-item" >EmployeeNumber1729517173</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -119,7 +119,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/migrations/jobs/1729092595-employee-number.ts</code>
+            <code>src/migrations/jobs/1729517173-employee-number.ts</code>
         </p>
 
 
@@ -131,6 +131,22 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#logger" >logger</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -141,9 +157,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#down" >down</a>
+                                <a href="#_migrateEmployeeNumberToArray" >_migrateEmployeeNumberToArray</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -169,12 +185,12 @@
                 <tr>
                     <td class="col-md-4">
                                 <span class="modifier">Public</span>
-                        <code>constructor(connection: Connection)</code>
+                        <code>constructor(mongo: Connection)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">src/migrations/jobs/1729092595-employee-number.ts:5</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">src/migrations/jobs/1729517173-employee-number.ts:6</a></div>
                             </td>
                         </tr>
 
@@ -192,7 +208,7 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>connection</td>
+                                                        <td>mongo</td>
                                                   
                                                         <td>
                                                                     <code>Connection</code>
@@ -212,6 +228,39 @@
         </table>
 </section>
 
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logger"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>logger</b></span>
+                        <a href="#logger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Logger(EmployeeNumber1729517173.name)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">src/migrations/jobs/1729517173-employee-number.ts:6</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
             <section data-compodoc="block-methods">
     
@@ -222,27 +271,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="down"></a>
+                    <a name="_migrateEmployeeNumberToArray"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
+                            <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>down</b></span>
-                        <a href="#down"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>_migrateEmployeeNumberToArray</b></span>
+                        <a href="#_migrateEmployeeNumberToArray"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>down()</code>
+                    <code>_migrateEmployeeNumberToArray()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">src/migrations/jobs/1729092595-employee-number.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">src/migrations/jobs/1729517173-employee-number.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -281,8 +330,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">src/migrations/jobs/1729092595-employee-number.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">src/migrations/jobs/1729517173-employee-number.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -309,35 +358,37 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Logger } from &quot;@nestjs/common&quot;
-import { InjectConnection } from &quot;@nestjs/mongoose&quot;
-import { Connection } from &quot;mongoose&quot;
+import { InjectConnection, InjectModel } from &quot;@nestjs/mongoose&quot;
+import { Connection, Model } from &quot;mongoose&quot;
 
-export default class EmployeeNumber1729092595 {
-  public constructor(@InjectConnection() private connection: Connection) {
+export default class EmployeeNumber1729517173 {
+  private readonly logger &#x3D; new Logger(EmployeeNumber1729517173.name)
 
+  public constructor(
+    @InjectConnection() private mongo: Connection,
+  ) {
   }
 
   public async up(): Promise&lt;void&gt; {
-    Logger.log(&#x27;EmployeeNumber1729092595 up&#x27;)
+    this.logger.log(&#x27;EmployeeNumber1729092660 up started&#x27;)
 
-    Logger.log(&#x27;this.connection.readyState&#x27;, this.connection.readyState)
-
-    return new Promise((resolve) &#x3D;&gt; {
-      const interval &#x3D; setInterval(() &#x3D;&gt; {
-        Logger.log(&#x27;EmployeeNumber1729092595 up in progress&#x27;)
-      }, 1_000)
-
-      setTimeout(() &#x3D;&gt; {
-        clearInterval(interval)
-        Logger.log(&#x27;EmployeeNumber1729092595 up done&#x27;)
-1729092595
-        resolve()
-      }, 5_000)
-    })
+    await this._migrateEmployeeNumberToArray()
   }
 
-  public async down(): Promise&lt;void&gt; {
-    Logger.log(&#x27;EmployeeNumber1729092595 down&#x27;)
+  private async _migrateEmployeeNumberToArray(): Promise&lt;void&gt; {
+    const identities &#x3D; await this.mongo.collection(&#x27;identities&#x27;).find();
+
+    for await (const identity of identities) {
+      const employeeNumber &#x3D; identity.inetOrgPerson.employeeNumber;
+
+      if (typeof employeeNumber &#x3D;&#x3D;&#x3D; &#x27;string&#x27;) {
+        this.logger.log(&#x60;Migrating employeeNumber for identity ${identity._id}&#x60;);
+        identity.inetOrgPerson.employeeNumber &#x3D; [employeeNumber];
+        this.mongo.collection(&#x27;identities&#x27;).updateOne({ _id: identity._id }, { $set: { &#x27;inetOrgPerson.employeeNumber&#x27;: [employeeNumber] } });
+      }
+    }
+
+    this.logger.log(&#x27;Migration terminée avec succès&#x27;);
   }
 }
 </code></pre>
@@ -378,7 +429,7 @@ export default class EmployeeNumber1729092595 {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'EmployeeNumber1729092595.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'EmployeeNumber1729517173.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

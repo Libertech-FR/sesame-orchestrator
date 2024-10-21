@@ -149,33 +149,29 @@ export class MigrationsService implements OnModuleInit {
         await instance.up();
       } catch (e) {
         this.logger.error(chalk.red(`Error while running migration ${chalk.bold('<' + key + '>')} !`));
-        this.logger.error(e);
-        break;
+        this.logger.error(e.message, e.stack);
+        return;
       }
 
-      try {
-        await writeFile(this.lockLocation, migrationTimestamp);
-        await this.mongo.collection('migrations').insertOne({
-          timestamp: parseInt(migrationTimestamp),
-          comment: `Migration ${key} executed`,
-        })
-        this.logger.log(chalk.blue(`Migration ${chalk.bold('<' + key + '>')} done.`));
-      } catch (e) {
-        this.logger.error(chalk.red(`Error while updating migration lock file !`));
-        this.logger.error(e);
-        break
-      }
+      this._writeMigrationLockFile(key, migrationTimestamp);
     }
 
     this.logger.log(chalk.blue('All migrations done.'));
   }
 
-  private async _validateMigration(migration: any) {
-    if (!migration.default) {
-      this.logger.log(chalk.yellow(`Migration ${chalk.bold('<' + migration + '>')} does not have a default export !`));
-      return false;
-    }
+  private async _writeMigrationLockFile(migrationKey: string, migrationTimestamp: string) {
+    try {
+      await writeFile(this.lockLocation, migrationTimestamp);
+      await this.mongo.collection('migrations').insertOne({
+        timestamp: parseInt(migrationTimestamp),
+        comment: `Migration ${migrationKey} executed`,
+      })
+      this.logger.log(chalk.blue(`Migration ${chalk.bold('<' + migrationKey + '>')} done.`));
+    } catch (e) {
+      this.logger.error(chalk.red(`Error while updating migration lock file !`));
+      this.logger.error(e);
 
-    return true;
+      throw new Error('Error while updating migration lock file !');
+    }
   }
 }

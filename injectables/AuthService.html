@@ -765,7 +765,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1265,7 +1265,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
         if (identity) {
           return identity.toObject();
         }
-      } catch (e) {}
+      } catch (e) { }
       return null;
     }
     try {
@@ -1350,16 +1350,16 @@ export class AuthService extends AbstractService implements OnModuleInit {
     };
   }
 
-  public async renewTokens(refresh_token: string): Promise&lt;{
+  public async renewTokens(refresh_token: string): Promise&lt;[Agents, {
     access_token: string;
     refresh_token?: string;
-  }&gt; {
+  }]&gt; {
     const data &#x3D; await this.redis.get([this.REFRESH_TOKEN_PREFIX, refresh_token].join(this.TOKEN_PATH_SEPARATOR));
     if (!data) throw new UnauthorizedException();
     const { identityId } &#x3D; JSON.parse(data);
-    const identity &#x3D; await this.agentsService.findOne({ _id: identityId });
+    const identity &#x3D; await this.agentsService.findOne&lt;Agents&gt;({ _id: identityId });
     if (!identity) throw new ForbiddenException();
-    return this.createTokens(omit(identity.toObject(), [&#x27;password&#x27;]), refresh_token);
+    return [identity, await this.createTokens(omit(identity.toObject(), [&#x27;password&#x27;]), refresh_token)];
   }
 
   public async clearSession(jwt: string): Promise&lt;void&gt; {

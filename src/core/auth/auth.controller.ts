@@ -8,6 +8,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { ReqIdentity } from '~/_common/decorators/params/req-identity.decorator';
 import { AgentType } from '~/_common/types/agent.type';
+import { hash } from 'crypto';
+import { omit } from 'radash';
 
 @Public()
 @ApiTags('core/auth')
@@ -38,8 +40,8 @@ export class AuthController extends AbstractController {
     const user = await this.service.getSessionData(identity);
     return res.status(HttpStatus.OK).json({
       user: {
-        ...user,
-        sseToken: 'hZcdVqHScVDsDFdHOdcjmufEKFJVKaS8', //TODO: change to real token
+        ...omit(user, ['security']),
+        sseToken: hash('sha256', user.security.secretKey),
       },
     });
   }
@@ -48,10 +50,10 @@ export class AuthController extends AbstractController {
   @Post('refresh')
   @ApiOperation({ summary: "Récupère un nouveau jeton d'authentification" })
   public async refresh(@Res() res: Response, @Body() body: { refresh_token: string }): Promise<Response> {
-    const tokens = await this.service.renewTokens(body.refresh_token);
+    const [agents, tokens] = await this.service.renewTokens(body.refresh_token);
     return res.status(HttpStatus.OK).json({
       ...tokens,
-      sseToken: 'hZcdVqHScVDsDFdHOdcjmufEKFJVKaS8', //TODO: change to real token
+      sseToken: hash('sha256', agents.security.secretKey),
     });
   }
 

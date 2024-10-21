@@ -7,12 +7,13 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  Req,
   Res,
   Sse,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import Redis from 'ioredis';
 import { Observable, Subscriber } from 'rxjs';
 import { Public } from '~/_common/decorators/public.decorator';
@@ -22,6 +23,9 @@ import { SyncIdentitiesDto } from './_dto/sync-identities.dto';
 import { Types } from 'mongoose';
 import { ActionType } from './_enum/action-type.enum';
 import { DeleteIdentitiesDto } from './_dto/delete-identities.dto';
+import { hash } from 'crypto';
+import { AgentsService } from '../agents/agents.service';
+import { Agents } from '../agents/_schemas/agents.schema';
 
 function fireMessage(observer: Subscriber<MessageEvent>, channel: string, message: any, loggername: string) {
   try {
@@ -40,6 +44,7 @@ export class BackendsController {
   private readonly logger = new Logger(BackendsController.name);
 
   constructor(
+    private agentsService: AgentsService,
     private backendsService: BackendsService,
     @InjectRedis() protected readonly redis: Redis,
   ) { }
@@ -124,8 +129,11 @@ export class BackendsController {
   @Public()
   @Sse('sse')
   @ApiOperation({ summary: 'Server Sent Event - Récupère en temps réel les Jobs et affiche leurs état' })
-  public async sse(@Res() res: Response, @Query('key') key: string): Promise<Observable<MessageEvent>> {
-    if (key !== 'hZcdVqHScVDsDFdHOdcjmufEKFJVKaS8') throw new UnauthorizedException();
+  public async sse(@Res() res: Response, @Query('id') id: string, @Query('key') key: string): Promise<Observable<MessageEvent>> {
+    if (!id || !key) throw new UnauthorizedException();
+    const user = await this.agentsService.findById<Agents>(id);
+    if (!user) throw new UnauthorizedException();
+    if (key !== hash('sha256', user.security.secretKey)) throw new UnauthorizedException();
 
     res.socket.on('close', () => {
       Logger.debug(`Observer close connection`, this.constructor.name);

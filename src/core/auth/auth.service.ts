@@ -93,7 +93,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
         if (identity) {
           return identity.toObject();
         }
-      } catch (e) {}
+      } catch (e) { }
       return null;
     }
     try {
@@ -178,16 +178,16 @@ export class AuthService extends AbstractService implements OnModuleInit {
     };
   }
 
-  public async renewTokens(refresh_token: string): Promise<{
+  public async renewTokens(refresh_token: string): Promise<[Agents, {
     access_token: string;
     refresh_token?: string;
-  }> {
+  }]> {
     const data = await this.redis.get([this.REFRESH_TOKEN_PREFIX, refresh_token].join(this.TOKEN_PATH_SEPARATOR));
     if (!data) throw new UnauthorizedException();
     const { identityId } = JSON.parse(data);
-    const identity = await this.agentsService.findOne({ _id: identityId });
+    const identity = await this.agentsService.findOne<Agents>({ _id: identityId });
     if (!identity) throw new ForbiddenException();
-    return this.createTokens(omit(identity.toObject(), ['password']), refresh_token);
+    return [identity, await this.createTokens(omit(identity.toObject(), ['password']), refresh_token)];
   }
 
   public async clearSession(jwt: string): Promise<void> {

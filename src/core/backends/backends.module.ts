@@ -5,10 +5,11 @@ import { ConfigModule } from '@nestjs/config';
 import { IdentitiesModule } from '~/management/identities/identities.module';
 import { JobsModule } from '../jobs/jobs.module';
 import { TasksModule } from '../tasks/tasks.module';
+import { AgentsModule } from '../agents/agents.module';
 @Module({
-  imports: [ConfigModule, IdentitiesModule, JobsModule, TasksModule],
+  imports: [ConfigModule, IdentitiesModule, JobsModule, TasksModule, AgentsModule],
   controllers: [BackendsController],
   providers: [BackendsService],
   exports: [BackendsService],
 })
-export class BackendsModule {}
+export class BackendsModule { }

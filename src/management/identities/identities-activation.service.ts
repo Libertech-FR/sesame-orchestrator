@@ -33,7 +33,7 @@ export class IdentitiesActivationService extends AbstractIdentitiesService {
     if (statusChanged) {
       // le dataStaus à changé on envoye l info aux backend et on enregistre l identité
       const result = await this.backends.activationIdentity(identity._id.toString(), status);
-      if (result.state === JobState.COMPLETED){
+      if (result.state === JobState.COMPLETED) {
         await super.update(identity._id, identity);
       } else {
         throw new BadRequestException('Backend failed');

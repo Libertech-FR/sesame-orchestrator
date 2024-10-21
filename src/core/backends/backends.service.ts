@@ -292,7 +292,7 @@ export class BackendsService extends AbstractQueueProcessor {
         });
       }
       identities.push({
-        action: ActionType.IDENTITY_ENABLE,
+        action: ActionType.IDENTITY_DISABLE,
         identity,
       });
     }
@@ -366,7 +366,7 @@ export class BackendsService extends AbstractQueueProcessor {
     } else {
       result = await this.disableIdentities([payload], options);
     }
-    return result[0];
+    return result[payload];
   }
   public async executeJob(
     actionType: ActionType,

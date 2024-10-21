@@ -333,7 +333,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:66</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="67" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -408,7 +408,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:60</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -445,7 +445,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="63" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:63</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="64" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -559,7 +559,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:69</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="70" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -937,7 +937,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="75" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:75</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="76" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -975,7 +975,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:78</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="79" class="link-to-prism">src/management/identities/_schemas/_parts/inetOrgPerson.part.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -1046,8 +1046,9 @@ export class inetOrgPerson extends Document {
     validate: [
       {
         validator: (employeeNumbers: string[]) &#x3D;&gt; {
-          console.log(employeeNumbers);
-          employeeNumbers.every((employeeNumber) &#x3D;&gt; /[A-Za-z0-9_-]+/.test(employeeNumber));
+          if (!Array.isArray(employeeNumbers)) return false;
+
+          return employeeNumbers.every((employeeNumber) &#x3D;&gt; /[A-Za-z0-9_-]+/.test(employeeNumber));
         },
         message: &#x27;EmployeeNumber invalide.&#x27;,
       },

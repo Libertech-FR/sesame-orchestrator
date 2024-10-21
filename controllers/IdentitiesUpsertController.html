@@ -88,7 +88,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Controllers</li>
-  <li class="breadcrumb-item" >IdentitiesJsonFormsController</li>
+  <li class="breadcrumb-item" >IdentitiesUpsertController</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -112,14 +112,14 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/management/identities/jsonforms/identities.jsonforms.controller.ts</code>
+            <code>src/management/identities/identities-upsert.controller.ts</code>
         </p>
 
             <p class="comment">
                 <h3>Prefix</h3>
             </p>
             <p class="comment">
-                <code>management/identities/jsonforms</code>
+                <code>identities</code>
             </p>
 
 
@@ -150,28 +150,15 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#generate" >generate</a>
+                                <a href="#upsert" >upsert</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#generateAll" >generateAll</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#search" >search</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#searchAll" >searchAll</a>
+                                <a href="#upsertInetOrgPersonJpegPhoto" >upsertInetOrgPersonJpegPhoto</a>
                             </li>
                         </ul>
                     </td>
@@ -194,21 +181,21 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="generate"></a>
+                    <a name="upsert"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>generate</b></span>
-                        <a href="#generate"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>upsert</b></span>
+                        <a href="#upsert"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>generate(res: Response, schema: string | null)</code>
+                    <code>upsert(res: Response, body: <a href="../classes/IdentitiesUpsertDto.html" target="_self">IdentitiesUpsertDto</a>, filtersQuery: literal type[], errorOnNotFound: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, upsert: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -216,14 +203,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;generate&#x27;)<br />@ApiOperation({summary: &#x27;Génère un JSON Forms d&#x27;un schéma personnalisé&#x27;})<br /></code>
+                    <code>@Post(&#x27;upsert&#x27;)<br />@ApiCreateDecorator(IdentitiesUpsertDto, IdentitiesDto, {operationOptions: undefined})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">src/management/identities/identities-upsert.controller.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -259,9 +246,9 @@
 
                                         </tr>
                                         <tr>
-                                                <td>schema</td>
+                                                <td>body</td>
                                             <td>
-                                                        <code>string | null</code>
+                                                            <code><a href="../classes/IdentitiesUpsertDto.html" target="_self" >IdentitiesUpsertDto</a></code>
                                             </td>
 
                                             <td>
@@ -269,7 +256,51 @@
                                             </td>
 
                                             <td>
-                                                    <code>null</code>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>filtersQuery</td>
+                                            <td>
+                                                        <code>literal type[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>[]</code>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>errorOnNotFound</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>&#x27;false&#x27;</code>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>upsert</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>&#x27;true&#x27;</code>
                                             </td>
 
                                         </tr>
@@ -277,7 +308,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;Response&lt;literal type&gt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -291,21 +322,22 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="generateAll"></a>
+                    <a name="upsertInetOrgPersonJpegPhoto"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>generateAll</b></span>
-                        <a href="#generateAll"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>upsertInetOrgPersonJpegPhoto</b></span>
+                        <a href="#upsertInetOrgPersonJpegPhoto"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>generateAll(res: Response)</code>
+                    <code>upsertInetOrgPersonJpegPhoto(res: Response, body: <a href="../s/storage.html" target="_self">Partial&lt;FilestorageCreateDto&gt;</a>, searchFilterSchema: FilterSchema, file?: Express.Multer.File)</code>
                 </td>
             </tr>
 
@@ -313,14 +345,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;generateAll&#x27;)<br />@ApiOperation({summary: &#x27;Génère tous les JSON Forms liés aux schémas personnalisés&#x27;})<br /></code>
+                    <code>@Post(&#x27;upsert/photo&#x27;)<br />@UseInterceptors(undefined)<br />@ApiFileUploadDecorator(FileUploadDto, undefined, FilestorageDto)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">src/management/identities/identities-upsert.controller.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -344,108 +376,6 @@
                                                 <td>res</td>
                                             <td>
                                                         <code>Response</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="search"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>search</b></span>
-                        <a href="#search"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>search(res: Response, schema, mode: "create" | "update", body: Partial<literal type>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Post(&#x27;:schema&#x27;)<br />@ApiOperation({summary: &#x27;Récupère un JSON Forms d&#x27;un schéma personnalisé&#x27;})<br /></code>
-                </td>
-            </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:47</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>res</td>
-                                            <td>
-                                                        <code>Response</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>schema</td>
-                                            <td>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>mode</td>
-                                            <td>
-                                                        <code>&quot;create&quot; | &quot;update&quot;</code>
                                             </td>
 
                                             <td>
@@ -457,7 +387,7 @@
                                         <tr>
                                                 <td>body</td>
                                             <td>
-                                                        <code>Partial&lt;literal type&gt;</code>
+                                                            <code><a href="../miscellaneous/variables.html#storage" target="_self" >Partial&lt;FilestorageCreateDto&gt;</a></code>
                                             </td>
 
                                             <td>
@@ -466,77 +396,10 @@
 
 
                                         </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="searchAll"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>searchAll</b></span>
-                        <a href="#searchAll"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>searchAll(res: Response)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Get()<br />@ApiOperation({summary: &#x27;Liste les JSON Forms de schémas personnalisés&#x27;})<br /></code>
-                </td>
-            </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:36</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
                                         <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>res</td>
+                                                <td>searchFilterSchema</td>
                                             <td>
-                                                        <code>Response</code>
+                                                        <code>FilterSchema</code>
                                             </td>
 
                                             <td>
@@ -545,11 +408,23 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>file</td>
+                                            <td>
+                                                        <code>Express.Multer.File</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -563,63 +438,142 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, HttpStatus, Param, Post, Query, Res } from &#x27;@nestjs/common&#x27;;
-import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
-import { IdentitiesJsonformsService } from &#x27;./identities.jsonforms.service&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  BadRequestException,
+  Body,
+  Controller,
+  HttpStatus,
+  ParseFilePipe,
+  Post,
+  Query,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+} from &#x27;@nestjs/common&#x27;;
+import { ApiTags, PartialType } from &#x27;@nestjs/swagger&#x27;;
+import { FilterSchema, SearchFilterSchema } from &#x27;@the-software-compagny/nestjs_module_restools&#x27;;
 import { Response } from &#x27;express&#x27;;
-import { ApiOperation, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { Document, Types, isValidObjectId } from &#x27;mongoose&#x27;;
+import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
+import { ApiCreateDecorator } from &#x27;~/_common/decorators/api-create.decorator&#x27;;
+import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
+import { PartialProjectionType } from &#x27;~/_common/types/partial-projection.type&#x27;;
+import { IdentitiesDto, IdentitiesUpsertDto } from &#x27;./_dto/identities.dto&#x27;;
+import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
+import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
+import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
+import { FileInterceptor } from &#x27;@nestjs/platform-express&#x27;;
+import { ApiFileUploadDecorator } from &#x27;~/_common/decorators/api-file-upload.decorator&#x27;;
+import { FilestorageCreateDto, FilestorageDto, FileUploadDto } from &#x27;~/core/filestorage/_dto/filestorage.dto&#x27;;
+import { FilestorageService } from &#x27;~/core/filestorage/filestorage.service&#x27;;
+import { FsType } from &#x27;~/core/filestorage/_enum/fs-type.enum&#x27;;
+import { join } from &#x27;node:path&#x27;;
+import { omit } from &#x27;radash&#x27;;
+import { TransformersFilestorageService } from &#x27;~/core/filestorage/_services/transformers-filestorage.service&#x27;;
+import { IdentitiesUpsertService } from &#x27;~/management/identities/identities-upsert.service&#x27;;
 
-@ApiTags(&#x27;management/identities/jsonforms&#x27;)
-@Controller(&#x27;management/identities/jsonforms&#x27;)
-export class IdentitiesJsonFormsController extends AbstractController {
-  public constructor(private readonly _service: IdentitiesJsonformsService) {
+@ApiTags(&#x27;management/identities&#x27;)
+@Controller(&#x27;identities&#x27;)
+export class IdentitiesUpsertController extends AbstractController {
+  public constructor(
+    protected readonly _service: IdentitiesUpsertService,
+    protected readonly _validation: IdentitiesValidationService,
+    protected readonly filestorage: FilestorageService,
+    private readonly transformerService: TransformersFilestorageService,
+  ) {
     super();
   }
+  protected static readonly projection: PartialProjectionType&lt;IdentitiesDto&gt; &#x3D; {
+    state: 1,
+    initState: 1,
+    inetOrgPerson: 1,
+    additionalFields: 1,
+    metadata: 1,
+  };
 
-  @Post(&#x27;generateAll&#x27;)
-  @ApiOperation({ summary: &#x27;Génère tous les JSON Forms liés aux schémas personnalisés&#x27; })
-  public async generateAll(@Res() res: Response): Promise&lt;any&gt; {
-    const result &#x3D; await this._service.generateAll();
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data: result,
+  @Post(&#x27;upsert&#x27;)
+  @ApiCreateDecorator(IdentitiesUpsertDto, IdentitiesDto, {
+    operationOptions: {
+      summary: &#x27;Importe ou met à jour une &lt;Identitée&gt; en fonction des filtres fournis&#x27;,
+    },
+  })
+  public async upsert(
+    @Res()
+      res: Response,
+    @Body() body: IdentitiesUpsertDto,
+    @Query(&#x27;filters&#x27;)
+      filtersQuery: {
+      [key: string]: string;
+    }[] &#x3D; [],
+    @Query(&#x27;errorOnNotFound&#x27;) errorOnNotFound: string &#x3D; &#x27;false&#x27;,
+    @Query(&#x27;upsert&#x27;) upsert: string &#x3D; &#x27;true&#x27;,
+  ): Promise&lt;
+    Response&lt;{
+      statusCode: number;
+      data?: Document&lt;Identities, any, Identities&gt;;
+      message?: string;
+      validations?: MixedValue;
+    }&gt;
+  &gt; {
+    const filters &#x3D; {};
+    if (filtersQuery.length &#x3D;&#x3D;&#x3D; 0) {
+      throw new BadRequestException(&#x27;Missing filters array&#x27;);
+    }
+    for (const [key, filter] of Object.entries(filtersQuery)) {
+      filters[key] &#x3D; isValidObjectId(filter) ? new Types.ObjectId(&#x60;${filter}&#x60;) : filter;
+    }
+
+    //TODO: check if the filters are valid and if the body is equal to filters
+
+    const [code, data] &#x3D; await this._service.upsertWithFingerprint&lt;Identities&gt;(filters, body, {
+      errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),
+      upsert: /true|on|yes|1/i.test(upsert),
+    });
+
+    // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
+    // Else the state is TO_VALIDATE, we return a 201 status code
+    if ((data as unknown as Identities).state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
+      return res.status(HttpStatus.ACCEPTED).json({
+        statusCode: HttpStatus.ACCEPTED,
+        message: &#x27;Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.&#x27;,
+        data,
+      });
+    }
+
+    return res.status(code).json({
+      statusCode: code,
+      message: code &#x3D;&#x3D;&#x3D; HttpStatus.OK ? &#x27;Identitée mise à jour avec succès.&#x27; : &#x27;Identitée créée avec succès.&#x27;,
+      data,
     });
   }
 
-  @Post(&#x27;generate&#x27;)
-  @ApiOperation({ summary: &quot;Génère un JSON Forms d&#x27;un schéma personnalisé&quot; })
-  public async generate(@Res() res: Response, @Body(&#x27;schema&#x27;) schema: string | null &#x3D; null): Promise&lt;any&gt; {
-    const result &#x3D; await this._service.generate({ schema, path: &#x27;./configs/identities/jsonforms&#x27; });
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data: result,
-    });
-  }
-
-  @Get()
-  @ApiOperation({ summary: &#x27;Liste les JSON Forms de schémas personnalisés&#x27; })
-  public async searchAll(@Res() res: Response): Promise&lt;any&gt; {
-    const result &#x3D; await this._service.findAll();
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data: result,
-    });
-  }
-
-  // @Get(&#x27;:schema&#x27;)
-  @Post(&#x27;:schema&#x27;)
-  @ApiOperation({ summary: &quot;Récupère un JSON Forms d&#x27;un schéma personnalisé&quot; })
-  public async search(
+  @Post(&#x27;upsert/photo&#x27;)
+  @UseInterceptors(FileInterceptor(&#x27;file&#x27;))
+  @ApiFileUploadDecorator(FileUploadDto, PartialType(FilestorageCreateDto), FilestorageDto)
+  public async upsertInetOrgPersonJpegPhoto(
     @Res() res: Response,
-    @Param(&#x27;schema&#x27;) schema,
-    @Query(&#x27;mode&#x27;) mode: &#x27;create&#x27; | &#x27;update&#x27;,
-    @Body() body: Partial&lt;{ employeeType?: string }&gt;,
-  ): Promise&lt;any&gt; {
-    const [filePath, result] &#x3D; await this._service.findOne(schema, { mode, employeeType: body?.employeeType });
+    @Body() body: Partial&lt;FilestorageCreateDto&gt;,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) file?: Express.Multer.File,
+  ): Promise&lt;Response&gt; {
+    const identity &#x3D; await this._service.findOne&lt;Identities&gt;(searchFilterSchema);
+    const filter &#x3D; {
+      namespace: &#x27;identities&#x27;,
+      path: join(
+        [identity.inetOrgPerson?.employeeType, identity.inetOrgPerson?.employeeNumber, &#x27;jpegPhoto.jpg&#x27;].join(&#x27;/&#x27;),
+      ),
+    };
+
+    const data &#x3D; await this.filestorage.upsertFile(filter, {
+      ...filter,
+      type: FsType.FILE,
+      file,
+      ...omit(body, [&#x27;namespace&#x27;, &#x27;path&#x27;, &#x27;type&#x27;, &#x27;file&#x27;] as any),
+    });
+
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
-      data: result,
-      file: filePath,
+      data,
     });
   }
 }
@@ -668,7 +622,7 @@ export class IdentitiesJsonFormsController extends AbstractController {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
-            var COMPODOC_CURRENT_PAGE_URL = 'IdentitiesJsonFormsController.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'IdentitiesUpsertController.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

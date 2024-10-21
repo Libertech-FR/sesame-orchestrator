@@ -115,7 +115,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/migrations.service.ts</code>
+            <code>src/migrations/migrations.service.ts</code>
         </p>
 
 
@@ -126,6 +126,30 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#lockLocation" >lockLocation</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#logger" >logger</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#migrations" >migrations</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -138,17 +162,27 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#loadMigrationsFiles" >loadMigrationsFiles</a>
+                                <a href="#_checkMigrationLockFile" >_checkMigrationLockFile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#_executeMigrations" >_executeMigrations</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#_loadMigrationsFiles" >_loadMigrationsFiles</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#_validateMigration" >_validateMigration</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#onModuleInit" >onModuleInit</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#runMigrations" >runMigrations</a>
                             </li>
                         </ul>
                     </td>
@@ -169,15 +203,69 @@
                 <tr>
                     <td class="col-md-4">
                                 <span class="modifier">Public</span>
-                        <code>constructor()</code>
+                        <code>constructor(mongo: Connection, moduleRef: ModuleRef, config: ConfigService)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">src/migrations.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/migrations/migrations.service.ts:17</a></div>
                             </td>
                         </tr>
 
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>mongo</td>
+                                                  
+                                                        <td>
+                                                                    <code>Connection</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>moduleRef</td>
+                                                  
+                                                        <td>
+                                                                    <code>ModuleRef</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>config</td>
+                                                  
+                                                        <td>
+                                                                    <code>ConfigService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
             </tbody>
         </table>
 </section>
@@ -191,27 +279,67 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="loadMigrationsFiles"></a>
+                    <a name="_checkMigrationLockFile"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>loadMigrationsFiles</b></span>
-                        <a href="#loadMigrationsFiles"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>_checkMigrationLockFile</b></span>
+                        <a href="#_checkMigrationLockFile"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>loadMigrationsFiles()</code>
+                    <code>_checkMigrationLockFile()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">src/migrations.service.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">src/migrations/migrations.service.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_executeMigrations"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>_executeMigrations</b></span>
+                        <a href="#_executeMigrations"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_executeMigrations()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="125"
+                                    class="link-to-prism">src/migrations/migrations.service.ts:125</a></div>
                         </td>
                     </tr>
 
@@ -223,6 +351,150 @@
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_loadMigrationsFiles"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>_loadMigrationsFiles</b></span>
+                        <a href="#_loadMigrationsFiles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_loadMigrationsFiles(currentTimestamp: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">src/migrations/migrations.service.ts:84</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentTimestamp</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>0</code>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_validateMigration"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>_validateMigration</b></span>
+                        <a href="#_validateMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_validateMigration(migration: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="173"
+                                    class="link-to-prism">src/migrations/migrations.service.ts:173</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>migration</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -250,48 +522,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">src/migrations.service.ts:10</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="runMigrations"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>runMigrations</b></span>
-                        <a href="#runMigrations"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>runMigrations()</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">src/migrations.service.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/migrations/migrations.service.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -308,46 +540,276 @@
         </tbody>
     </table>
 </section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="lockLocation"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>lockLocation</b></span>
+                        <a href="#lockLocation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/migrations/migrations.service.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logger"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>logger</b></span>
+                        <a href="#logger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Logger(&#x60;${chalk.bold.red(MigrationsService.name)}\x1b[33m&#x60;)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/migrations/migrations.service.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="migrations"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>migrations</b></span>
+                        <a href="#migrations"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Map&lt;string, any&gt;()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/migrations/migrations.service.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, OnModuleInit } from &#x27;@nestjs/common&#x27;
-import { InjectModel } from &#x27;@nestjs/mongoose&#x27;
-import { readdir } from &#x27;fs/promises&#x27;
-import { Model } from &#x27;mongoose&#x27;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Logger, OnModuleInit } from &#x27;@nestjs/common&#x27;
+import { glob } from &#x27;glob&#x27;
+import chalk from &#x27;chalk&#x27;
+import { ModuleRef } from &#x27;@nestjs/core&#x27;
+import { startLoader, stopLoader } from &#x27;./migration-loader.function&#x27;
+import { readFile, writeFile } from &#x27;fs/promises&#x27;
+import { posix } from &#x27;path&#x27;
+import { ConfigService } from &#x27;@nestjs/config&#x27;
+import { Connection } from &#x27;mongoose&#x27;
+import { InjectConnection } from &#x27;@nestjs/mongoose&#x27;
 
 @Injectable()
 export class MigrationsService implements OnModuleInit {
-  public constructor() { }
+  private readonly logger &#x3D; new Logger(&#x60;${chalk.bold.red(MigrationsService.name)}\x1b[33m&#x60;)
+
+  protected lockLocation: string
+  protected migrations &#x3D; new Map&lt;string, any&gt;()
+
+  public constructor(
+    @InjectConnection() private readonly mongo: Connection,
+    private readonly moduleRef: ModuleRef,
+    private readonly config: ConfigService,
+
+  ) {
+    this.lockLocation &#x3D; posix.join(this.config.get(&#x27;factorydrive.options.disks.local.config.root&#x27;, &#x27;/tmp&#x27;), &#x27;migrations.lock&#x27;)
+  }
 
   public async onModuleInit() {
-    await this.runMigrations()
+    this.logger.debug(chalk.yellow(&#x27;Migrations service initialized.&#x27;));
+    this.logger.debug(chalk.yellow(&#x27;Lock file location: &#x27; + this.lockLocation));
+    const currentTimestamp &#x3D; await this._checkMigrationLockFile()
+    this.logger.debug(chalk.yellow(&#x27;Checking migrations files...&#x27;));
+    await this._loadMigrationsFiles(currentTimestamp);
+
+    const loader &#x3D; startLoader(&#x27;Migration en cours...&#x27;);
+    await this._executeMigrations();
+    stopLoader(loader);
   }
 
-  public async runMigrations() {
+  private async _checkMigrationLockFile() {
+    let currentTimestamp &#x3D; 0
+
     try {
-      await this.loadMigrationsFiles()
-    } catch { }
+      const migration &#x3D; await readFile(this.lockLocation, &#x27;utf-8&#x27;);
+      currentTimestamp &#x3D; parseInt(migration, 10);
+      this.logger.log(chalk.blue(&#x60;Migration lock state is &lt;${currentTimestamp}&gt; !&#x60;));
+    } catch (error) {
+      this.logger.warn(chalk.red(&#x27;No migration lock file found.&#x27;));
+    }
+
+    const dbMigration &#x3D; await this.mongo.collection(&#x27;migrations&#x27;).findOne({}, { sort: { timestamp: -1 } });
+
+    if (currentTimestamp &#x3D;&#x3D;&#x3D; 0) {
+      if (dbMigration) {
+        try {
+          this.logger.warn(chalk.yellow(&#x27;No migration lock file found. Creating one with the last migration timestamp...&#x27;));
+          await writeFile(this.lockLocation, dbMigration.timestamp.toString());
+          this.logger.log(chalk.green(&#x27;Migration lock file created.&#x27;));
+        } catch (error) {
+          this.logger.error(chalk.red(&#x27;Error while creating migration lock file !&#x27;));
+        }
+      } else {
+        try {
+          await writeFile(this.lockLocation, currentTimestamp.toString());
+          this.logger.log(chalk.green(&#x27;Migration lock file created.&#x27;));
+        } catch (error) {
+          this.logger.error(chalk.red(&#x27;Error while creating migration lock file !&#x27;));
+        }
+      }
+    }
+
+    if (!dbMigration &amp;&amp; currentTimestamp !&#x3D;&#x3D; 0) {
+      this.logger.error(chalk.red(&#x27;Database is not up to date with the migrations files !&#x27;));
+      await this.mongo.collection(&#x27;migrations&#x27;).insertOne({
+        timestamp: currentTimestamp,
+        comment: &#x27;Synchronization with the migration lock file&#x27;,
+      });
+      this.logger.log(chalk.green(&#x27;Database updated with the current migration lock file !&#x27;));
+    }
+
+    return currentTimestamp
   }
 
-  private async loadMigrationsFiles() {
-    let files: string[] &#x3D; []
-    try {
-      console.log(&#x27;Loading migrations files&#x27;)
-      console.log(process.cwd())
-      console.log(__dirname)
-      console.log(__filename)
-      files &#x3D; await readdir(&#x27;./migrations&#x27;)
-    } catch { }
+  private async _loadMigrationsFiles(currentTimestamp &#x3D; 0) {
+    let files &#x3D; await glob(&#x60;./jobs/*.js&#x60;, {
+      cwd: __dirname,
+      root: __dirname,
+    });
 
-    console.log(files)
+    files &#x3D; files.filter((file) &#x3D;&gt; {
+      const [timestampMatch] &#x3D; file.match(/\d{10,}/) || []
+
+      if (!timestampMatch) {
+        this.logger.warn(chalk.yellow(&#x60;Migration ${chalk.bold(&#x27;&lt;&#x27; + file.replace(/.js$/, &#x27;&#x27;) + &#x27;&gt;&#x27;)} does not have a timestamp in the filename !&#x60;));
+        return;
+      }
+
+      if (parseInt(timestampMatch) &lt;&#x3D; currentTimestamp) {
+        this.logger.debug(chalk.yellow(&#x60;Migration ${chalk.bold(&#x27;&lt;&#x27; + file.replace(/.js$/, &#x27;&#x27;) + &#x27;&gt;&#x27;)} are already executed !&#x60;));
+        return false;
+      }
+
+      return true
+    })
+
+    files &#x3D; files.sort((a, b) &#x3D;&gt; {
+      const [aTimestamp] &#x3D; a.match(/\d{10,}/) || []
+      const [bTimestamp] &#x3D; b.match(/\d{10,}/) || []
+
+      return parseInt(aTimestamp) - parseInt(bTimestamp)
+    })
 
     for (const file of files) {
-      const migration &#x3D; await import(&#x60;./migrations/${file}&#x60;)
-      console.log(migration)
+      const migration &#x3D; await import(&#x60;${__dirname}/${file}&#x60;);
+
+      if (!migration.default) {
+        this.logger.log(chalk.yellow(&#x60;Migration ${chalk.bold(&#x27;&lt;&#x27; + file + &#x27;&gt;&#x27;)} does not have a default export !&#x60;));
+        return;
+      }
+
+      this.migrations.set(file, migration)
     }
+  }
+
+  private async _executeMigrations() {
+    if (this.migrations.size &#x3D;&#x3D;&#x3D; 0) {
+      this.logger.log(chalk.green(&#x27;No migrations to execute.&#x27;));
+      return;
+    }
+
+    if (!this.migrations.size) {
+      this.logger.log(chalk.blue(&#x27;No migrations to execute.&#x27;));
+      return;
+    }
+
+    for (const key of this.migrations.keys()) {
+      const [migrationTimestamp] &#x3D; key.match(/\d{10,}/) || []
+
+      const migration &#x3D; this.migrations.get(key);
+      const instance &#x3D; await this.moduleRef.create(migration.default);
+
+      if (typeof instance.up !&#x3D;&#x3D; &#x27;function&#x27;) {
+        this.logger.log(chalk.yellow(&#x60;Migration ${chalk.bold(&#x27;&lt;&#x27; + key + &#x27;&gt;&#x27;)} does not have an up method !&#x60;));
+        break;
+      }
+
+      try {
+        this.logger.log(chalk.yellow(&#x60;Running migration ${chalk.bold(&#x27;&lt;&#x27; + key + &#x27;&gt;&#x27;)}...&#x60;));
+        await instance.up();
+      } catch (e) {
+        this.logger.error(chalk.red(&#x60;Error while running migration ${chalk.bold(&#x27;&lt;&#x27; + key + &#x27;&gt;&#x27;)} !&#x60;));
+        this.logger.error(e);
+        break;
+      }
+
+      try {
+        await writeFile(this.lockLocation, migrationTimestamp);
+        await this.mongo.collection(&#x27;migrations&#x27;).insertOne({
+          timestamp: parseInt(migrationTimestamp),
+          comment: &#x60;Migration ${key} executed&#x60;,
+        })
+        this.logger.log(chalk.blue(&#x60;Migration ${chalk.bold(&#x27;&lt;&#x27; + key + &#x27;&gt;&#x27;)} done.&#x60;));
+      } catch (e) {
+        this.logger.error(chalk.red(&#x60;Error while updating migration lock file !&#x60;));
+        this.logger.error(e);
+        break
+      }
+    }
+
+    this.logger.log(chalk.blue(&#x27;All migrations done.&#x27;));
+  }
+
+  private async _validateMigration(migration: any) {
+    if (!migration.default) {
+      this.logger.log(chalk.yellow(&#x60;Migration ${chalk.bold(&#x27;&lt;&#x27; + migration + &#x27;&gt;&#x27;)} does not have a default export !&#x60;));
+      return false;
+    }
+
+    return true;
   }
 }
 </code></pre>

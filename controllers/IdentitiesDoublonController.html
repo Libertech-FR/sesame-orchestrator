@@ -88,7 +88,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Controllers</li>
-  <li class="breadcrumb-item" >IdentitiesJsonFormsController</li>
+  <li class="breadcrumb-item" >IdentitiesDoublonController</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -112,14 +112,14 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/management/identities/jsonforms/identities.jsonforms.controller.ts</code>
+            <code>src/management/identities/identities-doublon.controller.ts</code>
         </p>
 
             <p class="comment">
                 <h3>Prefix</h3>
             </p>
             <p class="comment">
-                <code>management/identities/jsonforms</code>
+                <code>identities</code>
             </p>
 
 
@@ -148,30 +148,17 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#generate" >generate</a>
+                                <a href="#fusion" >fusion</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#generateAll" >generateAll</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#search" >search</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#searchAll" >searchAll</a>
+                                <a href="#getDoublons" >getDoublons</a>
                             </li>
                         </ul>
                     </td>
@@ -194,21 +181,22 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="generate"></a>
+                    <a name="fusion"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>generate</b></span>
-                        <a href="#generate"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>fusion</b></span>
+                        <a href="#fusion"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>generate(res: Response, schema: string | null)</code>
+                    <code>fusion(body: <a href="../classes/FusionDto.html" target="_self">FusionDto</a>, res: Response)</code>
                 </td>
             </tr>
 
@@ -216,111 +204,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;generate&#x27;)<br />@ApiOperation({summary: &#x27;Génère un JSON Forms d&#x27;un schéma personnalisé&#x27;})<br /></code>
+                    <code>@Post(&#x27;fusion&#x27;)<br />@ApiOperation({summary: &#x27;fusionne les deux identités&#x27;})<br />@ApiResponse({status: undefined})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:26</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                                <td>Default value</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>res</td>
-                                            <td>
-                                                        <code>Response</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-                                            <td>
-                                            </td>
-
-                                        </tr>
-                                        <tr>
-                                                <td>schema</td>
-                                            <td>
-                                                        <code>string | null</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-                                            <td>
-                                                    <code>null</code>
-                                            </td>
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="generateAll"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>generateAll</b></span>
-                        <a href="#generateAll"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>generateAll(res: Response)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Post(&#x27;generateAll&#x27;)<br />@ApiOperation({summary: &#x27;Génère tous les JSON Forms liés aux schémas personnalisés&#x27;})<br /></code>
-                </td>
-            </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">src/management/identities/identities-doublon.controller.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -340,124 +231,22 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                                <td>res</td>
-                                            <td>
-                                                        <code>Response</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="search"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>search</b></span>
-                        <a href="#search"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>search(res: Response, schema, mode: "create" | "update", body: Partial<literal type>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Post(&#x27;:schema&#x27;)<br />@ApiOperation({summary: &#x27;Récupère un JSON Forms d&#x27;un schéma personnalisé&#x27;})<br /></code>
-                </td>
-            </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:47</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>res</td>
-                                            <td>
-                                                        <code>Response</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>schema</td>
-                                            <td>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>mode</td>
-                                            <td>
-                                                        <code>&quot;create&quot; | &quot;update&quot;</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                         <tr>
                                                 <td>body</td>
                                             <td>
-                                                        <code>Partial&lt;literal type&gt;</code>
+                                                            <code><a href="../classes/FusionDto.html" target="_self" >FusionDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
                                             </td>
 
                                             <td>
@@ -470,7 +259,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -484,21 +273,21 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="searchAll"></a>
+                    <a name="getDoublons"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>searchAll</b></span>
-                        <a href="#searchAll"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getDoublons</b></span>
+                        <a href="#getDoublons"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>searchAll(res: Response)</code>
+                    <code>getDoublons(res: Response)</code>
                 </td>
             </tr>
 
@@ -506,14 +295,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get()<br />@ApiOperation({summary: &#x27;Liste les JSON Forms de schémas personnalisés&#x27;})<br /></code>
+                    <code>@Get(&#x27;duplicates&#x27;)<br />@ApiOperation({summary: &#x27;Renvoie la liste des doublons supposés&#x27;})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">src/management/identities/jsonforms/identities.jsonforms.controller.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">src/management/identities/identities-doublon.controller.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -549,7 +338,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -563,63 +352,53 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, HttpStatus, Param, Post, Query, Res } from &#x27;@nestjs/common&#x27;;
-import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
-import { IdentitiesJsonformsService } from &#x27;./identities.jsonforms.service&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, HttpStatus, Post, Res } from &#x27;@nestjs/common&#x27;;
+import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { Response } from &#x27;express&#x27;;
-import { ApiOperation, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
+import { PartialProjectionType } from &#x27;~/_common/types/partial-projection.type&#x27;;
+import { IdentitiesDto } from &#x27;./_dto/identities.dto&#x27;;
+import { FusionDto } from &#x27;~/management/identities/_dto/fusion.dto&#x27;;
+import { IdentitiesDoublonService } from &#x27;~/management/identities/identities-doublon.service&#x27;;
 
-@ApiTags(&#x27;management/identities/jsonforms&#x27;)
-@Controller(&#x27;management/identities/jsonforms&#x27;)
-export class IdentitiesJsonFormsController extends AbstractController {
-  public constructor(private readonly _service: IdentitiesJsonformsService) {
+@ApiTags(&#x27;management/identities&#x27;)
+@Controller(&#x27;identities&#x27;)
+
+export class IdentitiesDoublonController extends AbstractController {
+  public constructor(protected readonly _service: IdentitiesDoublonService) {
     super();
   }
+  protected static readonly projection: PartialProjectionType&lt;IdentitiesDto&gt; &#x3D; {
+    state: 1,
+    initState: 1,
+    inetOrgPerson: 1,
+    additionalFields: 1,
+    metadata: 1,
+  };
 
-  @Post(&#x27;generateAll&#x27;)
-  @ApiOperation({ summary: &#x27;Génère tous les JSON Forms liés aux schémas personnalisés&#x27; })
-  public async generateAll(@Res() res: Response): Promise&lt;any&gt; {
-    const result &#x3D; await this._service.generateAll();
+  @Get(&#x27;duplicates&#x27;)
+  @ApiOperation({ summary: &#x27;Renvoie la liste des doublons supposés&#x27; })
+  public async getDoublons(@Res() res: Response): Promise&lt;Response&gt; {
+    const data &#x3D; await this._service.searchDoubles();
+    const total &#x3D; data.length;
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
-      data: result,
+      data,
+      total,
     });
   }
 
-  @Post(&#x27;generate&#x27;)
-  @ApiOperation({ summary: &quot;Génère un JSON Forms d&#x27;un schéma personnalisé&quot; })
-  public async generate(@Res() res: Response, @Body(&#x27;schema&#x27;) schema: string | null &#x3D; null): Promise&lt;any&gt; {
-    const result &#x3D; await this._service.generate({ schema, path: &#x27;./configs/identities/jsonforms&#x27; });
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data: result,
-    });
-  }
-
-  @Get()
-  @ApiOperation({ summary: &#x27;Liste les JSON Forms de schémas personnalisés&#x27; })
-  public async searchAll(@Res() res: Response): Promise&lt;any&gt; {
-    const result &#x3D; await this._service.findAll();
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data: result,
-    });
-  }
-
-  // @Get(&#x27;:schema&#x27;)
-  @Post(&#x27;:schema&#x27;)
-  @ApiOperation({ summary: &quot;Récupère un JSON Forms d&#x27;un schéma personnalisé&quot; })
-  public async search(
+  @Post(&#x27;fusion&#x27;)
+  @ApiOperation({ summary: &#x27;fusionne les deux identités&#x27; })
+  @ApiResponse({ status: HttpStatus.OK })
+  public async fusion(
+    @Body() body: FusionDto,
     @Res() res: Response,
-    @Param(&#x27;schema&#x27;) schema,
-    @Query(&#x27;mode&#x27;) mode: &#x27;create&#x27; | &#x27;update&#x27;,
-    @Body() body: Partial&lt;{ employeeType?: string }&gt;,
-  ): Promise&lt;any&gt; {
-    const [filePath, result] &#x3D; await this._service.findOne(schema, { mode, employeeType: body?.employeeType });
+  ): Promise&lt;Response&gt; {
+    const newId &#x3D; await this._service.fusion(body.id1, body.id2);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
-      data: result,
-      file: filePath,
+      newId,
     });
   }
 }
@@ -668,7 +447,7 @@ export class IdentitiesJsonFormsController extends AbstractController {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
-            var COMPODOC_CURRENT_PAGE_URL = 'IdentitiesJsonFormsController.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'IdentitiesDoublonController.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

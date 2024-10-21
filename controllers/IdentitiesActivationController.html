@@ -79,23 +79,16 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content class">
+               <div class="content controller">
                    <div class="content-data">
 
 
 
 
 
-
-
-
-
-
-
-
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >IdentitiesUpdateDto</li>
+  <li class="breadcrumb-item">Controllers</li>
+  <li class="breadcrumb-item" >IdentitiesActivationController</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -119,8 +112,15 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/management/identities/_dto/identities.dto.ts</code>
+            <code>src/management/identities/identities-activation.controller.ts</code>
         </p>
+
+            <p class="comment">
+                <h3>Prefix</h3>
+            </p>
+            <p class="comment">
+                <code>identities</code>
+            </p>
 
 
 
@@ -128,95 +128,186 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                        <code>PartialType(IdentitiesCreateDto)</code>
             </p>
 
 
 
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#activation" >activation</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
 
 
 
 
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="activation"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>activation</b></span>
+                        <a href="#activation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>activation(res: Response, body: <a href="../classes/ActivationDto.html" target="_self">ActivationDto</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;activation&#x27;)<br />@ApiOperation({summary: &#x27;active/desactive l identité&#x27;})<br />@ApiResponse({status: undefined})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">src/management/identities/identities-activation.controller.ts:18</a></div>
+                        </td>
+                    </tr>
 
 
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
 
 
-    </div>
+                                        </tr>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../classes/ActivationDto.html" target="_self" >ActivationDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, IntersectionType, PartialType } from &#x27;@nestjs/swagger&#x27;;
-import { IsOptional, IsObject, IsEnum, IsNumber } from &#x27;class-validator&#x27;;
-import { inetOrgPersonDto } from &#x27;./_parts/inetOrgPerson.dto&#x27;;
-import { IdentityState } from &#x27;../_enums/states.enum&#x27;;
-import { IdentityLifecycle } from &#x27;../_enums/lifecycle.enum&#x27;;
-import { Type } from &#x27;class-transformer&#x27;;
-import { additionalFieldsPartDto } from &#x27;./_parts/additionalFields.dto&#x27;;
-import { MetadataDto } from &#x27;~/_common/abstracts/dto/metadata.dto&#x27;;
-import { InitStatesEnum } from &#x27;~/management/identities/_enums/init-state.enum&#x27;;
-import { CustomFieldsDto } from &#x27;~/_common/abstracts/dto/custom-fields.dto&#x27;;
-import {DataStatusEnum} from &quot;~/management/identities/_enums/data-status&quot;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
+import { IdentitiesActivationService } from &#x27;~/management/identities/identities-activation.service&#x27;;
+import { ApiOperation, ApiResponse, ApiTags} from &#x27;@nestjs/swagger&#x27;;
+import { Body, Controller, HttpStatus, Post, Res} from &#x27;@nestjs/common&#x27;;
+import { Response } from &#x27;express&#x27;;
+import { ActivationDto } from &#x27;~/management/identities/_dto/_parts/activation-dto&#x27;;
 
-export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, MetadataDto) {
-  @IsNumber()
-  @IsEnum(IdentityState)
-  @ApiProperty({ enum: IdentityState })
-  public state: IdentityState;
+@ApiTags(&#x27;management/identities&#x27;)
+@Controller(&#x27;identities&#x27;)
+export class IdentitiesActivationController extends AbstractController {
+  public constructor(protected readonly _service: IdentitiesActivationService) {
+    super();
+  }
 
-  @IsNumber()
-  @IsEnum(InitStatesEnum)
-  @ApiProperty({ enum: InitStatesEnum })
-  public initState: InitStatesEnum;
-
-  @IsNumber()
-  @IsEnum(DataStatusEnum)
-  @ApiProperty({ enum: DataStatusEnum })
-  public dataStatus: DataStatusEnum;
-
-  @IsNumber()
-  @IsOptional()
-  @IsEnum(IdentityLifecycle)
-  @ApiProperty({ enum: IdentityLifecycle })
-  public lifecycle: number;
-
-  @IsObject()
-  @Type(() &#x3D;&gt; inetOrgPersonDto)
-  @ApiProperty({ type: inetOrgPersonDto })
-  public inetOrgPerson: inetOrgPersonDto;
-
-  @IsOptional()
-  @Type(() &#x3D;&gt; additionalFieldsPartDto)
-  @ApiProperty({
-    required: false,
-    type: additionalFieldsPartDto,
-    description:
-      &#x27;Champs composé de deux items, un tableau de string correspondant aux attributs requis et un champs attributes contenant des pair clé/valeur correspondant aux attributs dans le champ objectClasses&#x27;,
-    example: {
-      objectClasses: [&#x27;supann&#x27;],
-      attributes: {
-        supann: {
-          supannAliasLogin: &#x27;alias&#x27;,
-          supannEntiteAffectationPrincipale: &#x27;entite&#x27;,
-        },
-      },
-    },
-  })
-  public additionalFields?: additionalFieldsPartDto;
-}
-
-export class IdentitiesDto extends IdentitiesCreateDto { }
-
-export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) { }
-
-export class IdentitiesUpsertDto extends PartialType(IdentitiesUpdateDto) {
-  @IsOptional()
-  @Type(() &#x3D;&gt; IdentitiesUpdateDto)
-  public $setOnInsert?: Partial&lt;IdentitiesUpdateDto&gt;;
+  @Post(&#x27;activation&#x27;)
+  @ApiOperation({ summary: &#x27;active/desactive l identité&#x27; })
+  @ApiResponse({ status: HttpStatus.OK })
+  public async activation(@Res() res: Response, @Body() body: ActivationDto): Promise&lt;Response&gt; {
+    try {
+      const data &#x3D; await this._service.activation(body.id, body.status);
+      return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        data,
+      });
+    } catch (error) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: error.message,
+      });
+    }
+  }
 }
 </code></pre>
     </div>
 </div>
+
+
+
+
+
+
+
 
 
 
@@ -251,8 +342,8 @@ export class IdentitiesUpsertDto extends PartialType(IdentitiesUpdateDto) {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'IdentitiesUpdateDto.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
+            var COMPODOC_CURRENT_PAGE_URL = 'IdentitiesActivationController.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

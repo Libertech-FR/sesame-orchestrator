@@ -292,8 +292,8 @@ import { Jobs } from &#x27;~/core/jobs/_schemas/jobs.schema&#x27;;
 import { AskTokenDto } from &#x27;./_dto/ask-token.dto&#x27;;
 import { ChangePasswordDto } from &#x27;./_dto/change-password.dto&#x27;;
 import { ResetPasswordDto } from &#x27;./_dto/reset-password.dto&#x27;;
-import { IdentitiesService } from &#x27;../identities/identities.service&#x27;;
-import { get, pick } from &#x27;radash&#x27;;
+import { IdentitiesCrudService } from &#x27;../identities/identities-crud.service&#x27;;
+import { get } from &#x27;radash&#x27;;
 import { Identities } from &#x27;../identities/_schemas/identities.schema&#x27;;
 import { MailerService } from &#x27;@nestjs-modules/mailer&#x27;;
 import { InitAccountDto } from &#x27;~/management/passwd/_dto/init-account.dto&#x27;;
@@ -302,7 +302,6 @@ import { ResetByCodeDto } from &#x27;~/management/passwd/_dto/reset-by-code.dto&
 import { PasswdadmService } from &#x27;~/settings/passwdadm.service&#x27;;
 import { IdentityState } from &#x27;~/management/identities/_enums/states.enum&#x27;;
 import { InitResetDto } from &#x27;~/management/passwd/_dto/init-reset.dto&#x27;;
-import { PasswordPoliciesDto } from &#x27;~/settings/_dto/password-policy.dto&#x27;;
 import { SmsadmService } from &#x27;~/settings/smsadm.service&#x27;;
 import { InitManyDto } from &#x27;~/management/passwd/_dto/init-many.dto&#x27;;
 import { InitStatesEnum } from &#x27;~/management/identities/_enums/init-state.enum&#x27;;
@@ -328,7 +327,7 @@ export class PasswdService extends AbstractService {
 
   public constructor(
     protected readonly backends: BackendsService,
-    protected readonly identities: IdentitiesService,
+    protected readonly identities: IdentitiesCrudService,
     protected mailer: MailerService,
     protected config: ConfigService,
     private passwdadmService: PasswdadmService,
@@ -402,7 +401,6 @@ export class PasswdService extends AbstractService {
       } else {
         this.logger.error(&#x27;Error while reset identityMailAttribute Empty&#x27;);
       }
-
     } catch (e) {
       this.logger.error(&#x27;Error while reseting password. &#x27; + e + &#x60; (uid&#x3D;${initDto?.uid})&#x60;);
       //on retoune un token qui ne sert à rien pour ne pas divulguer que l uid n existe pas

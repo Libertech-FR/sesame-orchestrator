@@ -1,6 +1,6 @@
 import { AbstractIdentitiesService } from '~/management/identities/abstract-identities.service';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
-import { BadRequestException } from '@nestjs/common';
+import {BadRequestException, HttpException} from '@nestjs/common';
 import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 import { JobState } from '~/core/jobs/_enums/state.enum';
 
@@ -12,7 +12,10 @@ export class IdentitiesActivationService extends AbstractIdentitiesService {
     try {
       identity = await this.findById<Identities>(id);
     } catch (error) {
-      throw new BadRequestException('Id1 not found');
+      throw new HttpException('Id not found', 400);
+    }
+    if (identity.lastBackendSync === null) {
+      throw new HttpException('Identity has never been synced', 400);
     }
     if (identity.dataStatus !== DataStatusEnum.DELETED) {
       if (status) {
@@ -36,7 +39,7 @@ export class IdentitiesActivationService extends AbstractIdentitiesService {
       if (result.state === JobState.COMPLETED) {
         await super.update(identity._id, identity);
       } else {
-        throw new BadRequestException('Backend failed');
+        throw new HttpException('Backend failed', 400);
       }
     }
   }

@@ -15,11 +15,18 @@ export class IdentitiesActivationController extends AbstractController {
   @Post('activation')
   @ApiOperation({ summary: 'active/desactive l identité' })
   @ApiResponse({ status: HttpStatus.OK })
-  public async activation(@Res() res: Response,@Body() body:ActivationDto): Promise<Response> {
-    const data = this._service.activation(body.id, body.status)
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data,
-    });
+  public async activation(@Res() res: Response, @Body() body: ActivationDto): Promise<Response> {
+    try {
+      const data = await this._service.activation(body.id, body.status);
+      return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        data,
+      });
+    } catch (error) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: error.message,
+      });
+    }
   }
 }

@@ -1423,7 +1423,7 @@ export class BackendsService extends AbstractQueueProcessor {
     for (const identity of identities) {
       //convertion tableau employeeNumber
       if (identity.identity.primaryEmployeeNumber !&#x3D;&#x3D; null) {
-        identity.identity.employeeNumber &#x3D; identity.identity.identityprimaryEmployeeNumber;
+        identity.identity.employeeNumber &#x3D; identity.identity.primaryEmployeeNumber;
       } else {
         //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
         identity.identity.inetOrgPerson.employeeNumber &#x3D; identity.identity.inetOrgPerson.employeeNumber[0];

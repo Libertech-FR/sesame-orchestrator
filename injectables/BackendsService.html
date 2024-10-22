@@ -353,8 +353,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="362"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:362</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="390"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:390</a></div>
                         </td>
                     </tr>
 
@@ -447,8 +447,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="234"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:234</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="244"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:244</a></div>
                         </td>
                     </tr>
 
@@ -529,8 +529,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="277"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:277</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="293"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:293</a></div>
                         </td>
                     </tr>
 
@@ -611,8 +611,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="320"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:320</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="342"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:342</a></div>
                         </td>
                     </tr>
 
@@ -693,8 +693,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="371"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:371</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="399"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:399</a></div>
                         </td>
                     </tr>
 
@@ -915,8 +915,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="191"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:191</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="198"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:198</a></div>
                         </td>
                     </tr>
 
@@ -1405,10 +1405,10 @@ export class BackendsService extends AbstractQueueProcessor {
   }
 
   public async syncAllIdentities(options?: ExecuteJobOptions): Promise&lt;any&gt; {
-    const syncAllIdentities &#x3D; (await this.identitiesService.find&lt;Identities&gt;({
+    const syncAllIdentities &#x3D; await this.identitiesService.find&lt;any&gt;({
       state: IdentityState.TO_SYNC,
-    })) as unknown as Identities[];
-    const identities &#x3D; syncAllIdentities.map((identity: Identities) &#x3D;&gt; {
+    });
+    const identities &#x3D; syncAllIdentities.map((identity: any) &#x3D;&gt; {
       return {
         action: ActionType.IDENTITY_UPDATE,
         identity,
@@ -1421,6 +1421,13 @@ export class BackendsService extends AbstractQueueProcessor {
 
     const result &#x3D; {};
     for (const identity of identities) {
+      //convertion tableau employeeNumber
+      if (identity.identity.primaryEmployeeNumber !&#x3D;&#x3D; null) {
+        identity.identity.employeeNumber &#x3D; identity.identity.identityprimaryEmployeeNumber;
+      } else {
+        //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
+        identity.identity.inetOrgPerson.employeeNumber &#x3D; identity.identity.inetOrgPerson.employeeNumber[0];
+      }
       try {
         this.logger.debug(&#x60;Syncing identity ${identity.identity._id}&#x60;);
         const [executedJob] &#x3D; await this.executeJob(
@@ -1465,6 +1472,9 @@ export class BackendsService extends AbstractQueueProcessor {
       // cas des fusion l employeeNumber doit etre celui de l identite primaire
       if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null) {
         identity.inetOrgPerson.employeeNumber &#x3D; identity.primaryEmployeeNumber;
+      } else {
+        //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
+        identity.inetOrgPerson.employeeNumber &#x3D; identity.inetOrgPerson.employeeNumber[0];
       }
       identities.push({
         action: ActionType.IDENTITY_UPDATE,
@@ -1497,7 +1507,13 @@ export class BackendsService extends AbstractQueueProcessor {
     if (!payload.length) throw new BadRequestException(&#x27;No identities to disable&#x27;);
 
     for (const key of payload) {
-      const identity &#x3D; await this.identitiesService.findById&lt;Identities&gt;(key);
+      const identity &#x3D; await this.identitiesService.findById&lt;any&gt;(key);
+      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null) {
+        identity.inetOrgPerson.employeeNumber &#x3D; identity.primaryEmployeeNumber;
+      } else {
+        //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
+        identity.inetOrgPerson.employeeNumber &#x3D; identity.inetOrgPerson.employeeNumber[0];
+      }
       if (!identity.lastBackendSync) {
         throw new BadRequestException({
           status: HttpStatus.BAD_REQUEST,
@@ -1540,13 +1556,19 @@ export class BackendsService extends AbstractQueueProcessor {
     if (!payload.length) throw new BadRequestException(&#x27;No identities to disable&#x27;);
 
     for (const key of payload) {
-      const identity &#x3D; await this.identitiesService.findById&lt;Identities&gt;(key);
+      const identity &#x3D; await this.identitiesService.findById&lt;any&gt;(key);
       if (!identity.lastBackendSync) {
         throw new BadRequestException({
           status: HttpStatus.BAD_REQUEST,
           message: &#x60;Identity ${key}  has never been synched&#x60;,
           identity,
         });
+      }
+      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null) {
+        identity.inetOrgPerson.employeeNumber &#x3D; identity.primaryEmployeeNumber;
+      } else {
+        //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
+        identity.inetOrgPerson.employeeNumber &#x3D; identity.inetOrgPerson.employeeNumber[0];
       }
       identities.push({
         action: ActionType.IDENTITY_DISABLE,
@@ -1583,7 +1605,13 @@ export class BackendsService extends AbstractQueueProcessor {
     if (!payload.length) throw new BadRequestException(&#x27;No identities to disable&#x27;);
 
     for (const key of payload) {
-      const identity &#x3D; await this.identitiesService.findById&lt;Identities&gt;(key);
+      const identity &#x3D; await this.identitiesService.findById&lt;any&gt;(key);
+      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null) {
+        identity.inetOrgPerson.employeeNumber &#x3D; identity.primaryEmployeeNumber;
+      } else {
+        //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
+        identity.inetOrgPerson.employeeNumber &#x3D; identity.inetOrgPerson.employeeNumber[0];
+      }
       if (!identity.lastBackendSync) {
         throw new BadRequestException({
           status: HttpStatus.BAD_REQUEST,
@@ -1619,7 +1647,7 @@ export class BackendsService extends AbstractQueueProcessor {
   public async activationIdentity(payload: string, status: boolean, options?: ExecuteJobOptions) {
     let result &#x3D; null;
     if (status &#x3D;&#x3D;&#x3D; true) {
-      result &#x3D; await this.enableIdentities([payload], options );
+      result &#x3D; await this.enableIdentities([payload], options);
     } else {
       result &#x3D; await this.disableIdentities([payload], options);
     }
@@ -1641,7 +1669,7 @@ export class BackendsService extends AbstractQueueProcessor {
       },
       {
         ...options?.job,
-        jobId: (new Types.ObjectId() ).toHexString(),
+        jobId: (new Types.ObjectId()).toHexString(),
         attempts: 1,
       },
     );

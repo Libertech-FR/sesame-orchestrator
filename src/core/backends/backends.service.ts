@@ -165,7 +165,7 @@ export class BackendsService extends AbstractQueueProcessor {
     const result = {};
     for (const identity of identities) {
       //convertion tableau employeeNumber
-      if (identity.identity.primaryEmployeeNumber !== null) {
+      if (identity.identity.primaryEmployeeNumber !== '' && identity.identity.primaryEmployeeNumber !== null) {
         identity.identity.employeeNumber = identity.identity.primaryEmployeeNumber;
       } else {
         //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
@@ -213,7 +213,7 @@ export class BackendsService extends AbstractQueueProcessor {
         });
       }
       // cas des fusion l employeeNumber doit etre celui de l identite primaire
-      if (identity.primaryEmployeeNumber !== null) {
+      if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== '') {
         identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
       } else {
         //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap

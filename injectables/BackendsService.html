@@ -1422,7 +1422,7 @@ export class BackendsService extends AbstractQueueProcessor {
     const result &#x3D; {};
     for (const identity of identities) {
       //convertion tableau employeeNumber
-      if (identity.identity.primaryEmployeeNumber !&#x3D;&#x3D; null) {
+      if (identity.identity.primaryEmployeeNumber !&#x3D;&#x3D; &#x27;&#x27; &amp;&amp; identity.identity.primaryEmployeeNumber !&#x3D;&#x3D; null) {
         identity.identity.employeeNumber &#x3D; identity.identity.primaryEmployeeNumber;
       } else {
         //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
@@ -1470,7 +1470,7 @@ export class BackendsService extends AbstractQueueProcessor {
         });
       }
       // cas des fusion l employeeNumber doit etre celui de l identite primaire
-      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null) {
+      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null &amp;&amp; identity.primaryEmployeeNumber !&#x3D;&#x3D; &#x27;&#x27;) {
         identity.inetOrgPerson.employeeNumber &#x3D; identity.primaryEmployeeNumber;
       } else {
         //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap

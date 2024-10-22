@@ -166,7 +166,7 @@ export class BackendsService extends AbstractQueueProcessor {
     for (const identity of identities) {
       //convertion tableau employeeNumber
       if (identity.identity.primaryEmployeeNumber !== null) {
-        identity.identity.employeeNumber = identity.identity.identityprimaryEmployeeNumber;
+        identity.identity.employeeNumber = identity.identity.primaryEmployeeNumber;
       } else {
         //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
         identity.identity.inetOrgPerson.employeeNumber = identity.identity.inetOrgPerson.employeeNumber[0];

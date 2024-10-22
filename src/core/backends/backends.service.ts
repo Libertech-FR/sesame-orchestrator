@@ -148,10 +148,10 @@ export class BackendsService extends AbstractQueueProcessor {
   }
 
   public async syncAllIdentities(options?: ExecuteJobOptions): Promise<any> {
-    const syncAllIdentities = (await this.identitiesService.find<Identities>({
+    const syncAllIdentities = await this.identitiesService.find<any>({
       state: IdentityState.TO_SYNC,
-    })) as unknown as Identities[];
-    const identities = syncAllIdentities.map((identity: Identities) => {
+    });
+    const identities = syncAllIdentities.map((identity: any) => {
       return {
         action: ActionType.IDENTITY_UPDATE,
         identity,
@@ -164,6 +164,13 @@ export class BackendsService extends AbstractQueueProcessor {
 
     const result = {};
     for (const identity of identities) {
+      //convertion tableau employeeNumber
+      if (identity.identity.primaryEmployeeNumber !== null) {
+        identity.identity.employeeNumber = identity.identity.identityprimaryEmployeeNumber;
+      } else {
+        //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
+        identity.identity.inetOrgPerson.employeeNumber = identity.identity.inetOrgPerson.employeeNumber[0];
+      }
       try {
         this.logger.debug(`Syncing identity ${identity.identity._id}`);
         const [executedJob] = await this.executeJob(
@@ -208,6 +215,9 @@ export class BackendsService extends AbstractQueueProcessor {
       // cas des fusion l employeeNumber doit etre celui de l identite primaire
       if (identity.primaryEmployeeNumber !== null) {
         identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
+      } else {
+        //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
+        identity.inetOrgPerson.employeeNumber = identity.inetOrgPerson.employeeNumber[0];
       }
       identities.push({
         action: ActionType.IDENTITY_UPDATE,
@@ -240,7 +250,13 @@ export class BackendsService extends AbstractQueueProcessor {
     if (!payload.length) throw new BadRequestException('No identities to disable');
 
     for (const key of payload) {
-      const identity = await this.identitiesService.findById<Identities>(key);
+      const identity = await this.identitiesService.findById<any>(key);
+      if (identity.primaryEmployeeNumber !== null) {
+        identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
+      } else {
+        //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
+        identity.inetOrgPerson.employeeNumber = identity.inetOrgPerson.employeeNumber[0];
+      }
       if (!identity.lastBackendSync) {
         throw new BadRequestException({
           status: HttpStatus.BAD_REQUEST,
@@ -283,13 +299,19 @@ export class BackendsService extends AbstractQueueProcessor {
     if (!payload.length) throw new BadRequestException('No identities to disable');
 
     for (const key of payload) {
-      const identity = await this.identitiesService.findById<Identities>(key);
+      const identity = await this.identitiesService.findById<any>(key);
       if (!identity.lastBackendSync) {
         throw new BadRequestException({
           status: HttpStatus.BAD_REQUEST,
           message: `Identity ${key}  has never been synched`,
           identity,
         });
+      }
+      if (identity.primaryEmployeeNumber !== null) {
+        identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
+      } else {
+        //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
+        identity.inetOrgPerson.employeeNumber = identity.inetOrgPerson.employeeNumber[0];
       }
       identities.push({
         action: ActionType.IDENTITY_DISABLE,
@@ -326,7 +348,13 @@ export class BackendsService extends AbstractQueueProcessor {
     if (!payload.length) throw new BadRequestException('No identities to disable');
 
     for (const key of payload) {
-      const identity = await this.identitiesService.findById<Identities>(key);
+      const identity = await this.identitiesService.findById<any>(key);
+      if (identity.primaryEmployeeNumber !== null) {
+        identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
+      } else {
+        //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
+        identity.inetOrgPerson.employeeNumber = identity.inetOrgPerson.employeeNumber[0];
+      }
       if (!identity.lastBackendSync) {
         throw new BadRequestException({
           status: HttpStatus.BAD_REQUEST,
@@ -362,7 +390,7 @@ export class BackendsService extends AbstractQueueProcessor {
   public async activationIdentity(payload: string, status: boolean, options?: ExecuteJobOptions) {
     let result = null;
     if (status === true) {
-      result = await this.enableIdentities([payload], options );
+      result = await this.enableIdentities([payload], options);
     } else {
       result = await this.disableIdentities([payload], options);
     }
@@ -384,7 +412,7 @@ export class BackendsService extends AbstractQueueProcessor {
       },
       {
         ...options?.job,
-        jobId: (new Types.ObjectId() ).toHexString(),
+        jobId: (new Types.ObjectId()).toHexString(),
         attempts: 1,
       },
     );

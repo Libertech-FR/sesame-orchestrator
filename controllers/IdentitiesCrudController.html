@@ -162,15 +162,19 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getdeleted" >getdeleted</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#read" >read</a>
                             </li>
                             <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#remove" >remove</a>
@@ -254,8 +258,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="160"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:160</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="183"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:183</a></div>
                         </td>
                     </tr>
 
@@ -357,8 +361,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -420,6 +424,97 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getdeleted"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getdeleted</b></span>
+                        <a href="#getdeleted"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getdeleted(res: Response, searchFilterOptions: FilterOptions)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;getdeleted&#x27;)<br />@ApiPaginatedDecorator(undefined)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:102</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>searchFilterOptions</td>
+                                            <td>
+                                                        <code>FilterOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Response&lt;literal type, any&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="read"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -449,8 +544,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="135"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:135</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="158"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:158</a></div>
                         </td>
                     </tr>
 
@@ -514,9 +609,6 @@
                 <td class="col-md-4">
                     <a name="remove"></a>
                     <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>remove</b></span>
@@ -531,18 +623,11 @@
                 </td>
             </tr>
 
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Delete(&#x27;:_id([0-9a-fA-F]{24})&#x27;)<br />@ApiParam({name: &#x27;_id&#x27;, type: String})<br />@ApiDeletedResponseDecorator(IdentitiesDto)<br /></code>
-                </td>
-            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="230"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:230</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="253"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:253</a></div>
                         </td>
                     </tr>
 
@@ -632,8 +717,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="104"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:104</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="127"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:127</a></div>
                         </td>
                     </tr>
 
@@ -736,8 +821,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="175"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:175</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="198"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:198</a></div>
                         </td>
                     </tr>
 
@@ -840,8 +925,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="190"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:190</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="213"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:213</a></div>
                         </td>
                     </tr>
 
@@ -943,8 +1028,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="211"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:211</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="234"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:234</a></div>
                         </td>
                     </tr>
 
@@ -1029,7 +1114,6 @@ import { Response } from &#x27;express&#x27;;
 import { Document, Types } from &#x27;mongoose&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { ApiCreateDecorator } from &#x27;~/_common/decorators/api-create.decorator&#x27;;
-import { ApiDeletedResponseDecorator } from &#x27;~/_common/decorators/api-deleted-response.decorator&#x27;;
 import { ApiPaginatedDecorator } from &#x27;~/_common/decorators/api-paginated.decorator&#x27;;
 import { ApiReadResponseDecorator } from &#x27;~/_common/decorators/api-read-response.decorator&#x27;;
 import { ApiUpdateDecorator } from &#x27;~/_common/decorators/api-update.decorator&#x27;;
@@ -1104,6 +1188,30 @@ export class IdentitiesCrudController extends AbstractController {
       statusCode,
       data,
       message,
+    });
+  }
+  @Get(&#x27;getdeleted&#x27;)
+  @ApiPaginatedDecorator(PickProjectionHelper(IdentitiesDto, IdentitiesCrudController.projection))
+  public async getdeleted(
+    @Res() res: Response,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+  ): Promise&lt;
+    Response&lt;
+      {
+        statusCode: number;
+        data?: Document&lt;Identities, any, Identities&gt;;
+        total?: number;
+        message?: string;
+        validations?: MixedValue;
+      },
+      any
+    &gt;
+  &gt; {
+    const [data, total] &#x3D; await this._service.trashAndCount(IdentitiesCrudController.projection, searchFilterOptions);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      total,
+      data,
     });
   }
 
@@ -1232,9 +1340,9 @@ export class IdentitiesCrudController extends AbstractController {
     });
   }
 
-  @Delete(&#x27;:_id([0-9a-fA-F]{24})&#x27;)
-  @ApiParam({ name: &#x27;_id&#x27;, type: String })
-  @ApiDeletedResponseDecorator(IdentitiesDto)
+  //@Delete(&#x27;:_id([0-9a-fA-F]{24})&#x27;)
+  //@ApiParam({ name: &#x27;_id&#x27;, type: String })
+  //@ApiDeletedResponseDecorator(IdentitiesDto)
   public async remove(
     @Param(&#x27;_id&#x27;, ObjectIdValidationPipe) _id: Types.ObjectId,
     @Res() res: Response,

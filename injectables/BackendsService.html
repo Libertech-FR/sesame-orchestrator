@@ -353,8 +353,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="390"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:390</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="393"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:393</a></div>
                         </td>
                     </tr>
 
@@ -447,8 +447,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="244"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:244</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="247"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:247</a></div>
                         </td>
                     </tr>
 
@@ -529,8 +529,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="293"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:293</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="296"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:296</a></div>
                         </td>
                     </tr>
 
@@ -611,8 +611,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="342"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:342</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="345"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:345</a></div>
                         </td>
                     </tr>
 
@@ -693,8 +693,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="399"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:399</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="402"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:402</a></div>
                         </td>
                     </tr>
 
@@ -845,8 +845,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="150"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:150</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="153"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:153</a></div>
                         </td>
                     </tr>
 
@@ -915,8 +915,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="198"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:198</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="201"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:201</a></div>
                         </td>
                     </tr>
 
@@ -1368,12 +1368,14 @@ export class BackendsService extends AbstractQueueProcessor {
     });
 
     this.queueEvents.on(&#x27;completed&#x27;, async (payload) &#x3D;&gt; {
-      let jState &#x3D; JobState.COMPLETED;
-      let iState &#x3D; IdentityState.SYNCED;
+
       const result &#x3D; &lt;WorkerResultInterface&gt;(&lt;unknown&gt;payload.returnvalue);
+
       if (result.jobName &#x3D;&#x3D;&#x3D; ActionType.DUMP_PACKAGE_CONFIG || result?.options?.disableLogs &#x3D;&#x3D;&#x3D; true) {
         return;
       }
+      let jState &#x3D; JobState.COMPLETED;
+      let iState &#x3D; IdentityState.SYNCED;
       if (result.status !&#x3D;&#x3D; 0) {
         jState &#x3D; JobState.FAILED;
         iState &#x3D; IdentityState.ON_ERROR;
@@ -1392,8 +1394,9 @@ export class BackendsService extends AbstractQueueProcessor {
 
       await this.identitiesService.model.findByIdAndUpdate(completedJob?.concernedTo?.id, {
         $set: {
-          state: iState,
+          state: result.jobName &#x3D;&#x3D;&#x3D; ActionType.IDENTITY_DELETE ? IdentityState.DONT_SYNC : IdentityState.SYNCED,
           lastBackendSync: jState &#x3D;&#x3D;&#x3D; JobState.COMPLETED ? new Date() : null,
+          deletedFlag: result.jobName &#x3D;&#x3D;&#x3D; ActionType.IDENTITY_DELETE,
         },
       });
       if (jState &#x3D;&#x3D;&#x3D; JobState.COMPLETED) {

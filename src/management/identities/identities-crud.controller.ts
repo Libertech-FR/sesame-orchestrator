@@ -21,7 +21,6 @@ import { Response } from 'express';
 import { Document, Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator';
-import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-response.decorator';
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
 import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator';
 import { ApiUpdateDecorator } from '~/_common/decorators/api-update.decorator';
@@ -96,6 +95,30 @@ export class IdentitiesCrudController extends AbstractController {
       statusCode,
       data,
       message,
+    });
+  }
+  @Get('getdeleted')
+  @ApiPaginatedDecorator(PickProjectionHelper(IdentitiesDto, IdentitiesCrudController.projection))
+  public async getdeleted(
+    @Res() res: Response,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+  ): Promise<
+    Response<
+      {
+        statusCode: number;
+        data?: Document<Identities, any, Identities>;
+        total?: number;
+        message?: string;
+        validations?: MixedValue;
+      },
+      any
+    >
+  > {
+    const [data, total] = await this._service.trashAndCount(IdentitiesCrudController.projection, searchFilterOptions);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      total,
+      data,
     });
   }
 
@@ -224,9 +247,9 @@ export class IdentitiesCrudController extends AbstractController {
     });
   }
 
-  @Delete(':_id([0-9a-fA-F]{24})')
-  @ApiParam({ name: '_id', type: String })
-  @ApiDeletedResponseDecorator(IdentitiesDto)
+  //@Delete(':_id([0-9a-fA-F]{24})')
+  //@ApiParam({ name: '_id', type: String })
+  //@ApiDeletedResponseDecorator(IdentitiesDto)
   public async remove(
     @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
     @Res() res: Response,

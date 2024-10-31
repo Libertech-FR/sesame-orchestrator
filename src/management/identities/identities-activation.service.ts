@@ -1,6 +1,6 @@
 import { AbstractIdentitiesService } from '~/management/identities/abstract-identities.service';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
-import {BadRequestException, HttpException} from '@nestjs/common';
+import { BadRequestException, HttpException } from '@nestjs/common';
 import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 import { JobState } from '~/core/jobs/_enums/state.enum';
 

@@ -111,12 +111,14 @@ export class BackendsService extends AbstractQueueProcessor {
     });
 
     this.queueEvents.on('completed', async (payload) => {
-      let jState = JobState.COMPLETED;
-      let iState = IdentityState.SYNCED;
+
       const result = <WorkerResultInterface>(<unknown>payload.returnvalue);
+
       if (result.jobName === ActionType.DUMP_PACKAGE_CONFIG || result?.options?.disableLogs === true) {
         return;
       }
+      let jState = JobState.COMPLETED;
+      let iState = IdentityState.SYNCED;
       if (result.status !== 0) {
         jState = JobState.FAILED;
         iState = IdentityState.ON_ERROR;
@@ -135,8 +137,9 @@ export class BackendsService extends AbstractQueueProcessor {
 
       await this.identitiesService.model.findByIdAndUpdate(completedJob?.concernedTo?.id, {
         $set: {
-          state: iState,
+          state: result.jobName === ActionType.IDENTITY_DELETE ? IdentityState.DONT_SYNC : IdentityState.SYNCED,
           lastBackendSync: jState === JobState.COMPLETED ? new Date() : null,
+          deletedFlag: result.jobName === ActionType.IDENTITY_DELETE,
         },
       });
       if (jState === JobState.COMPLETED) {

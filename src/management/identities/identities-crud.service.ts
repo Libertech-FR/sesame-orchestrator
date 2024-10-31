@@ -15,7 +15,6 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     await this.checkInetOrgPersonJpegPhoto(data);
     const created: Document<T, any, T> = await super.create(data, options);
     return created;
-    //TODO: add backends service logic here
   }
   public async update<T extends AbstractSchema | Document>(
     _id: Types.ObjectId | any,
@@ -91,15 +90,13 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
 
     return updated as any;
   }
-
+  //Attention le front appelle backend/delete pour deleter l identite. La methode ci dessous n est pas utilisée
   public async delete<T extends AbstractSchema | Document>(
     _id: Types.ObjectId | any,
     options?: QueryOptions<T> | null | undefined,
   ): Promise<Query<T, T, any, T>> {
     // noinspection UnnecessaryLocalVariableJS
-    //TODO: soft delete
     const deleted = await super.delete(_id, options);
-    //TODO: add backends service logic here (TO_SYNC)
     return deleted;
   }
 }

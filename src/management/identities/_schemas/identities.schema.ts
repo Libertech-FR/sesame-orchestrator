@@ -25,6 +25,9 @@ export class Identities extends AbstractSchema {
   @Prop({ type: Number, enum: DataStatusEnum, default: DataStatusEnum.ACTIVE })
   public dataStatus: DataStatusEnum;
 
+  @Prop({ type: Boolean, default: false })
+  public deletedFlag: boolean;
+
   @Prop({ type: inetOrgPersonSchema, required: true })
   public inetOrgPerson: inetOrgPerson;
 

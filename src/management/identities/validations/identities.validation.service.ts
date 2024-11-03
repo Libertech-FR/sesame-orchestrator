@@ -35,7 +35,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
 
     try {
       files = readdirSync(`${process.cwd()}/configs/identities/validations`);
-      defaultFiles = readdirSync(`${process.cwd()}/configs/identities/default/validations`);
+      defaultFiles = readdirSync(`${process.cwd()}/defaults/identities/validations`);
     } catch (error) {
       this.logger.error('Error reading identities validations files', error.message, error.stack);
     }
@@ -43,7 +43,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     for (const file of defaultFiles) {
       if (!files.includes(file)) {
         try {
-          const defaultFile = readFileSync(`${process.cwd()}/configs/identities/default/validations/${file}`, 'utf-8');
+          const defaultFile = readFileSync(`${process.cwd()}/defaults/identities/validations/${file}`, 'utf-8');
           writeFileSync(`${process.cwd()}/configs/identities/validations/${file}`, defaultFile);
           this.logger.warn(`Copied default validation file: ${file}`);
         } catch (error) {

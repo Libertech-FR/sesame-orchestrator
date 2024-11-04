@@ -254,7 +254,7 @@ export class BackendsService extends AbstractQueueProcessor {
 
     for (const key of payload) {
       const identity = await this.identitiesService.findById<any>(key);
-      if (identity.primaryEmployeeNumber !== null) {
+      if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== '') {
         identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
       } else {
         //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
@@ -310,7 +310,7 @@ export class BackendsService extends AbstractQueueProcessor {
           identity,
         });
       }
-      if (identity.primaryEmployeeNumber !== null) {
+      if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== '') {
         identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
       } else {
         //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
@@ -352,7 +352,7 @@ export class BackendsService extends AbstractQueueProcessor {
 
     for (const key of payload) {
       const identity = await this.identitiesService.findById<any>(key);
-      if (identity.primaryEmployeeNumber !== null) {
+      if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== '') {
         identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
       } else {
         //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap

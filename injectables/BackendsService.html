@@ -1511,7 +1511,7 @@ export class BackendsService extends AbstractQueueProcessor {
 
     for (const key of payload) {
       const identity &#x3D; await this.identitiesService.findById&lt;any&gt;(key);
-      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null) {
+      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null &amp;&amp; identity.primaryEmployeeNumber !&#x3D;&#x3D; &#x27;&#x27;) {
         identity.inetOrgPerson.employeeNumber &#x3D; identity.primaryEmployeeNumber;
       } else {
         //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
@@ -1567,7 +1567,7 @@ export class BackendsService extends AbstractQueueProcessor {
           identity,
         });
       }
-      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null) {
+      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null &amp;&amp; identity.primaryEmployeeNumber !&#x3D;&#x3D; &#x27;&#x27;) {
         identity.inetOrgPerson.employeeNumber &#x3D; identity.primaryEmployeeNumber;
       } else {
         //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
@@ -1609,7 +1609,7 @@ export class BackendsService extends AbstractQueueProcessor {
 
     for (const key of payload) {
       const identity &#x3D; await this.identitiesService.findById&lt;any&gt;(key);
-      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null) {
+      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null &amp;&amp; identity.primaryEmployeeNumber !&#x3D;&#x3D; &#x27;&#x27;) {
         identity.inetOrgPerson.employeeNumber &#x3D; identity.primaryEmployeeNumber;
       } else {
         //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap

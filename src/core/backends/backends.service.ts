@@ -261,11 +261,14 @@ export class BackendsService extends AbstractQueueProcessor {
         identity.inetOrgPerson.employeeNumber = identity.inetOrgPerson.employeeNumber[0];
       }
       if (!identity.lastBackendSync) {
-        throw new BadRequestException({
-          status: HttpStatus.BAD_REQUEST,
-          message: `Identity ${key} is not in state TO_DELETE`,
-          identity,
+        // l identité n'a jamais été symchronisée on la soft delete
+        await this.identitiesService.model.findByIdAndUpdate(key, {
+          $set: {
+            state: IdentityState.DONT_SYNC,
+            deletedFlag: true,
+          },
         });
+        return [];
       }
       identities.push({
         action: ActionType.IDENTITY_DELETE,

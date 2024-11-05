@@ -353,8 +353,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="393"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:393</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="396"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:396</a></div>
                         </td>
                     </tr>
 
@@ -529,8 +529,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="296"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:296</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="299"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:299</a></div>
                         </td>
                     </tr>
 
@@ -611,8 +611,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="345"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:345</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="348"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:348</a></div>
                         </td>
                     </tr>
 
@@ -693,8 +693,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="402"
-                                    class="link-to-prism">src/core/backends/backends.service.ts:402</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="405"
+                                    class="link-to-prism">src/core/backends/backends.service.ts:405</a></div>
                         </td>
                     </tr>
 
@@ -1518,11 +1518,14 @@ export class BackendsService extends AbstractQueueProcessor {
         identity.inetOrgPerson.employeeNumber &#x3D; identity.inetOrgPerson.employeeNumber[0];
       }
       if (!identity.lastBackendSync) {
-        throw new BadRequestException({
-          status: HttpStatus.BAD_REQUEST,
-          message: &#x60;Identity ${key} is not in state TO_DELETE&#x60;,
-          identity,
+        // l identité n&#x27;a jamais été symchronisée on la soft delete
+        await this.identitiesService.model.findByIdAndUpdate(key, {
+          $set: {
+            state: IdentityState.DONT_SYNC,
+            deletedFlag: true,
+          },
         });
+        return [];
       }
       identities.push({
         action: ActionType.IDENTITY_DELETE,

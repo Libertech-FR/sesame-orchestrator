@@ -20,7 +20,7 @@ declare const module: any;
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bodyParser: false,
     rawBody: true,
-    cors: true,
+    cors: false,
     logger,
   });
   app.use((_: any, res: Response, next: () => void) => {

@@ -22,7 +22,7 @@ export class Identities extends AbstractSchema {
   @Prop({ type: Number, enum: IdentityLifecycle, default: IdentityLifecycle.INACTIVE })
   public lifecycle: IdentityLifecycle;
 
-  @Prop({ type: Number, enum: DataStatusEnum, default: DataStatusEnum.ACTIVE })
+  @Prop({ type: Number, enum: DataStatusEnum, default: DataStatusEnum.INACTIVE })
   public dataStatus: DataStatusEnum;
 
   @Prop({ type: Boolean, default: false })
@@ -71,6 +71,7 @@ export const IdentitiesSchema = SchemaFactory.createForClass(Identities)
     incrementBy: 1,
     field: 'inetOrgPerson.employeeNumber',
     startAt: 1,
+    type: 'array',
     rules: (ctx) => {
       return ctx.inetOrgPerson.employeeType === 'LOCAL';
     },

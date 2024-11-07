@@ -27,6 +27,7 @@ export interface AutoIncrementPluginOptions {
    * @default 0
    */
   startAt?: number;
+  type?: string;
   /**
    * Overwrite what to use for the `modelName` property in the tracker document
    * This can be overwritten when wanting to use a single tracker for multiple models

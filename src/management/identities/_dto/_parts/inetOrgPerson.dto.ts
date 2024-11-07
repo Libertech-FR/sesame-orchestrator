@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsString, IsEmail, IsOptional } from 'class-validator';
+import {IsString, IsEmail, IsOptional, IsArray} from 'class-validator';
 
 export class inetOrgPersonCreateDto {
   @IsString()
@@ -10,19 +10,20 @@ export class inetOrgPersonCreateDto {
   @ApiProperty()
   public cn: string;
 
-  @IsString()
+  @IsArray()
+  @IsString({ each: true })
   @ApiProperty()
   @IsOptional()
-  public employeeNumber: string;
+  public employeeNumber: string[];
 
   @IsString()
   @ApiProperty()
   public employeeType: string;
 
-  @IsString()
   @ApiProperty()
-  @IsOptional()
-  public departmentNumber: string;
+  @IsArray()
+  @IsString({ each: true })
+  public departmentNumber: string[];
 
   @IsString()
   @ApiProperty()

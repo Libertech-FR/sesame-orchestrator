@@ -8,7 +8,7 @@ import { additionalFieldsPartDto } from './_parts/additionalFields.dto';
 import { MetadataDto } from '~/_common/abstracts/dto/metadata.dto';
 import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
 import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto';
-import {DataStatusEnum} from "~/management/identities/_enums/data-status";
+import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 
 export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, MetadataDto) {
   @IsNumber()
@@ -17,11 +17,13 @@ export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, Metad
   public state: IdentityState;
 
   @IsNumber()
+  @IsOptional()
   @IsEnum(InitStatesEnum)
   @ApiProperty({ enum: InitStatesEnum })
   public initState: InitStatesEnum;
 
   @IsNumber()
+  @IsOptional()
   @IsEnum(DataStatusEnum)
   @ApiProperty({ enum: DataStatusEnum })
   public dataStatus: DataStatusEnum;

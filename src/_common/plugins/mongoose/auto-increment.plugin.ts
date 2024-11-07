@@ -129,9 +129,11 @@ export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
     }
 
     logger.info('Setting "%s" to "%d"', opt.field, leandoc.count);
-
-    set(this, opt.field, leandoc.count);
-    // this[opt.field] = leandoc.count;
+    if (opt.type === 'string') {
+      set(this, opt.field, leandoc.count);
+    } else {
+      set(this, opt.field, [leandoc.count]);
+    }
 
     return next();
   });

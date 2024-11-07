@@ -828,7 +828,7 @@ export class Identities extends AbstractSchema {
   @Prop({ type: Number, enum: IdentityLifecycle, default: IdentityLifecycle.INACTIVE })
   public lifecycle: IdentityLifecycle;
 
-  @Prop({ type: Number, enum: DataStatusEnum, default: DataStatusEnum.ACTIVE })
+  @Prop({ type: Number, enum: DataStatusEnum, default: DataStatusEnum.INACTIVE })
   public dataStatus: DataStatusEnum;
 
   @Prop({ type: Boolean, default: false })
@@ -877,6 +877,7 @@ export const IdentitiesSchema &#x3D; SchemaFactory.createForClass(Identities)
     incrementBy: 1,
     field: &#x27;inetOrgPerson.employeeNumber&#x27;,
     startAt: 1,
+    type: &#x27;array&#x27;,
     rules: (ctx) &#x3D;&gt; {
       return ctx.inetOrgPerson.employeeType &#x3D;&#x3D;&#x3D; &#x27;LOCAL&#x27;;
     },

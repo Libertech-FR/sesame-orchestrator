@@ -1645,6 +1645,7 @@
     incrementBy: 1,
     field: &#x27;inetOrgPerson.employeeNumber&#x27;,
     startAt: 1,
+    type: &#x27;array&#x27;,
     rules: (ctx) &#x3D;&gt; {
       return ctx.inetOrgPerson.employeeType &#x3D;&#x3D;&#x3D; &#x27;LOCAL&#x27;;
     },
@@ -1680,9 +1681,9 @@
     cn: &#x27;cn&#x27;,
     sn: &#x27;sn&#x27;,
     uid: &#x27;uid&#x27;,
-    employeeNumber: &#x27;employeeNumber&#x27;,
+    employeeNumber: [&#x27;employeeNumber&#x27;],
     employeeType: &#x27;employeeType&#x27;,
-    departmentNumber: &#x27;departmentNumber&#x27;,
+    departmentNumber: [&#x27;departmentNumber&#x27;],
     displayName: &#x27;displayName&#x27;,
     facsimileTelephoneNumber: &#x27;facsimileTelephoneNumber&#x27;,
     givenName: &#x27;givenName&#x27;,

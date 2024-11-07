@@ -203,7 +203,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="67" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:67</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -232,7 +232,7 @@ import { additionalFieldsPartDto } from &#x27;./_parts/additionalFields.dto&#x27
 import { MetadataDto } from &#x27;~/_common/abstracts/dto/metadata.dto&#x27;;
 import { InitStatesEnum } from &#x27;~/management/identities/_enums/init-state.enum&#x27;;
 import { CustomFieldsDto } from &#x27;~/_common/abstracts/dto/custom-fields.dto&#x27;;
-import {DataStatusEnum} from &quot;~/management/identities/_enums/data-status&quot;;
+import { DataStatusEnum } from &#x27;~/management/identities/_enums/data-status&#x27;;
 
 export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, MetadataDto) {
   @IsNumber()
@@ -241,11 +241,13 @@ export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, Metad
   public state: IdentityState;
 
   @IsNumber()
+  @IsOptional()
   @IsEnum(InitStatesEnum)
   @ApiProperty({ enum: InitStatesEnum })
   public initState: InitStatesEnum;
 
   @IsNumber()
+  @IsOptional()
   @IsEnum(DataStatusEnum)
   @ApiProperty({ enum: DataStatusEnum })
   public dataStatus: DataStatusEnum;

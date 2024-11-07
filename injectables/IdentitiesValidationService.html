@@ -975,12 +975,20 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
 
   public async findOne(schema): Promise&lt;any&gt; {
     this.logger.debug([&#x27;findOne&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;));
-    const filePath &#x3D; this.resolveConfigPath(schema);
-    if (!existsSync(filePath)) {
-      const message &#x3D; &#x60;File not found: ${filePath}&#x60;;
-      throw new ValidationConfigException({ message });
+    let filePath &#x3D; &#x27;&#x27;;
+    if (schema &#x3D;&#x3D;&#x3D; &#x27;inetorgperson&#x27;) {
+      filePath &#x3D; &#x27;./validation/inetorgperson.json&#x27;;
+      if (!existsSync(filePath)) {
+        const message &#x3D; &#x60;File not found /validation/inetorgperson.json&#x60;;
+        throw new ValidationConfigException({ message });
+      }
+    } else {
+      filePath &#x3D; this.resolveConfigPath(schema);
+      if (!existsSync(filePath)) {
+        const message &#x3D; &#x60;File not found: ${filePath}&#x60;;
+        throw new ValidationConfigException({ message });
+      }
     }
-
     return parse(readFileSync(filePath, &#x27;utf-8&#x27;));
   }
 }

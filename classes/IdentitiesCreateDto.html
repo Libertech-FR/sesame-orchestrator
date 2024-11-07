@@ -157,6 +157,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                 <a href="#dataStatus" >dataStatus</a>
                             </li>
@@ -168,6 +169,7 @@
                                 <a href="#inetOrgPerson" >inetOrgPerson</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -241,7 +243,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:57</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -254,6 +256,7 @@
                 <td class="col-md-4">
                     <a name="dataStatus"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -274,13 +277,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsNumber()<br />@IsEnum(DataStatusEnum)<br />@ApiProperty({enum: DataStatusEnum})<br />
+                            @IsNumber()<br />@IsOptional()<br />@IsEnum(DataStatusEnum)<br />@ApiProperty({enum: DataStatusEnum})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:27</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -319,7 +322,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:38</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -332,6 +335,7 @@
                 <td class="col-md-4">
                     <a name="initState"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -352,13 +356,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsNumber()<br />@IsEnum(InitStatesEnum)<br />@ApiProperty({enum: InitStatesEnum})<br />
+                            @IsNumber()<br />@IsOptional()<br />@IsEnum(InitStatesEnum)<br />@ApiProperty({enum: InitStatesEnum})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -398,7 +402,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:33</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -466,7 +470,7 @@ import { additionalFieldsPartDto } from &#x27;./_parts/additionalFields.dto&#x27
 import { MetadataDto } from &#x27;~/_common/abstracts/dto/metadata.dto&#x27;;
 import { InitStatesEnum } from &#x27;~/management/identities/_enums/init-state.enum&#x27;;
 import { CustomFieldsDto } from &#x27;~/_common/abstracts/dto/custom-fields.dto&#x27;;
-import {DataStatusEnum} from &quot;~/management/identities/_enums/data-status&quot;;
+import { DataStatusEnum } from &#x27;~/management/identities/_enums/data-status&#x27;;
 
 export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, MetadataDto) {
   @IsNumber()
@@ -475,11 +479,13 @@ export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, Metad
   public state: IdentityState;
 
   @IsNumber()
+  @IsOptional()
   @IsEnum(InitStatesEnum)
   @ApiProperty({ enum: InitStatesEnum })
   public initState: InitStatesEnum;
 
   @IsNumber()
+  @IsOptional()
   @IsEnum(DataStatusEnum)
   @ApiProperty({ enum: DataStatusEnum })
   public dataStatus: DataStatusEnum;

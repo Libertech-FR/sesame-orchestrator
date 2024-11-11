@@ -13,6 +13,13 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
   ): Promise<Document<T, any, T>> {
     data = this.transformNullsToString(data);
     await this.checkInetOrgPersonJpegPhoto(data);
+    //recherche si email oy uid deja present
+    const f:any = { $or: [{ 'inetOrgPerson.uid' : data.inetOrgPerson.uid}, {'inetOrgPerson.mail': data.inetOrgPerson.mail }]};
+    let dataDup = await this._model.countDocuments(f).exec()
+    if (dataDup > 0){
+      this.logger.error('Identité existante');
+      throw new HttpException("Uid ou mail déjà présent dans une autre identité", 400);
+    }
     const created: Document<T, any, T> = await super.create(data, options);
     return created;
   }

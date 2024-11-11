@@ -582,7 +582,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:94</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:101</a></code>
 </div>
                         </td>
                     </tr>
@@ -678,7 +678,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:19</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:26</a></code>
 </div>
                         </td>
                     </tr>
@@ -779,8 +779,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -880,8 +880,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -2110,6 +2110,13 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
   ): Promise&lt;Document&lt;T, any, T&gt;&gt; {
     data &#x3D; this.transformNullsToString(data);
     await this.checkInetOrgPersonJpegPhoto(data);
+    //recherche si email oy uid deja present
+    const f:any &#x3D; { $or: [{ &#x27;inetOrgPerson.uid&#x27; : data.inetOrgPerson.uid}, {&#x27;inetOrgPerson.mail&#x27;: data.inetOrgPerson.mail }]};
+    let dataDup &#x3D; await this._model.countDocuments(f).exec()
+    if (dataDup &gt; 0){
+      this.logger.error(&#x27;Identité existante&#x27;);
+      throw new HttpException(&quot;Uid ou mail déjà présent dans une autre identité&quot;, 400);
+    }
     const created: Document&lt;T, any, T&gt; &#x3D; await super.create(data, options);
     return created;
   }

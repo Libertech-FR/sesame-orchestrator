@@ -36,9 +36,10 @@ ADD *.lock .
 RUN mkdir ./configs
 RUN mkdir ./templates
 RUN mkdir ./defaults
+RUN mkdir ./defaults/identities
 COPY ./templates/* ./templates
 COPY ./configs/* ./configs
-COPY ./defaults/* ./defaults
+COPY ./defaults/identities/* ./defaults/identities
 
 RUN apt clean -y \
   && apt update -y \

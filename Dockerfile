@@ -35,8 +35,10 @@ ADD package.json .
 ADD *.lock .
 RUN mkdir ./configs
 RUN mkdir ./templates
+RUN mkdir ./defaults
 COPY ./templates/* ./templates
 COPY ./configs/* ./configs
+COPY ./defaults/* ./defaults
 
 RUN apt clean -y \
   && apt update -y \

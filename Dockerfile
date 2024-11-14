@@ -37,9 +37,14 @@ RUN mkdir ./configs
 RUN mkdir ./templates
 RUN mkdir ./defaults
 RUN mkdir ./defaults/identities
+RUN mkdir ./defaults/identities/jsonforms
+RUN mkdir ./defaults/identities/validations
+
+
 COPY ./templates/* ./templates
 COPY ./configs/* ./configs
-COPY ./defaults/identities/* ./defaults/identities
+COPY ./defaults/identities/jsonforms/* ./defaults/identities/jsonforms
+COPY ./defaults/identities/validations/* ./defaults/identities/validations
 
 RUN apt clean -y \
   && apt update -y \

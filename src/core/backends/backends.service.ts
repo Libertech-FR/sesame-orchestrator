@@ -134,19 +134,22 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { upsert: true, new: true },
       );
-
-      await this.identitiesService.model.findByIdAndUpdate(completedJob?.concernedTo?.id, {
-        $set: {
-          state: result.jobName === ActionType.IDENTITY_DELETE ? IdentityState.DONT_SYNC : IdentityState.SYNCED,
-          lastBackendSync: jState === JobState.COMPLETED ? new Date() : null,
-          deletedFlag: result.jobName === ActionType.IDENTITY_DELETE,
-        },
-      });
+      let myState = result.jobName === ActionType.IDENTITY_DELETE ? IdentityState.DONT_SYNC : IdentityState.SYNCED
       if (jState === JobState.COMPLETED) {
         this.logger.log(`Job completed... Syncing [${payload.jobId}]`);
       } else {
         this.logger.error(`Job FAILED... Syncing [${payload.jobId}]`);
+        this.logger.error(`Set State on error [${payload.jobId}]`);
+        myState = IdentityState.ON_ERROR
       }
+      await this.identitiesService.model.findByIdAndUpdate(completedJob?.concernedTo?.id, {
+        $set: {
+          state: myState,
+          lastBackendSync: jState === JobState.COMPLETED ? new Date() : null,
+          deletedFlag: result.jobName === ActionType.IDENTITY_DELETE,
+        },
+      });
+
     });
   }
 

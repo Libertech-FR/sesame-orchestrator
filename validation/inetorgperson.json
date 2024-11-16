@@ -83,5 +83,5 @@
       "description": "User jpeg photo of the inetOrgPerson."
     }
   },
-  "required": ["uid", "employeeNumber", "employeeType"]
+  "required": ["uid", "employeeNumber", "employeeType","departmentNumber"]
 }

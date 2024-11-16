@@ -39,8 +39,9 @@ RUN mkdir ./defaults
 RUN mkdir ./defaults/identities
 RUN mkdir ./defaults/identities/jsonforms
 RUN mkdir ./defaults/identities/validations
+RUN mkdir ./validation
 
-
+COPY ./validation/* ./validation
 COPY ./templates/* ./templates
 COPY ./configs/* ./configs
 COPY ./defaults/identities/jsonforms/* ./defaults/identities/jsonforms

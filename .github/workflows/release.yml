@@ -20,7 +20,7 @@ on:
       latest:
         description: "Tagger l'image docker avec le tag 'latest' ?"
         required: true
-        default: true
+        default: false
         type: boolean
 
 jobs:

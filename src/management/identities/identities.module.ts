@@ -18,6 +18,11 @@ import { IdentitiesPhotoController } from '~/management/identities/identities-ph
 import { IdentitiesActivationController } from '~/management/identities/identities-activation.controller';
 import { IdentitiesActivationService } from '~/management/identities/identities-activation.service';
 import { IdentitiesDoublonController } from '~/management/identities/identities-doublon.controller';
+import {IdentitiesForcePasswordController} from "~/management/identities/identities-forcepassword.controller";
+import {IdentitiesForcepasswordService} from "~/management/identities/identities-forcepassword.service";
+import {SettingsModule} from "~/settings/settings.module";
+import {PasswdadmService} from "~/settings/passwdadm.service";
+import {PasswdModule} from "~/management/passwd/passwd.module";
 
 @Module({
   imports: [
@@ -31,6 +36,7 @@ import { IdentitiesDoublonController } from '~/management/identities/identities-
     ]),
     FilestorageModule,
     forwardRef(() => BackendsModule),
+    SettingsModule
   ],
   providers: [
     IdentitiesUpsertService,
@@ -43,6 +49,7 @@ import { IdentitiesDoublonController } from '~/management/identities/identities-
       useClass: IdentitiesValidationFilter,
     },
     IdentitiesJsonformsService,
+    IdentitiesForcepasswordService
   ],
   controllers: [
     IdentitiesCrudController,
@@ -50,6 +57,7 @@ import { IdentitiesDoublonController } from '~/management/identities/identities-
     IdentitiesPhotoController,
     IdentitiesDoublonController,
     IdentitiesActivationController,
+    IdentitiesForcePasswordController
   ],
   exports: [IdentitiesCrudService],
 })

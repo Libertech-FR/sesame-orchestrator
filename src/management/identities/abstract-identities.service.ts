@@ -13,6 +13,7 @@ import { BackendsService } from '~/core/backends/backends.service';
 import { construct, omit } from 'radash';
 import { toPlainAndCrush } from '~/_common/functions/to-plain-and-crush';
 import { createHash } from 'node:crypto';
+import {PasswdadmService} from "~/settings/passwdadm.service";
 
 @Injectable()
 export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
@@ -20,6 +21,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     @InjectModel(Identities.name) protected _model: Model<Identities>,
     protected readonly _validation: IdentitiesValidationService,
     protected readonly storage: FactorydriveService,
+    protected readonly passwdAdmService: PasswdadmService,
     @Inject(forwardRef(() => BackendsService)) protected readonly backends: BackendsService,
   ) {
     super();

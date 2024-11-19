@@ -147,7 +147,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;;
-import {IsString, IsEmail, IsOptional, IsArray} from &#x27;class-validator&#x27;;
+import { Type } from &#x27;class-transformer&#x27;;
+import { IsString, IsEmail, IsOptional, IsArray } from &#x27;class-validator&#x27;;
 
 export class inetOrgPersonCreateDto {
   @IsString()
@@ -156,9 +157,11 @@ export class inetOrgPersonCreateDto {
 
   @IsString()
   @ApiProperty()
+  @IsOptional()
   public cn: string;
 
   @IsArray()
+  @Type(() &#x3D;&gt; String)
   @IsString({ each: true })
   @ApiProperty()
   @IsOptional()
@@ -171,6 +174,7 @@ export class inetOrgPersonCreateDto {
   @ApiProperty()
   @IsArray()
   @IsString({ each: true })
+  @IsOptional()
   public departmentNumber: string[];
 
   @IsString()
@@ -200,6 +204,7 @@ export class inetOrgPersonCreateDto {
 
   @IsEmail()
   @ApiProperty({ required: false })
+  @IsOptional()
   public mail?: string;
 
   @IsOptional()

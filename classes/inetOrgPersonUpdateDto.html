@@ -153,6 +153,7 @@ import { IsString, IsEmail, IsOptional, IsArray } from &#x27;class-validator&#x2
 export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty()
+  @IsOptional()
   public uid: string;
 
   @IsString()

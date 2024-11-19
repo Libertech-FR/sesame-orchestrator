@@ -133,7 +133,6 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
         ),
       ),
     );
-    console.log('datadata', data);
 
     const hash = createHash('sha256');
     hash.update(data);

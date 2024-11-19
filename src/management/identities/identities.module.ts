@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { forwardRef, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Identities, IdentitiesSchema } from './_schemas/identities.schema';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
@@ -18,6 +18,7 @@ import { IdentitiesPhotoController } from '~/management/identities/identities-ph
 import { IdentitiesActivationController } from '~/management/identities/identities-activation.controller';
 import { IdentitiesActivationService } from '~/management/identities/identities-activation.service';
 import { IdentitiesDoublonController } from '~/management/identities/identities-doublon.controller';
+import { EnsureIdentitiesIndexMiddleware } from './_middlewares/ensure-identities-index.middleware';
 
 @Module({
   imports: [
@@ -53,4 +54,8 @@ import { IdentitiesDoublonController } from '~/management/identities/identities-
   ],
   exports: [IdentitiesCrudService],
 })
-export class IdentitiesModule {}
+export class IdentitiesModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer) {
+    consumer.apply(EnsureIdentitiesIndexMiddleware).forRoutes('/management/identities/*');
+  }
+}

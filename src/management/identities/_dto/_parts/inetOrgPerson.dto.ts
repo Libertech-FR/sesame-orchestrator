@@ -1,5 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import {IsString, IsEmail, IsOptional, IsArray} from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, IsEmail, IsOptional, IsArray } from 'class-validator';
 
 export class inetOrgPersonCreateDto {
   @IsString()
@@ -8,9 +9,11 @@ export class inetOrgPersonCreateDto {
 
   @IsString()
   @ApiProperty()
+  @IsOptional()
   public cn: string;
 
   @IsArray()
+  @Type(() => String)
   @IsString({ each: true })
   @ApiProperty()
   @IsOptional()
@@ -23,6 +26,7 @@ export class inetOrgPersonCreateDto {
   @ApiProperty()
   @IsArray()
   @IsString({ each: true })
+  @IsOptional()
   public departmentNumber: string[];
 
   @IsString()
@@ -52,6 +56,7 @@ export class inetOrgPersonCreateDto {
 
   @IsEmail()
   @ApiProperty({ required: false })
+  @IsOptional()
   public mail?: string;
 
   @IsOptional()

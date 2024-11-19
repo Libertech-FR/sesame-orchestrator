@@ -5,6 +5,7 @@ import { IsString, IsEmail, IsOptional, IsArray } from 'class-validator';
 export class inetOrgPersonCreateDto {
   @IsString()
   @ApiProperty()
+  @IsOptional()
   public uid: string;
 
   @IsString()

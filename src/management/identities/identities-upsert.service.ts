@@ -64,9 +64,10 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
         ...crushedUpdate,
       }),
     );
+
     await this.checkFingerprint(filters, fingerprint);
 
-    console.log('insert', {
+    this.logger.verbose('identities upsert data: ' + JSON.stringify({
       $setOnInsert: {
         ...crushedSetOnInsert,
         // 'state': IdentityState.TO_CREATE,
@@ -76,7 +77,7 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
         'additionalFields.objectClasses': data.additionalFields.objectClasses,
         lastSync: new Date(),
       },
-    });
+    }, null, 2));
 
     const upserted = await super.upsert(
       filters,

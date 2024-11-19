@@ -24,71 +24,71 @@
 <title>cluster_IdentitiesModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 669,-268 669,-70 8,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_IdentitiesModule_imports</title>
-<polygon fill="none" stroke="black" points="523,-78 523,-130 661,-130 661,-78 523,-78"/>
+<g id="clust6" class="cluster">
+<title>cluster_IdentitiesModule_providers</title>
+<polygon fill="none" stroke="black" points="162,-78 162,-130 661,-130 661,-78 162,-78"/>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_IdentitiesModule_exports</title>
-<polygon fill="none" stroke="black" points="312,-208 312,-260 470,-260 470,-208 312,-208"/>
+<polygon fill="none" stroke="black" points="208,-208 208,-260 366,-260 366,-208 208,-208"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_IdentitiesModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 515,-130 515,-78 16,-78"/>
+<g id="clust3" class="cluster">
+<title>cluster_IdentitiesModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 154,-130 154,-78 16,-78"/>
 </g>
 <!-- FilestorageModule -->
 <g id="node1" class="node">
 <title>FilestorageModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="652.75,-122 649.75,-126 628.75,-126 625.75,-122 531.25,-122 531.25,-86 652.75,-86 652.75,-122"/>
-<text text-anchor="middle" x="592" y="-99.8" font-family="Times,serif" font-size="14.00">FilestorageModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="145.75,-122 142.75,-126 121.75,-126 118.75,-122 24.25,-122 24.25,-86 145.75,-86 145.75,-122"/>
+<text text-anchor="middle" x="85" y="-99.8" font-family="Times,serif" font-size="14.00">FilestorageModule</text>
 </g>
 <!-- IdentitiesModule -->
 <g id="node2" class="node">
 <title>IdentitiesModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="446.65,-187 443.65,-191 422.65,-191 419.65,-187 335.35,-187 335.35,-151 446.65,-151 446.65,-187"/>
-<text text-anchor="middle" x="391" y="-164.8" font-family="Times,serif" font-size="14.00">IdentitiesModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="342.65,-187 339.65,-191 318.65,-191 315.65,-187 231.35,-187 231.35,-151 342.65,-151 342.65,-187"/>
+<text text-anchor="middle" x="287" y="-164.8" font-family="Times,serif" font-size="14.00">IdentitiesModule</text>
 </g>
 <!-- FilestorageModule&#45;&gt;IdentitiesModule -->
 <g id="edge1" class="edge">
 <title>FilestorageModule&#45;&gt;IdentitiesModule</title>
-<path fill="none" stroke="black" d="M592,-122.11C592,-141.34 592,-169 592,-169 592,-169 456.72,-169 456.72,-169"/>
-<polygon fill="black" stroke="black" points="456.72,-165.5 446.72,-169 456.72,-172.5 456.72,-165.5"/>
+<path fill="none" stroke="black" d="M85,-122.11C85,-141.34 85,-169 85,-169 85,-169 221.27,-169 221.27,-169"/>
+<polygon fill="black" stroke="black" points="221.27,-172.5 231.27,-169 221.27,-165.5 221.27,-172.5"/>
 </g>
 <!-- IdentitiesCrudService  -->
 <g id="node3" class="node">
 <title>IdentitiesCrudService </title>
-<polygon fill="#fb8072" stroke="black" points="461.57,-252 320.43,-252 320.43,-216 461.57,-216 461.57,-252"/>
-<text text-anchor="middle" x="391" y="-229.8" font-family="Times,serif" font-size="14.00">IdentitiesCrudService </text>
+<polygon fill="#fb8072" stroke="black" points="357.57,-252 216.43,-252 216.43,-216 357.57,-216 357.57,-252"/>
+<text text-anchor="middle" x="287" y="-229.8" font-family="Times,serif" font-size="14.00">IdentitiesCrudService </text>
 </g>
 <!-- IdentitiesModule&#45;&gt;IdentitiesCrudService  -->
 <g id="edge2" class="edge">
 <title>IdentitiesModule&#45;&gt;IdentitiesCrudService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M391,-187.11C391,-187.11 391,-205.99 391,-205.99"/>
-<polygon fill="black" stroke="black" points="387.5,-205.99 391,-215.99 394.5,-205.99 387.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M287,-187.11C287,-187.11 287,-205.99 287,-205.99"/>
+<polygon fill="black" stroke="black" points="283.5,-205.99 287,-215.99 290.5,-205.99 283.5,-205.99"/>
 </g>
 <!-- IdentitiesJsonformsService -->
 <g id="node4" class="node">
 <title>IdentitiesJsonformsService</title>
-<ellipse fill="#fdb462" stroke="black" cx="391" cy="-104" rx="115.74" ry="18"/>
-<text text-anchor="middle" x="391" y="-99.8" font-family="Times,serif" font-size="14.00">IdentitiesJsonformsService</text>
+<ellipse fill="#fdb462" stroke="black" cx="537" cy="-104" rx="115.74" ry="18"/>
+<text text-anchor="middle" x="537" y="-99.8" font-family="Times,serif" font-size="14.00">IdentitiesJsonformsService</text>
 </g>
 <!-- IdentitiesJsonformsService&#45;&gt;IdentitiesModule -->
 <g id="edge3" class="edge">
 <title>IdentitiesJsonformsService&#45;&gt;IdentitiesModule</title>
-<path fill="none" stroke="black" d="M391,-122.11C391,-122.11 391,-140.99 391,-140.99"/>
-<polygon fill="black" stroke="black" points="387.5,-140.99 391,-150.99 394.5,-140.99 387.5,-140.99"/>
+<path fill="none" stroke="black" d="M537,-122.11C537,-141.34 537,-169 537,-169 537,-169 352.79,-169 352.79,-169"/>
+<polygon fill="black" stroke="black" points="352.79,-165.5 342.79,-169 352.79,-172.5 352.79,-165.5"/>
 </g>
 <!-- IdentitiesValidationService -->
 <g id="node5" class="node">
 <title>IdentitiesValidationService</title>
-<ellipse fill="#fdb462" stroke="black" cx="141" cy="-104" rx="116.88" ry="18"/>
-<text text-anchor="middle" x="141" y="-99.8" font-family="Times,serif" font-size="14.00">IdentitiesValidationService</text>
+<ellipse fill="#fdb462" stroke="black" cx="287" cy="-104" rx="116.88" ry="18"/>
+<text text-anchor="middle" x="287" y="-99.8" font-family="Times,serif" font-size="14.00">IdentitiesValidationService</text>
 </g>
 <!-- IdentitiesValidationService&#45;&gt;IdentitiesModule -->
 <g id="edge4" class="edge">
 <title>IdentitiesValidationService&#45;&gt;IdentitiesModule</title>
-<path fill="none" stroke="black" d="M141,-122.11C141,-141.34 141,-169 141,-169 141,-169 325.21,-169 325.21,-169"/>
-<polygon fill="black" stroke="black" points="325.21,-172.5 335.21,-169 325.21,-165.5 325.21,-172.5"/>
+<path fill="none" stroke="black" d="M287,-122.11C287,-122.11 287,-140.99 287,-140.99"/>
+<polygon fill="black" stroke="black" points="283.5,-140.99 287,-150.99 290.5,-140.99 283.5,-140.99"/>
 </g>
 </g>
 </svg>

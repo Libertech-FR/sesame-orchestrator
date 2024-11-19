@@ -754,7 +754,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
   public constructor() {
     ajvErrors(this.ajv);
     this.validateSchema &#x3D; this.ajv.compile(validSchema);
-    this.logger &#x3D; new Logger();
+    this.logger &#x3D; new Logger(IdentitiesValidationService.name);
   }
 
   public onApplicationBootstrap(): void {
@@ -904,7 +904,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       }
     }
 
-    console.log(data[key]);
+    this.logger.debug(&#x60;Additionalfields object validation: ${JSON.stringify(data[key])}&#x60;);
 
     const yupSchema &#x3D; buildYup(schema, { noSortEdges: true });
     try {

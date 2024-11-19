@@ -628,8 +628,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="119"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:119</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="120"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:120</a></div>
                         </td>
                     </tr>
 
@@ -2070,6 +2070,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     this.logger.debug(&#x60;Fingerprint updated for &lt;${identity._id}&gt;: ${fingerprint}&#x60;);
     return updated as unknown as ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;;
   }
+
   protected async previewFingerprint(identity: any): Promise&lt;string&gt; {
     const additionalFields &#x3D; omit(identity.additionalFields, [&#x27;validations&#x27;]);
     const data &#x3D; JSON.stringify(
@@ -2086,6 +2087,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
         ),
       ),
     );
+    console.log(&#x27;datadata&#x27;, data);
 
     const hash &#x3D; createHash(&#x27;sha256&#x27;);
     hash.update(data);

@@ -480,8 +480,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="102"
-                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:102</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="103"
+                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:103</a></div>
                         </td>
                     </tr>
 
@@ -949,7 +949,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractIdentitiesService.html#source" target="_self" >AbstractIdentitiesService:119</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractIdentitiesService.html#source" target="_self" >AbstractIdentitiesService:120</a></code>
 </div>
                         </td>
                     </tr>
@@ -2175,9 +2175,10 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
         ...crushedUpdate,
       }),
     );
+
     await this.checkFingerprint(filters, fingerprint);
 
-    console.log(&#x27;insert&#x27;, {
+    this.logger.verbose(&#x27;identities upsert data: &#x27; + JSON.stringify({
       $setOnInsert: {
         ...crushedSetOnInsert,
         // &#x27;state&#x27;: IdentityState.TO_CREATE,
@@ -2187,7 +2188,7 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
         &#x27;additionalFields.objectClasses&#x27;: data.additionalFields.objectClasses,
         lastSync: new Date(),
       },
-    });
+    }, null, 2));
 
     const upserted &#x3D; await super.upsert(
       filters,

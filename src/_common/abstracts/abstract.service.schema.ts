@@ -50,8 +50,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
   public async trashAndCount<T extends AbstractSchema | Document>(
     projection?: ProjectionType<T> | null | undefined,
     options?: QueryOptions<T> | null | undefined,
-  ):Promise<[Array<T & Query<T, T, any, T>>, number]> {
-    const filter={deletedFlag : true}
+  ): Promise<[Array<T & Query<T, T, any, T>>, number]> {
+    const filter = { deletedFlag: true }
     let count = await this._model.countDocuments(filter).exec()
     let data = await this._model.find<T & Query<T, T, any, T>>(filter, projection, options).exec()
     return [data, count]
@@ -75,8 +75,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options = { ...options, ...beforeEvent.options }
       }
     }
-    const softDelete={deletedFlag : {$ne: true}}
-    filter= {...filter,...softDelete}
+    const softDelete = { deletedFlag: { $ne: true } }
+    filter = { ...filter, ...softDelete }
     let count = await this._model.countDocuments(filter).exec()
     let data = await this._model.find<T & Query<T, T, any, T>>(filter, projection, options).exec()
     if (this.eventEmitter) {

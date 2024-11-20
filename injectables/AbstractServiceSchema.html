@@ -510,8 +510,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="331"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:331</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="330"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:330</a></div>
                         </td>
                     </tr>
 
@@ -1200,8 +1200,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="270"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:270</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="269"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:269</a></div>
                         </td>
                     </tr>
 
@@ -1709,12 +1709,11 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options &#x3D; { ...options, ...beforeEvent.options }
       }
     }
-    console.log(&#x27;_id&#x27;, update)
     let updated &#x3D; await this._model
-      .findByIdAndUpdate&lt;Query&lt;T | null, T, any, T&gt;&gt;(
-        _id,
+      .findOneAndUpdate&lt;Query&lt;T | null, T, any, T&gt;&gt;(
+        { _id },
         {
-          ...omit(update, [&#x27;_id&#x27;]),
+          ...update,
           $setOnInsert: {
             &#x27;metadata.createdBy&#x27;: this.request?.user?.username || &#x27;anonymous&#x27;,
             &#x27;metadata.createdAt&#x27;: new Date(),

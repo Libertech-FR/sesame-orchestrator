@@ -1288,7 +1288,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:331</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:330</a></code>
 </div>
                         </td>
                     </tr>
@@ -2020,7 +2020,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:270</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:269</a></code>
 </div>
                         </td>
                     </tr>
@@ -2148,7 +2148,7 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       );
     }
     //controle si l identité est fusionnée si c est la bonne à mettre à jour puisqu elle a 2 employeeNumber
-    if (identity !&#x3D;&#x3D; null &amp;&amp; identity?.srcFusionId !&#x3D;&#x3D; null) {
+    if (identity !&#x3D;&#x3D; null &amp;&amp; identity?.srcFusionId) {
       if (identity.primaryEmployeeNumber !&#x3D;&#x3D; data?.inetOrgPerson?.employeeNumber[0]) {
         throw new HttpException(&#x27;Secondary identity&#x27;, HttpStatus.SEE_OTHER);
       }

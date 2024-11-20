@@ -582,7 +582,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:107</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:102</a></code>
 </div>
                         </td>
                     </tr>
@@ -779,8 +779,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -880,8 +880,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="84"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:84</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -2006,7 +2006,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:270</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:269</a></code>
 </div>
                         </td>
                     </tr>
@@ -2151,21 +2151,16 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     }
 
     // if (update.state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
-    update &#x3D; {
-      ...update,
-      state: IdentityState.TO_VALIDATE,
-    };
+    update &#x3D; { ...update, state: IdentityState.TO_VALIDATE };
 
     await this.checkInetOrgPersonJpegPhoto(update);
-
-    console.log(&#x27;update&#x27;, update, _id, options)
 
     // }
     // if (update.state &#x3D;&#x3D;&#x3D; IdentityState.SYNCED) {
     //   update &#x3D; { ...update, state: IdentityState.TO_VALIDATE };
     // }
     //update.state &#x3D; IdentityState.TO_VALIDATE;
-    const updated &#x3D; await super.update(_id, { $set: update }, options);
+    const updated &#x3D; await super.update(_id, update, options);
     //TODO: add backends service logic here (TO_SYNC)
     return await this.generateFingerprint(updated as unknown as Identities);
   }

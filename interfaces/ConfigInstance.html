@@ -619,15 +619,15 @@ export interface ConfigInstance {
   };
   factorydrive: {
     options:
-      | StorageManagerConfig
-      | {
-          disks: {
-            [key: string]: {
-              driver: &#x27;s3&#x27;;
-              config: AmazonWebServicesS3StorageConfig;
-            };
-          };
+    | StorageManagerConfig
+    | {
+      disks: {
+        [key: string]: {
+          driver: &#x27;s3&#x27;;
+          config: AmazonWebServicesS3StorageConfig;
         };
+      };
+    };
   };
   passport: {
     options: IAuthModuleOptions;
@@ -692,7 +692,16 @@ export default (): ConfigInstance &#x3D;&gt; ({
     options: {
       directConnection: true,
     },
-    plugins: [],
+    plugins: [
+      {
+        package: &#x27;mongoose-duplicate-error&#x27;,
+        enabled: true,
+      },
+      {
+        package: &#x27;mongoose-unique-validator&#x27;,
+        enabled: true,
+      },
+    ],
   },
   factorydrive: {
     options: {

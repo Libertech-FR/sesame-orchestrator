@@ -582,7 +582,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:108</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:107</a></code>
 </div>
                         </td>
                     </tr>
@@ -779,8 +779,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="77"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:77</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -880,8 +880,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="85"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:85</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -2152,8 +2152,7 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
 
     // if (update.state &#x3D;&#x3D;&#x3D; IdentityState.TO_COMPLETE) {
     update &#x3D; {
-      ...omit(update, [&#x27;inetOrgPerson&#x27;]),
-      inetOrgPerson: omit(update.inetOrgPerson, [&#x27;employeeNumber&#x27;, &#x27;employeeType&#x27;]),
+      ...update,
       state: IdentityState.TO_VALIDATE,
     };
 

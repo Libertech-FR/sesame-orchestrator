@@ -22,6 +22,7 @@ export class inetOrgPersonCreateDto {
 
   @IsString()
   @ApiProperty()
+  @IsOptional()
   public employeeType: string;
 
   @ApiProperty()

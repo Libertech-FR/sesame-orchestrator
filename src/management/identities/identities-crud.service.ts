@@ -55,8 +55,7 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
 
     // if (update.state === IdentityState.TO_COMPLETE) {
     update = {
-      ...omit(update, ['inetOrgPerson']),
-      inetOrgPerson: omit(update.inetOrgPerson, ['employeeNumber', 'employeeType']),
+      ...update,
       state: IdentityState.TO_VALIDATE,
     };
 

@@ -228,12 +228,11 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options = { ...options, ...beforeEvent.options }
       }
     }
-    console.log('_id', update)
     let updated = await this._model
-      .findByIdAndUpdate<Query<T | null, T, any, T>>(
-        _id,
+      .findOneAndUpdate<Query<T | null, T, any, T>>(
+        { _id },
         {
-          ...omit(update, ['_id']),
+          ...update,
           $setOnInsert: {
             'metadata.createdBy': this.request?.user?.username || 'anonymous',
             'metadata.createdAt': new Date(),

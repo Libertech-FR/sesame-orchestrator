@@ -37,7 +37,7 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       );
     }
     //controle si l identité est fusionnée si c est la bonne à mettre à jour puisqu elle a 2 employeeNumber
-    if (identity !== null && identity?.srcFusionId !== null) {
+    if (identity !== null && identity?.srcFusionId) {
       if (identity.primaryEmployeeNumber !== data?.inetOrgPerson?.employeeNumber[0]) {
         throw new HttpException('Secondary identity', HttpStatus.SEE_OTHER);
       }

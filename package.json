@@ -80,8 +80,6 @@
     "loglevel": "^1.9.1",
     "mjml": "^4.15.3",
     "mongoose": "^8.4.3",
-    "mongoose-duplicate-error": "^1.0.0",
-    "mongoose-unique-validator": "^4.0.1",
     "nest-commander": "^3.13.0",
     "nest-winston": "^1.10.0",
     "nestjs-request-context": "^3.0.0",

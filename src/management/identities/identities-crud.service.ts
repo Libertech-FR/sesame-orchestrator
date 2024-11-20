@@ -54,21 +54,16 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     }
 
     // if (update.state === IdentityState.TO_COMPLETE) {
-    update = {
-      ...update,
-      state: IdentityState.TO_VALIDATE,
-    };
+    update = { ...update, state: IdentityState.TO_VALIDATE };
 
     await this.checkInetOrgPersonJpegPhoto(update);
-
-    console.log('update', update, _id, options)
 
     // }
     // if (update.state === IdentityState.SYNCED) {
     //   update = { ...update, state: IdentityState.TO_VALIDATE };
     // }
     //update.state = IdentityState.TO_VALIDATE;
-    const updated = await super.update(_id, { $set: update }, options);
+    const updated = await super.update(_id, update, options);
     //TODO: add backends service logic here (TO_SYNC)
     return await this.generateFingerprint(updated as unknown as Identities);
   }

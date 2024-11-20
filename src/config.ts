@@ -106,14 +106,6 @@ export default (): ConfigInstance => ({
       directConnection: true,
     },
     plugins: [
-      {
-        package: 'mongoose-duplicate-error',
-        enabled: true,
-      },
-      {
-        package: 'mongoose-unique-validator',
-        enabled: true,
-      },
     ],
   },
   factorydrive: {

@@ -17,6 +17,7 @@ import { AbstractService, AbstractServiceContext } from './abstract.service';
 import { ServiceSchemaInterface } from './interfaces/service.schema.interface';
 import { AbstractSchema } from './schemas/abstract.schema';
 import mongodb from 'mongodb';
+import { omit } from 'radash';
 
 @Injectable()
 export abstract class AbstractServiceSchema extends AbstractService implements ServiceSchemaInterface {
@@ -227,17 +228,18 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options = { ...options, ...beforeEvent.options }
       }
     }
+    console.log('_id', update)
     let updated = await this._model
       .findByIdAndUpdate<Query<T | null, T, any, T>>(
-        { _id },
+        _id,
         {
-          ...update,
+          ...omit(update, ['_id']),
           $setOnInsert: {
             'metadata.createdBy': this.request?.user?.username || 'anonymous',
             'metadata.createdAt': new Date(),
           },
           $set: {
-            ...(update?.$set || {}),
+            ...omit(update?.$set || {}, ['_id']),
             'metadata.lastUpdatedBy': this.request?.user?.username || 'anonymous',
             'metadata.lastUpdatedAt': new Date(),
           }

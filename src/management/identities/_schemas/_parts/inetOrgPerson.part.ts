@@ -60,7 +60,7 @@ export class inetOrgPerson extends Document {
   })
   public employeeNumber: string[];
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String })
   public employeeType: string;
 
   @Prop({ type: Array, of: String, required: true, default: [] })

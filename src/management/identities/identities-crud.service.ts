@@ -5,6 +5,7 @@ import { ValidationConfigException, ValidationSchemaException } from '~/_common/
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { HttpException } from '@nestjs/common';
+import { omit } from 'radash';
 
 export class IdentitiesCrudService extends AbstractIdentitiesService {
   public async create<T extends AbstractSchema | Document>(
@@ -14,9 +15,9 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     data = this.transformNullsToString(data);
     await this.checkInetOrgPersonJpegPhoto(data);
     //recherche si email oy uid deja present
-    const f:any = { $or: [{ 'inetOrgPerson.uid' : data.inetOrgPerson.uid}, {'inetOrgPerson.mail': data.inetOrgPerson.mail }]};
+    const f: any = { $or: [{ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, { 'inetOrgPerson.mail': data.inetOrgPerson.mail }] };
     let dataDup = await this._model.countDocuments(f).exec()
-    if (dataDup > 0){
+    if (dataDup > 0) {
       this.logger.error('Identité existante');
       throw new HttpException("Uid ou mail déjà présent dans une autre identité", 400);
     }
@@ -53,16 +54,22 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     }
 
     // if (update.state === IdentityState.TO_COMPLETE) {
-    update = { ...update, state: IdentityState.TO_VALIDATE };
+    update = {
+      ...omit(update, ['inetOrgPerson']),
+      inetOrgPerson: omit(update.inetOrgPerson, ['employeeNumber', 'employeeType']),
+      state: IdentityState.TO_VALIDATE,
+    };
 
     await this.checkInetOrgPersonJpegPhoto(update);
+
+    console.log('update', update, _id, options)
 
     // }
     // if (update.state === IdentityState.SYNCED) {
     //   update = { ...update, state: IdentityState.TO_VALIDATE };
     // }
     //update.state = IdentityState.TO_VALIDATE;
-    const updated = await super.update(_id, update, options);
+    const updated = await super.update(_id, { $set: update }, options);
     //TODO: add backends service logic here (TO_SYNC)
     return await this.generateFingerprint(updated as unknown as Identities);
   }

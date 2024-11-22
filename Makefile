@@ -120,3 +120,9 @@ run-test: ## Run tests
 
 gen-doc:
 	@npx @compodoc/compodoc -p tsconfig.json -s -d docs --includes ./markdowns -n "Sesame Orchestrator"
+
+ncu: ## Check latest versions of all project dependencies
+	@npx npm-check-updates
+
+ncu-upgrade: ## Upgrade all project dependencies to the latest versions
+	@npx npm-check-updates -u

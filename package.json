@@ -39,7 +39,6 @@
     "test:cov": "jest --coverage --detectOpenHandles",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "schematics:inherit": "nest generate -c @kradihsoy/lt-schematics inherit",
     "generate:doc": "npx @compodoc/compodoc -c .compodocrc",
     "generate:docServer": "npx @compodoc/compodoc -s -c .compodocrc -d ./documentation",
     "console": "node dist/console",
@@ -47,7 +46,6 @@
     "start:debug:webstorm": "node $NODE_DEBUG_OPTION -r ts-node/register -r tsconfig-paths/register src/main.ts"
   },
   "dependencies": {
-    "@kradihsoy/lt-schematics": "^1.0.13",
     "@nestjs-modules/ioredis": "^2.0.2",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/bullmq": "^10.1.1",

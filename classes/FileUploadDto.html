@@ -247,7 +247,7 @@ export class FilestorageCreateDto extends CustomFieldsDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ type: String, default: &#x27;/&#x27; })
-  @Matches(/^\/(\.?[^\/\0]+\/?)+$/, { message: &#x27;Path must be a valid path&#x27; })
+  @Matches(/^\/(?:\.?[^\/\0]+\/?)+$/, { message: &#x27;Path must be a valid path&#x27; })
   public path: string;
 
   @IsOptional()

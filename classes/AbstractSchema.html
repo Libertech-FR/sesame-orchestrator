@@ -148,7 +148,6 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Readonly</span>
-                                    <span class="modifier">Optional</span>
                                 <a href="#_id" >_id</a>
                             </li>
                             <li>
@@ -184,7 +183,6 @@
                     <span class="name">
                             <span class="modifier">Public</span>
                             <span class="modifier">Readonly</span>
-                            <span class="modifier">Optional</span>
                         <span ><b>_id</b></span>
                         <a href="#_id"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -260,7 +258,7 @@ import { Types, Document } from &#x27;mongoose&#x27;;
 import { MetadataPart, MetadataPartSchema } from &#x27;~/_common/abstracts/schemas/parts/metadata.part.schema&#x27;;
 
 export abstract class AbstractSchema extends Document {
-  public readonly _id?: Types.ObjectId | any // eslint-disable-line
+  public readonly _id: Types.ObjectId | any // eslint-disable-line
 
   @Prop({ type: MetadataPartSchema })
   public metadata?: MetadataPart;

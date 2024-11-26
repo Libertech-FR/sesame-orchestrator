@@ -213,15 +213,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>count(filter?: FilterQuery<T>, options?: QueryOptions<T> | null | undefined)</code>
+<code>count(filter?: FilterQuery<T>, options?:  | null)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -264,7 +264,7 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                        <code>QueryOptions&lt;T&gt; | null | undefined</code>
+                                                        <code> | null</code>
                                             </td>
 
                                             <td>
@@ -307,8 +307,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -394,8 +394,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -481,8 +481,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -580,8 +580,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -679,8 +679,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -778,8 +778,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -877,8 +877,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">src/_common/abstracts/interfaces/service.schema.interface.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -966,6 +966,7 @@
   Document,
   FilterQuery,
   ModifyResult,
+  MongooseBaseQueryOptions,
   ProjectionType,
   Query,
   QueryOptions,
@@ -974,6 +975,7 @@
   UpdateQuery,
 } from &#x27;mongoose&#x27;;
 import { AbstractSchema } from &#x27;../schemas/abstract.schema&#x27;;
+import mongodb from &#x27;mongodb&#x27;;
 
 export interface ServiceSchemaInterface {
   /* eslint-disable */
@@ -983,7 +985,7 @@ export interface ServiceSchemaInterface {
     options?: QueryOptions&lt;T&gt; | null | undefined,
   ): Promise&lt;Query&lt;Array&lt;T&gt;, T, any, T&gt;[]&gt;
 
-  count&lt;T extends AbstractSchema | Document&gt;(filter?: FilterQuery&lt;T&gt;, options?: QueryOptions&lt;T&gt; | null | undefined): Promise&lt;number&gt;
+  count&lt;T extends AbstractSchema | Document&gt;(filter?: FilterQuery&lt;T&gt;, options?: (mongodb.CountOptions &amp; MongooseBaseQueryOptions&lt;T&gt;) | null): Promise&lt;number&gt;
 
   findAndCount&lt;T extends AbstractSchema | Document&gt;(
     filter?: FilterQuery&lt;T&gt;,

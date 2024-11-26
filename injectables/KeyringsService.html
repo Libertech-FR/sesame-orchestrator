@@ -249,7 +249,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/core/keyrings/keyrings.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/core/keyrings/keyrings.service.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -321,7 +321,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:15</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:16</a></code>
 </div>
                         </td>
                     </tr>
@@ -1511,6 +1511,7 @@ import { Model, SaveOptions, Document } from &#x27;mongoose&#x27;;
 import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
 import { KeyringsCreateDto } from &#x27;./_dto/keyrings.dto&#x27;;
 import { randomBytes } from &#x27;node:crypto&#x27;;
+import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
 
 @Injectable()
 export class KeyringsService extends AbstractServiceSchema {
@@ -1518,7 +1519,7 @@ export class KeyringsService extends AbstractServiceSchema {
     super();
   }
 
-  public async create&lt;T extends Keyrings | Document&gt;(
+  public async create&lt;T extends AbstractSchema | Document&gt;(
     data?: KeyringsCreateDto,
     options?: SaveOptions,
   ): Promise&lt;Document&lt;T, any, T&gt;&gt; {

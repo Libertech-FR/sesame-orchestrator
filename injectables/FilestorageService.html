@@ -2073,9 +2073,9 @@ export class FilestorageService extends AbstractServiceSchema {
       return {
         ...data.toObject(),
         _exists: storageRequest.exists,
-      }
+      } as any
     }
-    return data.toObject()
+    return data.toObject() as any
   }
 
   public async findByIdWithRawData&lt;T extends Filestorage | Document&gt;(
@@ -2103,9 +2103,9 @@ export class FilestorageService extends AbstractServiceSchema {
       return {
         ...data.toObject(),
         _exists: storageRequest.exists,
-      }
+      } as any
     }
-    return data.toObject()
+    return data.toObject() as any
   }
 
   public async findOneWithRawData&lt;T extends Filestorage | Document&gt;(
@@ -2158,7 +2158,7 @@ export class FilestorageService extends AbstractServiceSchema {
   ) {
     let stored: Document&lt;any, any, Filestorage&gt; &amp; Filestorage
     try {
-      stored &#x3D; await this.findOne&lt;Filestorage&gt;(filter, options)
+      stored &#x3D; (await this.findOne&lt;Filestorage&gt;(filter, options)) as any
     } catch (e) {
       if (e.status !&#x3D;&#x3D; HttpStatus.NOT_FOUND) throw e
     }

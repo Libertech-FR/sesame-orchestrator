@@ -205,7 +205,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({type: &#x27;object&#x27;, name: &#x27;attributes&#x27;})<br />@IsOptional()<br />
+                            @ApiProperty({type: Object, name: &#x27;attributes&#x27;})<br />@IsOptional()<br />
                         </code>
                     </td>
                 </tr>
@@ -285,7 +285,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({type: &#x27;object&#x27;, name: &#x27;validations&#x27;})<br />
+                            @ApiProperty({type: Object, name: &#x27;validations&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -323,14 +323,14 @@ export class additionalFieldsPartDto {
   public objectClasses: string[] &#x3D; [];
 
   @ApiProperty({
-    type: &#x27;object&#x27;,
+    type: Object,
     name: &#x27;attributes&#x27;,
   })
   @IsOptional()
   public attributes: { [key: string]: any } &#x3D; {};
 
   @ApiProperty({
-    type: &#x27;object&#x27;,
+    type: Object,
     name: &#x27;validations&#x27;,
   })
   public validations?: { [key: string]: { [key: string]: string } };

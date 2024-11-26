@@ -92,10 +92,10 @@ export class inetOrgPersonCreateDto {
   @IsOptional()
   public userCertificate?: string;
 
-  @IsString()
-  @ApiProperty({ required: false })
-  @IsOptional()
-  public userPassword?: string;
+  // @IsString()
+  // @ApiProperty({ required: false })
+  // @IsOptional()
+  // public userPassword?: string;
 
   @IsString()
   @ApiProperty({ required: false })

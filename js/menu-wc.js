@@ -61,6 +61,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <li class="link ">
                                         <a href="additional-documentation/cahier-des-charges.html" data-type="entity-link" data-context-id="additional">Cahier des charges</a>
                                     </li>
+                                    <li class="link ">
+                                        <a href="additional-documentation/filtres-api.html" data-type="entity-link" data-context-id="additional">Filtres API</a>
+                                    </li>
                                     <li class="chapter inner">
                                         <a data-type="chapter-link" href="additional-documentation/documentation-technique.html" data-context-id="additional">
                                             <div class="menu-toggler linked" data-bs-toggle="collapse" ${ isNormalMode ?

@@ -86,7 +86,7 @@ export class IdentitiesCrudController extends AbstractController {
     const data = await this._service.create<Identities>(body);
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
     // Else the state is TO_VALIDATE, we return a 201 status code
-    if ((data as Identities).state === IdentityState.TO_COMPLETE) {
+    if (data.toObject().state === IdentityState.TO_COMPLETE) {
       statusCode = HttpStatus.ACCEPTED;
       message = 'Identitée créée avec succès, mais des champs additionnels sont manquants ou invalides.';
     }
@@ -234,7 +234,7 @@ export class IdentitiesCrudController extends AbstractController {
   public async updateStateMany(
     @Res() res: Response,
     @Body()
-      body: {
+    body: {
       originState: IdentityState;
       targetState: IdentityState;
       ids: Types.ObjectId[];

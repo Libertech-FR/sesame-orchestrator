@@ -11,14 +11,14 @@ export class additionalFieldsPartDto {
   public objectClasses: string[] = [];
 
   @ApiProperty({
-    type: 'object',
+    type: Object,
     name: 'attributes',
   })
   @IsOptional()
   public attributes: { [key: string]: any } = {};
 
   @ApiProperty({
-    type: 'object',
+    type: Object,
     name: 'validations',
   })
   public validations?: { [key: string]: { [key: string]: string } };

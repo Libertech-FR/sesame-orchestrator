@@ -5,6 +5,7 @@ import { Model, SaveOptions, Document } from 'mongoose';
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { KeyringsCreateDto } from './_dto/keyrings.dto';
 import { randomBytes } from 'node:crypto';
+import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
 
 @Injectable()
 export class KeyringsService extends AbstractServiceSchema {
@@ -12,7 +13,7 @@ export class KeyringsService extends AbstractServiceSchema {
     super();
   }
 
-  public async create<T extends Keyrings | Document>(
+  public async create<T extends AbstractSchema | Document>(
     data?: KeyringsCreateDto,
     options?: SaveOptions,
   ): Promise<Document<T, any, T>> {

@@ -420,8 +420,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="252"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:252</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="254"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:254</a></div>
                         </td>
                     </tr>
 
@@ -513,8 +513,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="195"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:195</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="197"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:197</a></div>
                         </td>
                     </tr>
 
@@ -583,8 +583,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="455"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:455</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="457"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:457</a></div>
                         </td>
                     </tr>
 
@@ -623,8 +623,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="313"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:313</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="315"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:315</a></div>
                         </td>
                     </tr>
 
@@ -693,8 +693,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="290"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:290</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="292"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:292</a></div>
                         </td>
                     </tr>
 
@@ -775,8 +775,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="431"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:431</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="433"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:433</a></div>
                         </td>
                     </tr>
 
@@ -815,8 +815,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="138"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:138</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="140"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:140</a></div>
                         </td>
                     </tr>
 
@@ -885,8 +885,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="416"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:416</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="418"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:418</a></div>
                         </td>
                     </tr>
 
@@ -1025,8 +1025,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="378"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:378</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="380"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:380</a></div>
                         </td>
                     </tr>
 
@@ -1095,8 +1095,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="335"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:335</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="337"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:337</a></div>
                         </td>
                     </tr>
 
@@ -1165,8 +1165,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="442"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:442</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="444"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:444</a></div>
                         </td>
                     </tr>
 
@@ -1552,8 +1552,10 @@ export class PasswdService extends AbstractService {
           this.logger.log(&#x27;Reset password asked by mail for  : &#x27; + initDto.uid);
           const smtpParams &#x3D; await this.mailadmService.getParams();
           if (mailAttribute !&#x3D;&#x3D; &#x27;&#x27;) {
+            // this.mailer.addTransporter(&#x27;lastStmp&#x27;, smtpParams.host)
             this.mailer
               .sendMail({
+                // transporterName: &#x27;lastStmp&#x27;,
                 from: smtpParams.sender,
                 to: mail,
                 subject: &#x27;Reinitialisation de votre mot de passe&#x27;,
@@ -1884,7 +1886,7 @@ export class PasswdService extends AbstractService {
 
   //Envoi le message d init à plusieurs identités
   public async initMany(ids: InitManyDto): Promise&lt;any&gt; {
-    const identities &#x3D; await this.identities.find({ _id: { $in: ids.ids }, state: IdentityState.SYNCED });
+    const identities &#x3D; await this.identities.find({ _id: { $in: ids.ids } });
     if (identities.length &#x3D;&#x3D;&#x3D; 0) {
       throw new HttpException(&#x27;Aucune identité trouvée.&#x27;, 404);
     }

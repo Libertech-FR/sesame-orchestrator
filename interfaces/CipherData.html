@@ -318,8 +318,10 @@ export class PasswdService extends AbstractService {
           this.logger.log(&#x27;Reset password asked by mail for  : &#x27; + initDto.uid);
           const smtpParams &#x3D; await this.mailadmService.getParams();
           if (mailAttribute !&#x3D;&#x3D; &#x27;&#x27;) {
+            // this.mailer.addTransporter(&#x27;lastStmp&#x27;, smtpParams.host)
             this.mailer
               .sendMail({
+                // transporterName: &#x27;lastStmp&#x27;,
                 from: smtpParams.sender,
                 to: mail,
                 subject: &#x27;Reinitialisation de votre mot de passe&#x27;,
@@ -650,7 +652,7 @@ export class PasswdService extends AbstractService {
 
   //Envoi le message d init à plusieurs identités
   public async initMany(ids: InitManyDto): Promise&lt;any&gt; {
-    const identities &#x3D; await this.identities.find({ _id: { $in: ids.ids }, state: IdentityState.SYNCED });
+    const identities &#x3D; await this.identities.find({ _id: { $in: ids.ids } });
     if (identities.length &#x3D;&#x3D;&#x3D; 0) {
       throw new HttpException(&#x27;Aucune identité trouvée.&#x27;, 404);
     }

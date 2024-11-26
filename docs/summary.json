@@ -1,46 +1,50 @@
 [
-    {
-        "title": "Cahier des charges",
-        "file": "Specifications.md"
-    },
-    {
-        "title": "Documentation technique",
-        "file": "Documentation_technique.md",
-        "children": [
-            {
-                "title": "Demon",
-                "file": "./technical/DAEMON.md"
-            },
-            {
-                "title": "Queue processor service",
-                "file": "./technical/QueueProcessorService.md"
-            },
-            {
-                "title": "Ecriture des test et utilisation des utilitaires",
-                "file": "./technical/Tests.md"
-            },
-            {
-                "title": "Validation des identités",
-                "file": "./technical/IdentitiesValidation.md"
-            },
-            {
-                "title": "Formulaires customs",
-                "file": "./technical/CustomForms.md"
-            }
-        ]
-    },
-    {
-        "title": "Documentation utilisateur",
-        "file": "Documentation_utilisateur.md",
-        "children": [
-            {
-                "title": "Création et modification d'une identité",
-                "file": "./user/IdentitiesCreation.md"
-            },
-            {
-                "title": "Validation des schemas complémentaires de l'identité",
-                "file": "./user/IdentitiesValidation.md"
-            }
-        ]
-    }
+  {
+    "title": "Cahier des charges",
+    "file": "Specifications.md"
+  },
+  {
+    "title": "Filtres API",
+    "file": "Filtres_API.md"
+  },
+  {
+    "title": "Documentation technique",
+    "file": "Documentation_technique.md",
+    "children": [
+      {
+        "title": "Demon",
+        "file": "./technical/DAEMON.md"
+      },
+      {
+        "title": "Queue processor service",
+        "file": "./technical/QueueProcessorService.md"
+      },
+      {
+        "title": "Ecriture des test et utilisation des utilitaires",
+        "file": "./technical/Tests.md"
+      },
+      {
+        "title": "Validation des identités",
+        "file": "./technical/IdentitiesValidation.md"
+      },
+      {
+        "title": "Formulaires customs",
+        "file": "./technical/CustomForms.md"
+      }
+    ]
+  },
+  {
+    "title": "Documentation utilisateur",
+    "file": "Documentation_utilisateur.md",
+    "children": [
+      {
+        "title": "Création et modification d'une identité",
+        "file": "./user/IdentitiesCreation.md"
+      },
+      {
+        "title": "Validation des schemas complémentaires de l'identité",
+        "file": "./user/IdentitiesValidation.md"
+      }
+    ]
+  }
 ]

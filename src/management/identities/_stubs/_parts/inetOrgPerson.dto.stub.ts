@@ -19,6 +19,5 @@ export const inetOrgPersonDtoStub = (): inetOrgPersonDto => {
     telephoneNumber: 'telephoneNumber',
     title: 'title',
     userCertificate: 'userCertificate',
-    userPassword: 'userPassword',
   };
 };

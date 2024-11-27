@@ -81,6 +81,7 @@ import { MigrationsModule } from './migrations/migrations.module';
           host: configService.get('ioredis.host'),
           port: configService.get('ioredis.port'),
         },
+        blockingConnection: true,
       }),
     }),
     FactorydriveModule.forRootAsync({

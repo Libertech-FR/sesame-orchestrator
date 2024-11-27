@@ -202,8 +202,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">src/app.controller.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">src/app.controller.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -281,8 +281,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">src/app.controller.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">src/app.controller.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -362,7 +362,7 @@ import { Response } from &#x27;express&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { Public } from &#x27;./_common/decorators/public.decorator&#x27;;
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
-import LRU from &#x27;lru-cache&#x27;;
+import { LRUCache } from &#x27;lru-cache&#x27;;
 
 interface GithubUpdate {
   name?: string;
@@ -375,7 +375,10 @@ interface GithubUpdate {
   node_id?: string;
 }
 
-const storage &#x3D; new LRU({ ttl: 60 * 60 * 1000 });
+const storage &#x3D; new LRUCache({
+  ttl: 1000 * 60 * 60,
+  ttlAutopurge: true,
+});
 
 @Public()
 @Controller()

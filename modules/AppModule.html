@@ -365,6 +365,7 @@ import { MigrationsModule } from &#x27;./migrations/migrations.module&#x27;;
           host: configService.get(&#x27;ioredis.host&#x27;),
           port: configService.get(&#x27;ioredis.port&#x27;),
         },
+        blockingConnection: true,
       }),
     }),
     FactorydriveModule.forRootAsync({

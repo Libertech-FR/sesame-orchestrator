@@ -318,8 +318,27 @@ import { MigrationsModule } from &#x27;./migrations/migrations.module&#x27;;
       inject: [MailadmService],
       useFactory: async (service: MailadmService) &#x3D;&gt; {
         const params &#x3D; await service.getParams();
+        const regex &#x3D; /^(smtps?|):\/\/([a-zA-Z0-9.-]+|\d{1,3}(?:\.\d{1,3}){3}|\[(?:[0-9a-fA-F:]+)\]):(\d+)$/;
+        const [_, protocol, host, port] &#x3D; &#x60;${params.host}&#x60;.match(regex);
+        const isDev &#x3D; process.env.NODE_ENV &#x3D;&#x3D;&#x3D; &#x27;development&#x27;;
+
         return {
-          transport: params.host,
+          transport: {
+            host,
+            port: parseInt(port),
+            from: params.sender,
+            secure: protocol &#x3D;&#x3D;&#x3D; &#x27;smtps&#x27; &amp;&amp; port &#x3D;&#x3D;&#x3D; &#x27;465&#x27;,
+            requireTLS: protocol &#x3D;&#x3D;&#x3D; &#x27;smtps&#x27; &amp;&amp; port &#x3D;&#x3D;&#x3D; &#x27;587&#x27;,
+            auth: {
+              user: params.username,
+              pass: params.password,
+            },
+            tls: {
+              ciphers: &#x27;SSLv3,TLSv1,TLSv1.1,TLSv1.2&#x27;,
+            },
+            debug: isDev,
+            logger: isDev,
+          },
           defaults: {
             from: params.sender,
           },

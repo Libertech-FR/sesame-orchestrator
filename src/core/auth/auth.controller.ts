@@ -37,7 +37,9 @@ export class AuthController extends AbstractController {
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Récupération de la session en cours' })
   public async session(@Res() res: Response, @ReqIdentity() identity: AgentType): Promise<Response> {
+    this.logger.debug(`Session request for ${identity.id} (${identity.email})`);
     const user = await this.service.getSessionData(identity);
+    this.logger.debug(`Session data delivered for ${identity.id} (${identity.email}) with ${JSON.stringify(user)}`);
     return res.status(HttpStatus.OK).json({
       user: {
         ...omit(user, ['security']),

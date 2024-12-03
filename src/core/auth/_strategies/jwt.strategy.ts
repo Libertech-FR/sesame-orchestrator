@@ -9,6 +9,8 @@ import { JwtPayload } from 'jsonwebtoken';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+  protected logger: Logger;
+
   constructor(
     private readonly auth: AuthService,
     config: ConfigService,
@@ -27,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     payload: JwtPayload & { identity: AgentType },
     done: VerifiedCallback,
   ): Promise<void> {
-    Logger.verbose(`Atempt to authenticate with JTI: <${payload.jti}>`, JwtStrategy.name);
+    this.logger.verbose(`Atempt to authenticate with JTI: <${payload.jti}>`, JwtStrategy.name);
     if (!payload?.identity) return done(new UnauthorizedException(), false);
     const user = await this.auth.verifyIdentity(payload);
 

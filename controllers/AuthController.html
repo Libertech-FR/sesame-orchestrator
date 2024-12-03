@@ -316,8 +316,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">src/core/auth/auth.controller.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">src/core/auth/auth.controller.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -407,8 +407,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">src/core/auth/auth.controller.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">src/core/auth/auth.controller.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -601,7 +601,9 @@ export class AuthController extends AbstractController {
   @UseGuards(AuthGuard(&#x27;jwt&#x27;))
   @ApiOperation({ summary: &#x27;Récupération de la session en cours&#x27; })
   public async session(@Res() res: Response, @ReqIdentity() identity: AgentType): Promise&lt;Response&gt; {
+    this.logger.debug(&#x60;Session request for ${identity.id} (${identity.email})&#x60;);
     const user &#x3D; await this.service.getSessionData(identity);
+    this.logger.debug(&#x60;Session data delivered for ${identity.id} (${identity.email}) with ${JSON.stringify(user)}&#x60;);
     return res.status(HttpStatus.OK).json({
       user: {
         ...omit(user, [&#x27;security&#x27;]),

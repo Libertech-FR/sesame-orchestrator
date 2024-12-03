@@ -356,6 +356,11 @@
 
                     </td>
                 </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Logger(JwtStrategy.name)</code>
+                    </td>
+                </tr>
                     <tr>
                         <td class="col-md-4">
                                 <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/core/auth/_strategies/jwt.strategy.ts:12</a></div>
@@ -382,7 +387,7 @@ import { JwtPayload } from &#x27;jsonwebtoken&#x27;;
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, &#x27;jwt&#x27;) {
-  protected logger: Logger;
+  protected logger: Logger &#x3D; new Logger(JwtStrategy.name);
 
   constructor(
     private readonly auth: AuthService,
@@ -402,7 +407,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, &#x27;jwt&#x27;) {
     payload: JwtPayload &amp; { identity: AgentType },
     done: VerifiedCallback,
   ): Promise&lt;void&gt; {
-    this.logger.verbose(&#x60;Atempt to authenticate with JTI: &lt;${payload.jti}&gt;&#x60;, JwtStrategy.name);
+    this.logger.verbose(&#x60;Atempt to authenticate with JTI: &lt;${payload.jti}&gt;&#x60;);
     if (!payload?.identity) return done(new UnauthorizedException(), false);
     const user &#x3D; await this.auth.verifyIdentity(payload);
 

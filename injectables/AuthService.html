@@ -454,8 +454,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="193"
-                                    class="link-to-prism">src/core/auth/auth.service.ts:193</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="195"
+                                    class="link-to-prism">src/core/auth/auth.service.ts:195</a></div>
                         </td>
                     </tr>
 
@@ -524,8 +524,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="116"
-                                    class="link-to-prism">src/core/auth/auth.service.ts:116</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">src/core/auth/auth.service.ts:118</a></div>
                         </td>
                     </tr>
 
@@ -618,8 +618,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="166"
-                                    class="link-to-prism">src/core/auth/auth.service.ts:166</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="168"
+                                    class="link-to-prism">src/core/auth/auth.service.ts:168</a></div>
                         </td>
                     </tr>
 
@@ -728,8 +728,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="181"
-                                    class="link-to-prism">src/core/auth/auth.service.ts:181</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="183"
+                                    class="link-to-prism">src/core/auth/auth.service.ts:183</a></div>
                         </td>
                     </tr>
 
@@ -1180,7 +1180,7 @@ import { verify as argon2Verify } from &#x27;argon2&#x27;;
 import { Agents } from &#x27;~/core/agents/_schemas/agents.schema&#x27;;
 import { AgentsService } from &#x27;~/core/agents/agents.service&#x27;;
 import { AgentType } from &#x27;~/_common/types/agent.type&#x27;;
-import { omit } from &#x27;radash&#x27;;
+import { omit, pascal, pick } from &#x27;radash&#x27;;
 import { JwtPayload } from &#x27;jsonwebtoken&#x27;;
 import { JwtService } from &#x27;@nestjs/jwt&#x27;;
 import { resolve } from &#x27;path&#x27;;
@@ -1253,6 +1253,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
 
   // eslint-disable-next-line
   public async verifyIdentity(payload: any &amp; { identity: AgentType &amp; { token: string } }): Promise&lt;any&gt; {
+    console.log(&#x27;payload&#x27;, payload);
     if (payload.scopes.includes(&#x27;offline&#x27;)) {
       return payload.identity;
     }
@@ -1272,6 +1273,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
       const identity &#x3D; await this.redis.get([this.ACCESS_TOKEN_PREFIX, payload.jti].join(&#x27;:&#x27;));
       if (identity) {
         const data &#x3D; JSON.parse(identity);
+        console.log(&#x27;data&#x27;, data);
         const success &#x3D; await this.agentsService.model.countDocuments({
           _id: payload.identity._id,
           &#x27;security.secretKey&#x27;: data.identity?.security?.secretKey,
@@ -1297,7 +1299,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
     if (options?.scopes) scopes.push(...options.scopes);
     const jwtid &#x3D; &#x60;${identity._id}_${randomBytes(16).toString(&#x27;hex&#x27;)}&#x60;;
     const access_token &#x3D; this.jwtService.sign(
-      { identity, scopes },
+      { identity: pick(identity, [&#x27;_id&#x27;, &#x27;username&#x27;, &#x27;email&#x27;]), scopes },
       {
         expiresIn: this.ACCESS_TOKEN_EXPIRES_IN,
         jwtid,
@@ -1319,10 +1321,11 @@ export class AuthService extends AbstractService implements OnModuleInit {
       [this.REFRESH_TOKEN_PREFIX, refresh_token].join(this.TOKEN_PATH_SEPARATOR),
       this.REFRESH_TOKEN_EXPIRES_IN,
     );
+    const userIdentity &#x3D; await this.agentsService.findOne&lt;Agents&gt;({ _id: identity._id });
     await this.redis.set(
       [this.ACCESS_TOKEN_PREFIX, jwtid].join(this.TOKEN_PATH_SEPARATOR),
       JSON.stringify({
-        identity,
+        identity: userIdentity.toJSON(),
         refresh_token,
       }),
       &#x27;EX&#x27;,
@@ -1334,19 +1337,18 @@ export class AuthService extends AbstractService implements OnModuleInit {
     };
   }
 
-  //TODO: change any
   public async getSessionData(identity: AgentType): Promise&lt;AgentType&gt; {
-    // const entity &#x3D; await this.agentsService.findOne&lt;Agents&gt;(
-    //   { _id: identity.entityId },
-    //   {
-    //     projection: {
-    //       metadata: 0,
-    //     },
-    //   },
-    // )
+    const entity &#x3D; await this.agentsService.findOne&lt;Agents&gt;(
+      { _id: identity._id },
+      {
+        projection: {
+          metadata: 0,
+          password: 0,
+        },
+      },
+    )
     return {
-      ...identity,
-      // entity,
+      ...omit(entity.toJSON(), [&#x27;password&#x27;]),
     };
   }
 

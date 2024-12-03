@@ -573,7 +573,7 @@ import { Response } from &#x27;express&#x27;;
 import { ReqIdentity } from &#x27;~/_common/decorators/params/req-identity.decorator&#x27;;
 import { AgentType } from &#x27;~/_common/types/agent.type&#x27;;
 import { hash } from &#x27;crypto&#x27;;
-import { omit } from &#x27;radash&#x27;;
+import { omit, pick } from &#x27;radash&#x27;;
 
 @Public()
 @ApiTags(&#x27;core/auth&#x27;)
@@ -601,12 +601,12 @@ export class AuthController extends AbstractController {
   @UseGuards(AuthGuard(&#x27;jwt&#x27;))
   @ApiOperation({ summary: &#x27;Récupération de la session en cours&#x27; })
   public async session(@Res() res: Response, @ReqIdentity() identity: AgentType): Promise&lt;Response&gt; {
-    this.logger.debug(&#x60;Session request for ${identity.id} (${identity.email})&#x60;);
+    this.logger.debug(&#x60;Session request for ${identity._id} (${identity.email})&#x60;);
     const user &#x3D; await this.service.getSessionData(identity);
-    this.logger.debug(&#x60;Session data delivered for ${identity.id} (${identity.email}) with ${JSON.stringify(user)}&#x60;);
+    this.logger.debug(&#x60;Session data delivered for ${identity._id} (${identity.email}) with ${JSON.stringify(user)}&#x60;);
     return res.status(HttpStatus.OK).json({
       user: {
-        ...omit(user, [&#x27;security&#x27;]),
+        ...omit(user, [&#x27;security&#x27;, &#x27;metadata&#x27;]),
         sseToken: hash(&#x27;sha256&#x27;, user.security.secretKey),
       },
     });

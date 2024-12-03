@@ -9,7 +9,7 @@ import { Response } from 'express';
 import { ReqIdentity } from '~/_common/decorators/params/req-identity.decorator';
 import { AgentType } from '~/_common/types/agent.type';
 import { hash } from 'crypto';
-import { omit } from 'radash';
+import { omit, pick } from 'radash';
 
 @Public()
 @ApiTags('core/auth')
@@ -37,12 +37,12 @@ export class AuthController extends AbstractController {
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Récupération de la session en cours' })
   public async session(@Res() res: Response, @ReqIdentity() identity: AgentType): Promise<Response> {
-    this.logger.debug(`Session request for ${identity.id} (${identity.email})`);
+    this.logger.debug(`Session request for ${identity._id} (${identity.email})`);
     const user = await this.service.getSessionData(identity);
-    this.logger.debug(`Session data delivered for ${identity.id} (${identity.email}) with ${JSON.stringify(user)}`);
+    this.logger.debug(`Session data delivered for ${identity._id} (${identity.email}) with ${JSON.stringify(user)}`);
     return res.status(HttpStatus.OK).json({
       user: {
-        ...omit(user, ['security']),
+        ...omit(user, ['security', 'metadata']),
         sseToken: hash('sha256', user.security.secretKey),
       },
     });

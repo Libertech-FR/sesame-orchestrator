@@ -81,7 +81,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
 
   // eslint-disable-next-line
   public async verifyIdentity(payload: any & { identity: AgentType & { token: string } }): Promise<any> {
-    console.log('payload', payload);
+    // console.log('payload', payload);
     if (payload.scopes.includes('offline')) {
       return payload.identity;
     }

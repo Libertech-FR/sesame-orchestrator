@@ -26,6 +26,7 @@ declare const module: any;
         key: readFileSync(cfg.application?.https?.key),
         cert: readFileSync(cfg.application?.https?.cert),
       };
+      logger.log('HTTPS is enabled !');
     } catch (error) {
       logger.error('Error while reading https key and cert', error);
     }

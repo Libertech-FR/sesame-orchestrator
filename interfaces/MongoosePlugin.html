@@ -373,7 +373,7 @@ export default (): ConfigInstance &#x3D;&gt; ({
       limit: &#x27;500mb&#x27;,
     },
     https: {
-      enabled: !!parseInt(process.env[&#x27;SESAME_HTTPS_ENABLED&#x27;]) || false,
+      enabled: /yes|1|on|true/i.test(process.env[&#x27;SESAME_HTTPS_ENABLED&#x27;]),
       key: process.env[&#x27;SESAME_HTTPS_PATH_KEY&#x27;] || &#x27;&#x27;,
       cert: process.env[&#x27;SESAME_HTTPS_PATH_CERT&#x27;] || &#x27;&#x27;,
     },

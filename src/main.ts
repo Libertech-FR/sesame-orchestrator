@@ -8,6 +8,7 @@ import { getLogLevel } from './_common/functions/get-log-level';
 import { AppModule } from './app.module';
 import configInstance from './config';
 import { InternalLogger } from './core/logger/internal.logger';
+import { readFileSync } from 'fs';
 
 declare const module: any;
 (async (): Promise<void> => {
@@ -17,11 +18,25 @@ declare const module: any;
     mongoose: cfg?.mongoose,
   });
   await logger.initialize();
+
+  let httpsOptions = {};
+  if (cfg.application?.https?.enabled) {
+    try {
+      httpsOptions = {
+        key: readFileSync(cfg.application?.https?.key),
+        cert: readFileSync(cfg.application?.https?.cert),
+      };
+    } catch (error) {
+      logger.error('Error while reading https key and cert', error);
+    }
+  }
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bodyParser: false,
     rawBody: true,
     cors: true,
     logger,
+    httpsOptions,
   });
   app.use((_: any, res: Response, next: () => void) => {
     res.removeHeader('x-powered-by');

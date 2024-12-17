@@ -6,6 +6,7 @@ import { IAuthModuleOptions } from '@nestjs/passport';
 import { JwtModuleOptions } from '@nestjs/jwt';
 import { StorageManagerConfig } from '@the-software-compagny/nestjs_module_factorydrive';
 import { AmazonWebServicesS3StorageConfig } from '@the-software-compagny/nestjs_module_factorydrive-s3';
+import { parse } from 'path';
 
 export interface MongoosePlugin {
   package: string;
@@ -19,6 +20,11 @@ export interface ConfigInstance {
     bodyParser: {
       limit: string;
     };
+    https: {
+      enabled: boolean;
+      key: string;
+      cert: string;
+    }
   };
   helmet: HelmetOptions;
   mongoose: {
@@ -78,6 +84,11 @@ export default (): ConfigInstance => ({
     nameQueue: process.env['SESAME_NAME_QUEUE'] || 'sesame',
     bodyParser: {
       limit: '500mb',
+    },
+    https: {
+      enabled: !!parseInt(process.env['SESAME_HTTPS_ENABLED']) || false,
+      key: process.env['SESAME_HTTPS_PATH_KEY'] || '',
+      cert: process.env['SESAME_HTTPS_PATH_CERT'] || '',
     },
   },
   helmet: {

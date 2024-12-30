@@ -19,10 +19,12 @@ declare const module: any;
   });
   await logger.initialize();
 
-  let httpsOptions = {};
+  console.log('cfg', cfg.application);
+
+  let extraOptions = <any>{};
   if (cfg.application?.https?.enabled) {
     try {
-      httpsOptions = {
+      extraOptions.httpsOptions = {
         key: readFileSync(cfg.application?.https?.key),
         cert: readFileSync(cfg.application?.https?.cert),
       };
@@ -37,7 +39,7 @@ declare const module: any;
     rawBody: true,
     cors: true,
     logger,
-    httpsOptions,
+    ...extraOptions,
   });
   app.use((_: any, res: Response, next: () => void) => {
     res.removeHeader('x-powered-by');

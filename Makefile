@@ -1,4 +1,5 @@
 APP_PORT = 4002
+APP_PORT_SECURE = 4443
 IMG_NAME = "ghcr.io/libertech-fr/sesame-orchestrator"
 BASE_NAME = "sesame"
 APP_NAME = "sesame-orchestrator"
@@ -30,6 +31,7 @@ prod: ## Start production environment
 		--network dev \
 		--name $(APP_NAME) \
 		-p $(APP_PORT):4000 \
+		-p $(APP_PORT_SECURE):4443 \
 		-p 9229:9229 \
 		-v $(CURDIR):/data \
 		$(IMG_NAME) yarn start:prod
@@ -43,6 +45,7 @@ dev: ## Start development environment
 		--network dev \
 		--name $(APP_NAME) \
 		-p $(APP_PORT):4000 \
+		-p $(APP_PORT_SECURE):4443 \
 		-p 9229:9229 \
 		-v $(CURDIR):/data \
 		$(IMG_NAME) yarn start:dev
@@ -56,6 +59,7 @@ debug: ## Start debug environment
 		--network dev \
 		--name $(APP_NAME) \
 		-p $(APP_PORT):4000 \
+		-p $(APP_PORT_SECURE):4443 \
 		-p 9229:9229 \
 		-v $(CURDIR):/data \
 		$(IMG_NAME) yarn start:debug

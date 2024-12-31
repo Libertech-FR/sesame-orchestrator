@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express';
+import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
-import { Response } from 'express';
+import express, { Response } from 'express';
 import passport from 'passport';
 import { rawBodyBuffer } from '~/_common/middlewares/raw-body-buffer.middleware';
 import { getLogLevel } from './_common/functions/get-log-level';
@@ -9,6 +9,9 @@ import { AppModule } from './app.module';
 import configInstance from './config';
 import { InternalLogger } from './core/logger/internal.logger';
 import { readFileSync } from 'fs';
+import * as http from 'http';
+import * as https from 'https';
+import { ShutdownObserver } from './_common/observers/shutdown.observer';
 
 declare const module: any;
 (async (): Promise<void> => {
@@ -34,7 +37,8 @@ declare const module: any;
     }
   }
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+  const server = express();
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, new ExpressAdapter(server), {
     bodyParser: false,
     rawBody: true,
     cors: true,
@@ -52,9 +56,18 @@ declare const module: any;
     await (await import('./swagger')).default(app);
   }
 
-  await app.listen(4000, async (): Promise<void> => {
-    logger.log(`Sesame - Orchestrator is READY on <http://127.0.0.1:4000> !`);
-  });
+  await app.init();
+
+  const shutdownObserver = app.get(ShutdownObserver);
+  const httpServer = http.createServer(server).listen(4000);
+  shutdownObserver.addHttpServer(httpServer);
+  logger.log(`Sesame - Orchestrator is READY on <http://127.0.0.1:4000> !`);
+
+  if (cfg.application?.https?.enabled) {
+    const httpsServer = https.createServer(extraOptions.httpsOptions!, server).listen(4443);
+    shutdownObserver.addHttpServer(httpsServer);
+    logger.log(`Sesame - Orchestrator is READY on <https://127.0.0.1:4443> !`);
+  }
 
   if (module.hot) {
     module.hot.accept();

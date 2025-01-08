@@ -19,6 +19,7 @@ import { IdentitiesActivationController } from '~/management/identities/identiti
 import { IdentitiesActivationService } from '~/management/identities/identities-activation.service';
 import { IdentitiesDoublonController } from '~/management/identities/identities-doublon.controller';
 import { EnsureIdentitiesIndexMiddleware } from './_middlewares/ensure-identities-index.middleware';
+import { AgentsModule } from '~/core/agents/agents.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { EnsureIdentitiesIndexMiddleware } from './_middlewares/ensure-identitie
     ]),
     FilestorageModule,
     forwardRef(() => BackendsModule),
+    AgentsModule,
   ],
   providers: [
     IdentitiesUpsertService,

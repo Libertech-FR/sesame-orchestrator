@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   Res,
+  UnauthorizedException,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -30,6 +31,9 @@ import { TransformersFilestorageService } from '~/core/filestorage/_services/tra
 import { PaginatedFilterDto } from '~/_common/dto/paginated-filter.dto';
 import { IdentitiesCrudService } from '~/management/identities/identities-crud.service';
 import { Public } from '~/_common/decorators/public.decorator';
+import { Agents } from '~/core/agents/_schemas/agents.schema';
+import { hash } from 'crypto';
+import { AgentsService } from '~/core/agents/agents.service';
 
 @ApiTags('management/identities')
 @Controller('identities')
@@ -39,6 +43,7 @@ export class IdentitiesPhotoController extends AbstractController {
     protected readonly _validation: IdentitiesValidationService,
     protected readonly filestorage: FilestorageService,
     private readonly transformerService: TransformersFilestorageService,
+    private agentsService: AgentsService,
   ) {
     super();
   }
@@ -97,8 +102,15 @@ export class IdentitiesPhotoController extends AbstractController {
   public async readPhotoRaw(
     @Res() res: Response,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @Query('id') id: string,
+    @Query('key') key: string,
     @Query('mime') mime: string = '',
   ): Promise<void> {
+    if (!id || !key) throw new UnauthorizedException();
+    const user = await this.agentsService.findById<Agents>(id);
+    if (!user) throw new UnauthorizedException();
+    if (key !== hash('sha256', user.security.secretKey)) throw new UnauthorizedException();
+
     const identity = await this._service.findOne<Identities>(searchFilterSchema);
     const [data, stream, parent] = await this.filestorage.findOneWithRawData({
       namespace: 'identities',

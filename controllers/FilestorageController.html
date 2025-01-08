@@ -171,11 +171,13 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#readPathRawData" >readPathRawData</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -530,6 +532,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>readPathRawData</b></span>
@@ -548,14 +551,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;path/raw&#x27;)<br />@ApiReadResponseDecorator(FilestorageDto)<br /></code>
+                    <code>@Get(&#x27;path/raw&#x27;)<br />@ApiReadResponseDecorator(FilestorageDto)<br />@ApiQuery({name: &#x27;mime&#x27;, required: false, type: String})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="141"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:141</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="151"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:151</a></div>
                         </td>
                     </tr>
 
@@ -656,6 +659,7 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>readRawData</b></span>
@@ -674,14 +678,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;:_id([0-9a-fA-F]{24})/raw&#x27;)<br />@ApiParam({name: &#x27;_id&#x27;, type: String})<br />@ApiReadResponseDecorator(FilestorageDto)<br /></code>
+                    <code>@Get(&#x27;:_id([0-9a-fA-F]{24})/raw&#x27;)<br />@ApiParam({name: &#x27;_id&#x27;, type: String})<br />@ApiReadResponseDecorator(FilestorageDto)<br />@ApiQuery({name: &#x27;mime&#x27;, required: false, type: String})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="130"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:130</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="135"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:135</a></div>
                         </td>
                     </tr>
 
@@ -792,8 +796,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="169"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:169</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="179"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:179</a></div>
                         </td>
                     </tr>
 
@@ -999,8 +1003,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="154"
-                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:154</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="164"
+                                    class="link-to-prism">src/core/filestorage/filestorage.controller.ts:164</a></div>
                         </td>
                     </tr>
 
@@ -1090,7 +1094,7 @@
   UseInterceptors,
 } from &#x27;@nestjs/common&#x27;;
 import { FileInterceptor } from &#x27;@nestjs/platform-express&#x27;;
-import { ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ApiParam, ApiQuery, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import {
   FilterOptions,
   FilterSchema,
@@ -1203,6 +1207,11 @@ export class FilestorageController extends AbstractController {
   @Get(&#x27;:_id([0-9a-fA-F]{24})/raw&#x27;)
   @ApiParam({ name: &#x27;_id&#x27;, type: String })
   @ApiReadResponseDecorator(FilestorageDto)
+  @ApiQuery({
+    name: &#x27;mime&#x27;,
+    required: false,
+    type: String,
+  })
   public async readRawData(
     @Res() res: Response,
     @Param(&#x27;_id&#x27;, ObjectIdValidationPipe) _id: Types.ObjectId,
@@ -1214,6 +1223,11 @@ export class FilestorageController extends AbstractController {
 
   @Get(&#x27;path/raw&#x27;)
   @ApiReadResponseDecorator(FilestorageDto)
+  @ApiQuery({
+    name: &#x27;mime&#x27;,
+    required: false,
+    type: String,
+  })
   public async readPathRawData(
     @Res() res: Response,
     @Query(&#x27;namespace&#x27;) namespace: string,

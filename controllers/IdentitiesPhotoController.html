@@ -199,7 +199,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>readPhotoRaw(res: Response, searchFilterSchema: FilterSchema, mime: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>readPhotoRaw(res: Response, searchFilterSchema: FilterSchema, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, mime: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -213,8 +213,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="97"
-                                    class="link-to-prism">src/management/identities/identities-photo.controller.ts:97</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">src/management/identities/identities-photo.controller.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -253,6 +253,34 @@
                                                 <td>searchFilterSchema</td>
                                             <td>
                                                         <code>FilterSchema</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>key</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
 
                                             <td>
@@ -325,8 +353,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">src/management/identities/identities-photo.controller.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">src/management/identities/identities-photo.controller.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -421,6 +449,7 @@
   Post,
   Query,
   Res,
+  UnauthorizedException,
   UploadedFile,
   UseInterceptors,
 } from &#x27;@nestjs/common&#x27;;
@@ -444,6 +473,9 @@ import { TransformersFilestorageService } from &#x27;~/core/filestorage/_service
 import { PaginatedFilterDto } from &#x27;~/_common/dto/paginated-filter.dto&#x27;;
 import { IdentitiesCrudService } from &#x27;~/management/identities/identities-crud.service&#x27;;
 import { Public } from &#x27;~/_common/decorators/public.decorator&#x27;;
+import { Agents } from &#x27;~/core/agents/_schemas/agents.schema&#x27;;
+import { hash } from &#x27;crypto&#x27;;
+import { AgentsService } from &#x27;~/core/agents/agents.service&#x27;;
 
 @ApiTags(&#x27;management/identities&#x27;)
 @Controller(&#x27;identities&#x27;)
@@ -453,6 +485,7 @@ export class IdentitiesPhotoController extends AbstractController {
     protected readonly _validation: IdentitiesValidationService,
     protected readonly filestorage: FilestorageService,
     private readonly transformerService: TransformersFilestorageService,
+    private agentsService: AgentsService,
   ) {
     super();
   }
@@ -511,8 +544,15 @@ export class IdentitiesPhotoController extends AbstractController {
   public async readPhotoRaw(
     @Res() res: Response,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
+    @Query(&#x27;id&#x27;) id: string,
+    @Query(&#x27;key&#x27;) key: string,
     @Query(&#x27;mime&#x27;) mime: string &#x3D; &#x27;&#x27;,
   ): Promise&lt;void&gt; {
+    if (!id || !key) throw new UnauthorizedException();
+    const user &#x3D; await this.agentsService.findById&lt;Agents&gt;(id);
+    if (!user) throw new UnauthorizedException();
+    if (key !&#x3D;&#x3D; hash(&#x27;sha256&#x27;, user.security.secretKey)) throw new UnauthorizedException();
+
     const identity &#x3D; await this._service.findOne&lt;Identities&gt;(searchFilterSchema);
     const [data, stream, parent] &#x3D; await this.filestorage.findOneWithRawData({
       namespace: &#x27;identities&#x27;,

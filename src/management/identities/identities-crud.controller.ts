@@ -78,10 +78,16 @@ export class IdentitiesCrudController extends AbstractController {
       body.inetOrgPerson.employeeType = 'LOCAL';
     }
     if (!body.inetOrgPerson.cn) {
-      body.inetOrgPerson.cn = `${(body.inetOrgPerson.sn || '').toUpperCase()} ${body.inetOrgPerson.givenName}`;
+      body.inetOrgPerson.cn = [
+        body.inetOrgPerson.sn?.toUpperCase(),
+        body.inetOrgPerson.givenName,
+      ].join(' ').trim();
     }
     if (!body.inetOrgPerson.displayName) {
-      body.inetOrgPerson.displayName = body.inetOrgPerson.givenName + ' ' + (body.inetOrgPerson.sn || '').toUpperCase();
+      body.inetOrgPerson.displayName = [
+        body.inetOrgPerson.givenName,
+        body.inetOrgPerson.sn?.toUpperCase(),
+      ].join(' ').trim();
     }
     const data = await this._service.create<Identities>(body);
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid

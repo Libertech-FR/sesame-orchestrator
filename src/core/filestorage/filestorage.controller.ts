@@ -14,7 +14,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import {
   FilterOptions,
   FilterSchema,
@@ -127,6 +127,11 @@ export class FilestorageController extends AbstractController {
   @Get(':_id([0-9a-fA-F]{24})/raw')
   @ApiParam({ name: '_id', type: String })
   @ApiReadResponseDecorator(FilestorageDto)
+  @ApiQuery({
+    name: 'mime',
+    required: false,
+    type: String,
+  })
   public async readRawData(
     @Res() res: Response,
     @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
@@ -138,6 +143,11 @@ export class FilestorageController extends AbstractController {
 
   @Get('path/raw')
   @ApiReadResponseDecorator(FilestorageDto)
+  @ApiQuery({
+    name: 'mime',
+    required: false,
+    type: String,
+  })
   public async readPathRawData(
     @Res() res: Response,
     @Query('namespace') namespace: string,

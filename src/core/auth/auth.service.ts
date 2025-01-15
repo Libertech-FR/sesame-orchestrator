@@ -101,7 +101,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
       const identity = await this.redis.get([this.ACCESS_TOKEN_PREFIX, payload.jti].join(':'));
       if (identity) {
         const data = JSON.parse(identity);
-        console.log('data', data);
+        // console.log('data', data);
         const success = await this.agentsService.model.countDocuments({
           _id: payload.identity._id,
           'security.secretKey': data.identity?.security?.secretKey,

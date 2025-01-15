@@ -508,11 +508,7 @@ export class BackendsService extends AbstractQueueProcessor {
           $set: {
             state: JobState.FAILED,
             finishedAt: new Date(),
-            result: {
-              error: {
-                message: error.message,
-              },
-            },
+            result: { ...(error as any)?.response },
           },
         });
       }

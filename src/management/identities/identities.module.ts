@@ -36,7 +36,7 @@ import {PasswdModule} from "~/management/passwd/passwd.module";
     ]),
     FilestorageModule,
     forwardRef(() => BackendsModule),
-    SettingsModule
+    SettingsModule,
   ],
   providers: [
     IdentitiesUpsertService,

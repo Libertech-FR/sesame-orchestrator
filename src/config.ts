@@ -6,6 +6,7 @@ import { IAuthModuleOptions } from '@nestjs/passport';
 import { JwtModuleOptions } from '@nestjs/jwt';
 import { StorageManagerConfig } from '@the-software-compagny/nestjs_module_factorydrive';
 import { AmazonWebServicesS3StorageConfig } from '@the-software-compagny/nestjs_module_factorydrive-s3';
+import { parse } from 'path';
 
 export interface MongoosePlugin {
   package: string;
@@ -19,6 +20,11 @@ export interface ConfigInstance {
     bodyParser: {
       limit: string;
     };
+    https: {
+      enabled: boolean;
+      key: string;
+      cert: string;
+    }
   };
   helmet: HelmetOptions;
   mongoose: {
@@ -32,15 +38,15 @@ export interface ConfigInstance {
   };
   factorydrive: {
     options:
-      | StorageManagerConfig
-      | {
-          disks: {
-            [key: string]: {
-              driver: 's3';
-              config: AmazonWebServicesS3StorageConfig;
-            };
-          };
+    | StorageManagerConfig
+    | {
+      disks: {
+        [key: string]: {
+          driver: 's3';
+          config: AmazonWebServicesS3StorageConfig;
         };
+      };
+    };
   };
   passport: {
     options: IAuthModuleOptions;
@@ -79,6 +85,11 @@ export default (): ConfigInstance => ({
     bodyParser: {
       limit: '500mb',
     },
+    https: {
+      enabled: /yes|1|on|true/i.test(process.env['SESAME_HTTPS_ENABLED']),
+      key: process.env['SESAME_HTTPS_PATH_KEY'] || '',
+      cert: process.env['SESAME_HTTPS_PATH_CERT'] || '',
+    },
   },
   helmet: {
     contentSecurityPolicy: {
@@ -105,7 +116,8 @@ export default (): ConfigInstance => ({
     options: {
       directConnection: true,
     },
-    plugins: [],
+    plugins: [
+    ],
   },
   factorydrive: {
     options: {

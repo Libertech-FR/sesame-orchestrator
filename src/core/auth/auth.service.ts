@@ -8,7 +8,7 @@ import { verify as argon2Verify } from 'argon2';
 import { Agents } from '~/core/agents/_schemas/agents.schema';
 import { AgentsService } from '~/core/agents/agents.service';
 import { AgentType } from '~/_common/types/agent.type';
-import { omit } from 'radash';
+import { omit, pascal, pick } from 'radash';
 import { JwtPayload } from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 import { resolve } from 'path';
@@ -81,6 +81,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
 
   // eslint-disable-next-line
   public async verifyIdentity(payload: any & { identity: AgentType & { token: string } }): Promise<any> {
+    // console.log('payload', payload);
     if (payload.scopes.includes('offline')) {
       return payload.identity;
     }
@@ -100,6 +101,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
       const identity = await this.redis.get([this.ACCESS_TOKEN_PREFIX, payload.jti].join(':'));
       if (identity) {
         const data = JSON.parse(identity);
+        // console.log('data', data);
         const success = await this.agentsService.model.countDocuments({
           _id: payload.identity._id,
           'security.secretKey': data.identity?.security?.secretKey,
@@ -125,7 +127,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
     if (options?.scopes) scopes.push(...options.scopes);
     const jwtid = `${identity._id}_${randomBytes(16).toString('hex')}`;
     const access_token = this.jwtService.sign(
-      { identity, scopes },
+      { identity: pick(identity, ['_id', 'username', 'email']), scopes },
       {
         expiresIn: this.ACCESS_TOKEN_EXPIRES_IN,
         jwtid,
@@ -147,10 +149,11 @@ export class AuthService extends AbstractService implements OnModuleInit {
       [this.REFRESH_TOKEN_PREFIX, refresh_token].join(this.TOKEN_PATH_SEPARATOR),
       this.REFRESH_TOKEN_EXPIRES_IN,
     );
+    const userIdentity = await this.agentsService.findOne<Agents>({ _id: identity._id });
     await this.redis.set(
       [this.ACCESS_TOKEN_PREFIX, jwtid].join(this.TOKEN_PATH_SEPARATOR),
       JSON.stringify({
-        identity,
+        identity: userIdentity.toJSON(),
         refresh_token,
       }),
       'EX',
@@ -162,19 +165,18 @@ export class AuthService extends AbstractService implements OnModuleInit {
     };
   }
 
-  //TODO: change any
   public async getSessionData(identity: AgentType): Promise<AgentType> {
-    // const entity = await this.agentsService.findOne<Agents>(
-    //   { _id: identity.entityId },
-    //   {
-    //     projection: {
-    //       metadata: 0,
-    //     },
-    //   },
-    // )
+    const entity = await this.agentsService.findOne<Agents>(
+      { _id: identity._id },
+      {
+        projection: {
+          metadata: 0,
+          password: 0,
+        },
+      },
+    )
     return {
-      ...identity,
-      // entity,
+      ...omit(entity.toJSON(), ['password']),
     };
   }
 

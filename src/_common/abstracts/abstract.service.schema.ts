@@ -17,6 +17,7 @@ import { AbstractService, AbstractServiceContext } from './abstract.service';
 import { ServiceSchemaInterface } from './interfaces/service.schema.interface';
 import { AbstractSchema } from './schemas/abstract.schema';
 import mongodb from 'mongodb';
+import { omit } from 'radash';
 
 @Injectable()
 export abstract class AbstractServiceSchema extends AbstractService implements ServiceSchemaInterface {
@@ -50,8 +51,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
   public async trashAndCount<T extends AbstractSchema | Document>(
     projection?: ProjectionType<T> | null | undefined,
     options?: QueryOptions<T> | null | undefined,
-  ):Promise<[Array<T & Query<T, T, any, T>>, number]> {
-    const filter={deletedFlag : true}
+  ): Promise<[Array<T & Query<T, T, any, T>>, number]> {
+    const filter = { deletedFlag: true }
     let count = await this._model.countDocuments(filter).exec()
     let data = await this._model.find<T & Query<T, T, any, T>>(filter, projection, options).exec()
     return [data, count]
@@ -75,8 +76,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options = { ...options, ...beforeEvent.options }
       }
     }
-    const softDelete={deletedFlag : {$ne: true}}
-    filter= {...filter,...softDelete}
+    const softDelete = { deletedFlag: { $ne: true } }
+    filter = { ...filter, ...softDelete }
     let count = await this._model.countDocuments(filter).exec()
     let data = await this._model.find<T & Query<T, T, any, T>>(filter, projection, options).exec()
     if (this.eventEmitter) {
@@ -228,7 +229,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       }
     }
     let updated = await this._model
-      .findByIdAndUpdate<Query<T | null, T, any, T>>(
+      .findOneAndUpdate<Query<T | null, T, any, T>>(
         { _id },
         {
           ...update,
@@ -237,7 +238,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
             'metadata.createdAt': new Date(),
           },
           $set: {
-            ...(update?.$set || {}),
+            ...omit(update?.$set || {}, ['_id']),
             'metadata.lastUpdatedBy': this.request?.user?.username || 'anonymous',
             'metadata.lastUpdatedAt': new Date(),
           }

@@ -2,6 +2,7 @@ import {
   Document,
   FilterQuery,
   ModifyResult,
+  MongooseBaseQueryOptions,
   ProjectionType,
   Query,
   QueryOptions,
@@ -10,6 +11,7 @@ import {
   UpdateQuery,
 } from 'mongoose';
 import { AbstractSchema } from '../schemas/abstract.schema';
+import mongodb from 'mongodb';
 
 export interface ServiceSchemaInterface {
   /* eslint-disable */
@@ -19,7 +21,7 @@ export interface ServiceSchemaInterface {
     options?: QueryOptions<T> | null | undefined,
   ): Promise<Query<Array<T>, T, any, T>[]>
 
-  count<T extends AbstractSchema | Document>(filter?: FilterQuery<T>, options?: QueryOptions<T> | null | undefined): Promise<number>
+  count<T extends AbstractSchema | Document>(filter?: FilterQuery<T>, options?: (mongodb.CountOptions & MongooseBaseQueryOptions<T>) | null): Promise<number>
 
   findAndCount<T extends AbstractSchema | Document>(
     filter?: FilterQuery<T>,

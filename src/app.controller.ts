@@ -4,7 +4,7 @@ import { Response } from 'express';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { Public } from './_common/decorators/public.decorator';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import LRU from 'lru-cache';
+import { LRUCache } from 'lru-cache';
 
 interface GithubUpdate {
   name?: string;
@@ -17,7 +17,10 @@ interface GithubUpdate {
   node_id?: string;
 }
 
-const storage = new LRU({ ttl: 60 * 60 * 1000 });
+const storage = new LRUCache({
+  ttl: 1000 * 60 * 60,
+  ttlAutopurge: true,
+});
 
 @Public()
 @Controller()

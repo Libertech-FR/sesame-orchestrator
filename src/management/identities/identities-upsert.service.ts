@@ -37,7 +37,7 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       );
     }
     //controle si l identité est fusionnée si c est la bonne à mettre à jour puisqu elle a 2 employeeNumber
-    if (identity !== null && identity?.srcFusionId !== null) {
+    if (identity !== null && identity?.srcFusionId) {
       if (identity.primaryEmployeeNumber !== data?.inetOrgPerson?.employeeNumber[0]) {
         throw new HttpException('Secondary identity', HttpStatus.SEE_OTHER);
       }
@@ -64,9 +64,10 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
         ...crushedUpdate,
       }),
     );
+
     await this.checkFingerprint(filters, fingerprint);
 
-    console.log('insert', {
+    this.logger.verbose('identities upsert data: ' + JSON.stringify({
       $setOnInsert: {
         ...crushedSetOnInsert,
         // 'state': IdentityState.TO_CREATE,
@@ -76,7 +77,7 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
         'additionalFields.objectClasses': data.additionalFields.objectClasses,
         lastSync: new Date(),
       },
-    });
+    }, null, 2));
 
     const upserted = await super.upsert(
       filters,

@@ -22,6 +22,7 @@ import { MailadmService } from '~/settings/mailadm.service';
 import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factorydrive';
 import { MigrationsService } from './migrations/migrations.service';
 import { MigrationsModule } from './migrations/migrations.module';
+import { ShutdownObserver } from './_common/observers/shutdown.observer';
 
 @Module({
   imports: [
@@ -34,8 +35,27 @@ import { MigrationsModule } from './migrations/migrations.module';
       inject: [MailadmService],
       useFactory: async (service: MailadmService) => {
         const params = await service.getParams();
+        const regex = /^(smtps?|):\/\/([a-zA-Z0-9.-]+|\d{1,3}(?:\.\d{1,3}){3}|\[(?:[0-9a-fA-F:]+)\]):(\d+)$/;
+        const [_, protocol, host, port] = `${params.host}`.match(regex);
+        const isDev = process.env.NODE_ENV === 'development';
+
         return {
-          transport: params.host,
+          transport: {
+            host,
+            port: parseInt(port),
+            from: params.sender,
+            secure: protocol === 'smtps' && port === '465',
+            requireTLS: protocol === 'smtps' && port === '587',
+            auth: {
+              user: params.username,
+              pass: params.password,
+            },
+            tls: {
+              ciphers: 'SSLv3,TLSv1,TLSv1.1,TLSv1.2',
+            },
+            debug: isDev,
+            logger: isDev,
+          },
           defaults: {
             from: params.sender,
           },
@@ -81,6 +101,7 @@ import { MigrationsModule } from './migrations/migrations.module';
           host: configService.get('ioredis.host'),
           port: configService.get('ioredis.port'),
         },
+        blockingConnection: true,
       }),
     }),
     FactorydriveModule.forRootAsync({
@@ -99,6 +120,7 @@ import { MigrationsModule } from './migrations/migrations.module';
   controllers: [AppController],
   providers: [
     AppService,
+    ShutdownObserver,
     {
       provide: APP_GUARD,
       useClass: AuthGuard('jwt'),

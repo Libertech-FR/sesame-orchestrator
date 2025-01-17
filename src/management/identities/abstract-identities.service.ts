@@ -118,6 +118,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     this.logger.debug(`Fingerprint updated for <${identity._id}>: ${fingerprint}`);
     return updated as unknown as ModifyResult<Query<T, T, any, T>>;
   }
+
   protected async previewFingerprint(identity: any): Promise<string> {
     const additionalFields = omit(identity.additionalFields, ['validations']);
     const data = JSON.stringify(

@@ -77,5 +77,6 @@ RUN yarn install \
 COPY --from=builder /data/dist ./dist
 
 EXPOSE 4000
+EXPOSE 4443
 
 CMD ["yarn", "run", "start:prod"]

@@ -1,9 +1,17 @@
 APP_PORT = 4002
+APP_PORT_SECURE = 4443
 IMG_NAME = "ghcr.io/libertech-fr/sesame-orchestrator"
 BASE_NAME = "sesame"
 APP_NAME = "sesame-orchestrator"
 PLATFORM = "linux/amd64"
 include .env
+
+CERT_DIR = ./certificates
+COMMON_NAME = localhost
+DAYS_VALID = 365
+
+$(shell mkdir -p $(CERT_DIR))
+
 
 .DEFAULT_GOAL := help
 help:
@@ -23,6 +31,7 @@ prod: ## Start production environment
 		--network dev \
 		--name $(APP_NAME) \
 		-p $(APP_PORT):4000 \
+		-p $(APP_PORT_SECURE):4443 \
 		-p 9229:9229 \
 		-v $(CURDIR):/data \
 		$(IMG_NAME) yarn start:prod
@@ -36,6 +45,7 @@ dev: ## Start development environment
 		--network dev \
 		--name $(APP_NAME) \
 		-p $(APP_PORT):4000 \
+		-p $(APP_PORT_SECURE):4443 \
 		-p 9229:9229 \
 		-v $(CURDIR):/data \
 		$(IMG_NAME) yarn start:dev
@@ -49,6 +59,7 @@ debug: ## Start debug environment
 		--network dev \
 		--name $(APP_NAME) \
 		-p $(APP_PORT):4000 \
+		-p $(APP_PORT_SECURE):4443 \
 		-p 9229:9229 \
 		-v $(CURDIR):/data \
 		$(IMG_NAME) yarn start:debug
@@ -120,3 +131,29 @@ run-test: ## Run tests
 
 gen-doc:
 	@npx @compodoc/compodoc -p tsconfig.json -s -d docs --includes ./markdowns -n "Sesame Orchestrator"
+
+ncu: ## Check latest versions of all project dependencies
+	@npx npm-check-updates
+
+ncu-upgrade: ## Upgrade all project dependencies to the latest versions
+	@npx npm-check-updates -u
+
+generate-ssl-cert: ## Générer les certificats HTTPS auto-signés
+	@echo "Génération des certificats HTTPS auto-signés..."
+	@openssl req -x509 \
+		-newkey rsa:4096 \
+		-keyout $(CERT_DIR)/server.key \
+		-out $(CERT_DIR)/server.crt \
+		-days $(DAYS_VALID) \
+		-nodes \
+		-subj "/CN=$(COMMON_NAME)"
+	@chmod 600 $(CERT_DIR)/server.key
+	@chmod 644 $(CERT_DIR)/server.crt
+	@echo "Certificats générés avec succès dans $(CERT_DIR)"
+
+clean-ssl-cert: ## Nettoyer les certificats HTTPS
+	@rm -rf $(CERT_DIR)
+	@echo "Certificats supprimés"
+
+show-cert-info: ## Afficher les informations du certificat
+	@openssl x509 -in $(CERT_DIR)/server.crt -text -noout

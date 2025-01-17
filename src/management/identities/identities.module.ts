@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { forwardRef, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Identities, IdentitiesSchema } from './_schemas/identities.schema';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
@@ -21,8 +21,9 @@ import { IdentitiesDoublonController } from '~/management/identities/identities-
 import {IdentitiesForcePasswordController} from "~/management/identities/identities-forcepassword.controller";
 import {IdentitiesForcepasswordService} from "~/management/identities/identities-forcepassword.service";
 import {SettingsModule} from "~/settings/settings.module";
-import {PasswdadmService} from "~/settings/passwdadm.service";
-import {PasswdModule} from "~/management/passwd/passwd.module";
+import { EnsureIdentitiesIndexMiddleware } from './_middlewares/ensure-identities-index.middleware';
+import { AgentsModule } from '~/core/agents/agents.module';
+
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import {PasswdModule} from "~/management/passwd/passwd.module";
     FilestorageModule,
     forwardRef(() => BackendsModule),
     SettingsModule,
+    AgentsModule,
   ],
   providers: [
     IdentitiesUpsertService,
@@ -61,4 +63,8 @@ import {PasswdModule} from "~/management/passwd/passwd.module";
   ],
   exports: [IdentitiesCrudService],
 })
-export class IdentitiesModule {}
+export class IdentitiesModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer) {
+    consumer.apply(EnsureIdentitiesIndexMiddleware).forRoutes('/management/identities/*');
+  }
+}

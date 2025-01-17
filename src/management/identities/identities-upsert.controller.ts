@@ -59,10 +59,10 @@ export class IdentitiesUpsertController extends AbstractController {
   })
   public async upsert(
     @Res()
-      res: Response,
+    res: Response,
     @Body() body: IdentitiesUpsertDto,
     @Query('filters')
-      filtersQuery: {
+    filtersQuery: {
       [key: string]: string;
     }[] = [],
     @Query('errorOnNotFound') errorOnNotFound: string = 'false',

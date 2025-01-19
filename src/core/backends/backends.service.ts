@@ -65,6 +65,7 @@ export class BackendsService extends AbstractQueueProcessor {
         await this.identitiesService.model.findByIdAndUpdate(isSyncedJob?.concernedTo?.id, {
           $set: {
             state: IdentityState.SYNCED,
+            lastBackendSync:  new Date(),
           },
         });
         this.logger.warn(`Job already completed, syncing... [${job.id}::COMPLETED]`);

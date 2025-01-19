@@ -1,9 +1,8 @@
-import { AbstractIdentitiesService } from '~/management/identities/abstract-identities.service';
-import { Identities } from '~/management/identities/_schemas/identities.schema';
+import {AbstractIdentitiesService} from '~/management/identities/abstract-identities.service';
+import {Identities} from '~/management/identities/_schemas/identities.schema';
 import {BadRequestException, HttpException, Injectable} from '@nestjs/common';
-import { DataStatusEnum } from '~/management/identities/_enums/data-status';
+import {DataStatusEnum} from '~/management/identities/_enums/data-status';
 import {ActionType} from "~/core/backends/_enum/action-type.enum";
-
 
 
 @Injectable()
@@ -30,6 +29,7 @@ export class IdentitiesForcepasswordService extends AbstractIdentitiesService {
         error: 'Bad Request',
         statusCode: 400,
       });
+    }
      //ok on envoie le changement de mdp
       try{
         const [_, response] = await this.backends.executeJob(
@@ -45,6 +45,8 @@ export class IdentitiesForcepasswordService extends AbstractIdentitiesService {
           },
         );
         if (response?.status === 0) {
+          //activation de l'identité
+          await this.activation(id,DataStatusEnum.ACTIVE)
           return [_, response];
         }
       }catch (e) {
@@ -53,8 +55,30 @@ export class IdentitiesForcepasswordService extends AbstractIdentitiesService {
           'Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible',
         );
       }
-
-
-    }
   }
+  public async needToChangePassword(id: string){
+    let identity: Identities = null;
+    try {
+      identity = await this.findById<Identities>(id);
+    } catch (error) {
+      throw new HttpException('Id not found', 400);
+    }
+    if (identity.lastBackendSync === null) {
+      throw new HttpException('Identity has never been synced', 400);
+    }
+    if (identity.dataStatus === DataStatusEnum.DELETED) {
+      throw new BadRequestException('Identity is in status deleted');
+    }
+    if (identity.dataStatus === DataStatusEnum.INACTIVE) {
+      throw new BadRequestException('Identity is in status disabled');
+    }
+    //desactivation du compte
+    try{
+      await this.activation(id,DataStatusEnum.PASSWORDNEEDTOBECHANGED)
+    }catch{
+      throw new BadRequestException('Error changing status');
+    }
+
+  }
+
 }

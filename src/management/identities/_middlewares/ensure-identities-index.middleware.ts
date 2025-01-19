@@ -13,7 +13,7 @@ export class EnsureIdentitiesIndexMiddleware implements NestMiddleware {
   public async use(req: Request, res: Response, next: () => void) {
     try {
       await this.identityModel.ensureIndexes();
-      console.log('Indexes synchronized.');
+      // console.log('Indexes synchronized.');
     } catch (err) {
       console.error('Erreur lors de la création des index :', err);
     }

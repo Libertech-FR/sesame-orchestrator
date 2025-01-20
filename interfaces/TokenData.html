@@ -520,8 +520,7 @@ export class PasswdService extends AbstractService {
         },
       );
       // on met actif l&#x27;identité
-      identity.dataStatus &#x3D; DataStatusEnum.ACTIVE;
-      await identity.save()
+      await this.identities.model.updateOne({ _id:identity._id},{dataStatus: DataStatusEnum.ACTIVE})
       return result;
     } catch (e) {
       let job &#x3D; undefined;

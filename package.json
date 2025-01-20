@@ -78,7 +78,7 @@
     "loglevel": "^1.9.1",
     "lru-cache": "^11.0.2",
     "mjml": "^4.15.3",
-    "mongoose": "^8.8.2",
+    "mongoose": "^8.9.5",
     "nest-commander": "^3.13.0",
     "nest-winston": "^1.10.0",
     "nestjs-request-context": "^3.0.0",

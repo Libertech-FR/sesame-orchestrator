@@ -420,8 +420,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="272"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:272</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="276"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:276</a></div>
                         </td>
                     </tr>
 
@@ -583,8 +583,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="475"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:475</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="485"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:485</a></div>
                         </td>
                     </tr>
 
@@ -623,8 +623,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="333"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:333</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="337"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:337</a></div>
                         </td>
                     </tr>
 
@@ -693,8 +693,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="310"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:310</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="314"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:314</a></div>
                         </td>
                     </tr>
 
@@ -775,8 +775,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="451"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:451</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="459"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:459</a></div>
                         </td>
                     </tr>
 
@@ -885,8 +885,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="436"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:436</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="444"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:444</a></div>
                         </td>
                     </tr>
 
@@ -1025,8 +1025,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="398"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:398</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="406"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:406</a></div>
                         </td>
                     </tr>
 
@@ -1095,8 +1095,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="355"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:355</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="359"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:359</a></div>
                         </td>
                     </tr>
 
@@ -1165,8 +1165,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="462"
-                                    class="link-to-prism">src/management/passwd/passwd.service.ts:462</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="470"
+                                    class="link-to-prism">src/management/passwd/passwd.service.ts:470</a></div>
                         </td>
                     </tr>
 
@@ -1540,7 +1540,7 @@ export class PasswdService extends AbstractService {
     try {
       const identity &#x3D; (await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: initDto.uid })) as Identities;
       //test si on peu reninitialiser le compte
-      if ( identity.dataStatus  &#x3D;&#x3D; DataStatusEnum.INACTIVE){
+      if ( identity.dataStatus  &#x3D;&#x3D;&#x3D; DataStatusEnum.INACTIVE ||  identity.dataStatus  &#x3D;&#x3D;&#x3D; DataStatusEnum.DELETED){
         throw new BadRequestException(
           &#x27;Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible&#x27;,
         );
@@ -1619,7 +1619,7 @@ export class PasswdService extends AbstractService {
     try {
       const identity &#x3D; (await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: initDto.uid })) as Identities;
       //test si on peu reninitialiser le compte
-      if ( identity.dataStatus  &#x3D;&#x3D; DataStatusEnum.INACTIVE){
+      if ( identity.dataStatus  &#x3D;&#x3D;&#x3D; DataStatusEnum.INACTIVE || identity.dataStatus  &#x3D;&#x3D;&#x3D; DataStatusEnum.DELETED){
         throw new BadRequestException(
           &#x27;Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible&#x27;,
         );
@@ -1683,7 +1683,7 @@ export class PasswdService extends AbstractService {
         &#x27;inetOrgPerson.uid&#x27;: passwdDto.uid,
         state: IdentityState.SYNCED,
       })) as Identities;
-      if ( identity.dataStatus  &#x3D;&#x3D; DataStatusEnum.INACTIVE){
+      if ( identity.dataStatus  &#x3D;&#x3D;&#x3D; DataStatusEnum.INACTIVE ||  identity.dataStatus  &#x3D;&#x3D;&#x3D; DataStatusEnum.DELETED){
         throw new BadRequestException(
           &#x27;Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible&#x27;,
         );
@@ -1697,7 +1697,7 @@ export class PasswdService extends AbstractService {
         });
       }
       //tout est ok en envoie au backend
-      return await this.backends.executeJob(
+      const result &#x3D; await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_CHANGE,
         identity._id,
         {
@@ -1714,6 +1714,10 @@ export class PasswdService extends AbstractService {
           updateStatus: false,
         },
       );
+      // on met actif l&#x27;identité
+      identity.dataStatus &#x3D; DataStatusEnum.ACTIVE;
+      await identity.save()
+      return result;
     } catch (e) {
       let job &#x3D; undefined;
       let _debug &#x3D; undefined;
@@ -1852,6 +1856,10 @@ export class PasswdService extends AbstractService {
       if (response?.status &#x3D;&#x3D;&#x3D; 0) {
         this.logger.log(&#x27;delete key&#x27;);
         await this.redis.del(data.token);
+        // mise de l indentité active
+        // on met actif l&#x27;identité
+        identity.dataStatus &#x3D; DataStatusEnum.ACTIVE;
+        await identity.save()
         return [_, response];
       }
       this.logger.error(&#x27;Error from backend while reseting password by code&#x27;);
@@ -1931,6 +1939,8 @@ export class PasswdService extends AbstractService {
 
   private async setInitState(identity: Identities, state: InitStatesEnum): Promise&lt;any&gt; {
     identity.initState &#x3D; state;
+    // on met actif l&#x27;identité
+    identity.dataStatus &#x3D; DataStatusEnum.ACTIVE;
     if (state &#x3D;&#x3D;&#x3D; InitStatesEnum.SENT) {
       identity.initInfo.initDate &#x3D; new Date();
       identity.initInfo.sentDate &#x3D; null;

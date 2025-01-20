@@ -306,7 +306,7 @@ export class PasswdService extends AbstractService {
     try {
       const identity &#x3D; (await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: initDto.uid })) as Identities;
       //test si on peu reninitialiser le compte
-      if ( identity.dataStatus  &#x3D;&#x3D; DataStatusEnum.INACTIVE){
+      if ( identity.dataStatus  &#x3D;&#x3D;&#x3D; DataStatusEnum.INACTIVE ||  identity.dataStatus  &#x3D;&#x3D;&#x3D; DataStatusEnum.DELETED){
         throw new BadRequestException(
           &#x27;Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible&#x27;,
         );
@@ -385,7 +385,7 @@ export class PasswdService extends AbstractService {
     try {
       const identity &#x3D; (await this.identities.findOne({ &#x27;inetOrgPerson.uid&#x27;: initDto.uid })) as Identities;
       //test si on peu reninitialiser le compte
-      if ( identity.dataStatus  &#x3D;&#x3D; DataStatusEnum.INACTIVE){
+      if ( identity.dataStatus  &#x3D;&#x3D;&#x3D; DataStatusEnum.INACTIVE || identity.dataStatus  &#x3D;&#x3D;&#x3D; DataStatusEnum.DELETED){
         throw new BadRequestException(
           &#x27;Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible&#x27;,
         );
@@ -449,7 +449,7 @@ export class PasswdService extends AbstractService {
         &#x27;inetOrgPerson.uid&#x27;: passwdDto.uid,
         state: IdentityState.SYNCED,
       })) as Identities;
-      if ( identity.dataStatus  &#x3D;&#x3D; DataStatusEnum.INACTIVE){
+      if ( identity.dataStatus  &#x3D;&#x3D;&#x3D; DataStatusEnum.INACTIVE ||  identity.dataStatus  &#x3D;&#x3D;&#x3D; DataStatusEnum.DELETED){
         throw new BadRequestException(
           &#x27;Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible&#x27;,
         );
@@ -463,7 +463,7 @@ export class PasswdService extends AbstractService {
         });
       }
       //tout est ok en envoie au backend
-      return await this.backends.executeJob(
+      const result &#x3D; await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_CHANGE,
         identity._id,
         {
@@ -480,6 +480,10 @@ export class PasswdService extends AbstractService {
           updateStatus: false,
         },
       );
+      // on met actif l&#x27;identité
+      identity.dataStatus &#x3D; DataStatusEnum.ACTIVE;
+      await identity.save()
+      return result;
     } catch (e) {
       let job &#x3D; undefined;
       let _debug &#x3D; undefined;
@@ -618,6 +622,10 @@ export class PasswdService extends AbstractService {
       if (response?.status &#x3D;&#x3D;&#x3D; 0) {
         this.logger.log(&#x27;delete key&#x27;);
         await this.redis.del(data.token);
+        // mise de l indentité active
+        // on met actif l&#x27;identité
+        identity.dataStatus &#x3D; DataStatusEnum.ACTIVE;
+        await identity.save()
         return [_, response];
       }
       this.logger.error(&#x27;Error from backend while reseting password by code&#x27;);
@@ -697,6 +705,8 @@ export class PasswdService extends AbstractService {
 
   private async setInitState(identity: Identities, state: InitStatesEnum): Promise&lt;any&gt; {
     identity.initState &#x3D; state;
+    // on met actif l&#x27;identité
+    identity.dataStatus &#x3D; DataStatusEnum.ACTIVE;
     if (state &#x3D;&#x3D;&#x3D; InitStatesEnum.SENT) {
       identity.initInfo.initDate &#x3D; new Date();
       identity.initInfo.sentDate &#x3D; null;

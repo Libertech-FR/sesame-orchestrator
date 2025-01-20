@@ -177,6 +177,16 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#activation" >activation</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#askToChangePassword" >askToChangePassword</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Protected</span>
                                     <span class="modifier">Async</span>
                                 <a href="#checkInetOrgPersonJpegPhoto" >checkInetOrgPersonJpegPhoto</a>
@@ -268,12 +278,12 @@
                 <tr>
                     <td class="col-md-4">
                                 <span class="modifier">Public</span>
-                        <code>constructor(_model: <a href="../classes/Identities.html" target="_self">Model&lt;Identities&gt;</a>, _validation: <a href="../injectables/IdentitiesValidationService.html" target="_self">IdentitiesValidationService</a>, storage: FactorydriveService, backends: <a href="../injectables/BackendsService.html" target="_self">BackendsService</a>)</code>
+                        <code>constructor(_model: <a href="../classes/Identities.html" target="_self">Model&lt;Identities&gt;</a>, _validation: <a href="../injectables/IdentitiesValidationService.html" target="_self">IdentitiesValidationService</a>, storage: FactorydriveService, passwdAdmService: <a href="../injectables/PasswdadmService.html" target="_self">PasswdadmService</a>, backends: <a href="../injectables/BackendsService.html" target="_self">BackendsService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/management/identities/abstract-identities.service.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">src/management/identities/abstract-identities.service.ts:21</a></div>
                             </td>
                         </tr>
 
@@ -327,6 +337,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>passwdAdmService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/PasswdadmService.html" target="_self" >PasswdadmService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>backends</td>
                                                   
                                                         <td>
@@ -356,6 +378,158 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="activation"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>activation</b></span>
+                        <a href="#activation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>activation(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, status: <a href="../undefineds/DataStatusEnum.html" target="_self">DataStatusEnum</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="145"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:145</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>status</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#DataStatusEnum" target="_self" >DataStatusEnum</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="askToChangePassword"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>askToChangePassword</b></span>
+                        <a href="#askToChangePassword"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>askToChangePassword(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="179"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:179</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="checkInetOrgPersonJpegPhoto"></a>
                     <span class="name">
                             <span class="modifier">Protected</span>
@@ -375,8 +549,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="79"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:79</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -445,8 +619,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="95"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:95</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="99"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:99</a></div>
                         </td>
                     </tr>
 
@@ -534,8 +708,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -628,8 +802,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="120"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:120</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="124"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:124</a></div>
                         </td>
                     </tr>
 
@@ -697,8 +871,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -1952,21 +2126,24 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, forwardRef, HttpException, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
-import { Document, Model, ModifyResult, Query, Types } from &#x27;mongoose&#x27;;
-import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
-import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
-import { ValidationConfigException, ValidationSchemaException } from &#x27;~/_common/errors/ValidationException&#x27;;
-import { IdentitiesUpsertDto } from &#x27;./_dto/identities.dto&#x27;;
-import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
-import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
-import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
-import { FactorydriveService } from &#x27;@the-software-compagny/nestjs_module_factorydrive&#x27;;
-import { BackendsService } from &#x27;~/core/backends/backends.service&#x27;;
-import { construct, omit } from &#x27;radash&#x27;;
-import { toPlainAndCrush } from &#x27;~/_common/functions/to-plain-and-crush&#x27;;
-import { createHash } from &#x27;node:crypto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {BadRequestException, forwardRef, HttpException, Inject, Injectable} from &#x27;@nestjs/common&#x27;;
+import {InjectModel} from &#x27;@nestjs/mongoose&#x27;;
+import {Document, Model, ModifyResult, Query, Types} from &#x27;mongoose&#x27;;
+import {AbstractServiceSchema} from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
+import {AbstractSchema} from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
+import {ValidationConfigException, ValidationSchemaException} from &#x27;~/_common/errors/ValidationException&#x27;;
+import {IdentitiesUpsertDto} from &#x27;./_dto/identities.dto&#x27;;
+import {IdentityState} from &#x27;./_enums/states.enum&#x27;;
+import {Identities} from &#x27;./_schemas/identities.schema&#x27;;
+import {IdentitiesValidationService} from &#x27;./validations/identities.validation.service&#x27;;
+import {FactorydriveService} from &#x27;@the-software-compagny/nestjs_module_factorydrive&#x27;;
+import {BackendsService} from &#x27;~/core/backends/backends.service&#x27;;
+import {construct, omit} from &#x27;radash&#x27;;
+import {toPlainAndCrush} from &#x27;~/_common/functions/to-plain-and-crush&#x27;;
+import {createHash} from &#x27;node:crypto&#x27;;
+import {PasswdadmService} from &quot;~/settings/passwdadm.service&quot;;
+import {DataStatusEnum} from &quot;~/management/identities/_enums/data-status&quot;;
+import {JobState} from &quot;~/core/jobs/_enums/state.enum&quot;;
 
 @Injectable()
 export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
@@ -1974,6 +2151,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     @InjectModel(Identities.name) protected _model: Model&lt;Identities&gt;,
     protected readonly _validation: IdentitiesValidationService,
     protected readonly storage: FactorydriveService,
+    protected readonly passwdAdmService: PasswdadmService,
     @Inject(forwardRef(() &#x3D;&gt; BackendsService)) protected readonly backends: BackendsService,
   ) {
     super();
@@ -2091,6 +2269,53 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     const hash &#x3D; createHash(&#x27;sha256&#x27;);
     hash.update(data);
     return hash.digest(&#x27;hex&#x27;).toString();
+  }
+  public async activation(id: string, status: DataStatusEnum) {
+    //recherche de l&#x27;identité
+    let identity: Identities &#x3D; null;
+    let statusChanged &#x3D; false;
+    try {
+      identity &#x3D; await this.findById&lt;Identities&gt;(id);
+    } catch (error) {
+      throw new HttpException(&#x27;Id not found&#x27;, 400);
+    }
+    if (identity.lastBackendSync &#x3D;&#x3D;&#x3D; null) {
+      throw new HttpException(&#x27;Identity has never been synced&#x27;, 400);
+    }
+    if (identity.dataStatus !&#x3D;&#x3D; DataStatusEnum.DELETED) {
+      identity.dataStatus &#x3D; status;
+      statusChanged &#x3D; true;
+    } else {
+      throw new BadRequestException(&#x27;Identity is in status deleted&#x27;);
+    }
+    //sauvegarde de l&#x27;identité
+    if (statusChanged) {
+      // le dataStaus à changé on envoye l info aux backend et on enregistre l identité
+      // Envoi du status au backend
+      let statusBackend&#x3D;true
+      if (status &#x3D;&#x3D; DataStatusEnum.INACTIVE || status &#x3D;&#x3D; DataStatusEnum.PASSWORDNEEDTOBECHANGED){
+           statusBackend&#x3D; false
+      }
+      const result &#x3D; await this.backends.activationIdentity(identity._id.toString(),statusBackend);
+      if (result.state &#x3D;&#x3D;&#x3D; JobState.COMPLETED) {
+        await super.update(identity._id, identity);
+      } else {
+        throw new HttpException(&#x27;Backend failed&#x27;, 400);
+      }
+    }
+  }
+  public async askToChangePassword(id: string){
+    try {
+      const identity &#x3D; await this.findById&lt;Identities&gt;(id);
+      if (identity.dataStatus &#x3D;&#x3D;&#x3D; DataStatusEnum.ACTIVE) {
+        identity.dataStatus &#x3D; DataStatusEnum.PASSWORDNEEDTOBECHANGED
+        await super.update(identity._id, identity);
+      } else {
+        throw new BadRequestException(&#x27;Identity not in active&#x27;);
+      }
+    } catch (error) {
+      throw new HttpException(&#x27;Id not found&#x27;, 400);
+    }
   }
 }
 </code></pre>

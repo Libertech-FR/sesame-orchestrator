@@ -69,6 +69,12 @@ export class PasswdService extends AbstractService {
     //envoi du mail
     try {
       const identity = (await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid })) as Identities;
+      //test si on peu reninitialiser le compte
+      if ( identity.dataStatus  == DataStatusEnum.INACTIVE){
+        throw new BadRequestException(
+          'Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible',
+        );
+      }
       //prise des parametres
       const params = await this.passwdadmService.getPolicies();
       const k = randomInt(100000, 999999);

@@ -245,8 +245,7 @@ export class PasswdService extends AbstractService {
         },
       );
       // on met actif l'identité
-      identity.dataStatus = DataStatusEnum.ACTIVE;
-      await identity.save()
+      await this.identities.model.updateOne({ _id:identity._id},{dataStatus: DataStatusEnum.ACTIVE})
       return result;
     } catch (e) {
       let job = undefined;

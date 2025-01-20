@@ -1,18 +1,21 @@
-import { BadRequestException, forwardRef, HttpException, Inject, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Document, Model, ModifyResult, Query, Types } from 'mongoose';
-import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
-import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
-import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
-import { IdentitiesUpsertDto } from './_dto/identities.dto';
-import { IdentityState } from './_enums/states.enum';
-import { Identities } from './_schemas/identities.schema';
-import { IdentitiesValidationService } from './validations/identities.validation.service';
-import { FactorydriveService } from '@the-software-compagny/nestjs_module_factorydrive';
-import { BackendsService } from '~/core/backends/backends.service';
-import { construct, omit } from 'radash';
-import { toPlainAndCrush } from '~/_common/functions/to-plain-and-crush';
-import { createHash } from 'node:crypto';
+import {BadRequestException, forwardRef, HttpException, Inject, Injectable} from '@nestjs/common';
+import {InjectModel} from '@nestjs/mongoose';
+import {Document, Model, ModifyResult, Query, Types} from 'mongoose';
+import {AbstractServiceSchema} from '~/_common/abstracts/abstract.service.schema';
+import {AbstractSchema} from '~/_common/abstracts/schemas/abstract.schema';
+import {ValidationConfigException, ValidationSchemaException} from '~/_common/errors/ValidationException';
+import {IdentitiesUpsertDto} from './_dto/identities.dto';
+import {IdentityState} from './_enums/states.enum';
+import {Identities} from './_schemas/identities.schema';
+import {IdentitiesValidationService} from './validations/identities.validation.service';
+import {FactorydriveService} from '@the-software-compagny/nestjs_module_factorydrive';
+import {BackendsService} from '~/core/backends/backends.service';
+import {construct, omit} from 'radash';
+import {toPlainAndCrush} from '~/_common/functions/to-plain-and-crush';
+import {createHash} from 'node:crypto';
+import {PasswdadmService} from "~/settings/passwdadm.service";
+import {DataStatusEnum} from "~/management/identities/_enums/data-status";
+import {JobState} from "~/core/jobs/_enums/state.enum";
 
 @Injectable()
 export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
@@ -20,6 +23,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     @InjectModel(Identities.name) protected _model: Model<Identities>,
     protected readonly _validation: IdentitiesValidationService,
     protected readonly storage: FactorydriveService,
+    protected readonly passwdAdmService: PasswdadmService,
     @Inject(forwardRef(() => BackendsService)) protected readonly backends: BackendsService,
   ) {
     super();
@@ -137,5 +141,52 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     const hash = createHash('sha256');
     hash.update(data);
     return hash.digest('hex').toString();
+  }
+  public async activation(id: string, status: DataStatusEnum) {
+    //recherche de l'identité
+    let identity: Identities = null;
+    let statusChanged = false;
+    try {
+      identity = await this.findById<Identities>(id);
+    } catch (error) {
+      throw new HttpException('Id not found', 400);
+    }
+    if (identity.lastBackendSync === null) {
+      throw new HttpException('Identity has never been synced', 400);
+    }
+    if (identity.dataStatus !== DataStatusEnum.DELETED) {
+      identity.dataStatus = status;
+      statusChanged = true;
+    } else {
+      throw new BadRequestException('Identity is in status deleted');
+    }
+    //sauvegarde de l'identité
+    if (statusChanged) {
+      // le dataStaus à changé on envoye l info aux backend et on enregistre l identité
+      // Envoi du status au backend
+      let statusBackend=true
+      if (status == DataStatusEnum.INACTIVE || status == DataStatusEnum.PASSWORDNEEDTOBECHANGED){
+           statusBackend= false
+      }
+      const result = await this.backends.activationIdentity(identity._id.toString(),statusBackend);
+      if (result.state === JobState.COMPLETED) {
+        await super.update(identity._id, identity);
+      } else {
+        throw new HttpException('Backend failed', 400);
+      }
+    }
+  }
+  public async askToChangePassword(id: string){
+    try {
+      const identity = await this.findById<Identities>(id);
+      if (identity.dataStatus === DataStatusEnum.ACTIVE) {
+        identity.dataStatus = DataStatusEnum.PASSWORDNEEDTOBECHANGED
+        await super.update(identity._id, identity);
+      } else {
+        throw new BadRequestException('Identity not in active');
+      }
+    } catch (error) {
+      throw new HttpException('Id not found', 400);
+    }
   }
 }

@@ -18,8 +18,12 @@ import { IdentitiesPhotoController } from '~/management/identities/identities-ph
 import { IdentitiesActivationController } from '~/management/identities/identities-activation.controller';
 import { IdentitiesActivationService } from '~/management/identities/identities-activation.service';
 import { IdentitiesDoublonController } from '~/management/identities/identities-doublon.controller';
+import {IdentitiesForcePasswordController} from "~/management/identities/identities-forcepassword.controller";
+import {IdentitiesForcepasswordService} from "~/management/identities/identities-forcepassword.service";
+import {SettingsModule} from "~/settings/settings.module";
 import { EnsureIdentitiesIndexMiddleware } from './_middlewares/ensure-identities-index.middleware';
 import { AgentsModule } from '~/core/agents/agents.module';
+
 
 @Module({
   imports: [
@@ -33,6 +37,7 @@ import { AgentsModule } from '~/core/agents/agents.module';
     ]),
     FilestorageModule,
     forwardRef(() => BackendsModule),
+    SettingsModule,
     AgentsModule,
   ],
   providers: [
@@ -46,6 +51,7 @@ import { AgentsModule } from '~/core/agents/agents.module';
       useClass: IdentitiesValidationFilter,
     },
     IdentitiesJsonformsService,
+    IdentitiesForcepasswordService
   ],
   controllers: [
     IdentitiesCrudController,
@@ -53,6 +59,7 @@ import { AgentsModule } from '~/core/agents/agents.module';
     IdentitiesPhotoController,
     IdentitiesDoublonController,
     IdentitiesActivationController,
+    IdentitiesForcePasswordController
   ],
   exports: [IdentitiesCrudService],
 })

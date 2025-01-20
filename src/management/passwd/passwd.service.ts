@@ -1,4 +1,4 @@
-import { InjectRedis } from '@nestjs-modules/ioredis';
+import {InjectRedis} from '@nestjs-modules/ioredis';
 import {
   BadRequestException,
   HttpException,
@@ -8,29 +8,30 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as crypto from 'crypto';
-import { randomInt } from 'crypto';
+import {randomInt} from 'crypto';
 import Redis from 'ioredis';
-import { AbstractService } from '~/_common/abstracts/abstract.service';
-import { ActionType } from '~/core/backends/_enum/action-type.enum';
-import { BackendsService } from '~/core/backends/backends.service';
-import { Jobs } from '~/core/jobs/_schemas/jobs.schema';
-import { AskTokenDto } from './_dto/ask-token.dto';
-import { ChangePasswordDto } from './_dto/change-password.dto';
-import { ResetPasswordDto } from './_dto/reset-password.dto';
-import { IdentitiesCrudService } from '../identities/identities-crud.service';
-import { get } from 'radash';
-import { Identities } from '../identities/_schemas/identities.schema';
-import { MailerService } from '@nestjs-modules/mailer';
-import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
-import { ConfigService } from '@nestjs/config';
-import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
-import { PasswdadmService } from '~/settings/passwdadm.service';
-import { IdentityState } from '~/management/identities/_enums/states.enum';
-import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
-import { SmsadmService } from '~/settings/smsadm.service';
-import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
-import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
-import { MailadmService } from '~/settings/mailadm.service';
+import {AbstractService} from '~/_common/abstracts/abstract.service';
+import {ActionType} from '~/core/backends/_enum/action-type.enum';
+import {BackendsService} from '~/core/backends/backends.service';
+import {Jobs} from '~/core/jobs/_schemas/jobs.schema';
+import {AskTokenDto} from './_dto/ask-token.dto';
+import {ChangePasswordDto} from './_dto/change-password.dto';
+import {ResetPasswordDto} from './_dto/reset-password.dto';
+import {IdentitiesCrudService} from '../identities/identities-crud.service';
+import {get} from 'radash';
+import {Identities} from '../identities/_schemas/identities.schema';
+import {MailerService} from '@nestjs-modules/mailer';
+import {InitAccountDto} from '~/management/passwd/_dto/init-account.dto';
+import {ConfigService} from '@nestjs/config';
+import {ResetByCodeDto} from '~/management/passwd/_dto/reset-by-code.dto';
+import {PasswdadmService} from '~/settings/passwdadm.service';
+import {IdentityState} from '~/management/identities/_enums/states.enum';
+import {InitResetDto} from '~/management/passwd/_dto/init-reset.dto';
+import {SmsadmService} from '~/settings/smsadm.service';
+import {InitManyDto} from '~/management/passwd/_dto/init-many.dto';
+import {InitStatesEnum} from '~/management/identities/_enums/init-state.enum';
+import {MailadmService} from '~/settings/mailadm.service';
+import {DataStatusEnum} from "~/management/identities/_enums/data-status";
 
 interface TokenData {
   k: string;
@@ -141,6 +142,12 @@ export class PasswdService extends AbstractService {
     //recherche de l'identity
     try {
       const identity = (await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid })) as Identities;
+      //test si on peu reninitialiser le compte
+      if ( identity.dataStatus  == DataStatusEnum.INACTIVE){
+        throw new BadRequestException(
+          'Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible',
+        );
+      }
       //envoi du mail
       const params = await this.passwdadmService.getPolicies();
       const mailAttribute = params.emailAttribute;
@@ -200,6 +207,11 @@ export class PasswdService extends AbstractService {
         'inetOrgPerson.uid': passwdDto.uid,
         state: IdentityState.SYNCED,
       })) as Identities;
+      if ( identity.dataStatus  == DataStatusEnum.INACTIVE){
+        throw new BadRequestException(
+          'Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible',
+        );
+      }
       //verification de la police de mdp
       if ((await this.passwdadmService.checkPolicies(passwdDto.newPassword)) === false) {
         throw new BadRequestException({

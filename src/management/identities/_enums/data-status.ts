@@ -4,6 +4,8 @@
 //DELETED : soft delete
 export enum DataStatusEnum {
   ACTIVE = 1,
-  INACTIVE = 0,
+  NOTINITIALIZED = 0,
   DELETED = -1,
+  PASSWORDNEEDTOBECHANGED=-2,
+  INACTIVE = -3,
 }

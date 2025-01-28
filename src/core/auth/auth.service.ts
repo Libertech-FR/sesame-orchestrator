@@ -117,7 +117,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
   }
 
   public async createTokens(
-    identity: AgentType & ApiSession,
+    identity: AgentType & any,
     refresh_token?: string | false,
     options?: any,
   ): Promise<{

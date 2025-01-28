@@ -24,107 +24,107 @@
 <title>cluster_IdentitiesModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1194,-268 1194,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_IdentitiesModule_exports</title>
-<polygon fill="none" stroke="black" points="685,-208 685,-260 843,-260 843,-208 685,-208"/>
+<g id="clust6" class="cluster">
+<title>cluster_IdentitiesModule_providers</title>
+<polygon fill="none" stroke="black" points="401,-78 401,-130 1186,-130 1186,-78 401,-78"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_IdentitiesModule_imports</title>
-<polygon fill="none" stroke="black" points="809,-78 809,-130 1186,-130 1186,-78 809,-78"/>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 393,-130 393,-78 16,-78"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_IdentitiesModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 801,-130 801,-78 16,-78"/>
+<g id="clust4" class="cluster">
+<title>cluster_IdentitiesModule_exports</title>
+<polygon fill="none" stroke="black" points="351,-208 351,-260 509,-260 509,-208 351,-208"/>
 </g>
 <!-- AgentsModule -->
 <g id="node1" class="node">
 <title>AgentsModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1177.71,-122 1174.71,-126 1153.71,-126 1150.71,-122 1078.29,-122 1078.29,-86 1177.71,-86 1177.71,-122"/>
-<text text-anchor="middle" x="1128" y="-99.8" font-family="Times,serif" font-size="14.00">AgentsModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="384.71,-122 381.71,-126 360.71,-126 357.71,-122 285.29,-122 285.29,-86 384.71,-86 384.71,-122"/>
+<text text-anchor="middle" x="335" y="-99.8" font-family="Times,serif" font-size="14.00">AgentsModule</text>
 </g>
 <!-- IdentitiesModule -->
 <g id="node4" class="node">
 <title>IdentitiesModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="819.65,-187 816.65,-191 795.65,-191 792.65,-187 708.35,-187 708.35,-151 819.65,-151 819.65,-187"/>
-<text text-anchor="middle" x="764" y="-164.8" font-family="Times,serif" font-size="14.00">IdentitiesModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="485.65,-187 482.65,-191 461.65,-191 458.65,-187 374.35,-187 374.35,-151 485.65,-151 485.65,-187"/>
+<text text-anchor="middle" x="430" y="-164.8" font-family="Times,serif" font-size="14.00">IdentitiesModule</text>
 </g>
 <!-- AgentsModule&#45;&gt;IdentitiesModule -->
 <g id="edge1" class="edge">
 <title>AgentsModule&#45;&gt;IdentitiesModule</title>
-<path fill="none" stroke="black" d="M1128,-122.29C1128,-144.21 1128,-178 1128,-178 1128,-178 829.68,-178 829.68,-178"/>
-<polygon fill="black" stroke="black" points="829.68,-174.5 819.68,-178 829.68,-181.5 829.68,-174.5"/>
+<path fill="none" stroke="black" d="M379.39,-122.11C379.39,-122.11 379.39,-140.99 379.39,-140.99"/>
+<polygon fill="black" stroke="black" points="375.89,-140.99 379.39,-150.99 382.89,-140.99 375.89,-140.99"/>
 </g>
 <!-- FilestorageModule -->
 <g id="node2" class="node">
 <title>FilestorageModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1060.75,-122 1057.75,-126 1036.75,-126 1033.75,-122 939.25,-122 939.25,-86 1060.75,-86 1060.75,-122"/>
-<text text-anchor="middle" x="1000" y="-99.8" font-family="Times,serif" font-size="14.00">FilestorageModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="267.75,-122 264.75,-126 243.75,-126 240.75,-122 146.25,-122 146.25,-86 267.75,-86 267.75,-122"/>
+<text text-anchor="middle" x="207" y="-99.8" font-family="Times,serif" font-size="14.00">FilestorageModule</text>
 </g>
 <!-- FilestorageModule&#45;&gt;IdentitiesModule -->
 <g id="edge2" class="edge">
 <title>FilestorageModule&#45;&gt;IdentitiesModule</title>
-<path fill="none" stroke="black" d="M1000,-122.11C1000,-141.34 1000,-169 1000,-169 1000,-169 829.93,-169 829.93,-169"/>
-<polygon fill="black" stroke="black" points="829.93,-165.5 819.93,-169 829.93,-172.5 829.93,-165.5"/>
+<path fill="none" stroke="black" d="M207,-122.02C207,-139.37 207,-163 207,-163 207,-163 364.3,-163 364.3,-163"/>
+<polygon fill="black" stroke="black" points="364.3,-166.5 374.3,-163 364.3,-159.5 364.3,-166.5"/>
 </g>
 <!-- SettingsModule -->
 <g id="node3" class="node">
 <title>SettingsModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="921.16,-122 918.16,-126 897.16,-126 894.16,-122 816.84,-122 816.84,-86 921.16,-86 921.16,-122"/>
-<text text-anchor="middle" x="869" y="-99.8" font-family="Times,serif" font-size="14.00">SettingsModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="128.16,-122 125.16,-126 104.16,-126 101.16,-122 23.84,-122 23.84,-86 128.16,-86 128.16,-122"/>
+<text text-anchor="middle" x="76" y="-99.8" font-family="Times,serif" font-size="14.00">SettingsModule</text>
 </g>
 <!-- SettingsModule&#45;&gt;IdentitiesModule -->
 <g id="edge3" class="edge">
 <title>SettingsModule&#45;&gt;IdentitiesModule</title>
-<path fill="none" stroke="black" d="M827.3,-122.03C827.3,-138.4 827.3,-160 827.3,-160 827.3,-160 826.58,-160 826.58,-160"/>
-<polygon fill="black" stroke="black" points="830.04,-156.5 820.04,-160 830.04,-163.5 830.04,-156.5"/>
+<path fill="none" stroke="black" d="M76,-122.28C76,-143.32 76,-175 76,-175 76,-175 364.3,-175 364.3,-175"/>
+<polygon fill="black" stroke="black" points="364.3,-178.5 374.3,-175 364.3,-171.5 364.3,-178.5"/>
 </g>
 <!-- IdentitiesCrudService  -->
 <g id="node5" class="node">
 <title>IdentitiesCrudService </title>
-<polygon fill="#fb8072" stroke="black" points="834.57,-252 693.43,-252 693.43,-216 834.57,-216 834.57,-252"/>
-<text text-anchor="middle" x="764" y="-229.8" font-family="Times,serif" font-size="14.00">IdentitiesCrudService </text>
+<polygon fill="#fb8072" stroke="black" points="500.57,-252 359.43,-252 359.43,-216 500.57,-216 500.57,-252"/>
+<text text-anchor="middle" x="430" y="-229.8" font-family="Times,serif" font-size="14.00">IdentitiesCrudService </text>
 </g>
 <!-- IdentitiesModule&#45;&gt;IdentitiesCrudService  -->
 <g id="edge4" class="edge">
 <title>IdentitiesModule&#45;&gt;IdentitiesCrudService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M764,-187.11C764,-187.11 764,-205.99 764,-205.99"/>
-<polygon fill="black" stroke="black" points="760.5,-205.99 764,-215.99 767.5,-205.99 760.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M430,-187.11C430,-187.11 430,-205.99 430,-205.99"/>
+<polygon fill="black" stroke="black" points="426.5,-205.99 430,-215.99 433.5,-205.99 426.5,-205.99"/>
 </g>
 <!-- IdentitiesForcepasswordService -->
 <g id="node6" class="node">
 <title>IdentitiesForcepasswordService</title>
-<ellipse fill="#fdb462" stroke="black" cx="659" cy="-104" rx="134.26" ry="18"/>
-<text text-anchor="middle" x="659" y="-99.8" font-family="Times,serif" font-size="14.00">IdentitiesForcepasswordService</text>
+<ellipse fill="#fdb462" stroke="black" cx="1044" cy="-104" rx="134.26" ry="18"/>
+<text text-anchor="middle" x="1044" y="-99.8" font-family="Times,serif" font-size="14.00">IdentitiesForcepasswordService</text>
 </g>
 <!-- IdentitiesForcepasswordService&#45;&gt;IdentitiesModule -->
 <g id="edge5" class="edge">
 <title>IdentitiesForcepasswordService&#45;&gt;IdentitiesModule</title>
-<path fill="none" stroke="black" d="M750.78,-117.15C750.78,-117.15 750.78,-140.69 750.78,-140.69"/>
-<polygon fill="black" stroke="black" points="747.28,-140.69 750.78,-150.69 754.28,-140.69 747.28,-140.69"/>
+<path fill="none" stroke="black" d="M1044,-122.28C1044,-143.32 1044,-175 1044,-175 1044,-175 495.84,-175 495.84,-175"/>
+<polygon fill="black" stroke="black" points="495.84,-171.5 485.84,-175 495.84,-178.5 495.84,-171.5"/>
 </g>
 <!-- IdentitiesJsonformsService -->
 <g id="node7" class="node">
 <title>IdentitiesJsonformsService</title>
-<ellipse fill="#fdb462" stroke="black" cx="391" cy="-104" rx="115.74" ry="18"/>
-<text text-anchor="middle" x="391" y="-99.8" font-family="Times,serif" font-size="14.00">IdentitiesJsonformsService</text>
+<ellipse fill="#fdb462" stroke="black" cx="776" cy="-104" rx="115.74" ry="18"/>
+<text text-anchor="middle" x="776" y="-99.8" font-family="Times,serif" font-size="14.00">IdentitiesJsonformsService</text>
 </g>
 <!-- IdentitiesJsonformsService&#45;&gt;IdentitiesModule -->
 <g id="edge6" class="edge">
 <title>IdentitiesJsonformsService&#45;&gt;IdentitiesModule</title>
-<path fill="none" stroke="black" d="M391,-122.02C391,-139.37 391,-163 391,-163 391,-163 698.16,-163 698.16,-163"/>
-<polygon fill="black" stroke="black" points="698.16,-166.5 708.16,-163 698.16,-159.5 698.16,-166.5"/>
+<path fill="none" stroke="black" d="M776,-122.02C776,-139.37 776,-163 776,-163 776,-163 495.98,-163 495.98,-163"/>
+<polygon fill="black" stroke="black" points="495.98,-159.5 485.98,-163 495.98,-166.5 495.98,-159.5"/>
 </g>
 <!-- IdentitiesValidationService -->
 <g id="node8" class="node">
 <title>IdentitiesValidationService</title>
-<ellipse fill="#fdb462" stroke="black" cx="141" cy="-104" rx="116.88" ry="18"/>
-<text text-anchor="middle" x="141" y="-99.8" font-family="Times,serif" font-size="14.00">IdentitiesValidationService</text>
+<ellipse fill="#fdb462" stroke="black" cx="526" cy="-104" rx="116.88" ry="18"/>
+<text text-anchor="middle" x="526" y="-99.8" font-family="Times,serif" font-size="14.00">IdentitiesValidationService</text>
 </g>
 <!-- IdentitiesValidationService&#45;&gt;IdentitiesModule -->
 <g id="edge7" class="edge">
 <title>IdentitiesValidationService&#45;&gt;IdentitiesModule</title>
-<path fill="none" stroke="black" d="M141,-122.28C141,-143.32 141,-175 141,-175 141,-175 698.16,-175 698.16,-175"/>
-<polygon fill="black" stroke="black" points="698.16,-178.5 708.16,-175 698.16,-171.5 698.16,-178.5"/>
+<path fill="none" stroke="black" d="M447.57,-117.47C447.57,-117.47 447.57,-140.86 447.57,-140.86"/>
+<polygon fill="black" stroke="black" points="444.07,-140.86 447.57,-150.86 451.07,-140.86 444.07,-140.86"/>
 </g>
 </g>
 </svg>

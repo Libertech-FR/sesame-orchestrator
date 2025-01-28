@@ -15,6 +15,7 @@ import { resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { ConsoleSession } from '~/_common/data/console-session';
 import { KeyringsService } from '../keyrings/keyrings.service';
+import { ApiSession } from '~/_common/data/api-session';
 
 @Injectable()
 export class AuthService extends AbstractService implements OnModuleInit {
@@ -116,7 +117,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
   }
 
   public async createTokens(
-    identity: AgentType,
+    identity: AgentType & ApiSession,
     refresh_token?: string | false,
     options?: any,
   ): Promise<{
@@ -127,7 +128,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
     if (options?.scopes) scopes.push(...options.scopes);
     const jwtid = `${identity._id}_${randomBytes(16).toString('hex')}`;
     const access_token = this.jwtService.sign(
-      { identity: pick(identity, ['_id', 'username', 'email']), scopes },
+      { identity: pick(identity, ['_id', 'username', 'email', 'token']), scopes },
       {
         expiresIn: this.ACCESS_TOKEN_EXPIRES_IN,
         jwtid,

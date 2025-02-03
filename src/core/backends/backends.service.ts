@@ -65,7 +65,7 @@ export class BackendsService extends AbstractQueueProcessor {
         await this.identitiesService.model.findByIdAndUpdate(isSyncedJob?.concernedTo?.id, {
           $set: {
             state: IdentityState.SYNCED,
-            lastBackendSync:  new Date(),
+            lastBackendSync: new Date(),
           },
         });
         this.logger.warn(`Job already completed, syncing... [${job.id}::COMPLETED]`);
@@ -426,6 +426,7 @@ export class BackendsService extends AbstractQueueProcessor {
         attempts: 1,
       },
     );
+    console.log('job', job)
     const optionals = {};
     if (!options?.async) {
       optionals['processedAt'] = new Date();
@@ -491,6 +492,7 @@ export class BackendsService extends AbstractQueueProcessor {
           await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
             $set: {
               state: options?.targetState || IdentityState.SYNCED,
+              lastBackendSync: new Date(),
             },
           });
         }
@@ -498,6 +500,7 @@ export class BackendsService extends AbstractQueueProcessor {
         return [jobStoreUpdated as unknown as Jobs, response];
       } catch (err) {
         this.logger.error(`Error while executing job ${job.id}`, err);
+        console.error(err.stack)
         error = err;
       }
 

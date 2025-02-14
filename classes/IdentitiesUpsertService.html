@@ -483,15 +483,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkFingerprint(filters: FilterQuery<T>, fingerprint: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>checkFingerprint(filters: FilterQuery<T>, fingerprint: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, extra: literal type)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="103"
-                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:103</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="108"
+                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:108</a></div>
                         </td>
                     </tr>
 
@@ -516,6 +516,7 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Default value</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -529,6 +530,8 @@
                                                     No
                                             </td>
 
+                                            <td>
+                                            </td>
 
                                         </tr>
                                         <tr>
@@ -541,6 +544,23 @@
                                                     No
                                             </td>
 
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>extra</td>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>{ force: false }</code>
+                                            </td>
 
                                         </tr>
                                     </tbody>
@@ -573,7 +593,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>upsertWithFingerprint(filters: FilterQuery<T>, data?: <a href="../classes/IdentitiesUpsertDto.html" target="_self">IdentitiesUpsertDto</a>, options?: QueryOptions<T>)</code>
+                    <code>upsertWithFingerprint(filters: FilterQuery<T>, data?: <a href="../classes/IdentitiesUpsertDto.html" target="_self">IdentitiesUpsertDto</a>, options?: QueryOptions<T>, extra?: literal type)</code>
                 </td>
             </tr>
 
@@ -637,6 +657,18 @@
                                                 <td>options</td>
                                             <td>
                                                         <code>QueryOptions&lt;T&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>extra</td>
+                                            <td>
+                                                        <code>literal type</code>
                                             </td>
 
                                             <td>
@@ -2298,7 +2330,12 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
     filters: FilterQuery&lt;T&gt;,
     data?: IdentitiesUpsertDto,
     options?: QueryOptions&lt;T&gt;,
+    extra?: { force?: boolean },
   ): Promise&lt;[HttpStatus.OK | HttpStatus.CREATED, ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;]&gt; {
+    extra &#x3D; {
+      force: false,
+      ...extra,
+    }
     data &#x3D; this.transformNullsToString(data);
     const identity &#x3D; await this.model.findOne&lt;Identities&gt;(filters).exec();
     this.logger.log(&#x60;Upserting identity with filters ${JSON.stringify(filters)}&#x60;);
@@ -2350,7 +2387,7 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       }),
     );
 
-    await this.checkFingerprint(filters, fingerprint);
+    await this.checkFingerprint(filters, fingerprint, extra);
 
     this.logger.verbose(&#x27;identities upsert data: &#x27; + JSON.stringify({
       $setOnInsert: {
@@ -2388,7 +2425,11 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
   public async checkFingerprint&lt;T extends AbstractSchema | Document&gt;(
     filters: FilterQuery&lt;T&gt;,
     fingerprint: string,
+    extra: { force?: boolean } &#x3D; { force: false },
   ): Promise&lt;void&gt; {
+    if (extra.force) {
+      return;
+    }
     const identity &#x3D; await this.model
       .findOne(
         { ...filters, fingerprint },

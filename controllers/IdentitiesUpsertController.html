@@ -195,7 +195,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>upsert(res: Response, body: <a href="../classes/IdentitiesUpsertDto.html" target="_self">IdentitiesUpsertDto</a>, filtersQuery: literal type[], errorOnNotFound: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, upsert: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>upsert(res: Response, body: <a href="../classes/IdentitiesUpsertDto.html" target="_self">IdentitiesUpsertDto</a>, filtersQuery: literal type[], forceString: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, errorOnNotFound: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, upsert: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -271,6 +271,20 @@
 
                                             <td>
                                                     <code>[]</code>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>forceString</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
                                             </td>
 
                                         </tr>
@@ -351,8 +365,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="113"
-                                    class="link-to-prism">src/management/identities/identities-upsert.controller.ts:113</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">src/management/identities/identities-upsert.controller.ts:118</a></div>
                         </td>
                     </tr>
 
@@ -505,6 +519,7 @@ export class IdentitiesUpsertController extends AbstractController {
     filtersQuery: {
       [key: string]: string;
     }[] &#x3D; [],
+    @Query(&#x27;force&#x27;) forceString: string,
     @Query(&#x27;errorOnNotFound&#x27;) errorOnNotFound: string &#x3D; &#x27;false&#x27;,
     @Query(&#x27;upsert&#x27;) upsert: string &#x3D; &#x27;true&#x27;,
   ): Promise&lt;
@@ -515,6 +530,10 @@ export class IdentitiesUpsertController extends AbstractController {
       validations?: MixedValue;
     }&gt;
   &gt; {
+    const force &#x3D; /true|on|yes|1/i.test(forceString);
+    if (force) {
+      this.logger.warn(&#x27;Upserting with force mode enabled.&#x27;);
+    }
     const filters &#x3D; {};
     if (filtersQuery.length &#x3D;&#x3D;&#x3D; 0) {
       throw new BadRequestException(&#x27;Missing filters array&#x27;);
@@ -528,7 +547,7 @@ export class IdentitiesUpsertController extends AbstractController {
     const [code, data] &#x3D; await this._service.upsertWithFingerprint&lt;Identities&gt;(filters, body, {
       errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),
       upsert: /true|on|yes|1/i.test(upsert),
-    });
+    }, {force});
 
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
     // Else the state is TO_VALIDATE, we return a 201 status code

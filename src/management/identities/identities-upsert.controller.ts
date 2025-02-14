@@ -65,6 +65,7 @@ export class IdentitiesUpsertController extends AbstractController {
     filtersQuery: {
       [key: string]: string;
     }[] = [],
+    @Query('force') forceString: string,
     @Query('errorOnNotFound') errorOnNotFound: string = 'false',
     @Query('upsert') upsert: string = 'true',
   ): Promise<
@@ -75,6 +76,10 @@ export class IdentitiesUpsertController extends AbstractController {
       validations?: MixedValue;
     }>
   > {
+    const force = /true|on|yes|1/i.test(forceString);
+    if (force) {
+      this.logger.warn('Upserting with force mode enabled.');
+    }
     const filters = {};
     if (filtersQuery.length === 0) {
       throw new BadRequestException('Missing filters array');
@@ -88,7 +93,7 @@ export class IdentitiesUpsertController extends AbstractController {
     const [code, data] = await this._service.upsertWithFingerprint<Identities>(filters, body, {
       errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),
       upsert: /true|on|yes|1/i.test(upsert),
-    });
+    }, {force});
 
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
     // Else the state is TO_VALIDATE, we return a 201 status code

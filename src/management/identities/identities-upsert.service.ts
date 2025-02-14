@@ -13,7 +13,12 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
     filters: FilterQuery<T>,
     data?: IdentitiesUpsertDto,
     options?: QueryOptions<T>,
+    extra?: { force?: boolean },
   ): Promise<[HttpStatus.OK | HttpStatus.CREATED, ModifyResult<Query<T, T, any, T>>]> {
+    extra = {
+      force: false,
+      ...extra,
+    }
     data = this.transformNullsToString(data);
     const identity = await this.model.findOne<Identities>(filters).exec();
     this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
@@ -65,7 +70,7 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       }),
     );
 
-    await this.checkFingerprint(filters, fingerprint);
+    await this.checkFingerprint(filters, fingerprint, extra);
 
     this.logger.verbose('identities upsert data: ' + JSON.stringify({
       $setOnInsert: {
@@ -103,7 +108,11 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
   public async checkFingerprint<T extends AbstractSchema | Document>(
     filters: FilterQuery<T>,
     fingerprint: string,
+    extra: { force?: boolean } = { force: false },
   ): Promise<void> {
+    if (extra.force) {
+      return;
+    }
     const identity = await this.model
       .findOne(
         { ...filters, fingerprint },

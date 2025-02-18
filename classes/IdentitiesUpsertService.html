@@ -490,8 +490,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="108"
-                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:108</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="109"
+                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:109</a></div>
                         </td>
                     </tr>
 
@@ -2374,6 +2374,7 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       this.logger.log(&#x60;${logPrefix} AdditionalFields validation successful.&#x60;);
       this.logger.log(&#x60;Validations : ${JSON.stringify(validations)}&#x60;);
       crushedUpdate[&#x27;state&#x27;] &#x3D; IdentityState.TO_VALIDATE;
+      crushedUpdate[&#x27;additionalFields.validations&#x27;] &#x3D; {};
     } catch (error) {
       data &#x3D; this.handleValidationError(error, data, logPrefix);
       crushedUpdate[&#x27;state&#x27;] &#x3D; data.state;

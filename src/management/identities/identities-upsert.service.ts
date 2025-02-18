@@ -57,6 +57,7 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
       this.logger.log(`Validations : ${JSON.stringify(validations)}`);
       crushedUpdate['state'] = IdentityState.TO_VALIDATE;
+      crushedUpdate['additionalFields.validations'] = {};
     } catch (error) {
       data = this.handleValidationError(error, data, logPrefix);
       crushedUpdate['state'] = data.state;

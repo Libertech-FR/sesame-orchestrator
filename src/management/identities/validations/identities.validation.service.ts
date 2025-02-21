@@ -66,7 +66,22 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     }
     return null;
   }
+  public async transform(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise<AdditionalFieldsPart | additionalFieldsPartDto>{
+    if (!data.objectClasses) {
+      data.objectClasses = [];
+    }
+    if (!data.attributes) {
+      data.attributes = {};
+    }
+    data.validations = {};
 
+    const objectClasses = data.objectClasses || [];
+    const attributes = data.attributes || {};
+    const attributesKeys = Object.keys(attributes);
+    const validations = {};
+
+    return data
+  }
   /**
    * Validates additional fields for identities.
    * @param data - The additional fields data to validate.

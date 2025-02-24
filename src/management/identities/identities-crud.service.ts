@@ -34,6 +34,8 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     //TODO : add validation logic here
     const logPrefix = `Validation [${update.inetOrgPerson.cn}]:`;
     try {
+      this.logger.log(`${logPrefix} Starting additionalFields transformation.`);
+      await this._validation.transform(update.additionalFields);
       this.logger.log(`${logPrefix} Starting additionalFields validation.`);
       const validations = await this._validation.validate(update.additionalFields);
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);

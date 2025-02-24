@@ -1,15 +1,15 @@
-import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
-import { parse } from 'yaml';
-import { existsSync, readFileSync, readdirSync, writeFileSync } from 'fs';
-import { ConfigObjectSchemaDTO } from './_dto/config.dto';
-import { diff } from 'radash';
-import { AdditionalFieldsPart } from '../_schemas/_parts/additionalFields.part.schema';
+import {Injectable, Logger, OnApplicationBootstrap} from '@nestjs/common';
+import {parse} from 'yaml';
+import {existsSync, readFileSync, readdirSync, writeFileSync} from 'fs';
+import {ConfigObjectSchemaDTO} from './_dto/config.dto';
+import {diff} from 'radash';
+import {AdditionalFieldsPart} from '../_schemas/_parts/additionalFields.part.schema';
 import Ajv from 'ajv';
-import { buildYup } from 'schema-to-yup';
+import {buildYup} from 'schema-to-yup';
 import validSchema from './_config/validSchema';
 import ajvErrors from 'ajv-errors';
-import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
-import { additionalFieldsPartDto } from '../_dto/_parts/additionalFields.dto';
+import {ValidationConfigException, ValidationSchemaException} from '~/_common/errors/ValidationException';
+import {additionalFieldsPartDto} from '../_dto/_parts/additionalFields.dto';
 
 
 /**
@@ -17,7 +17,7 @@ import { additionalFieldsPartDto } from '../_dto/_parts/additionalFields.dto';
  */
 @Injectable()
 export class IdentitiesValidationService implements OnApplicationBootstrap {
-  private ajv: Ajv = new Ajv({ allErrors: true });
+  private ajv: Ajv = new Ajv({allErrors: true});
   private validateSchema;
   private logger: Logger;
 
@@ -66,7 +66,8 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     }
     return null;
   }
-  public async transform(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise<AdditionalFieldsPart | additionalFieldsPartDto>{
+
+  public async transform(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise<AdditionalFieldsPart | additionalFieldsPartDto> {
     if (!data.objectClasses) {
       data.objectClasses = [];
     }
@@ -79,8 +80,86 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     const attributes = data.attributes || {};
     const attributesKeys = Object.keys(attributes);
     const validations = {};
-
+    for (const key of attributesKeys) {
+      await this.transformAttribute(key, attributes[key], attributes);
+    }
     return data
+  }
+
+  /**
+   * Transform data following schema validation
+   * @param key
+   * @param attribute
+   * @param data
+   */
+  public async transformAttribute(key: string, attribute: any, data: any) {
+
+    const path = this.resolveConfigPath(key);
+    const schema: any = parse(readFileSync(path, 'utf8'));
+    this.logger.debug(`Additionalfields object transformation: ${JSON.stringify(data[key])}`);
+    for (const [index, def] of Object.entries(schema?.properties || {})) {
+      switch ((def as any).type) {
+        case 'array':
+          if (typeof data[key][index] === 'undefined' || data[key][index] === null) {
+            data[key][index] = [];
+          }
+          if (!(data[key][index] instanceof Array)){
+            data[key][index]=[data[key][index]];
+          }
+          if (typeof def['items'] !== 'undefined') {
+              //test si toutes les valeurs sont du bon type
+              for(const elems in data[key][index]){
+                if (typeof data[key][index][elems] !== def['items']['type']){
+                   switch(def['items']['type']){
+                     case 'string':
+                       data[key][index][elems]=String(data[key][index][elems]);
+                       break;
+                     case 'number':
+                       data[key][index][elems]=await this.transformNumber(data[key][index][elems])
+                       break;
+                   }
+                }
+              }
+          }
+          break;
+        case 'number':
+          if (typeof data[key][index] === 'undefined' || data[key][index] === null) {
+            data[key][index] = 0;
+          }
+          if (typeof data[key][index] !== 'number'){
+            //on ne convertit pas si la chaine est vide
+            if (typeof data[key][index] === 'string' &&  data[key][index] !== ""){
+              data[key][index]=await this.transformNumber(data[key][index])
+            }
+          }
+          break;
+        case 'string':
+          if (typeof data[key][index] === 'undefined' || data[key][index] === null) {
+            data[key][index] = "";
+          }
+          if (typeof data[key][index] !== 'string'){
+            data[key][index]=String(data[key][index]);
+          }
+          break;
+      }
+    }
+  }
+
+  /**
+   * transform string in number if it is possible
+   * @param value
+   * @private
+   */
+  private async transformNumber(value){
+    if (typeof value === 'string'){
+      const tr=parseFloat(value)
+      if (! isNaN(tr)){
+        return tr
+      }else{
+        return 0
+      }
+    }
+    return value
   }
   /**
    * Validates additional fields for identities.
@@ -137,7 +216,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     }
 
     if (reject) {
-      throw new ValidationConfigException({ validations });
+      throw new ValidationConfigException({validations});
     }
 
     // Validate each attribute
@@ -152,9 +231,9 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     }
 
     if (reject) {
-      throw new ValidationSchemaException({ validations });
+      throw new ValidationSchemaException({validations});
     }
-    return Promise.resolve({ message: 'Validation succeeded' });
+    return Promise.resolve({message: 'Validation succeeded'});
   }
 
   /**
@@ -191,9 +270,9 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
 
     this.logger.debug(`Additionalfields object validation: ${JSON.stringify(data[key])}`);
 
-    const yupSchema = buildYup(schema, { noSortEdges: true });
+    const yupSchema = buildYup(schema, {noSortEdges: true});
     try {
-      await yupSchema.validate(attribute, { strict: true, abortEarly: false });
+      await yupSchema.validate(attribute, {strict: true, abortEarly: false});
       return null;
     } catch (error) {
       return error.inner.reduce((acc, err) => {
@@ -204,7 +283,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
   }
 
   public async findAll(): Promise<any> {
-    this.logger.debug(['findAll', JSON.stringify(Object.values({ ...arguments }))].join(' '));
+    this.logger.debug(['findAll', JSON.stringify(Object.values({...arguments}))].join(' '));
     const hardConfigPath = './src/management/identities/validations/_config';
     const dynamicConfigPath = './configs/identities/validations';
     // Retrieve files from each directory and tag them with their source
@@ -253,7 +332,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       const filePath = `${fileObj.path}/${fileObj.file}`;
       const data = parse(readFileSync(filePath, 'utf-8'));
       const key = fileObj.file.replace('.yml', '');
-      result.push({ [key]: data, source: fileObj.source, name: key });
+      result.push({[key]: data, source: fileObj.source, name: key});
     }
     return [result, files.length];
   }
@@ -265,13 +344,13 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       filePath = './validation/inetorgperson.json';
       if (!existsSync(filePath)) {
         const message = `File not found /validation/inetorgperson.json`;
-        throw new ValidationConfigException({ message });
+        throw new ValidationConfigException({message});
       }
     } else {
       filePath = this.resolveConfigPath(schema);
       if (!existsSync(filePath)) {
         const message = `File not found: ${filePath}`;
-        throw new ValidationConfigException({ message });
+        throw new ValidationConfigException({message});
       }
     }
     return parse(readFileSync(filePath, 'utf-8'));

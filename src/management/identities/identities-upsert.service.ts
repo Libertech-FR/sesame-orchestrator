@@ -52,6 +52,8 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
 
     const logPrefix = `Validation [${data?.inetOrgPerson?.employeeType}:${data?.inetOrgPerson?.employeeNumber}]:`;
     try {
+      this.logger.log(`${logPrefix} Starting additionalFields transformation.`);
+      await this._validation.transform(data.additionalFields);
       this.logger.log(`${logPrefix} Starting additionalFields validation.`);
       const validations = await this._validation.validate(data.additionalFields);
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);

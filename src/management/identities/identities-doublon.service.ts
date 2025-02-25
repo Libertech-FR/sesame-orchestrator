@@ -133,6 +133,10 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
       ...identity1.inetOrgPerson.employeeNumber,
       ...identity2.inetOrgPerson.employeeNumber,
     ];
+    identity1.inetOrgPerson.departmentNumber = [
+      ...identity1.inetOrgPerson.departmentNumber,
+      ...identity2.inetOrgPerson.departmentNumber,
+    ];
     // si supann est present
     if (
       identity1.additionalFields.objectClasses.includes('supannPerson') &&

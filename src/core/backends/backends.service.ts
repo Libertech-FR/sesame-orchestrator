@@ -172,12 +172,12 @@ export class BackendsService extends AbstractQueueProcessor {
     const result = {};
     for (const identity of identities) {
       //convertion tableau employeeNumber
-      if (identity.identity.primaryEmployeeNumber !== '' && identity.identity.primaryEmployeeNumber !== null) {
-        identity.identity.employeeNumber = identity.identity.primaryEmployeeNumber;
-      } else {
-        //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
-        identity.identity.inetOrgPerson.employeeNumber = identity.identity.inetOrgPerson.employeeNumber[0];
-      }
+      //if (identity.identity.primaryEmployeeNumber !== '' && identity.identity.primaryEmployeeNumber !== null) {
+      //  identity.identity.employeeNumber = identity.identity.primaryEmployeeNumber;
+      //} else {
+      //  //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
+      //  identity.identity.inetOrgPerson.employeeNumber = identity.identity.inetOrgPerson.employeeNumber[0];
+      //}
       try {
         this.logger.debug(`Syncing identity ${identity.identity._id}`);
         const [executedJob] = await this.executeJob(

@@ -5,12 +5,11 @@ import {ConfigObjectSchemaDTO} from './_dto/config.dto';
 import {diff} from 'radash';
 import {AdditionalFieldsPart} from '../_schemas/_parts/additionalFields.part.schema';
 import Ajv from 'ajv';
-import {buildYup} from 'schema-to-yup';
+import addFormats from 'ajv-formats';
 import validSchema from './_config/validSchema';
 import ajvErrors from 'ajv-errors';
 import {ValidationConfigException, ValidationSchemaException} from '~/_common/errors/ValidationException';
 import {additionalFieldsPartDto} from '../_dto/_parts/additionalFields.dto';
-
 
 /**
  * Service responsible for validating identities.
@@ -22,7 +21,9 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
   private logger: Logger;
 
   public constructor() {
+    addFormats(this.ajv);
     ajvErrors(this.ajv);
+    this.ajv.addFormat('number',/^\d*$/);
     this.validateSchema = this.ajv.compile(validSchema);
     this.logger = new Logger(IdentitiesValidationService.name);
   }
@@ -242,7 +243,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
    * @param attribute - The attribute value to validate.
    * @returns A promise that resolves with an error message if validation fails, otherwise null.
    */
-  public async validateAttribute(key: string, attribute: any, data: any): Promise<string | null> {
+  public async validateAttribute(key: string, attribute: any, data: any): Promise<any | null> {
     const path = this.resolveConfigPath(key);
     const schema: any = parse(readFileSync(path, 'utf8'));
 
@@ -269,17 +270,15 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     }
 
     this.logger.debug(`Additionalfields object validation: ${JSON.stringify(data[key])}`);
-
-    const yupSchema = buildYup(schema, {noSortEdges: true});
-    try {
-      await yupSchema.validate(attribute, {strict: true, abortEarly: false});
-      return null;
-    } catch (error) {
-      return error.inner.reduce((acc, err) => {
-        acc[err.path] = err.message;
-        return acc;
-      }, {});
+    const ok= await this.ajv.validate(schema,data[key]);
+    if (ok === false) {
+      const retErrors = {};
+      for (const err of this.ajv.errors) {
+        retErrors[err['instancePath'].substring(1)]= err['instancePath'].substring(1) + ' ' +  err['message']
+      }
+      return(retErrors)
     }
+    return null
   }
 
   public async findAll(): Promise<any> {

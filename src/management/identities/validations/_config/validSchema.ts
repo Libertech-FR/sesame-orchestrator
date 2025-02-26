@@ -28,8 +28,8 @@ const validSchema = {
             },
             format: {
               type: 'string',
-              enum: ['date', 'email'],
-              errorMessage: "Le 'format' doit être 'date' ou 'email'.",
+              enum: ['date', 'email','number','time','date-time','duration','uri','uri-reference','hostname','ipv4','ipv6','regex','uuid'],
+              errorMessage: "Format invalide",
             },
             items: {
               type: 'object',
@@ -118,7 +118,7 @@ const validSchema = {
             camelCase: {
               type: 'boolean',
               errorMessage: "L'option 'camelCase' doit être un booléen.",
-            },
+            }
           },
           required: ['type'],
           additionalProperties: false,

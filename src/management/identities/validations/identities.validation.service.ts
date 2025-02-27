@@ -81,12 +81,59 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     const attributes = data.attributes || {};
     const attributesKeys = Object.keys(attributes);
     const validations = {};
+    //test si il y a les attributs sans attributes
+    await this.checkAndCreateObjectClasses(data);
     for (const key of attributesKeys) {
       await this.transformAttribute(key, attributes[key], attributes);
     }
     return data
   }
 
+  /**
+   * check objectclasses and add missing keys
+   * @param data
+   */
+  public async checkAndCreateObjectClasses(data){
+    const objectClasses = data.objectClasses || [];
+    const attributes = data.attributes || {};
+    const attributesKeys = Object.keys(attributes);
+    for(const objectclass of objectClasses) {
+      if (! attributesKeys.includes(objectclass)) {
+        this.logger.log( objectclass + " attribute not found creating");
+        await this.createAttributes(objectclass,data);
+      }
+    }
+  }
+  private async createAttributes(key:string,data:any){
+
+    const path = this.resolveConfigPath(key);
+    if (path === null){
+      this.logger.error('schema for ' + key + ' does not exist');
+      throw new BadRequestException('schema for ' + key + ' does not exist');
+    }
+    const schema: any = parse(readFileSync(path, 'utf8'));
+    //creation de la clé
+    data.attributes[key] = {}
+    for (const [index, def] of Object.entries(schema?.properties || {})) {
+      switch ((def as any).type) {
+        case 'array':
+          data.attributes[key][index] = [];
+          break;
+
+        case 'object':
+          data.attributes[key][index] = {};
+          break;
+
+        case 'number':
+          data.attributes[key][index] = 0;
+          break;
+
+        default:
+          data.attributes[key][index] = '';
+          break;
+      }
+    }
+  }
   /**
    * Transform data following schema validation
    * @param key
@@ -206,24 +253,26 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       // Check for missing schema files
       const path = this.resolveConfigPath(key);
       if (!existsSync(path)) {
-        validations[key] = `Fichier de config '${key}.yml' introuvable`;
-        reject = true;
-        continue;
+        validations['message'] = `Fichier de config '${key}.yml' introuvable`;
+        throw new ValidationConfigException(validations);
       }
 
       // Check for invalid schema
       const schema: ConfigObjectSchemaDTO = parse(readFileSync(path, 'utf8'));
       if (!this.validateSchema(schema)) {
-        validations[key] = `Schema ${key}.yml invalide: ${this.ajv.errorsText(this.validateSchema.errors)}`;
-        reject = true;
-        continue;
+        validations['message'] = `Schema ${key}.yml invalide: ${this.ajv.errorsText(this.validateSchema.errors)}`;
+        throw new ValidationConfigException(validations);
+      }
+      //verification des required, il faut que l'entree soit presente dans les proprietes
+      if (schema.hasOwnProperty('required')) {
+        for (const required of schema['required']){
+          if (! schema['properties'].hasOwnProperty(required)){
+            validations['message'] = `Schema ${key}.yml invalide : required : ${required} without property`;
+            throw new ValidationConfigException(validations);
+          }
+        }
       }
     }
-
-    if (reject) {
-      throw new ValidationConfigException({validations});
-    }
-
     // Validate each attribute
     for (const key of attributesKeys) {
       const validationError = await this.validateAttribute(key, attributes[key], attributes);

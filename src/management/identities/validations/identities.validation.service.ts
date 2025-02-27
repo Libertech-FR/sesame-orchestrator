@@ -1,4 +1,4 @@
-import {Injectable, Logger, OnApplicationBootstrap} from '@nestjs/common';
+import {BadRequestException, Injectable, Logger, OnApplicationBootstrap} from '@nestjs/common';
 import {parse} from 'yaml';
 import {existsSync, readFileSync, readdirSync, writeFileSync} from 'fs';
 import {ConfigObjectSchemaDTO} from './_dto/config.dto';
@@ -96,6 +96,10 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
   public async transformAttribute(key: string, attribute: any, data: any) {
 
     const path = this.resolveConfigPath(key);
+    if (path === null){
+      this.logger.error('schema for ' + key + ' does not exist');
+      throw new BadRequestException('schema for ' + key + ' does not exist');
+    }
     const schema: any = parse(readFileSync(path, 'utf8'));
     this.logger.debug(`Additionalfields object transformation: ${JSON.stringify(data[key])}`);
     for (const [index, def] of Object.entries(schema?.properties || {})) {
@@ -245,6 +249,10 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
    */
   public async validateAttribute(key: string, attribute: any, data: any): Promise<any | null> {
     const path = this.resolveConfigPath(key);
+    if (path === null) {
+      this.logger.error('schema for ' + key + ' does not exist');
+      throw new BadRequestException('schema for ' + key + ' does not exist');
+    }
     const schema: any = parse(readFileSync(path, 'utf8'));
 
     for (const [index, def] of Object.entries(schema?.properties || {})) {

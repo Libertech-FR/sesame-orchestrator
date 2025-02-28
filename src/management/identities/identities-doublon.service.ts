@@ -133,18 +133,26 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
       ...identity1.inetOrgPerson.employeeNumber,
       ...identity2.inetOrgPerson.employeeNumber,
     ];
+    identity1.inetOrgPerson.departmentNumber = [
+      ...identity1.inetOrgPerson.departmentNumber,
+      ...identity2.inetOrgPerson.departmentNumber,
+    ];
     // si supann est present
     if (
       identity1.additionalFields.objectClasses.includes('supannPerson') &&
       identity2.additionalFields.objectClasses.includes('supannPerson')
     ) {
-      identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.forEach((depN) => {
-        (identity1.additionalFields.attributes.supannPerson as any).supannTypeEntiteAffectation.push(depN);
-      });
+      if (identity2.additionalFields.attributes.supannPerson.includes('supannTypeEntiteAffectation') ) {
+        identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.forEach((depN) => {
+          (identity1.additionalFields.attributes.supannPerson as any).supannTypeEntiteAffectation.push(depN);
+        });
+      }
       // supannRefId
-      identity2.additionalFields.attributes.supannPerson.supannRefId.forEach((depN) => {
-        (identity1.additionalFields.attributes.supannPerson as any).supannRefId.push(depN);
-      });
+      if (identity2.additionalFields.attributes.supannPerson.includes('supannRefId') ){
+        identity2.additionalFields.attributes.supannPerson.supannRefId.forEach((depN) => {
+          (identity1.additionalFields.attributes.supannPerson as any).supannRefId.push(depN);
+        });
+      }
     }
     identity1.state = IdentityState.TO_VALIDATE;
     identity1.srcFusionId = identity2._id;

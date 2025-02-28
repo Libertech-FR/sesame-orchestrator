@@ -16,7 +16,7 @@ import {additionalFieldsPartDto} from '../_dto/_parts/additionalFields.dto';
  */
 @Injectable()
 export class IdentitiesValidationService implements OnApplicationBootstrap {
-  private ajv: Ajv = new Ajv({allErrors: true});
+  private ajv: Ajv = new Ajv({allErrors: true });
   private validateSchema;
   private logger: Logger;
 
@@ -332,6 +332,12 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     }
 
     this.logger.debug(`Additionalfields object validation: ${JSON.stringify(data[key])}`);
+    //limitation de la taille du data pour le pb de deny of service de ajv
+    //voir (https://ajv.js.org/security.html)
+    if (Object.keys(data[key]).length >500){
+      this.logger.error('Request too large');
+      throw new BadRequestException('Request too large');
+    }
     const ok= await this.ajv.validate(schema,data[key]);
     if (ok === false) {
       const retErrors = {};

@@ -106,6 +106,11 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
   }
   private async createAttributes(key:string,data:any){
 
+    // Validate the key to prevent prototype pollution
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+      this.logger.error('Invalid key: ' + key);
+      throw new BadRequestException('Invalid key: ' + key);
+    }
     const path = this.resolveConfigPath(key);
     if (path === null){
       this.logger.error('schema for ' + key + ' does not exist');

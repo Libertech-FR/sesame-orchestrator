@@ -592,7 +592,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:102</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:104</a></code>
 </div>
                         </td>
                     </tr>
@@ -789,8 +789,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -890,8 +890,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="79"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:79</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -2305,6 +2305,8 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     //TODO : add validation logic here
     const logPrefix &#x3D; &#x60;Validation [${update.inetOrgPerson.cn}]:&#x60;;
     try {
+      this.logger.log(&#x60;${logPrefix} Starting additionalFields transformation.&#x60;);
+      await this._validation.transform(update.additionalFields);
       this.logger.log(&#x60;${logPrefix} Starting additionalFields validation.&#x60;);
       const validations &#x3D; await this._validation.validate(update.additionalFields);
       this.logger.log(&#x60;${logPrefix} AdditionalFields validation successful.&#x60;);

@@ -2341,18 +2341,26 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
       ...identity1.inetOrgPerson.employeeNumber,
       ...identity2.inetOrgPerson.employeeNumber,
     ];
+    identity1.inetOrgPerson.departmentNumber &#x3D; [
+      ...identity1.inetOrgPerson.departmentNumber,
+      ...identity2.inetOrgPerson.departmentNumber,
+    ];
     // si supann est present
     if (
       identity1.additionalFields.objectClasses.includes(&#x27;supannPerson&#x27;) &amp;&amp;
       identity2.additionalFields.objectClasses.includes(&#x27;supannPerson&#x27;)
     ) {
-      identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.forEach((depN) &#x3D;&gt; {
-        (identity1.additionalFields.attributes.supannPerson as any).supannTypeEntiteAffectation.push(depN);
-      });
+      if (identity2.additionalFields.attributes.supannPerson.includes(&#x27;supannTypeEntiteAffectation&#x27;) ) {
+        identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.forEach((depN) &#x3D;&gt; {
+          (identity1.additionalFields.attributes.supannPerson as any).supannTypeEntiteAffectation.push(depN);
+        });
+      }
       // supannRefId
-      identity2.additionalFields.attributes.supannPerson.supannRefId.forEach((depN) &#x3D;&gt; {
-        (identity1.additionalFields.attributes.supannPerson as any).supannRefId.push(depN);
-      });
+      if (identity2.additionalFields.attributes.supannPerson.includes(&#x27;supannRefId&#x27;) ){
+        identity2.additionalFields.attributes.supannPerson.supannRefId.forEach((depN) &#x3D;&gt; {
+          (identity1.additionalFields.attributes.supannPerson as any).supannRefId.push(depN);
+        });
+      }
     }
     identity1.state &#x3D; IdentityState.TO_VALIDATE;
     identity1.srcFusionId &#x3D; identity2._id;

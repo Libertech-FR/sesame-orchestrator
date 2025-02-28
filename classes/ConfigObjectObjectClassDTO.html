@@ -203,7 +203,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/management/identities/validations/_dto/config.dto.ts:28</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/management/identities/validations/_dto/config.dto.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -240,7 +240,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/management/identities/validations/_dto/config.dto.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/management/identities/validations/_dto/config.dto.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -277,7 +277,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/management/identities/validations/_dto/config.dto.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/management/identities/validations/_dto/config.dto.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -296,7 +296,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IsString, ArrayNotEmpty, ValidateNested, IsEnum, IsBoolean } from &#x27;class-validator&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {IsString, ArrayNotEmpty, ValidateNested, IsEnum, IsBoolean, IsOptional} from &#x27;class-validator&#x27;;
 import { Type } from &#x27;class-transformer&#x27;;
 import { ConfigObjectType } from &#x27;../_enums/config.object&#x27;;
 
@@ -313,6 +313,10 @@ export class ConfigObjectAttributeDTO {
 
   @IsBoolean()
   public required: boolean;
+
+  @IsString()
+  @IsOptional()
+  public format: string;
 }
 
 export class ConfigObjectObjectClassDTO {

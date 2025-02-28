@@ -2450,8 +2450,8 @@
             },
             format: {
               type: &#x27;string&#x27;,
-              enum: [&#x27;date&#x27;, &#x27;email&#x27;],
-              errorMessage: &quot;Le &#x27;format&#x27; doit être &#x27;date&#x27; ou &#x27;email&#x27;.&quot;,
+              enum: [&#x27;date&#x27;, &#x27;email&#x27;,&#x27;number&#x27;,&#x27;time&#x27;,&#x27;date-time&#x27;,&#x27;duration&#x27;,&#x27;uri&#x27;,&#x27;uri-reference&#x27;,&#x27;hostname&#x27;,&#x27;ipv4&#x27;,&#x27;ipv6&#x27;,&#x27;regex&#x27;,&#x27;uuid&#x27;],
+              errorMessage: &quot;Format invalide&quot;,
             },
             items: {
               type: &#x27;object&#x27;,
@@ -2540,7 +2540,7 @@
             camelCase: {
               type: &#x27;boolean&#x27;,
               errorMessage: &quot;L&#x27;option &#x27;camelCase&#x27; doit être un booléen.&quot;,
-            },
+            }
           },
           required: [&#x27;type&#x27;],
           additionalProperties: false,

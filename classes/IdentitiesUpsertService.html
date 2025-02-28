@@ -490,8 +490,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="109"
-                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:109</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="111"
+                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:111</a></div>
                         </td>
                     </tr>
 
@@ -2369,6 +2369,8 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
 
     const logPrefix &#x3D; &#x60;Validation [${data?.inetOrgPerson?.employeeType}:${data?.inetOrgPerson?.employeeNumber}]:&#x60;;
     try {
+      this.logger.log(&#x60;${logPrefix} Starting additionalFields transformation.&#x60;);
+      await this._validation.transform(data.additionalFields);
       this.logger.log(&#x60;${logPrefix} Starting additionalFields validation.&#x60;);
       const validations &#x3D; await this._validation.validate(data.additionalFields);
       this.logger.log(&#x60;${logPrefix} AdditionalFields validation successful.&#x60;);

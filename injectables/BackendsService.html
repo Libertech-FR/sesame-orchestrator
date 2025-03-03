@@ -1257,27 +1257,27 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
   BadRequestException,
-  HttpStatus,
   HttpException,
+  HttpStatus,
   Injectable,
   RequestTimeoutException,
   UnprocessableEntityException,
 } from &#x27;@nestjs/common&#x27;;
-import { ModuleRef } from &#x27;@nestjs/core&#x27;;
-import { Document, ModifyResult, Query, Types } from &#x27;mongoose&#x27;;
-import { AbstractQueueProcessor } from &#x27;~/_common/abstracts/abstract.queue.processor&#x27;;
-import { IdentityState } from &#x27;~/management/identities/_enums/states.enum&#x27;;
-import { Identities } from &#x27;~/management/identities/_schemas/identities.schema&#x27;;
-import { IdentitiesCrudService } from &#x27;~/management/identities/identities-crud.service&#x27;;
-import { JobState } from &#x27;../jobs/_enums/state.enum&#x27;;
-import { Jobs } from &#x27;../jobs/_schemas/jobs.schema&#x27;;
-import { JobsService } from &#x27;../jobs/jobs.service&#x27;;
-import { Tasks } from &#x27;../tasks/_schemas/tasks.schema&#x27;;
-import { TasksService } from &#x27;../tasks/tasks.service&#x27;;
-import { ActionType } from &#x27;./_enum/action-type.enum&#x27;;
-import { ExecuteJobOptions } from &#x27;./_interfaces/execute-job-options.interface&#x27;;
-import { WorkerResultInterface } from &#x27;~/core/backends/_interfaces/worker-result.interface&#x27;;
-import { DataStatusEnum } from &#x27;~/management/identities/_enums/data-status&#x27;;
+import {ModuleRef} from &#x27;@nestjs/core&#x27;;
+import {Document, ModifyResult, Query, Types} from &#x27;mongoose&#x27;;
+import {AbstractQueueProcessor} from &#x27;~/_common/abstracts/abstract.queue.processor&#x27;;
+import {IdentityState} from &#x27;~/management/identities/_enums/states.enum&#x27;;
+import {Identities} from &#x27;~/management/identities/_schemas/identities.schema&#x27;;
+import {IdentitiesCrudService} from &#x27;~/management/identities/identities-crud.service&#x27;;
+import {JobState} from &#x27;../jobs/_enums/state.enum&#x27;;
+import {Jobs} from &#x27;../jobs/_schemas/jobs.schema&#x27;;
+import {JobsService} from &#x27;../jobs/jobs.service&#x27;;
+import {Tasks} from &#x27;../tasks/_schemas/tasks.schema&#x27;;
+import {TasksService} from &#x27;../tasks/tasks.service&#x27;;
+import {ActionType} from &#x27;./_enum/action-type.enum&#x27;;
+import {ExecuteJobOptions} from &#x27;./_interfaces/execute-job-options.interface&#x27;;
+import {WorkerResultInterface} from &#x27;~/core/backends/_interfaces/worker-result.interface&#x27;;
+import {DataStatusEnum} from &#x27;~/management/identities/_enums/data-status&#x27;;
 
 const DEFAULT_SYNC_TIMEOUT &#x3D; 30_000;
 
@@ -1689,7 +1689,13 @@ export class BackendsService extends AbstractQueueProcessor {
       optionals[&#x27;processedAt&#x27;] &#x3D; new Date();
       optionals[&#x27;state&#x27;] &#x3D; JobState.IN_PROGRESS;
     }
-
+    //anonymisation payload sur reset et changement de mdp
+    if (actionType &#x3D;&#x3D;&#x3D; ActionType.IDENTITY_PASSWORD_RESET || actionType &#x3D;&#x3D;&#x3D; ActionType.IDENTITY_PASSWORD_CHANGE) {
+        payload[&#x27;params&#x27;][&#x27;newPassword&#x27;] &#x3D;&#x27;**********&#x27;;
+    }
+    if (actionType &#x3D;&#x3D;&#x3D; ActionType.IDENTITY_PASSWORD_CHANGE) {
+      payload[&#x27;params&#x27;][&#x27;oldPassword&#x27;] &#x3D;&#x27;**********&#x27;;
+    }
     let jobStore: Document&lt;Jobs&gt; &#x3D; null;
     if (!options?.disableLogs) {
       const identity &#x3D; concernedTo ? await this.identitiesService.findById&lt;Identities&gt;(concernedTo) : null;

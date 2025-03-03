@@ -41,6 +41,7 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
       this.logger.log(`Validations : ${validations}`);
     } catch (error) {
+      console.log(error);
       if (error instanceof ValidationConfigException) {
         this.logger.error(`${logPrefix} Validation config error. ${JSON.stringify(error.getValidations())}`);
         throw new ValidationConfigException(error.getPayload());

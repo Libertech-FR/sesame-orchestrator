@@ -1,26 +1,26 @@
 import {
   BadRequestException,
-  HttpStatus,
   HttpException,
+  HttpStatus,
   Injectable,
   RequestTimeoutException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
-import { Document, ModifyResult, Query, Types } from 'mongoose';
-import { AbstractQueueProcessor } from '~/_common/abstracts/abstract.queue.processor';
-import { IdentityState } from '~/management/identities/_enums/states.enum';
-import { Identities } from '~/management/identities/_schemas/identities.schema';
-import { IdentitiesCrudService } from '~/management/identities/identities-crud.service';
-import { JobState } from '../jobs/_enums/state.enum';
-import { Jobs } from '../jobs/_schemas/jobs.schema';
-import { JobsService } from '../jobs/jobs.service';
-import { Tasks } from '../tasks/_schemas/tasks.schema';
-import { TasksService } from '../tasks/tasks.service';
-import { ActionType } from './_enum/action-type.enum';
-import { ExecuteJobOptions } from './_interfaces/execute-job-options.interface';
-import { WorkerResultInterface } from '~/core/backends/_interfaces/worker-result.interface';
-import { DataStatusEnum } from '~/management/identities/_enums/data-status';
+import {ModuleRef} from '@nestjs/core';
+import {Document, ModifyResult, Query, Types} from 'mongoose';
+import {AbstractQueueProcessor} from '~/_common/abstracts/abstract.queue.processor';
+import {IdentityState} from '~/management/identities/_enums/states.enum';
+import {Identities} from '~/management/identities/_schemas/identities.schema';
+import {IdentitiesCrudService} from '~/management/identities/identities-crud.service';
+import {JobState} from '../jobs/_enums/state.enum';
+import {Jobs} from '../jobs/_schemas/jobs.schema';
+import {JobsService} from '../jobs/jobs.service';
+import {Tasks} from '../tasks/_schemas/tasks.schema';
+import {TasksService} from '../tasks/tasks.service';
+import {ActionType} from './_enum/action-type.enum';
+import {ExecuteJobOptions} from './_interfaces/execute-job-options.interface';
+import {WorkerResultInterface} from '~/core/backends/_interfaces/worker-result.interface';
+import {DataStatusEnum} from '~/management/identities/_enums/data-status';
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
 
@@ -432,7 +432,13 @@ export class BackendsService extends AbstractQueueProcessor {
       optionals['processedAt'] = new Date();
       optionals['state'] = JobState.IN_PROGRESS;
     }
-
+    //anonymisation payload sur reset et changement de mdp
+    if (actionType === ActionType.IDENTITY_PASSWORD_RESET || actionType === ActionType.IDENTITY_PASSWORD_CHANGE) {
+        payload['params']['newPassword'] ='**********';
+    }
+    if (actionType === ActionType.IDENTITY_PASSWORD_CHANGE) {
+      payload['params']['oldPassword'] ='**********';
+    }
     let jobStore: Document<Jobs> = null;
     if (!options?.disableLogs) {
       const identity = concernedTo ? await this.identitiesService.findById<Identities>(concernedTo) : null;

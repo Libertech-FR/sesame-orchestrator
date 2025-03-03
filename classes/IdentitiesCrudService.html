@@ -592,7 +592,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:104</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:105</a></code>
 </div>
                         </td>
                     </tr>
@@ -789,8 +789,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -890,8 +890,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="81"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:81</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -2312,6 +2312,7 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
       this.logger.log(&#x60;${logPrefix} AdditionalFields validation successful.&#x60;);
       this.logger.log(&#x60;Validations : ${validations}&#x60;);
     } catch (error) {
+      console.log(error);
       if (error instanceof ValidationConfigException) {
         this.logger.error(&#x60;${logPrefix} Validation config error. ${JSON.stringify(error.getValidations())}&#x60;);
         throw new ValidationConfigException(error.getPayload());

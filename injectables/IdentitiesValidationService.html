@@ -428,8 +428,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="352"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:352</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="353"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:353</a></div>
                         </td>
                     </tr>
 
@@ -468,8 +468,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="407"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:407</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="408"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:408</a></div>
                         </td>
                     </tr>
 
@@ -956,8 +956,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="304"
-                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:304</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="305"
+                                    class="link-to-prism">src/management/identities/validations/identities.validation.service.ts:305</a></div>
                         </td>
                     </tr>
 
@@ -1071,7 +1071,7 @@
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>new Ajv({allErrors: true })</code>
+                        <i>Default value : </i><code>new Ajv({ allErrors: true })</code>
                     </td>
                 </tr>
                     <tr>
@@ -1137,32 +1137,32 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {BadRequestException, Injectable, Logger, OnApplicationBootstrap} from &#x27;@nestjs/common&#x27;;
-import {parse} from &#x27;yaml&#x27;;
-import {existsSync, readFileSync, readdirSync, writeFileSync} from &#x27;fs&#x27;;
-import {ConfigObjectSchemaDTO} from &#x27;./_dto/config.dto&#x27;;
-import {diff} from &#x27;radash&#x27;;
-import {AdditionalFieldsPart} from &#x27;../_schemas/_parts/additionalFields.part.schema&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, Injectable, Logger, OnApplicationBootstrap } from &#x27;@nestjs/common&#x27;;
+import { parse } from &#x27;yaml&#x27;;
+import { existsSync, readFileSync, readdirSync, writeFileSync } from &#x27;fs&#x27;;
+import { ConfigObjectSchemaDTO } from &#x27;./_dto/config.dto&#x27;;
+import { diff } from &#x27;radash&#x27;;
+import { AdditionalFieldsPart } from &#x27;../_schemas/_parts/additionalFields.part.schema&#x27;;
 import Ajv from &#x27;ajv&#x27;;
 import addFormats from &#x27;ajv-formats&#x27;;
 import validSchema from &#x27;./_config/validSchema&#x27;;
 import ajvErrors from &#x27;ajv-errors&#x27;;
-import {ValidationConfigException, ValidationSchemaException} from &#x27;~/_common/errors/ValidationException&#x27;;
-import {additionalFieldsPartDto} from &#x27;../_dto/_parts/additionalFields.dto&#x27;;
+import { ValidationConfigException, ValidationSchemaException } from &#x27;~/_common/errors/ValidationException&#x27;;
+import { additionalFieldsPartDto } from &#x27;../_dto/_parts/additionalFields.dto&#x27;;
 
 /**
  * Service responsible for validating identities.
  */
 @Injectable()
 export class IdentitiesValidationService implements OnApplicationBootstrap {
-  private ajv: Ajv &#x3D; new Ajv({allErrors: true });
+  private ajv: Ajv &#x3D; new Ajv({ allErrors: true });
   private validateSchema;
   private logger: Logger;
 
   public constructor() {
     addFormats(this.ajv);
     ajvErrors(this.ajv);
-    this.ajv.addFormat(&#x27;number&#x27;,/^\d*$/);
+    this.ajv.addFormat(&#x27;number&#x27;, /^\d*$/);
     this.validateSchema &#x3D; this.ajv.compile(validSchema);
     this.logger &#x3D; new Logger(IdentitiesValidationService.name);
   }
@@ -1232,18 +1232,18 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
    * check objectclasses and add missing keys
    * @param data
    */
-  public async checkAndCreateObjectClasses(data){
+  public async checkAndCreateObjectClasses(data) {
     const objectClasses &#x3D; data.objectClasses || [];
     const attributes &#x3D; data.attributes || {};
     const attributesKeys &#x3D; Object.keys(attributes);
-    for(const objectclass of objectClasses) {
-      if (! attributesKeys.includes(objectclass)) {
-        this.logger.log( objectclass + &quot; attribute not found creating&quot;);
-        await this.createAttributes(objectclass,data);
+    for (const objectclass of objectClasses) {
+      if (!attributesKeys.includes(objectclass)) {
+        this.logger.log(objectclass + &quot; attribute not found creating&quot;);
+        await this.createAttributes(objectclass, data);
       }
     }
   }
-  private async createAttributes(key:string,data:any){
+  private async createAttributes(key: string, data: any) {
 
     // Validate the key to prevent prototype pollution
     if (key &#x3D;&#x3D;&#x3D; &#x27;__proto__&#x27; || key &#x3D;&#x3D;&#x3D; &#x27;constructor&#x27; || key &#x3D;&#x3D;&#x3D; &#x27;prototype&#x27;) {
@@ -1251,7 +1251,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       throw new BadRequestException(&#x27;Invalid key: &#x27; + key);
     }
     const path &#x3D; this.resolveConfigPath(key);
-    if (path &#x3D;&#x3D;&#x3D; null){
+    if (path &#x3D;&#x3D;&#x3D; null) {
       this.logger.error(&#x27;schema for &#x27; + key + &#x27; does not exist&#x27;);
       throw new BadRequestException(&#x27;schema for &#x27; + key + &#x27; does not exist&#x27;);
     }
@@ -1287,7 +1287,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
   public async transformAttribute(key: string, attribute: any, data: any) {
 
     const path &#x3D; this.resolveConfigPath(key);
-    if (path &#x3D;&#x3D;&#x3D; null){
+    if (path &#x3D;&#x3D;&#x3D; null) {
       this.logger.error(&#x27;schema for &#x27; + key + &#x27; does not exist&#x27;);
       throw new BadRequestException(&#x27;schema for &#x27; + key + &#x27; does not exist&#x27;);
     }
@@ -1299,33 +1299,33 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
           if (typeof data[key][index] &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27; || data[key][index] &#x3D;&#x3D;&#x3D; null) {
             data[key][index] &#x3D; [];
           }
-          if (!(data[key][index] instanceof Array)){
-            data[key][index]&#x3D;[data[key][index]];
+          if (!(data[key][index] instanceof Array)) {
+            data[key][index] &#x3D; [data[key][index]];
           }
           if (typeof def[&#x27;items&#x27;] !&#x3D;&#x3D; &#x27;undefined&#x27;) {
-              //test si toutes les valeurs sont du bon type
-              for(const elems in data[key][index]){
-                if (typeof data[key][index][elems] !&#x3D;&#x3D; def[&#x27;items&#x27;][&#x27;type&#x27;]){
-                   switch(def[&#x27;items&#x27;][&#x27;type&#x27;]){
-                     case &#x27;string&#x27;:
-                       data[key][index][elems]&#x3D;String(data[key][index][elems]);
-                       break;
-                     case &#x27;number&#x27;:
-                       data[key][index][elems]&#x3D;await this.transformNumber(data[key][index][elems])
-                       break;
-                   }
+            //test si toutes les valeurs sont du bon type
+            for (const elems in data[key][index]) {
+              if (typeof data[key][index][elems] !&#x3D;&#x3D; def[&#x27;items&#x27;][&#x27;type&#x27;]) {
+                switch (def[&#x27;items&#x27;][&#x27;type&#x27;]) {
+                  case &#x27;string&#x27;:
+                    data[key][index][elems] &#x3D; String(data[key][index][elems]);
+                    break;
+                  case &#x27;number&#x27;:
+                    data[key][index][elems] &#x3D; await this.transformNumber(data[key][index][elems])
+                    break;
                 }
               }
+            }
           }
           break;
         case &#x27;number&#x27;:
           if (typeof data[key][index] &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27; || data[key][index] &#x3D;&#x3D;&#x3D; null) {
             data[key][index] &#x3D; 0;
           }
-          if (typeof data[key][index] !&#x3D;&#x3D; &#x27;number&#x27;){
+          if (typeof data[key][index] !&#x3D;&#x3D; &#x27;number&#x27;) {
             //on ne convertit pas si la chaine est vide
-            if (typeof data[key][index] &#x3D;&#x3D;&#x3D; &#x27;string&#x27; &amp;&amp;  data[key][index] !&#x3D;&#x3D; &quot;&quot;){
-              data[key][index]&#x3D;await this.transformNumber(data[key][index])
+            if (typeof data[key][index] &#x3D;&#x3D;&#x3D; &#x27;string&#x27; &amp;&amp; data[key][index] !&#x3D;&#x3D; &quot;&quot;) {
+              data[key][index] &#x3D; await this.transformNumber(data[key][index])
             }
           }
           break;
@@ -1333,8 +1333,8 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
           if (typeof data[key][index] &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27; || data[key][index] &#x3D;&#x3D;&#x3D; null) {
             data[key][index] &#x3D; &quot;&quot;;
           }
-          if (typeof data[key][index] !&#x3D;&#x3D; &#x27;string&#x27;){
-            data[key][index]&#x3D;String(data[key][index]);
+          if (typeof data[key][index] !&#x3D;&#x3D; &#x27;string&#x27;) {
+            data[key][index] &#x3D; String(data[key][index]);
           }
           break;
       }
@@ -1346,12 +1346,12 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
    * @param value
    * @private
    */
-  private async transformNumber(value){
-    if (typeof value &#x3D;&#x3D;&#x3D; &#x27;string&#x27;){
-      const tr&#x3D;parseFloat(value)
-      if (! isNaN(tr)){
+  private async transformNumber(value) {
+    if (typeof value &#x3D;&#x3D;&#x3D; &#x27;string&#x27;) {
+      const tr &#x3D; parseFloat(value)
+      if (!isNaN(tr)) {
         return tr
-      }else{
+      } else {
         return 0
       }
     }
@@ -1402,6 +1402,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       }
 
       // Check for invalid schema
+      this.logger.verbose(&#x60;Validating schema ${key}.yml&#x60;);
       const schema: ConfigObjectSchemaDTO &#x3D; parse(readFileSync(path, &#x27;utf8&#x27;));
       if (!this.validateSchema(schema)) {
         validations[&#x27;message&#x27;] &#x3D; &#x60;Schema ${key}.yml invalide: ${this.ajv.errorsText(this.validateSchema.errors)}&#x60;;
@@ -1409,8 +1410,8 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       }
       //verification des required, il faut que l&#x27;entree soit presente dans les proprietes
       if (schema.hasOwnProperty(&#x27;required&#x27;)) {
-        for (const required of schema[&#x27;required&#x27;]){
-          if (! schema[&#x27;properties&#x27;].hasOwnProperty(required)){
+        for (const required of schema[&#x27;required&#x27;]) {
+          if (!schema[&#x27;properties&#x27;].hasOwnProperty(required)) {
             validations[&#x27;message&#x27;] &#x3D; &#x60;Schema ${key}.yml invalide : required : ${required} without property&#x60;;
             throw new ValidationConfigException(validations);
           }
@@ -1429,9 +1430,9 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     }
 
     if (reject) {
-      throw new ValidationSchemaException({validations});
+      throw new ValidationSchemaException({ validations });
     }
-    return Promise.resolve({message: &#x27;Validation succeeded&#x27;});
+    return Promise.resolve({ message: &#x27;Validation succeeded&#x27; });
   }
 
   /**
@@ -1473,23 +1474,23 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     this.logger.debug(&#x60;Additionalfields object validation: ${JSON.stringify(data[key])}&#x60;);
     //limitation de la taille du data pour le pb de deny of service de ajv
     //voir (https://ajv.js.org/security.html)
-    if (Object.keys(data[key]).length &gt;500){
+    if (Object.keys(data[key]).length &gt; 500) {
       this.logger.error(&#x27;Request too large&#x27;);
       throw new BadRequestException(&#x27;Request too large&#x27;);
     }
-    const ok&#x3D; await this.ajv.validate(schema,data[key]);
+    const ok &#x3D; await this.ajv.validate(schema, data[key]);
     if (ok &#x3D;&#x3D;&#x3D; false) {
       const retErrors &#x3D; {};
       for (const err of this.ajv.errors) {
-        retErrors[err[&#x27;instancePath&#x27;].substring(1)]&#x3D; err[&#x27;instancePath&#x27;].substring(1) + &#x27; &#x27; +  err[&#x27;message&#x27;]
+        retErrors[err[&#x27;instancePath&#x27;].substring(1)] &#x3D; err[&#x27;instancePath&#x27;].substring(1) + &#x27; &#x27; + err[&#x27;message&#x27;]
       }
-      return(retErrors)
+      return (retErrors)
     }
     return null
   }
 
   public async findAll(): Promise&lt;any&gt; {
-    this.logger.debug([&#x27;findAll&#x27;, JSON.stringify(Object.values({...arguments}))].join(&#x27; &#x27;));
+    this.logger.debug([&#x27;findAll&#x27;, JSON.stringify(Object.values({ ...arguments }))].join(&#x27; &#x27;));
     const hardConfigPath &#x3D; &#x27;./src/management/identities/validations/_config&#x27;;
     const dynamicConfigPath &#x3D; &#x27;./configs/identities/validations&#x27;;
     // Retrieve files from each directory and tag them with their source
@@ -1538,7 +1539,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       const filePath &#x3D; &#x60;${fileObj.path}/${fileObj.file}&#x60;;
       const data &#x3D; parse(readFileSync(filePath, &#x27;utf-8&#x27;));
       const key &#x3D; fileObj.file.replace(&#x27;.yml&#x27;, &#x27;&#x27;);
-      result.push({[key]: data, source: fileObj.source, name: key});
+      result.push({ [key]: data, source: fileObj.source, name: key });
     }
     return [result, files.length];
   }
@@ -1550,13 +1551,13 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       filePath &#x3D; &#x27;./validation/inetorgperson.json&#x27;;
       if (!existsSync(filePath)) {
         const message &#x3D; &#x60;File not found /validation/inetorgperson.json&#x60;;
-        throw new ValidationConfigException({message});
+        throw new ValidationConfigException({ message });
       }
     } else {
       filePath &#x3D; this.resolveConfigPath(schema);
       if (!existsSync(filePath)) {
         const message &#x3D; &#x60;File not found: ${filePath}&#x60;;
-        throw new ValidationConfigException({message});
+        throw new ValidationConfigException({ message });
       }
     }
     return parse(readFileSync(filePath, &#x27;utf-8&#x27;));

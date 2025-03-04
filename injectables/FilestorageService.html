@@ -365,8 +365,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="212"
-                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:212</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="217"
+                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:217</a></div>
                         </td>
                     </tr>
 
@@ -970,7 +970,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:149</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:154</a></code>
 </div>
                         </td>
                     </tr>
@@ -1071,8 +1071,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="179"
-                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:179</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="184"
+                                    class="link-to-prism">src/core/filestorage/filestorage.service.ts:184</a></div>
                         </td>
                     </tr>
 
@@ -1973,7 +1973,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, HttpException, HttpStatus, Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { ModuleRef } from &#x27;@nestjs/core&#x27;;
 import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
 import { FactorydriveService } from &#x27;@the-software-compagny/nestjs_module_factorydrive&#x27;;
@@ -2115,6 +2115,11 @@ export class FilestorageService extends AbstractServiceSchema {
   ): Promise&lt;[Document&lt;any, any, Filestorage&gt; &amp; Filestorage, NodeJS.ReadableStream | null, (Document&lt;any, any, Filestorage&gt; &amp; Filestorage) | null]&gt; {
     const data &#x3D; await super.findOne&lt;Document&lt;any, any, Filestorage&gt; &amp; Filestorage&gt;(filter, projection, options)
     if (data.type &#x3D;&#x3D;&#x3D; FsType.FILE) {
+      const storageRequest &#x3D; await this.storage.getDisk(data.namespace).exists(data.path)
+      if (!storageRequest.exists) {
+        this.logger.warn(&#x60;Filestorage ${data._id} not found in storage&#x60;)
+        throw new NotFoundException(&#x60;Filestorage ${data._id} not found in storage&#x60;)
+      }
       const stream &#x3D; await this.storage.getDisk(data.namespace).getStream(data.path)
       return [data, stream, null]
     }

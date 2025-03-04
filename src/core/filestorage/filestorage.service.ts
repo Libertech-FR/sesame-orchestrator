@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { InjectModel } from '@nestjs/mongoose';
 import { FactorydriveService } from '@the-software-compagny/nestjs_module_factorydrive';
@@ -140,6 +140,11 @@ export class FilestorageService extends AbstractServiceSchema {
   ): Promise<[Document<any, any, Filestorage> & Filestorage, NodeJS.ReadableStream | null, (Document<any, any, Filestorage> & Filestorage) | null]> {
     const data = await super.findOne<Document<any, any, Filestorage> & Filestorage>(filter, projection, options)
     if (data.type === FsType.FILE) {
+      const storageRequest = await this.storage.getDisk(data.namespace).exists(data.path)
+      if (!storageRequest.exists) {
+        this.logger.warn(`Filestorage ${data._id} not found in storage`)
+        throw new NotFoundException(`Filestorage ${data._id} not found in storage`)
+      }
       const stream = await this.storage.getDisk(data.namespace).getStream(data.path)
       return [data, stream, null]
     }

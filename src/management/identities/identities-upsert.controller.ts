@@ -93,7 +93,7 @@ export class IdentitiesUpsertController extends AbstractController {
     const [code, data] = await this._service.upsertWithFingerprint<Identities>(filters, body, {
       errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),
       upsert: /true|on|yes|1/i.test(upsert),
-    }, {force});
+    }, { force });
 
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
     // Else the state is TO_VALIDATE, we return a 201 status code
@@ -125,7 +125,7 @@ export class IdentitiesUpsertController extends AbstractController {
     const filter = {
       namespace: 'identities',
       path: join(
-        [identity.inetOrgPerson?.employeeType, identity.inetOrgPerson?.employeeNumber, 'jpegPhoto.jpg'].join('/'),
+        [identity.inetOrgPerson?.employeeType, identity.inetOrgPerson?.employeeNumber[0], 'jpegPhoto.jpg'].join('/'),
       ),
     };
 

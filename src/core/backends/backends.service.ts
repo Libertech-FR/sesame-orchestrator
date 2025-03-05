@@ -434,10 +434,10 @@ export class BackendsService extends AbstractQueueProcessor {
     }
     //anonymisation payload sur reset et changement de mdp
     if (actionType === ActionType.IDENTITY_PASSWORD_RESET || actionType === ActionType.IDENTITY_PASSWORD_CHANGE) {
-        payload['params']['newPassword'] ='**********';
+        payload['newPassword'] ='**********';
     }
     if (actionType === ActionType.IDENTITY_PASSWORD_CHANGE) {
-      payload['params']['oldPassword'] ='**********';
+      payload['oldPassword'] ='**********';
     }
     let jobStore: Document<Jobs> = null;
     if (!options?.disableLogs) {

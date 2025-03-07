@@ -1128,6 +1128,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <li class="link">
                                     <a href="injectables/TransformersFilestorageService.html" data-type="entity-link" >TransformersFilestorageService</a>
                                 </li>
+                                <li class="link">
+                                    <a href="injectables/UniquenessMailValidator.html" data-type="entity-link" >UniquenessMailValidator</a>
+                                </li>
                             </ul>
                         </li>
                     <li class="chapter">

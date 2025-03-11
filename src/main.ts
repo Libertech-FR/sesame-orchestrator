@@ -12,6 +12,7 @@ import { readFileSync } from 'fs';
 import * as http from 'http';
 import * as https from 'https';
 import { ShutdownObserver } from './_common/observers/shutdown.observer';
+import { useContainer } from 'class-validator';
 
 declare const module: any;
 (async (): Promise<void> => {
@@ -21,8 +22,6 @@ declare const module: any;
     mongoose: cfg?.mongoose,
   });
   await logger.initialize();
-
-  console.log('cfg', cfg.application);
 
   let extraOptions = <any>{};
   if (cfg.application?.https?.enabled) {
@@ -55,6 +54,8 @@ declare const module: any;
   if (process.env.production !== 'production') {
     await (await import('./swagger')).default(app);
   }
+
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   await app.init();
 

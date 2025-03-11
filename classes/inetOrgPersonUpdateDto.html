@@ -148,7 +148,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;;
 import { Type } from &#x27;class-transformer&#x27;;
-import { IsString, IsEmail, IsOptional, IsArray } from &#x27;class-validator&#x27;;
+import {IsString, IsEmail, IsOptional, IsArray, ValidateIf} from &#x27;class-validator&#x27;;
 
 export class inetOrgPersonCreateDto {
   @IsString()
@@ -204,6 +204,9 @@ export class inetOrgPersonCreateDto {
   @IsOptional()
   public labeledURI?: string;
 
+  @ValidateIf(o &#x3D;&gt; {
+    return o.mail &amp;&amp; o.mail.length &gt; 0;
+  })
   @IsEmail()
   @ApiProperty({ required: false })
   @IsOptional()

@@ -214,6 +214,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Optional</span>
                                 <a href="#mail" >mail</a>
@@ -613,7 +614,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="103" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:103</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="106" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -669,6 +670,7 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Optional</span>
                         <span ><b>mail</b></span>
@@ -687,13 +689,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsEmail()<br />@ApiProperty({required: false})<br />@IsOptional()<br />
+                            @ValidateIf(o &#x3D;&gt; )<br />@IsEmail()<br />@ApiProperty({required: false})<br />@IsOptional()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:62</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -734,7 +736,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:68</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -774,7 +776,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="73" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:73</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="76" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -814,7 +816,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:78</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="81" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -894,7 +896,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="83" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:83</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="86" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -934,7 +936,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="88" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:88</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -1013,7 +1015,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="93" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:93</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="96" class="link-to-prism">src/management/identities/_dto/_parts/inetOrgPerson.dto.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -1034,7 +1036,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;;
 import { Type } from &#x27;class-transformer&#x27;;
-import { IsString, IsEmail, IsOptional, IsArray } from &#x27;class-validator&#x27;;
+import {IsString, IsEmail, IsOptional, IsArray, ValidateIf} from &#x27;class-validator&#x27;;
 
 export class inetOrgPersonCreateDto {
   @IsString()
@@ -1090,6 +1092,9 @@ export class inetOrgPersonCreateDto {
   @IsOptional()
   public labeledURI?: string;
 
+  @ValidateIf(o &#x3D;&gt; {
+    return o.mail &amp;&amp; o.mail.length &gt; 0;
+  })
   @IsEmail()
   @ApiProperty({ required: false })
   @IsOptional()

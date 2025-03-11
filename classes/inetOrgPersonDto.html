@@ -220,6 +220,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Optional</span>
                                 <a href="#mail" >mail</a>
@@ -674,7 +675,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:103</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:106</a></code>
 </div>
                         </td>
                     </tr>
@@ -738,6 +739,7 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Optional</span>
                         <span ><b>mail</b></span>
@@ -756,7 +758,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsEmail()<br />@ApiProperty({required: false})<br />@IsOptional()<br />
+                            @ValidateIf(o &#x3D;&gt; )<br />@IsEmail()<br />@ApiProperty({required: false})<br />@IsOptional()<br />
                         </code>
                     </td>
                 </tr>
@@ -768,7 +770,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:62</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:65</a></code>
 </div>
                         </td>
                     </tr>
@@ -816,7 +818,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:68</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:71</a></code>
 </div>
                         </td>
                     </tr>
@@ -863,7 +865,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:73</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:76</a></code>
 </div>
                         </td>
                     </tr>
@@ -910,7 +912,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:78</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:81</a></code>
 </div>
                         </td>
                     </tr>
@@ -1004,7 +1006,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:83</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:86</a></code>
 </div>
                         </td>
                     </tr>
@@ -1051,7 +1053,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:88</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:91</a></code>
 </div>
                         </td>
                     </tr>
@@ -1144,7 +1146,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:93</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/inetOrgPersonCreateDto.html#source" target="_self" >inetOrgPersonCreateDto:96</a></code>
 </div>
                         </td>
                     </tr>
@@ -1166,7 +1168,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;;
 import { Type } from &#x27;class-transformer&#x27;;
-import { IsString, IsEmail, IsOptional, IsArray } from &#x27;class-validator&#x27;;
+import {IsString, IsEmail, IsOptional, IsArray, ValidateIf} from &#x27;class-validator&#x27;;
 
 export class inetOrgPersonCreateDto {
   @IsString()
@@ -1222,6 +1224,9 @@ export class inetOrgPersonCreateDto {
   @IsOptional()
   public labeledURI?: string;
 
+  @ValidateIf(o &#x3D;&gt; {
+    return o.mail &amp;&amp; o.mail.length &gt; 0;
+  })
   @IsEmail()
   @ApiProperty({ required: false })
   @IsOptional()

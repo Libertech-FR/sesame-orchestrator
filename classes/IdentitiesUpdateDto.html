@@ -183,7 +183,6 @@ export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, Metad
   public lifecycle: number;
 
   @IsObject()
-  @ValidateNested()
   @Type(() &#x3D;&gt; inetOrgPersonDto)
   @ApiProperty({ type: inetOrgPersonDto })
   public inetOrgPerson: inetOrgPersonDto;

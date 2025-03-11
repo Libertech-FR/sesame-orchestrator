@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsString, IsEmail, IsOptional, IsArray } from 'class-validator';
+import {IsString, IsEmail, IsOptional, IsArray, ValidateIf} from 'class-validator';
 
 export class inetOrgPersonCreateDto {
   @IsString()
@@ -56,6 +56,9 @@ export class inetOrgPersonCreateDto {
   @IsOptional()
   public labeledURI?: string;
 
+  @ValidateIf(o => {
+    return o.mail && o.mail.length > 0;
+  })
   @IsEmail()
   @ApiProperty({ required: false })
   @IsOptional()

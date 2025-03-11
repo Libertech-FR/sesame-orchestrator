@@ -14,13 +14,19 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
   ): Promise<Document<T, any, T>> {
     data = this.transformNullsToString(data);
     await this.checkInetOrgPersonJpegPhoto(data);
-    //recherche si email oy uid deja present
-    const f: any = { $or: [{ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, { 'inetOrgPerson.mail': data.inetOrgPerson.mail }] };
-    let dataDup = await this._model.countDocuments(f).exec()
-    if (dataDup > 0) {
-      this.logger.error('Identité existante');
+    if(await this.checkMailAndUid(data) === false){
+      this.logger.error('Uid ou mail déjà présent dans une autre identité');
       throw new HttpException("Uid ou mail déjà présent dans une autre identité", 400);
     }
+    const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
+    this.logger.log(`${logPrefix} Starting inetOrgPerson validation.`);
+    const check={
+       objectClasses: ['inetorgperson'],
+       attributes:{ 'inetorgperson':data.inetOrgPerson}
+    }
+    //pour la validation le employeeNumber doit exister on en met un avec une valeur par defaut
+    check.attributes.inetorgperson.employeeNumber=["1"];
+    let validations = await this._validation.validate(check);
     const created: Document<T, any, T> = await super.create(data, options);
     return created;
   }
@@ -31,15 +37,29 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
     update = this.transformNullsToString(update);
     // noinspection UnnecessaryLocalVariableJS
+
     //TODO : add validation logic here
     const logPrefix = `Validation [${update.inetOrgPerson.cn}]:`;
     try {
       this.logger.log(`${logPrefix} Starting additionalFields transformation.`);
+      if(update.hasOwnProperty('metadata')){
+        //suppresion de la clé metadata
+        delete(update.metadata);
+      }
+
       await this._validation.transform(update.additionalFields);
-      this.logger.log(`${logPrefix} Starting additionalFields validation.`);
-      const validations = await this._validation.validate(update.additionalFields);
+
+      this.logger.log(`${logPrefix} Starting inetOrgPerson validation.`);
+      const check={
+        objectClasses: ['inetorgperson'],
+        attributes:{ 'inetorgperson':update.inetOrgPerson}
+      }
+      let validationsInetOrg = await this._validation.validate(check);
+      let validationsAdFields = await this._validation.validate(update.additionalFields);
+
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
-      this.logger.log(`Validations : ${validations}`);
+      this.logger.log(`Validations InetOrgPerson: ${validationsInetOrg}`);
+      this.logger.log(`Validations Additional fields: ${validationsAdFields}`);
     } catch (error) {
       console.log(error);
       if (error instanceof ValidationConfigException) {
@@ -55,7 +75,11 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
         throw error; // Rethrow the original error if it's not one of the handled types.
       }
     }
-
+    // check mail and Uid
+    if(await this.checkMailAndUid(update) === false){
+      this.logger.error('Uid ou mail déjà présent dans une autre identité');
+      throw new HttpException("Uid ou mail déjà présent dans une autre identité", 400);
+    }
     // if (update.state === IdentityState.TO_COMPLETE) {
     update = { ...update, state: IdentityState.TO_VALIDATE };
 
@@ -110,4 +134,6 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     const deleted = await super.delete(_id, options);
     return deleted;
   }
+
+
 }

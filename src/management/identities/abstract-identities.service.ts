@@ -189,4 +189,50 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
       throw new HttpException('Id not found', 400);
     }
   }
+  /**
+   * Check if mail and uid are unique. If mail is empty  it is not checked
+   * @param data
+   * @private
+   */
+  protected async checkMailAndUid(data): Promise <boolean> {
+    let dataDup=[];
+    if (data.inetOrgPerson.hasOwnProperty('mail')  && data.inetOrgPerson.mail !== ''){
+      const id=new Types.ObjectId(data['_id']);
+      const f: any = { '_id': {$ne : id},$or: [{ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, { 'inetOrgPerson.mail': data.inetOrgPerson.mail }] };
+      dataDup = await this._model.find(f).exec()
+    }else{
+      const id=new Types.ObjectId(data['_id']);
+      const f: any = { '_id': {$ne : id},'inetOrgPerson.uid': data.inetOrgPerson.uid };
+      dataDup = await this._model.find(f).exec()
+    }
+    if (dataDup.length > 0) {
+      return false
+    }else{
+      return true
+    }
+  }
+  protected async checkMail(data): Promise <boolean> {
+    let dataDup=0;
+    if (data.inetOrgPerson.hasOwnProperty('mail')  && data.inetOrgPerson.mail !== ''){
+      const id=new Types.ObjectId(data['_id']);
+      const f: any =  { '_id': {$ne : id},'inetOrgPerson.mail': data.inetOrgPerson.mail };
+      dataDup = await this._model.countDocuments(f).exec()
+    }
+    if (dataDup> 0) {
+      return false
+    }else{
+      return true
+    }
+  }
+  protected async checkUid(data): Promise <boolean> {
+    let dataDup=0;
+    const id=new Types.ObjectId(data['_id']);
+    const f: any = {'_id': {$ne : id}, 'inetOrgPerson.uid': data.inetOrgPerson.uid };
+    dataDup = await this._model.countDocuments(f).exec()
+    if (dataDup > 0) {
+      return false
+    }else{
+      return true
+    }
+  }
 }

@@ -31,6 +31,10 @@ const validSchema = {
               enum: ['date', 'email','number','time','date-time','duration','uri','uri-reference','hostname','ipv4','ipv6','regex','uuid'],
               errorMessage: "Format invalide",
             },
+            contains: {
+              type: 'object',
+              errorMessage: "Le champ 'required' doit être un booléen.",
+            },
             items: {
               type: 'object',
               errorMessage: "Le champ 'required' doit être un booléen.",

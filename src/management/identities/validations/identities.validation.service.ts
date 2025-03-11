@@ -6,10 +6,12 @@ import { diff } from 'radash';
 import { AdditionalFieldsPart } from '../_schemas/_parts/additionalFields.part.schema';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
+import localize from 'ajv-i18n';
 import validSchema from './_config/validSchema';
 import ajvErrors from 'ajv-errors';
 import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
 import { additionalFieldsPartDto } from '../_dto/_parts/additionalFields.dto';
+import {ConfigService} from "@nestjs/config";
 
 /**
  * Service responsible for validating identities.
@@ -20,12 +22,13 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
   private validateSchema;
   private logger: Logger;
 
-  public constructor() {
+  public constructor(protected config: ConfigService) {
     addFormats(this.ajv);
     ajvErrors(this.ajv);
     this.ajv.addFormat('number', /^\d*$/);
     this.validateSchema = this.ajv.compile(validSchema);
     this.logger = new Logger(IdentitiesValidationService.name);
+
   }
 
   public onApplicationBootstrap(): void {
@@ -57,13 +60,14 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
   }
 
   private resolveConfigPath(key: string): string | null {
-    const hardConfigPath = `./src/management/identities/validations/_config/${key}.yml`;
+    //lecture deja dans le repertoire /validation pour les schemas non modifiables
+    const hardConfigPath = `./validation/${key}.yml`;
     const dynamicConfigPath = `./configs/identities/validations/${key}.yml`;
-    if (existsSync(dynamicConfigPath)) {
-      return dynamicConfigPath;
-    }
     if (existsSync(hardConfigPath)) {
       return hardConfigPath;
+    }
+    if (existsSync(dynamicConfigPath)) {
+      return dynamicConfigPath;
     }
     return null;
   }
@@ -309,7 +313,23 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       throw new BadRequestException('schema for ' + key + ' does not exist');
     }
     const schema: any = parse(readFileSync(path, 'utf8'));
-
+    // mise de min length et minItems dans les champs requis
+    if (schema.hasOwnProperty('required')) {
+      for (const required of schema['required']) {
+        switch(schema['properties'][required]['type']){
+          case 'array':
+            if (!schema['properties'][required]['minItems']){
+              schema['properties'][required]['minItems']=1
+            }
+            break;
+          case 'string':
+            if (!schema['properties'][required]['minLength']){
+              schema['properties'][required]['minLength']=1
+            }
+            break;
+        }
+      }
+    }
     for (const [index, def] of Object.entries(schema?.properties || {})) {
       if (typeof data[key][index] === 'undefined' || data[key][index] === null) {
         switch ((def as any).type) {
@@ -342,6 +362,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     const ok = await this.ajv.validate(schema, data[key]);
     if (ok === false) {
       const retErrors = {};
+      await this.translateAjv(this.ajv.errors)
       for (const err of this.ajv.errors) {
         retErrors[err['instancePath'].substring(1)] = err['instancePath'].substring(1) + ' ' + err['message']
       }
@@ -409,9 +430,9 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     this.logger.debug(['findOne', JSON.stringify(Object.values(arguments))].join(' '));
     let filePath = '';
     if (schema === 'inetorgperson') {
-      filePath = './validation/inetorgperson.json';
+      filePath = './validation/inetorgperson.yml';
       if (!existsSync(filePath)) {
-        const message = `File not found /validation/inetorgperson.json`;
+        const message = `File not found /validation/inetorgperson.yml`;
         throw new ValidationConfigException({ message });
       }
     } else {
@@ -422,5 +443,16 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       }
     }
     return parse(readFileSync(filePath, 'utf-8'));
+  }
+  private async translateAjv(messages){
+    switch(this.config.get('application.lang')){
+      case 'en':
+        break
+      case 'fr':
+      case 'fr_FR.UTF-8':
+      case 'fr_FR':
+        localize.fr(messages)
+        break
+    }
   }
 }

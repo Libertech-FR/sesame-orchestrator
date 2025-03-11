@@ -15,6 +15,7 @@ export interface MongoosePlugin {
 }
 export interface ConfigInstance {
   application: {
+    lang: string
     logLevel: string;
     nameQueue: string;
     bodyParser: {
@@ -80,6 +81,7 @@ export interface ConfigInstance {
 
 export default (): ConfigInstance => ({
   application: {
+    lang: process.env['LANG'] || 'en',
     logLevel: process.env['SESAME_LOG_LEVEL'] || 'info',
     nameQueue: process.env['SESAME_NAME_QUEUE'] || 'sesame',
     bodyParser: {

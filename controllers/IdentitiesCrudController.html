@@ -429,7 +429,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;Response&lt;number&gt;&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;Response&lt;literal type&gt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -736,8 +736,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="283"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:283</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="287"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:287</a></div>
                         </td>
                     </tr>
 
@@ -931,8 +931,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="228"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:228</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="232"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:232</a></div>
                         </td>
                     </tr>
 
@@ -1035,8 +1035,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="243"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:243</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="247"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:247</a></div>
                         </td>
                     </tr>
 
@@ -1138,8 +1138,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="264"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:264</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="268"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:268</a></div>
                         </td>
                     </tr>
 
@@ -1410,18 +1410,22 @@ export class IdentitiesCrudController extends AbstractController {
       [key: string]: FilterSchema;
     },
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
-  ): Promise&lt;Response&lt;number&gt;&gt; {
-    const filters &#x3D; {}
-    for (const key in body) {
-      filters[key] &#x3D; filterSchema(body[key]);
-      console.log(&#x27;filters&#x27;, key, body[key], filters[key]);
-    }
+  ): Promise&lt;Response&lt;{
+    statusCode: number;
+    data: {
+      [key: string]: number;
+    };
+  }&gt;&gt; {
+    const filters &#x3D; Object.entries(body).reduce((acc, [key, value]) &#x3D;&gt; {
+      acc[key] &#x3D; filterSchema(value);
+      return acc;
+    }, {} as Record&lt;string, FilterSchema&gt;);
 
-    const totals &#x3D; await this._service.countAll(filters, searchFilterOptions);
+    const data &#x3D; await this._service.countAll(filters, searchFilterOptions);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
-      data: totals,
+      data,
     });
   }
 

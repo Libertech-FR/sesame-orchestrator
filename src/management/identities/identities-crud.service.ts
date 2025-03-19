@@ -7,6 +7,8 @@ import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { BadRequestException, HttpException } from '@nestjs/common';
 import { CountOptions } from 'mongodb';
 
+export const COUNT_ALL_MAX_ITERATIONS = 500;
+
 export class IdentitiesCrudService extends AbstractIdentitiesService {
   public async create<T extends AbstractSchema | Document>(
     data?: any,
@@ -138,8 +140,8 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
   public async countAll<T extends AbstractSchema | Document>(filters: {
     [key: string]: FilterQuery<T>;
   }, options?: (CountOptions & MongooseBaseQueryOptions<T>) | null) {
-    if (Object.keys(filters).length >= 5) {
-      throw new BadRequestException('Too many filters');
+    if (Object.keys(filters).length >= COUNT_ALL_MAX_ITERATIONS) {
+      throw new BadRequestException(`Too many filters (max: ${COUNT_ALL_MAX_ITERATIONS})`);
     }
 
     const entries = Object.entries(filters);

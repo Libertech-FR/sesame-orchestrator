@@ -207,18 +207,22 @@ export class IdentitiesCrudController extends AbstractController {
       [key: string]: FilterSchema;
     },
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
-  ): Promise<Response<number>> {
-    const filters = {}
-    for (const key in body) {
-      filters[key] = filterSchema(body[key]);
-      console.log('filters', key, body[key], filters[key]);
-    }
+  ): Promise<Response<{
+    statusCode: number;
+    data: {
+      [key: string]: number;
+    };
+  }>> {
+    const filters = Object.entries(body).reduce((acc, [key, value]) => {
+      acc[key] = filterSchema(value);
+      return acc;
+    }, {} as Record<string, FilterSchema>);
 
-    const totals = await this._service.countAll(filters, searchFilterOptions);
+    const data = await this._service.countAll(filters, searchFilterOptions);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
-      data: totals,
+      data,
     });
   }
 

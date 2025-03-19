@@ -510,8 +510,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="139"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:139</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="138"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:138</a></div>
                         </td>
                     </tr>
 
@@ -606,7 +606,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:12</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:11</a></code>
 </div>
                         </td>
                     </tr>
@@ -702,7 +702,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:130</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:129</a></code>
 </div>
                         </td>
                     </tr>
@@ -798,7 +798,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:34</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:33</a></code>
 </div>
                         </td>
                     </tr>
@@ -899,8 +899,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="99"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:99</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="98"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:98</a></div>
                         </td>
                     </tr>
 
@@ -1000,8 +1000,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="107"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:107</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="106"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -2603,8 +2603,7 @@ import { Document, FilterQuery, ModifyResult, MongooseBaseQueryOptions, Query, Q
 import { ValidationConfigException, ValidationSchemaException } from &#x27;~/_common/errors/ValidationException&#x27;;
 import { IdentityState } from &#x27;~/management/identities/_enums/states.enum&#x27;;
 import { Identities } from &#x27;~/management/identities/_schemas/identities.schema&#x27;;
-import { HttpException } from &#x27;@nestjs/common&#x27;;
-import { map, omit } from &#x27;radash&#x27;;
+import { BadRequestException, HttpException } from &#x27;@nestjs/common&#x27;;
 import { CountOptions } from &#x27;mongodb&#x27;;
 
 export class IdentitiesCrudService extends AbstractIdentitiesService {
@@ -2738,15 +2737,16 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
   public async countAll&lt;T extends AbstractSchema | Document&gt;(filters: {
     [key: string]: FilterQuery&lt;T&gt;;
   }, options?: (CountOptions &amp; MongooseBaseQueryOptions&lt;T&gt;) | null) {
-    const res &#x3D; {}
-    const maxItems &#x3D; 500;
-    for (const key in filters) {
-      res[key] &#x3D; await this._model.countDocuments(filters[key], options);
-      if (res[key] &gt; maxItems) {
-        throw new HttpException(&#x60;La requête a retourné plus de ${maxItems} résultats.&#x60;, 400);
-      }
+    if (Object.keys(filters).length &gt;&#x3D; 5) {
+      throw new BadRequestException(&#x27;Too many filters&#x27;);
     }
-    return res;
+
+    const entries &#x3D; Object.entries(filters);
+    const results &#x3D; await Promise.all(entries.map(([key, filter]) &#x3D;&gt;
+      this._model.countDocuments(filter, options).then(count &#x3D;&gt; [key, count])
+    ));
+
+    return Object.fromEntries(results);
   }
 }
 </code></pre>

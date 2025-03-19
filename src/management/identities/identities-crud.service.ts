@@ -1,11 +1,12 @@
 import { AbstractIdentitiesService } from '~/management/identities/abstract-identities.service';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
-import { Document, ModifyResult, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose';
+import { Document, FilterQuery, ModifyResult, MongooseBaseQueryOptions, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose';
 import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { HttpException } from '@nestjs/common';
-import { omit } from 'radash';
+import { map, omit } from 'radash';
+import { CountOptions } from 'mongodb';
 
 export class IdentitiesCrudService extends AbstractIdentitiesService {
   public async create<T extends AbstractSchema | Document>(
@@ -14,18 +15,18 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
   ): Promise<Document<T, any, T>> {
     data = this.transformNullsToString(data);
     await this.checkInetOrgPersonJpegPhoto(data);
-    if(await this.checkMailAndUid(data) === false){
+    if (await this.checkMailAndUid(data) === false) {
       this.logger.error('Uid ou mail déjà présent dans une autre identité');
       throw new HttpException("Uid ou mail déjà présent dans une autre identité", 400);
     }
     const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
     this.logger.log(`${logPrefix} Starting inetOrgPerson validation.`);
-    const check={
-       objectClasses: ['inetorgperson'],
-       attributes:{ 'inetorgperson':data.inetOrgPerson}
+    const check = {
+      objectClasses: ['inetorgperson'],
+      attributes: { 'inetorgperson': data.inetOrgPerson }
     }
     //pour la validation le employeeNumber doit exister on en met un avec une valeur par defaut
-    check.attributes.inetorgperson.employeeNumber=["1"];
+    check.attributes.inetorgperson.employeeNumber = ["1"];
     let validations = await this._validation.validate(check);
     const created: Document<T, any, T> = await super.create(data, options);
     return created;
@@ -42,17 +43,17 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     const logPrefix = `Validation [${update.inetOrgPerson.cn}]:`;
     try {
       this.logger.log(`${logPrefix} Starting additionalFields transformation.`);
-      if(update.hasOwnProperty('metadata')){
+      if (update.hasOwnProperty('metadata')) {
         //suppresion de la clé metadata
-        delete(update.metadata);
+        delete (update.metadata);
       }
 
       await this._validation.transform(update.additionalFields);
 
       this.logger.log(`${logPrefix} Starting inetOrgPerson validation.`);
-      const check={
+      const check = {
         objectClasses: ['inetorgperson'],
-        attributes:{ 'inetorgperson':update.inetOrgPerson}
+        attributes: { 'inetorgperson': update.inetOrgPerson }
       }
       let validationsInetOrg = await this._validation.validate(check);
       let validationsAdFields = await this._validation.validate(update.additionalFields);
@@ -76,7 +77,7 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
       }
     }
     // check mail and Uid
-    if(await this.checkMailAndUid(update) === false){
+    if (await this.checkMailAndUid(update) === false) {
       this.logger.error('Uid ou mail déjà présent dans une autre identité');
       throw new HttpException("Uid ou mail déjà présent dans une autre identité", 400);
     }
@@ -135,5 +136,17 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     return deleted;
   }
 
-
+  public async countAll<T extends AbstractSchema | Document>(filters: {
+    [key: string]: FilterQuery<T>;
+  }, options?: (CountOptions & MongooseBaseQueryOptions<T>) | null) {
+    const res = {}
+    const maxItems = 500;
+    for (const key in filters) {
+      res[key] = await this._model.countDocuments(filters[key], options);
+      if (res[key] > maxItems) {
+        throw new HttpException(`La requête a retourné plus de ${maxItems} résultats.`, 400);
+      }
+    }
+    return res;
+  }
 }

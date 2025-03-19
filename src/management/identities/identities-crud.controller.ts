@@ -13,6 +13,7 @@ import {
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import {
   FilterOptions,
+  filterSchema,
   FilterSchema,
   SearchFilterOptions,
   SearchFilterSchema,
@@ -195,6 +196,29 @@ export class IdentitiesCrudController extends AbstractController {
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: total,
+    });
+  }
+
+  @Post('count-all')
+  @ApiOperation({ summary: "Compte le nombre d'identitées en fonctions des filtres fournis via un body de counts" })
+  public async countAll(
+    @Res() res: Response,
+    @Body() body: {
+      [key: string]: FilterSchema;
+    },
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+  ): Promise<Response<number>> {
+    const filters = {}
+    for (const key in body) {
+      filters[key] = filterSchema(body[key]);
+      console.log('filters', key, body[key], filters[key]);
+    }
+
+    const totals = await this._service.countAll(filters, searchFilterOptions);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: totals,
     });
   }
 

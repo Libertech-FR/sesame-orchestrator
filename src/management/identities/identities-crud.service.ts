@@ -4,8 +4,7 @@ import { Document, FilterQuery, ModifyResult, MongooseBaseQueryOptions, Query, Q
 import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
-import { HttpException } from '@nestjs/common';
-import { map, omit } from 'radash';
+import { BadRequestException, HttpException } from '@nestjs/common';
 import { CountOptions } from 'mongodb';
 
 export class IdentitiesCrudService extends AbstractIdentitiesService {
@@ -139,14 +138,15 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
   public async countAll<T extends AbstractSchema | Document>(filters: {
     [key: string]: FilterQuery<T>;
   }, options?: (CountOptions & MongooseBaseQueryOptions<T>) | null) {
-    const res = {}
-    const maxItems = 500;
-    for (const key in filters) {
-      res[key] = await this._model.countDocuments(filters[key], options);
-      if (res[key] > maxItems) {
-        throw new HttpException(`La requête a retourné plus de ${maxItems} résultats.`, 400);
-      }
+    if (Object.keys(filters).length >= 5) {
+      throw new BadRequestException('Too many filters');
     }
-    return res;
+
+    const entries = Object.entries(filters);
+    const results = await Promise.all(entries.map(([key, filter]) =>
+      this._model.countDocuments(filter, options).then(count => [key, count])
+    ));
+
+    return Object.fromEntries(results);
   }
 }

@@ -970,7 +970,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validate(data: AdditionalFieldsPart | additionalFieldsPartDto)</code>
+                    <code>validate(data: AdditionalFieldsPart | additionalFieldsPartDto, callException: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
                 </td>
             </tr>
 
@@ -997,6 +997,7 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Default value</td>
                                                 <td>Description</td>
                                         </tr>
                                     </thead>
@@ -1011,12 +1012,31 @@
                                                     No
                                             </td>
 
+                                            <td>
+                                            </td>
 
                                             <td>
                                                     <ul>
 <li>The additional fields data to validate.</li>
 </ul>
 
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>callException</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>true</code>
+                                            </td>
+
+                                            <td>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -1467,7 +1487,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
    * @param data - The additional fields data to validate.
    * @returns A promise that resolves if validation succeeds, or rejects with validation errors.
    */
-  public async validate(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise&lt;object&gt; {
+  public async validate(data: AdditionalFieldsPart | additionalFieldsPartDto,callException:boolean&#x3D;true): Promise&lt;object&gt; {
     if (!data.objectClasses) {
       data.objectClasses &#x3D; [];
     }
@@ -1534,7 +1554,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       }
     }
 
-    if (reject) {
+    if (reject &amp;&amp; callException) {
       throw new ValidationSchemaException({ validations });
     }
     return Promise.resolve({ message: &#x27;Validation succeeded&#x27; });

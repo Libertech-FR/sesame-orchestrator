@@ -505,8 +505,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="118"
-                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:118</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="121"
+                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:121</a></div>
                         </td>
                     </tr>
 
@@ -2605,14 +2605,8 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       this.logger.log(&#x60;${logPrefix} Starting additionalFields transformation.&#x60;);
       await this._validation.transform(data.additionalFields);
       this.logger.log(&#x60;${logPrefix} Starting additionalFields validation.&#x60;);
-      let validations &#x3D; await this._validation.validate(data.additionalFields);
-      //validation email and uid
-      if (await this.checkMail(data) &#x3D;&#x3D;&#x3D; false){
-        validations[&#x27;inetOrgPerson.mail&#x27;]&#x3D;&quot;Email déjà présent dans une autre identité&quot;
-      }
-      if (await this.checkUid(data) &#x3D;&#x3D;&#x3D; false){
-        validations[&#x27;inetOrgPerson.uid&#x27;]&#x3D;&quot;Uid déjà présent dans une autre identité&quot;
-      }
+
+      let validations &#x3D; await this._validation.validate(data.additionalFields,true);
       this.logger.log(&#x60;${logPrefix} AdditionalFields validation successful.&#x60;);
       this.logger.log(&#x60;Validations : ${JSON.stringify(validations)}&#x60;);
       crushedUpdate[&#x27;state&#x27;] &#x3D; IdentityState.TO_VALIDATE;
@@ -2621,6 +2615,15 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       data &#x3D; this.handleValidationError(error, data, logPrefix);
       crushedUpdate[&#x27;state&#x27;] &#x3D; data.state;
       crushedUpdate[&#x27;additionalFields.validations&#x27;] &#x3D; data.additionalFields.validations;
+    }
+    //validation email and uid
+    if (await this.checkMail(data) &#x3D;&#x3D;&#x3D; false){
+      crushedUpdate[&#x27;additionalFields.validations&#x27;][&#x27;inetOrgPerson&#x27;]&#x3D;{mail:&quot;Email déjà présent dans une autre identité&quot;}
+      crushedUpdate[&#x27;state&#x27;] &#x3D; data.state;
+    }
+    if (await this.checkUid(data) &#x3D;&#x3D;&#x3D; false){
+      crushedUpdate[&#x27;additionalFields.validations&#x27;][&#x27;inetOrgPerson&#x27;]&#x3D; {uid:&quot;Uid déjà présent dans une autre identité&quot;}
+      crushedUpdate[&#x27;state&#x27;] &#x3D; data.state;
     }
 
     const fingerprint &#x3D; await this.previewFingerprint(

@@ -227,7 +227,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
    * @param data - The additional fields data to validate.
    * @returns A promise that resolves if validation succeeds, or rejects with validation errors.
    */
-  public async validate(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise<object> {
+  public async validate(data: AdditionalFieldsPart | additionalFieldsPartDto,callException:boolean=true): Promise<object> {
     if (!data.objectClasses) {
       data.objectClasses = [];
     }
@@ -294,7 +294,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       }
     }
 
-    if (reject) {
+    if (reject && callException) {
       throw new ValidationSchemaException({ validations });
     }
     return Promise.resolve({ message: 'Validation succeeded' });

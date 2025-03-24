@@ -55,14 +55,8 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       this.logger.log(`${logPrefix} Starting additionalFields transformation.`);
       await this._validation.transform(data.additionalFields);
       this.logger.log(`${logPrefix} Starting additionalFields validation.`);
-      let validations = await this._validation.validate(data.additionalFields);
-      //validation email and uid
-      if (await this.checkMail(data) === false){
-        validations['inetOrgPerson.mail']="Email déjà présent dans une autre identité"
-      }
-      if (await this.checkUid(data) === false){
-        validations['inetOrgPerson.uid']="Uid déjà présent dans une autre identité"
-      }
+
+      let validations = await this._validation.validate(data.additionalFields,true);
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
       this.logger.log(`Validations : ${JSON.stringify(validations)}`);
       crushedUpdate['state'] = IdentityState.TO_VALIDATE;
@@ -71,6 +65,15 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       data = this.handleValidationError(error, data, logPrefix);
       crushedUpdate['state'] = data.state;
       crushedUpdate['additionalFields.validations'] = data.additionalFields.validations;
+    }
+    //validation email and uid
+    if (await this.checkMail(data) === false){
+      crushedUpdate['additionalFields.validations']['inetOrgPerson']={mail:"Email déjà présent dans une autre identité"}
+      crushedUpdate['state'] = data.state;
+    }
+    if (await this.checkUid(data) === false){
+      crushedUpdate['additionalFields.validations']['inetOrgPerson']= {uid:"Uid déjà présent dans une autre identité"}
+      crushedUpdate['state'] = data.state;
     }
 
     const fingerprint = await this.previewFingerprint(

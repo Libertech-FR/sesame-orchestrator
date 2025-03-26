@@ -221,6 +221,10 @@
                                 <a href="#previewFingerprint" >previewFingerprint</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#stableStringify" >stableStringify</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                 <a href="#transformNullsToString" >transformNullsToString</a>
                             </li>
@@ -412,8 +416,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="145"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:145</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="158"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:158</a></div>
                         </td>
                     </tr>
 
@@ -494,8 +498,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="179"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:179</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="193"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:193</a></div>
                         </td>
                     </tr>
 
@@ -634,8 +638,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="214"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:214</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="230"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:230</a></div>
                         </td>
                     </tr>
 
@@ -700,8 +704,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="197"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:197</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="212"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:212</a></div>
                         </td>
                     </tr>
 
@@ -768,8 +772,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="227"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:227</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="244"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:244</a></div>
                         </td>
                     </tr>
 
@@ -1017,8 +1021,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="124"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:124</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="138"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:138</a></div>
                         </td>
                     </tr>
 
@@ -1055,6 +1059,71 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="stableStringify"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>stableStringify</b></span>
+                        <a href="#stableStringify"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>stableStringify(obj)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="124"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:124</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>obj</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -2341,24 +2410,24 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {BadRequestException, forwardRef, HttpException, Inject, Injectable} from &#x27;@nestjs/common&#x27;;
-import {InjectModel} from &#x27;@nestjs/mongoose&#x27;;
-import {Document, Model, ModifyResult, Query, Types} from &#x27;mongoose&#x27;;
-import {AbstractServiceSchema} from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
-import {AbstractSchema} from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
-import {ValidationConfigException, ValidationSchemaException} from &#x27;~/_common/errors/ValidationException&#x27;;
-import {IdentitiesUpsertDto} from &#x27;./_dto/identities.dto&#x27;;
-import {IdentityState} from &#x27;./_enums/states.enum&#x27;;
-import {Identities} from &#x27;./_schemas/identities.schema&#x27;;
-import {IdentitiesValidationService} from &#x27;./validations/identities.validation.service&#x27;;
-import {FactorydriveService} from &#x27;@the-software-compagny/nestjs_module_factorydrive&#x27;;
-import {BackendsService} from &#x27;~/core/backends/backends.service&#x27;;
-import {construct, omit} from &#x27;radash&#x27;;
-import {toPlainAndCrush} from &#x27;~/_common/functions/to-plain-and-crush&#x27;;
-import {createHash} from &#x27;node:crypto&#x27;;
-import {PasswdadmService} from &quot;~/settings/passwdadm.service&quot;;
-import {DataStatusEnum} from &quot;~/management/identities/_enums/data-status&quot;;
-import {JobState} from &quot;~/core/jobs/_enums/state.enum&quot;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, forwardRef, HttpException, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
+import { Document, Model, ModifyResult, Query, Types } from &#x27;mongoose&#x27;;
+import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
+import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema&#x27;;
+import { ValidationConfigException, ValidationSchemaException } from &#x27;~/_common/errors/ValidationException&#x27;;
+import { IdentitiesUpsertDto } from &#x27;./_dto/identities.dto&#x27;;
+import { IdentityState } from &#x27;./_enums/states.enum&#x27;;
+import { Identities } from &#x27;./_schemas/identities.schema&#x27;;
+import { IdentitiesValidationService } from &#x27;./validations/identities.validation.service&#x27;;
+import { FactorydriveService } from &#x27;@the-software-compagny/nestjs_module_factorydrive&#x27;;
+import { BackendsService } from &#x27;~/core/backends/backends.service&#x27;;
+import { construct, omit } from &#x27;radash&#x27;;
+import { toPlainAndCrush } from &#x27;~/_common/functions/to-plain-and-crush&#x27;;
+import { createHash } from &#x27;node:crypto&#x27;;
+import { PasswdadmService } from &quot;~/settings/passwdadm.service&quot;;
+import { DataStatusEnum } from &quot;~/management/identities/_enums/data-status&quot;;
+import { JobState } from &quot;~/core/jobs/_enums/state.enum&quot;;
 
 @Injectable()
 export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
@@ -2464,27 +2533,40 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     return updated as unknown as ModifyResult&lt;Query&lt;T, T, any, T&gt;&gt;;
   }
 
+  private stableStringify(obj) {
+    if (typeof obj !&#x3D;&#x3D; &quot;object&quot; || obj &#x3D;&#x3D;&#x3D; null) {
+      return JSON.stringify(obj);
+    }
+
+    if (Array.isArray(obj)) {
+      return &#x60;[${obj.map(this.stableStringify).join(&#x27;,&#x27;)}]&#x60;;
+    }
+
+    return &#x60;{${Object.keys(obj).sort().map(key &#x3D;&gt;
+      JSON.stringify(key) + &#x27;:&#x27; + this.stableStringify(obj[key])
+    ).join(&#x27;,&#x27;)}}&#x60;;
+  }
+
   protected async previewFingerprint(identity: any): Promise&lt;string&gt; {
     const additionalFields &#x3D; omit(identity.additionalFields, [&#x27;validations&#x27;]);
-    const data &#x3D; JSON.stringify(
-      construct(
-        omit(
-          toPlainAndCrush({
-            inetOrgPerson: identity.inetOrgPerson,
-            additionalFields,
-          }) as any,
-          [
-            //TODO: add configurable fields to exclude
-            /* &#x27;additionalFields.attributes.supannPerson.supannOIDCGenre&#x27; */
-          ],
-        ),
+    const data &#x3D; construct(
+      omit(
+        toPlainAndCrush({
+          inetOrgPerson: identity.inetOrgPerson,
+          additionalFields,
+        }) as any,
+        [
+          //TODO: add configurable fields to exclude
+          /* &#x27;additionalFields.attributes.supannPerson.supannOIDCGenre&#x27; */
+        ],
       ),
     );
 
     const hash &#x3D; createHash(&#x27;sha256&#x27;);
-    hash.update(data);
+    hash.update(this.stableStringify(data));
     return hash.digest(&#x27;hex&#x27;).toString();
   }
+
   public async activation(id: string, status: DataStatusEnum) {
     //recherche de l&#x27;identité
     let identity: Identities &#x3D; null;
@@ -2507,11 +2589,11 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     if (statusChanged) {
       // le dataStaus à changé on envoye l info aux backend et on enregistre l identité
       // Envoi du status au backend
-      let statusBackend&#x3D;true
-      if (status &#x3D;&#x3D; DataStatusEnum.INACTIVE || status &#x3D;&#x3D; DataStatusEnum.PASSWORDNEEDTOBECHANGED){
-           statusBackend&#x3D; false
+      let statusBackend &#x3D; true
+      if (status &#x3D;&#x3D; DataStatusEnum.INACTIVE || status &#x3D;&#x3D; DataStatusEnum.PASSWORDNEEDTOBECHANGED) {
+        statusBackend &#x3D; false
       }
-      const result &#x3D; await this.backends.activationIdentity(identity._id.toString(),statusBackend);
+      const result &#x3D; await this.backends.activationIdentity(identity._id.toString(), statusBackend);
       if (result.state &#x3D;&#x3D;&#x3D; JobState.COMPLETED) {
         await super.update(identity._id, identity);
       } else {
@@ -2519,7 +2601,8 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
       }
     }
   }
-  public async askToChangePassword(id: string){
+
+  public async askToChangePassword(id: string) {
     try {
       const identity &#x3D; await this.findById&lt;Identities&gt;(id);
       if (identity.dataStatus &#x3D;&#x3D;&#x3D; DataStatusEnum.ACTIVE) {
@@ -2532,49 +2615,52 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
       throw new HttpException(&#x27;Id not found&#x27;, 400);
     }
   }
+
   /**
    * Check if mail and uid are unique. If mail is empty  it is not checked
    * @param data
    * @private
    */
-  protected async checkMailAndUid(data): Promise &lt;boolean&gt; {
-    let dataDup&#x3D;[];
-    if (data.inetOrgPerson.hasOwnProperty(&#x27;mail&#x27;)  &amp;&amp; data.inetOrgPerson.mail !&#x3D;&#x3D; &#x27;&#x27;){
-      const id&#x3D;new Types.ObjectId(data[&#x27;_id&#x27;]);
-      const f: any &#x3D; { &#x27;_id&#x27;: {$ne : id},$or: [{ &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid }, { &#x27;inetOrgPerson.mail&#x27;: data.inetOrgPerson.mail }] };
+  protected async checkMailAndUid(data): Promise&lt;boolean&gt; {
+    let dataDup &#x3D; [];
+    if (data.inetOrgPerson.hasOwnProperty(&#x27;mail&#x27;) &amp;&amp; data.inetOrgPerson.mail !&#x3D;&#x3D; &#x27;&#x27;) {
+      const id &#x3D; new Types.ObjectId(data[&#x27;_id&#x27;]);
+      const f: any &#x3D; { &#x27;_id&#x27;: { $ne: id }, $or: [{ &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid }, { &#x27;inetOrgPerson.mail&#x27;: data.inetOrgPerson.mail }] };
       dataDup &#x3D; await this._model.find(f).exec()
-    }else{
-      const id&#x3D;new Types.ObjectId(data[&#x27;_id&#x27;]);
-      const f: any &#x3D; { &#x27;_id&#x27;: {$ne : id},&#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid };
+    } else {
+      const id &#x3D; new Types.ObjectId(data[&#x27;_id&#x27;]);
+      const f: any &#x3D; { &#x27;_id&#x27;: { $ne: id }, &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid };
       dataDup &#x3D; await this._model.find(f).exec()
     }
     if (dataDup.length &gt; 0) {
       return false
-    }else{
+    } else {
       return true
     }
   }
-  protected async checkMail(data): Promise &lt;boolean&gt; {
-    let dataDup&#x3D;0;
-    if (data.inetOrgPerson.hasOwnProperty(&#x27;mail&#x27;)  &amp;&amp; data.inetOrgPerson.mail !&#x3D;&#x3D; &#x27;&#x27;){
-      const id&#x3D;new Types.ObjectId(data[&#x27;_id&#x27;]);
-      const f: any &#x3D;  { &#x27;_id&#x27;: {$ne : id},&#x27;inetOrgPerson.mail&#x27;: data.inetOrgPerson.mail };
+
+  protected async checkMail(data): Promise&lt;boolean&gt; {
+    let dataDup &#x3D; 0;
+    if (data.inetOrgPerson.hasOwnProperty(&#x27;mail&#x27;) &amp;&amp; data.inetOrgPerson.mail !&#x3D;&#x3D; &#x27;&#x27;) {
+      const id &#x3D; new Types.ObjectId(data[&#x27;_id&#x27;]);
+      const f: any &#x3D; { &#x27;_id&#x27;: { $ne: id }, &#x27;inetOrgPerson.mail&#x27;: data.inetOrgPerson.mail };
       dataDup &#x3D; await this._model.countDocuments(f).exec()
     }
-    if (dataDup&gt; 0) {
+    if (dataDup &gt; 0) {
       return false
-    }else{
+    } else {
       return true
     }
   }
-  protected async checkUid(data): Promise &lt;boolean&gt; {
-    let dataDup&#x3D;0;
-    const id&#x3D;new Types.ObjectId(data[&#x27;_id&#x27;]);
-    const f: any &#x3D; {&#x27;_id&#x27;: {$ne : id}, &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid };
+
+  protected async checkUid(data): Promise&lt;boolean&gt; {
+    let dataDup &#x3D; 0;
+    const id &#x3D; new Types.ObjectId(data[&#x27;_id&#x27;]);
+    const f: any &#x3D; { &#x27;_id&#x27;: { $ne: id }, &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid };
     dataDup &#x3D; await this._model.countDocuments(f).exec()
     if (dataDup &gt; 0) {
       return false
-    }else{
+    } else {
       return true
     }
   }

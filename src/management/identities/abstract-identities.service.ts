@@ -1,21 +1,21 @@
-import {BadRequestException, forwardRef, HttpException, Inject, Injectable} from '@nestjs/common';
-import {InjectModel} from '@nestjs/mongoose';
-import {Document, Model, ModifyResult, Query, Types} from 'mongoose';
-import {AbstractServiceSchema} from '~/_common/abstracts/abstract.service.schema';
-import {AbstractSchema} from '~/_common/abstracts/schemas/abstract.schema';
-import {ValidationConfigException, ValidationSchemaException} from '~/_common/errors/ValidationException';
-import {IdentitiesUpsertDto} from './_dto/identities.dto';
-import {IdentityState} from './_enums/states.enum';
-import {Identities} from './_schemas/identities.schema';
-import {IdentitiesValidationService} from './validations/identities.validation.service';
-import {FactorydriveService} from '@the-software-compagny/nestjs_module_factorydrive';
-import {BackendsService} from '~/core/backends/backends.service';
-import {construct, omit} from 'radash';
-import {toPlainAndCrush} from '~/_common/functions/to-plain-and-crush';
-import {createHash} from 'node:crypto';
-import {PasswdadmService} from "~/settings/passwdadm.service";
-import {DataStatusEnum} from "~/management/identities/_enums/data-status";
-import {JobState} from "~/core/jobs/_enums/state.enum";
+import { BadRequestException, forwardRef, HttpException, Inject, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Document, Model, ModifyResult, Query, Types } from 'mongoose';
+import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
+import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
+import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
+import { IdentitiesUpsertDto } from './_dto/identities.dto';
+import { IdentityState } from './_enums/states.enum';
+import { Identities } from './_schemas/identities.schema';
+import { IdentitiesValidationService } from './validations/identities.validation.service';
+import { FactorydriveService } from '@the-software-compagny/nestjs_module_factorydrive';
+import { BackendsService } from '~/core/backends/backends.service';
+import { construct, omit } from 'radash';
+import { toPlainAndCrush } from '~/_common/functions/to-plain-and-crush';
+import { createHash } from 'node:crypto';
+import { PasswdadmService } from "~/settings/passwdadm.service";
+import { DataStatusEnum } from "~/management/identities/_enums/data-status";
+import { JobState } from "~/core/jobs/_enums/state.enum";
 
 @Injectable()
 export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
@@ -121,27 +121,40 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     return updated as unknown as ModifyResult<Query<T, T, any, T>>;
   }
 
+  private stableStringify(obj) {
+    if (typeof obj !== "object" || obj === null) {
+      return JSON.stringify(obj);
+    }
+
+    if (Array.isArray(obj)) {
+      return `[${obj.map(this.stableStringify).join(',')}]`;
+    }
+
+    return `{${Object.keys(obj).sort().map(key =>
+      JSON.stringify(key) + ':' + this.stableStringify(obj[key])
+    ).join(',')}}`;
+  }
+
   protected async previewFingerprint(identity: any): Promise<string> {
     const additionalFields = omit(identity.additionalFields, ['validations']);
-    const data = JSON.stringify(
-      construct(
-        omit(
-          toPlainAndCrush({
-            inetOrgPerson: identity.inetOrgPerson,
-            additionalFields,
-          }) as any,
-          [
-            //TODO: add configurable fields to exclude
-            /* 'additionalFields.attributes.supannPerson.supannOIDCGenre' */
-          ],
-        ),
+    const data = construct(
+      omit(
+        toPlainAndCrush({
+          inetOrgPerson: identity.inetOrgPerson,
+          additionalFields,
+        }) as any,
+        [
+          //TODO: add configurable fields to exclude
+          /* 'additionalFields.attributes.supannPerson.supannOIDCGenre' */
+        ],
       ),
     );
 
     const hash = createHash('sha256');
-    hash.update(data);
+    hash.update(this.stableStringify(data));
     return hash.digest('hex').toString();
   }
+
   public async activation(id: string, status: DataStatusEnum) {
     //recherche de l'identité
     let identity: Identities = null;
@@ -164,11 +177,11 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     if (statusChanged) {
       // le dataStaus à changé on envoye l info aux backend et on enregistre l identité
       // Envoi du status au backend
-      let statusBackend=true
-      if (status == DataStatusEnum.INACTIVE || status == DataStatusEnum.PASSWORDNEEDTOBECHANGED){
-           statusBackend= false
+      let statusBackend = true
+      if (status == DataStatusEnum.INACTIVE || status == DataStatusEnum.PASSWORDNEEDTOBECHANGED) {
+        statusBackend = false
       }
-      const result = await this.backends.activationIdentity(identity._id.toString(),statusBackend);
+      const result = await this.backends.activationIdentity(identity._id.toString(), statusBackend);
       if (result.state === JobState.COMPLETED) {
         await super.update(identity._id, identity);
       } else {
@@ -176,7 +189,8 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
       }
     }
   }
-  public async askToChangePassword(id: string){
+
+  public async askToChangePassword(id: string) {
     try {
       const identity = await this.findById<Identities>(id);
       if (identity.dataStatus === DataStatusEnum.ACTIVE) {
@@ -189,49 +203,52 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
       throw new HttpException('Id not found', 400);
     }
   }
+
   /**
    * Check if mail and uid are unique. If mail is empty  it is not checked
    * @param data
    * @private
    */
-  protected async checkMailAndUid(data): Promise <boolean> {
-    let dataDup=[];
-    if (data.inetOrgPerson.hasOwnProperty('mail')  && data.inetOrgPerson.mail !== ''){
-      const id=new Types.ObjectId(data['_id']);
-      const f: any = { '_id': {$ne : id},$or: [{ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, { 'inetOrgPerson.mail': data.inetOrgPerson.mail }] };
+  protected async checkMailAndUid(data): Promise<boolean> {
+    let dataDup = [];
+    if (data.inetOrgPerson.hasOwnProperty('mail') && data.inetOrgPerson.mail !== '') {
+      const id = new Types.ObjectId(data['_id']);
+      const f: any = { '_id': { $ne: id }, $or: [{ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, { 'inetOrgPerson.mail': data.inetOrgPerson.mail }] };
       dataDup = await this._model.find(f).exec()
-    }else{
-      const id=new Types.ObjectId(data['_id']);
-      const f: any = { '_id': {$ne : id},'inetOrgPerson.uid': data.inetOrgPerson.uid };
+    } else {
+      const id = new Types.ObjectId(data['_id']);
+      const f: any = { '_id': { $ne: id }, 'inetOrgPerson.uid': data.inetOrgPerson.uid };
       dataDup = await this._model.find(f).exec()
     }
     if (dataDup.length > 0) {
       return false
-    }else{
+    } else {
       return true
     }
   }
-  protected async checkMail(data): Promise <boolean> {
-    let dataDup=0;
-    if (data.inetOrgPerson.hasOwnProperty('mail')  && data.inetOrgPerson.mail !== ''){
-      const id=new Types.ObjectId(data['_id']);
-      const f: any =  { '_id': {$ne : id},'inetOrgPerson.mail': data.inetOrgPerson.mail };
+
+  protected async checkMail(data): Promise<boolean> {
+    let dataDup = 0;
+    if (data.inetOrgPerson.hasOwnProperty('mail') && data.inetOrgPerson.mail !== '') {
+      const id = new Types.ObjectId(data['_id']);
+      const f: any = { '_id': { $ne: id }, 'inetOrgPerson.mail': data.inetOrgPerson.mail };
       dataDup = await this._model.countDocuments(f).exec()
     }
-    if (dataDup> 0) {
+    if (dataDup > 0) {
       return false
-    }else{
+    } else {
       return true
     }
   }
-  protected async checkUid(data): Promise <boolean> {
-    let dataDup=0;
-    const id=new Types.ObjectId(data['_id']);
-    const f: any = {'_id': {$ne : id}, 'inetOrgPerson.uid': data.inetOrgPerson.uid };
+
+  protected async checkUid(data): Promise<boolean> {
+    let dataDup = 0;
+    const id = new Types.ObjectId(data['_id']);
+    const f: any = { '_id': { $ne: id }, 'inetOrgPerson.uid': data.inetOrgPerson.uid };
     dataDup = await this._model.countDocuments(f).exec()
     if (dataDup > 0) {
       return false
-    }else{
+    } else {
       return true
     }
   }

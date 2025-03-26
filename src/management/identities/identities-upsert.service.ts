@@ -55,8 +55,14 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       this.logger.log(`${logPrefix} Starting additionalFields transformation.`);
       await this._validation.transform(data.additionalFields);
       this.logger.log(`${logPrefix} Starting additionalFields validation.`);
-
       let validations = await this._validation.validate(data.additionalFields,true);
+      //validation email and uid
+      if (await this.checkMail(data) === false) {
+        validations['inetOrgPerson.mail'] = "Email déjà présent dans une autre identité"
+      }
+      if (await this.checkUid(data) === false) {
+        validations['inetOrgPerson.uid'] = "Uid déjà présent dans une autre identité"
+      }
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
       this.logger.log(`Validations : ${JSON.stringify(validations)}`);
       crushedUpdate['state'] = IdentityState.TO_VALIDATE;
@@ -77,10 +83,7 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
     }
 
     const fingerprint = await this.previewFingerprint(
-      construct({
-        ...toPlainAndCrush(identity?.toJSON()),
-        ...crushedUpdate,
-      }),
+      data,
     );
 
     await this.checkFingerprint(filters, fingerprint, extra);

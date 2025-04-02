@@ -140,7 +140,14 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     const data = construct(
       omit(
         toPlainAndCrush({
+          dataStatus: identity.dataStatus,
+          state: identity.state,
+          lifecycle: identity.lifecycle,
+          srcFusionId: identity.srcFusionId,
+          primaryEmployeeNumber: identity.primaryEmployeeNumber,
+          initState: identity.initState,
           inetOrgPerson: identity.inetOrgPerson,
+          deletedFlag: identity.deletedFlag,
           additionalFields,
         }) as any,
         [

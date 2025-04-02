@@ -416,8 +416,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="158"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:158</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="165"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:165</a></div>
                         </td>
                     </tr>
 
@@ -498,8 +498,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="193"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:193</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="200"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:200</a></div>
                         </td>
                     </tr>
 
@@ -638,8 +638,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="230"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:230</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="237"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:237</a></div>
                         </td>
                     </tr>
 
@@ -704,8 +704,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="212"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:212</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="219"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:219</a></div>
                         </td>
                     </tr>
 
@@ -772,8 +772,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="244"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:244</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="251"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:251</a></div>
                         </td>
                     </tr>
 
@@ -2552,7 +2552,14 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     const data &#x3D; construct(
       omit(
         toPlainAndCrush({
+          dataStatus: identity.dataStatus,
+          state: identity.state,
+          lifecycle: identity.lifecycle,
+          srcFusionId: identity.srcFusionId,
+          primaryEmployeeNumber: identity.primaryEmployeeNumber,
+          initState: identity.initState,
           inetOrgPerson: identity.inetOrgPerson,
+          deletedFlag: identity.deletedFlag,
           additionalFields,
         }) as any,
         [

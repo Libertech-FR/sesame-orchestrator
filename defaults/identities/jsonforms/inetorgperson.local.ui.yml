@@ -9,6 +9,11 @@ elements:
         options:
           required: true
       - type: Control
+        label: CN
+        scope: "#/properties/cn"
+        options:
+          required: true
+      - type: Control
         label: Nom
         scope: "#/properties/sn"
         options:

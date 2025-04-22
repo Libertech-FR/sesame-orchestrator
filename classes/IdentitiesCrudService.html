@@ -2820,7 +2820,10 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
 
     const entries &#x3D; Object.entries(filters);
     const results &#x3D; await Promise.all(entries.map(([key, filter]) &#x3D;&gt;
-      this._model.countDocuments(filter, options).then(count &#x3D;&gt; [key, count])
+      this._model.countDocuments({
+        ...filter,
+        deletedFlag: { $ne: true },
+      }, options).then(count &#x3D;&gt; [key, count])
     ));
 
     return Object.fromEntries(results);

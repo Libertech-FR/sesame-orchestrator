@@ -47,6 +47,10 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
         throw new HttpException('Secondary identity', HttpStatus.SEE_OTHER);
       }
     }
+    //controle si l'identité a été supprimée
+    if (identity !== null && identity?.deletedFlag === true){
+      throw new HttpException('Identity deleted', HttpStatus.SEE_OTHER);
+    }
 
     await this.checkInetOrgPersonJpegPhoto(data);
 

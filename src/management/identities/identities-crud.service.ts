@@ -146,7 +146,10 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
 
     const entries = Object.entries(filters);
     const results = await Promise.all(entries.map(([key, filter]) =>
-      this._model.countDocuments(filter, options).then(count => [key, count])
+      this._model.countDocuments({
+        ...filter,
+        deletedFlag: { $ne: true },
+      }, options).then(count => [key, count])
     ));
 
     return Object.fromEntries(results);

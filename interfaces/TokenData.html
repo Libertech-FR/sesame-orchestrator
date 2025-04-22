@@ -451,6 +451,7 @@ export class PasswdService extends AbstractService {
                 displayName: identity.inetOrgPerson.displayName,
                 uid: initDto.uid,
                 url: this.config.get(&#x27;frontPwd.url&#x27;) + &#x27;/initaccount/&#x27; + token,
+                mail: identity.inetOrgPerson.mail
               },
             })
             .then(() &#x3D;&gt; {

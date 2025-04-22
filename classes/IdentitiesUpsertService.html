@@ -509,8 +509,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="124"
-                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:124</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="128"
+                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:128</a></div>
                         </td>
                     </tr>
 
@@ -2671,6 +2671,10 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       if (identity.primaryEmployeeNumber !&#x3D;&#x3D; data?.inetOrgPerson?.employeeNumber[0]) {
         throw new HttpException(&#x27;Secondary identity&#x27;, HttpStatus.SEE_OTHER);
       }
+    }
+    //controle si l&#x27;identité a été supprimée
+    if (identity !&#x3D;&#x3D; null &amp;&amp; identity?.deletedFlag &#x3D;&#x3D;&#x3D; true){
+      throw new HttpException(&#x27;Identity deleted&#x27;, HttpStatus.SEE_OTHER);
     }
 
     await this.checkInetOrgPersonJpegPhoto(data);

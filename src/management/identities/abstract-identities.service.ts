@@ -230,12 +230,17 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     }
   }
 
-  protected async checkMail(data): Promise<boolean> {
+  protected async checkMail(identity,data): Promise<boolean> {
     let dataDup = 0;
     if (data.inetOrgPerson.hasOwnProperty('mail') && data.inetOrgPerson.mail !== '') {
-      const id = new Types.ObjectId(data['_id']);
-      const f: any = { '_id': { $ne: id }, 'inetOrgPerson.mail': data.inetOrgPerson.mail };
-      dataDup = await this._model.countDocuments(f).exec()
+      if (identity){
+        const f: any = { '_id': { $ne: identity._id }, 'inetOrgPerson.mail': identity.inetOrgPerson.mail };
+        dataDup = await this._model.countDocuments(f).exec()
+      }else{
+        const f: any = { 'inetOrgPerson.mail': data.inetOrgPerson.mail };
+        dataDup = await this._model.countDocuments(f).exec()
+      }
+
     }
     if (dataDup > 0) {
       return false
@@ -244,11 +249,16 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     }
   }
 
-  protected async checkUid(data): Promise<boolean> {
+  protected async checkUid(identity,data): Promise<boolean> {
     let dataDup = 0;
-    const id = new Types.ObjectId(data['_id']);
-    const f: any = { '_id': { $ne: id }, 'inetOrgPerson.uid': data.inetOrgPerson.uid };
-    dataDup = await this._model.countDocuments(f).exec()
+    if (identity){
+      const f: any = { '_id': { $ne: identity._id }, 'inetOrgPerson.uid': identity.inetOrgPerson.uid };
+      dataDup = await this._model.countDocuments(f).exec()
+    }else{
+      const f: any = { 'inetOrgPerson.uid': data.inetOrgPerson.uid };
+      dataDup = await this._model.countDocuments(f).exec()
+    }
+
     if (dataDup > 0) {
       return false
     } else {

@@ -631,7 +631,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkMail(data)</code>
+                    <code>checkMail(identity, data)</code>
                 </td>
             </tr>
 
@@ -658,6 +658,15 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <tr>
+                                                <td>identity</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                         <tr>
                                                 <td>data</td>
 
@@ -765,15 +774,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkUid(data)</code>
+                    <code>checkUid(identity, data)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="247"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:247</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="252"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:252</a></div>
                         </td>
                     </tr>
 
@@ -792,6 +801,15 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <tr>
+                                                <td>identity</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                         <tr>
                                                 <td>data</td>
 
@@ -2642,12 +2660,17 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     }
   }
 
-  protected async checkMail(data): Promise&lt;boolean&gt; {
+  protected async checkMail(identity,data): Promise&lt;boolean&gt; {
     let dataDup &#x3D; 0;
     if (data.inetOrgPerson.hasOwnProperty(&#x27;mail&#x27;) &amp;&amp; data.inetOrgPerson.mail !&#x3D;&#x3D; &#x27;&#x27;) {
-      const id &#x3D; new Types.ObjectId(data[&#x27;_id&#x27;]);
-      const f: any &#x3D; { &#x27;_id&#x27;: { $ne: id }, &#x27;inetOrgPerson.mail&#x27;: data.inetOrgPerson.mail };
-      dataDup &#x3D; await this._model.countDocuments(f).exec()
+      if (identity){
+        const f: any &#x3D; { &#x27;_id&#x27;: { $ne: identity._id }, &#x27;inetOrgPerson.mail&#x27;: identity.inetOrgPerson.mail };
+        dataDup &#x3D; await this._model.countDocuments(f).exec()
+      }else{
+        const f: any &#x3D; { &#x27;inetOrgPerson.mail&#x27;: data.inetOrgPerson.mail };
+        dataDup &#x3D; await this._model.countDocuments(f).exec()
+      }
+
     }
     if (dataDup &gt; 0) {
       return false
@@ -2656,11 +2679,16 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     }
   }
 
-  protected async checkUid(data): Promise&lt;boolean&gt; {
+  protected async checkUid(identity,data): Promise&lt;boolean&gt; {
     let dataDup &#x3D; 0;
-    const id &#x3D; new Types.ObjectId(data[&#x27;_id&#x27;]);
-    const f: any &#x3D; { &#x27;_id&#x27;: { $ne: id }, &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid };
-    dataDup &#x3D; await this._model.countDocuments(f).exec()
+    if (identity){
+      const f: any &#x3D; { &#x27;_id&#x27;: { $ne: identity._id }, &#x27;inetOrgPerson.uid&#x27;: identity.inetOrgPerson.uid };
+      dataDup &#x3D; await this._model.countDocuments(f).exec()
+    }else{
+      const f: any &#x3D; { &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid };
+      dataDup &#x3D; await this._model.countDocuments(f).exec()
+    }
+
     if (dataDup &gt; 0) {
       return false
     } else {

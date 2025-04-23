@@ -966,7 +966,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkMail(data)</code>
+                    <code>checkMail(identity, data)</code>
                 </td>
             </tr>
 
@@ -999,6 +999,15 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <tr>
+                                                <td>identity</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                         <tr>
                                                 <td>data</td>
 
@@ -1112,7 +1121,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkUid(data)</code>
+                    <code>checkUid(identity, data)</code>
                 </td>
             </tr>
 
@@ -1125,7 +1134,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractIdentitiesService.html#source" target="_self" >AbstractIdentitiesService:247</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractIdentitiesService.html#source" target="_self" >AbstractIdentitiesService:252</a></code>
 </div>
                         </td>
                     </tr>
@@ -1145,6 +1154,15 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <tr>
+                                                <td>identity</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                         <tr>
                                                 <td>data</td>
 
@@ -2686,10 +2704,10 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       this.logger.log(&#x60;${logPrefix} Starting additionalFields validation.&#x60;);
       let validations &#x3D; await this._validation.validate(data.additionalFields,true);
       //validation email and uid
-      if (await this.checkMail(data) &#x3D;&#x3D;&#x3D; false) {
+      if (await this.checkMail(identity,data) &#x3D;&#x3D;&#x3D; false) {
         validations[&#x27;inetOrgPerson.mail&#x27;] &#x3D; &quot;Email déjà présent dans une autre identité&quot;
       }
-      if (await this.checkUid(data) &#x3D;&#x3D;&#x3D; false) {
+      if (await this.checkUid(identity,data) &#x3D;&#x3D;&#x3D; false) {
         validations[&#x27;inetOrgPerson.uid&#x27;] &#x3D; &quot;Uid déjà présent dans une autre identité&quot;
       }
       this.logger.log(&#x60;${logPrefix} AdditionalFields validation successful.&#x60;);
@@ -2698,17 +2716,17 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       crushedUpdate[&#x27;additionalFields.validations&#x27;] &#x3D; {};
     } catch (error) {
       data &#x3D; this.handleValidationError(error, data, logPrefix);
-      crushedUpdate[&#x27;state&#x27;] &#x3D; data.state;
+      crushedUpdate[&#x27;state&#x27;] &#x3D; IdentityState.TO_COMPLETE;
       crushedUpdate[&#x27;additionalFields.validations&#x27;] &#x3D; data.additionalFields.validations;
     }
     //validation email and uid
-    if (await this.checkMail(data) &#x3D;&#x3D;&#x3D; false){
+    if (await this.checkMail(identity,data) &#x3D;&#x3D;&#x3D; false){
       crushedUpdate[&#x27;additionalFields.validations&#x27;][&#x27;inetOrgPerson&#x27;]&#x3D;{mail:&quot;Email déjà présent dans une autre identité&quot;}
-      crushedUpdate[&#x27;state&#x27;] &#x3D; data.state;
+      crushedUpdate[&#x27;state&#x27;] &#x3D; IdentityState.TO_COMPLETE;
     }
-    if (await this.checkUid(data) &#x3D;&#x3D;&#x3D; false){
+    if (await this.checkUid(identity,data) &#x3D;&#x3D;&#x3D; false){
       crushedUpdate[&#x27;additionalFields.validations&#x27;][&#x27;inetOrgPerson&#x27;]&#x3D; {uid:&quot;Uid déjà présent dans une autre identité&quot;}
-      crushedUpdate[&#x27;state&#x27;] &#x3D; data.state;
+      crushedUpdate[&#x27;state&#x27;] &#x3D; IdentityState.TO_COMPLETE;
     }
 
     const fingerprint &#x3D; await this.previewFingerprint(

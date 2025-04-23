@@ -16,6 +16,7 @@ import { createHash } from 'node:crypto';
 import { PasswdadmService } from "~/settings/passwdadm.service";
 import { DataStatusEnum } from "~/management/identities/_enums/data-status";
 import { JobState } from "~/core/jobs/_enums/state.enum";
+import { inetOrgPersonDto } from './_dto/_parts/inetOrgPerson.dto';
 
 @Injectable()
 export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
@@ -136,19 +137,13 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
   }
 
   protected async previewFingerprint(identity: any): Promise<string> {
+    const inetOrgPerson = inetOrgPersonDto.initForFingerprint(identity.inetOrgPerson);
+
     const additionalFields = omit(identity.additionalFields, ['validations']);
     const data = construct(
       omit(
         toPlainAndCrush({
-          // dataStatus: identity.dataStatus,
-          // state: identity.state,
-          // lifecycle: identity.lifecycle,
-          // srcFusionId: identity.srcFusionId,
-          // primaryEmployeeNumber: identity.primaryEmployeeNumber,
-          // initState: identity.initState,
-          // deletedFlag: identity.deletedFlag,
-
-          inetOrgPerson: identity.inetOrgPerson,
+          inetOrgPerson,
           additionalFields,
         }) as any,
         [

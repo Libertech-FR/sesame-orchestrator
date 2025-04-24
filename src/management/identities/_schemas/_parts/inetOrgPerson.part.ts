@@ -79,7 +79,4 @@ export class inetOrgPerson extends Document {
   // public userPassword?: string;
 }
 
-export const inetOrgPersonSchema = SchemaFactory.createForClass(inetOrgPerson).index(
-  { employeeNumber: 1, employeeType: 1 },
-  { unique: true },
-);
+export const inetOrgPersonSchema = SchemaFactory.createForClass(inetOrgPerson);

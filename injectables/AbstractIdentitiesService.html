@@ -2664,7 +2664,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     let dataDup &#x3D; 0;
     if (data.inetOrgPerson.hasOwnProperty(&#x27;mail&#x27;) &amp;&amp; data.inetOrgPerson.mail !&#x3D;&#x3D; &#x27;&#x27;) {
       if (identity){
-        const f: any &#x3D; { &#x27;_id&#x27;: { $ne: identity._id }, &#x27;inetOrgPerson.mail&#x27;: identity.inetOrgPerson.mail };
+        const f: any &#x3D; { &#x27;_id&#x27;: { $ne: identity._id },&#x27;state&#x27;:{$ne:IdentityState.DONT_SYNC},&#x27;deletedFlag&#x27;:{$ne:true}, &#x27;inetOrgPerson.mail&#x27;: identity.inetOrgPerson.mail };
         dataDup &#x3D; await this._model.countDocuments(f).exec()
       }else{
         const f: any &#x3D; { &#x27;inetOrgPerson.mail&#x27;: data.inetOrgPerson.mail };
@@ -2682,7 +2682,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
   protected async checkUid(identity,data): Promise&lt;boolean&gt; {
     let dataDup &#x3D; 0;
     if (identity){
-      const f: any &#x3D; { &#x27;_id&#x27;: { $ne: identity._id }, &#x27;inetOrgPerson.uid&#x27;: identity.inetOrgPerson.uid };
+      const f: any &#x3D; { &#x27;_id&#x27;: { $ne: identity._id } ,&#x27;state&#x27;:{$ne:IdentityState.DONT_SYNC},&#x27;deletedFlag&#x27;:{$ne:true},&#x27;inetOrgPerson.uid&#x27;: identity.inetOrgPerson.uid };
       dataDup &#x3D; await this._model.countDocuments(f).exec()
     }else{
       const f: any &#x3D; { &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid };

@@ -509,8 +509,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="128"
-                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:128</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="135"
+                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:135</a></div>
                         </td>
                     </tr>
 
@@ -2667,6 +2667,13 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
     this.logger.log(&#x60;Upserting identity with filters ${JSON.stringify(filters)}&#x60;);
     const crushedUpdate &#x3D; toPlainAndCrush(omit(data || {}, [&#x27;$setOnInsert&#x27;]));
     const crushedSetOnInsert &#x3D; toPlainAndCrush(data.$setOnInsert || {});
+    let employeeNumber&#x3D;&quot;&quot;
+    if (data?.$setOnInsert.inetOrgPerson.employeeNumber){
+      employeeNumber&#x3D;data.$setOnInsert.inetOrgPerson.employeeNumber[0];
+    }else{
+      employeeNumber&#x3D;data.inetOrgPerson.employeeNumber[0];
+    }
+
     data &#x3D; construct({
       ...crushedSetOnInsert,
       ...toPlainAndCrush(identity?.toJSON() || {}, {
@@ -2685,8 +2692,8 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       );
     }
     //controle si l identité est fusionnée si c est la bonne à mettre à jour puisqu elle a 2 employeeNumber
-    if (identity !&#x3D;&#x3D; null &amp;&amp; identity?.srcFusionId) {
-      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; data?.inetOrgPerson?.employeeNumber[0]) {
+    if (identity !&#x3D;&#x3D; null){
+      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null &amp;&amp; identity.primaryEmployeeNumber !&#x3D;&#x3D; employeeNumber) {
         throw new HttpException(&#x27;Secondary identity&#x27;, HttpStatus.SEE_OTHER);
       }
     }

@@ -142,13 +142,13 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
       identity1.additionalFields.objectClasses.includes('supannPerson') &&
       identity2.additionalFields.objectClasses.includes('supannPerson')
     ) {
-      if (identity2.additionalFields.attributes.supannPerson.includes('supannTypeEntiteAffectation') ) {
+      if (identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation ) {
         identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.forEach((depN) => {
           (identity1.additionalFields.attributes.supannPerson as any).supannTypeEntiteAffectation.push(depN);
         });
       }
       // supannRefId
-      if (identity2.additionalFields.attributes.supannPerson.includes('supannRefId') ){
+      if (identity2.additionalFields.attributes.supannPerson.supannRefId ){
         identity2.additionalFields.attributes.supannPerson.supannRefId.forEach((depN) => {
           (identity1.additionalFields.attributes.supannPerson as any).supannRefId.push(depN);
         });

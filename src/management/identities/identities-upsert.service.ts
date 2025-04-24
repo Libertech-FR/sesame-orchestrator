@@ -24,6 +24,13 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
     this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
     const crushedUpdate = toPlainAndCrush(omit(data || {}, ['$setOnInsert']));
     const crushedSetOnInsert = toPlainAndCrush(data.$setOnInsert || {});
+    let employeeNumber=""
+    if (data?.$setOnInsert.inetOrgPerson.employeeNumber){
+      employeeNumber=data.$setOnInsert.inetOrgPerson.employeeNumber[0];
+    }else{
+      employeeNumber=data.inetOrgPerson.employeeNumber[0];
+    }
+
     data = construct({
       ...crushedSetOnInsert,
       ...toPlainAndCrush(identity?.toJSON() || {}, {
@@ -42,8 +49,8 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       );
     }
     //controle si l identité est fusionnée si c est la bonne à mettre à jour puisqu elle a 2 employeeNumber
-    if (identity !== null && identity?.srcFusionId) {
-      if (identity.primaryEmployeeNumber !== data?.inetOrgPerson?.employeeNumber[0]) {
+    if (identity !== null){
+      if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== employeeNumber) {
         throw new HttpException('Secondary identity', HttpStatus.SEE_OTHER);
       }
     }

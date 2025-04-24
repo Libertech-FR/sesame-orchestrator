@@ -234,7 +234,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     let dataDup = 0;
     if (data.inetOrgPerson.hasOwnProperty('mail') && data.inetOrgPerson.mail !== '') {
       if (identity){
-        const f: any = { '_id': { $ne: identity._id }, 'inetOrgPerson.mail': identity.inetOrgPerson.mail };
+        const f: any = { '_id': { $ne: identity._id },'state':{$ne:IdentityState.DONT_SYNC},'deletedFlag':{$ne:true}, 'inetOrgPerson.mail': identity.inetOrgPerson.mail };
         dataDup = await this._model.countDocuments(f).exec()
       }else{
         const f: any = { 'inetOrgPerson.mail': data.inetOrgPerson.mail };
@@ -252,7 +252,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
   protected async checkUid(identity,data): Promise<boolean> {
     let dataDup = 0;
     if (identity){
-      const f: any = { '_id': { $ne: identity._id }, 'inetOrgPerson.uid': identity.inetOrgPerson.uid };
+      const f: any = { '_id': { $ne: identity._id } ,'state':{$ne:IdentityState.DONT_SYNC},'deletedFlag':{$ne:true},'inetOrgPerson.uid': identity.inetOrgPerson.uid };
       dataDup = await this._model.countDocuments(f).exec()
     }else{
       const f: any = { 'inetOrgPerson.uid': data.inetOrgPerson.uid };

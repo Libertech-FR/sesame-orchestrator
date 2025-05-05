@@ -4,28 +4,33 @@ import { IsString, IsEmail, IsOptional, IsArray, ValidateIf } from 'class-valida
 
 export class inetOrgPersonCreateDto {
   public static initForFingerprint(partial: Partial<inetOrgPersonCreateDto>) {
-    return plainToInstance(inetOrgPersonCreateDto, {
-      cn: partial.cn || null,
-      sn: partial.sn || null,
-      uid: partial.uid || null,
-      employeeNumber: partial.employeeNumber || [],
-      employeeType: partial.employeeType || null,
-      departmentNumber: partial.departmentNumber || [],
-      displayName: partial.displayName || null,
-      facsimileTelephoneNumber: partial.facsimileTelephoneNumber || null,
-      givenName: partial.givenName || null,
-      labeledURI: partial.labeledURI || null,
-      mail: partial.mail || null,
-      mobile: partial.mobile || null,
-      postalAddress: partial.postalAddress || null,
-      preferredLanguage: partial.preferredLanguage || null,
-      telephoneNumber: partial.telephoneNumber || null,
-      title: partial.title || null,
-      userCertificate: partial.userCertificate || null,
-      jpegPhoto: partial.jpegPhoto || null,
+    try {
+      return plainToInstance(inetOrgPersonCreateDto, {
+        cn: partial.cn || null,
+        sn: partial.sn || null,
+        uid: partial.uid || null,
+        employeeNumber: partial.employeeNumber || [],
+        employeeType: partial.employeeType || null,
+        departmentNumber: partial.departmentNumber || [],
+        displayName: partial.displayName || null,
+        facsimileTelephoneNumber: partial.facsimileTelephoneNumber || null,
+        givenName: partial.givenName || null,
+        labeledURI: partial.labeledURI || null,
+        mail: partial.mail || null,
+        mobile: partial.mobile || null,
+        postalAddress: partial.postalAddress || null,
+        preferredLanguage: partial.preferredLanguage || null,
+        telephoneNumber: partial.telephoneNumber || null,
+        title: partial.title || null,
+        userCertificate: partial.userCertificate || null,
+        jpegPhoto: partial.jpegPhoto || null,
 
-      ...partial
-    });
+        ...partial
+      });
+    } catch (error) {
+      console.error('inetOrgPersonCreateDto.initForFingerprint', error);
+      throw error;
+    }
   }
 
   @IsString()

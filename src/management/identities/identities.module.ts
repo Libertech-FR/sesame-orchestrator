@@ -18,9 +18,9 @@ import { IdentitiesPhotoController } from '~/management/identities/identities-ph
 import { IdentitiesActivationController } from '~/management/identities/identities-activation.controller';
 import { IdentitiesActivationService } from '~/management/identities/identities-activation.service';
 import { IdentitiesDoublonController } from '~/management/identities/identities-doublon.controller';
-import {IdentitiesForcePasswordController} from "~/management/identities/identities-forcepassword.controller";
-import {IdentitiesForcepasswordService} from "~/management/identities/identities-forcepassword.service";
-import {SettingsModule} from "~/settings/settings.module";
+import { IdentitiesForcePasswordController } from "~/management/identities/identities-forcepassword.controller";
+import { IdentitiesForcepasswordService } from "~/management/identities/identities-forcepassword.service";
+import { SettingsModule } from "~/settings/settings.module";
 import { EnsureIdentitiesIndexMiddleware } from './_middlewares/ensure-identities-index.middleware';
 import { AgentsModule } from '~/core/agents/agents.module';
 
@@ -61,7 +61,7 @@ import { AgentsModule } from '~/core/agents/agents.module';
     IdentitiesActivationController,
     IdentitiesForcePasswordController
   ],
-  exports: [IdentitiesCrudService],
+  exports: [IdentitiesCrudService, IdentitiesUpsertService],
 })
 export class IdentitiesModule implements NestModule {
   public configure(consumer: MiddlewareConsumer) {

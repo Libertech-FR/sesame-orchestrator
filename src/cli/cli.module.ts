@@ -14,6 +14,8 @@ import { BackendsCommand } from './backends.command';
 import { BackendsModule } from '~/core/backends/backends.module';
 import { AuthModule } from '~/core/auth/auth.module';
 import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factorydrive';
+import { IdentitiesCommand } from './identities.command';
+import { IdentitiesModule } from '~/management/identities/identities.module';
 
 @Module({
   imports: [
@@ -65,12 +67,14 @@ import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factory
     AgentsModule,
     KeyringsModule,
     BackendsModule,
+    IdentitiesModule,
     AuthModule,
   ],
   providers: [
     ...AgentsCommand.registerWithSubCommands(),
     ...KeyringsCommand.registerWithSubCommands(),
     ...BackendsCommand.registerWithSubCommands(),
+    ...IdentitiesCommand.registerWithSubCommands(),
     AgentCreateQuestions,
     KeyringsCreateQuestions,
   ],

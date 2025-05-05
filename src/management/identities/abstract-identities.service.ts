@@ -97,7 +97,8 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
       }
     }
   }
-  protected async generateFingerprint<T extends AbstractSchema | Document>(
+
+  public async generateFingerprint<T extends AbstractSchema | Document>(
     identity: Identities,
     fingerprint?: string,
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
@@ -136,7 +137,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     ).join(',')}}`;
   }
 
-  protected async previewFingerprint(identity: any): Promise<string> {
+  public async previewFingerprint(identity: any): Promise<string> {
     const inetOrgPerson = inetOrgPersonDto.initForFingerprint(identity.inetOrgPerson);
 
     const additionalFields = omit(identity.additionalFields, ['validations']);
@@ -230,13 +231,13 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     }
   }
 
-  protected async checkMail(identity,data): Promise<boolean> {
+  protected async checkMail(identity, data): Promise<boolean> {
     let dataDup = 0;
     if (data.inetOrgPerson.hasOwnProperty('mail') && data.inetOrgPerson.mail !== '') {
       if (identity){
         const f: any = { '_id': { $ne: identity._id },'state':{$ne:IdentityState.DONT_SYNC},'deletedFlag':{$ne:true}, 'inetOrgPerson.mail': identity.inetOrgPerson.mail };
         dataDup = await this._model.countDocuments(f).exec()
-      }else{
+      } else {
         const f: any = { 'inetOrgPerson.mail': data.inetOrgPerson.mail };
         dataDup = await this._model.countDocuments(f).exec()
       }
@@ -249,12 +250,12 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     }
   }
 
-  protected async checkUid(identity,data): Promise<boolean> {
+  protected async checkUid(identity, data): Promise<boolean> {
     let dataDup = 0;
     if (identity){
       const f: any = { '_id': { $ne: identity._id } ,'state':{$ne:IdentityState.DONT_SYNC},'deletedFlag':{$ne:true},'inetOrgPerson.uid': identity.inetOrgPerson.uid };
       dataDup = await this._model.countDocuments(f).exec()
-    }else{
+    } else {
       const f: any = { 'inetOrgPerson.uid': data.inetOrgPerson.uid };
       dataDup = await this._model.countDocuments(f).exec()
     }

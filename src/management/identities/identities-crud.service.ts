@@ -15,23 +15,54 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     options?: SaveOptions,
   ): Promise<Document<T, any, T>> {
     data = this.transformNullsToString(data);
+
+    const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
+    try {
+      this.logger.log(`${logPrefix} Starting additionalFields transformation.`);
+      if (data.hasOwnProperty('metadata')) {
+        //suppresion de la clé metadata
+        delete (data.metadata);
+      }
+
+      await this._validation.transform(data.additionalFields);
+
+      let validationsAdFields = await this._validation.validate(data.additionalFields);
+
+      this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
+      this.logger.log(`Validations Additional fields: ${validationsAdFields}`);
+    } catch (error) {
+      console.log(error);
+      if (error instanceof ValidationConfigException) {
+        this.logger.error(`${logPrefix} Validation config error. ${JSON.stringify(error.getValidations())}`);
+        throw new ValidationConfigException(error.getPayload());
+      }
+      if (error instanceof ValidationSchemaException) {
+        this.logger.warn(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
+        data.additionalFields.validations = error.getValidations();
+        throw new ValidationSchemaException(error.getPayload());
+      } else {
+        this.logger.error(`${logPrefix} Unhandled error: ${error.message}`);
+        throw error; // Rethrow the original error if it's not one of the handled types.
+      }
+    }
+
     await this.checkInetOrgPersonJpegPhoto(data);
     if (await this.checkMailAndUid(data) === false) {
       this.logger.error('Uid ou mail déjà présent dans une autre identité');
       throw new HttpException("Uid ou mail déjà présent dans une autre identité", 400);
     }
-    const logPrefix = `Validation [${data.inetOrgPerson.cn}]:`;
     this.logger.log(`${logPrefix} Starting inetOrgPerson validation.`);
     const check = {
-      objectClasses: ['inetorgperson'],
-      attributes: { 'inetorgperson': data.inetOrgPerson }
+      objectClasses: ['inetOrgPerson'],
+      attributes: { 'inetOrgPerson': data.inetOrgPerson }
     }
     //pour la validation le employeeNumber doit exister on en met un avec une valeur par defaut
-    check.attributes.inetorgperson.employeeNumber = ["1"];
+    check.attributes.inetOrgPerson.employeeNumber = ["1"];
     let validations = await this._validation.validate(check);
     const created: Document<T, any, T> = await super.create(data, options);
     return created;
   }
+
   public async update<T extends AbstractSchema | Document>(
     _id: Types.ObjectId | any,
     update: UpdateQuery<T>,
@@ -53,8 +84,8 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
 
       this.logger.log(`${logPrefix} Starting inetOrgPerson validation.`);
       const check = {
-        objectClasses: ['inetorgperson'],
-        attributes: { 'inetorgperson': update.inetOrgPerson }
+        objectClasses: ['inetOrgPerson'],
+        attributes: { 'inetOrgPerson': update.inetOrgPerson }
       }
       let validationsInetOrg = await this._validation.validate(check);
       let validationsAdFields = await this._validation.validate(update.additionalFields);

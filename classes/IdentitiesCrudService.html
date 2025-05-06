@@ -514,8 +514,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="140"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:140</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:171</a></div>
                         </td>
                     </tr>
 
@@ -706,7 +706,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:131</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:162</a></code>
 </div>
                         </td>
                     </tr>
@@ -802,7 +802,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:35</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:66</a></code>
 </div>
                         </td>
                     </tr>
@@ -903,8 +903,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="100"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:100</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="131"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:131</a></div>
                         </td>
                     </tr>
 
@@ -1004,8 +1004,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="108"
-                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:108</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="139"
+                                    class="link-to-prism">src/management/identities/identities-crud.service.ts:139</a></div>
                         </td>
                     </tr>
 
@@ -2707,23 +2707,54 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     options?: SaveOptions,
   ): Promise&lt;Document&lt;T, any, T&gt;&gt; {
     data &#x3D; this.transformNullsToString(data);
+
+    const logPrefix &#x3D; &#x60;Validation [${data.inetOrgPerson.cn}]:&#x60;;
+    try {
+      this.logger.log(&#x60;${logPrefix} Starting additionalFields transformation.&#x60;);
+      if (data.hasOwnProperty(&#x27;metadata&#x27;)) {
+        //suppresion de la clé metadata
+        delete (data.metadata);
+      }
+
+      await this._validation.transform(data.additionalFields);
+
+      let validationsAdFields &#x3D; await this._validation.validate(data.additionalFields);
+
+      this.logger.log(&#x60;${logPrefix} AdditionalFields validation successful.&#x60;);
+      this.logger.log(&#x60;Validations Additional fields: ${validationsAdFields}&#x60;);
+    } catch (error) {
+      console.log(error);
+      if (error instanceof ValidationConfigException) {
+        this.logger.error(&#x60;${logPrefix} Validation config error. ${JSON.stringify(error.getValidations())}&#x60;);
+        throw new ValidationConfigException(error.getPayload());
+      }
+      if (error instanceof ValidationSchemaException) {
+        this.logger.warn(&#x60;${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}&#x60;);
+        data.additionalFields.validations &#x3D; error.getValidations();
+        throw new ValidationSchemaException(error.getPayload());
+      } else {
+        this.logger.error(&#x60;${logPrefix} Unhandled error: ${error.message}&#x60;);
+        throw error; // Rethrow the original error if it&#x27;s not one of the handled types.
+      }
+    }
+
     await this.checkInetOrgPersonJpegPhoto(data);
     if (await this.checkMailAndUid(data) &#x3D;&#x3D;&#x3D; false) {
       this.logger.error(&#x27;Uid ou mail déjà présent dans une autre identité&#x27;);
       throw new HttpException(&quot;Uid ou mail déjà présent dans une autre identité&quot;, 400);
     }
-    const logPrefix &#x3D; &#x60;Validation [${data.inetOrgPerson.cn}]:&#x60;;
     this.logger.log(&#x60;${logPrefix} Starting inetOrgPerson validation.&#x60;);
     const check &#x3D; {
-      objectClasses: [&#x27;inetorgperson&#x27;],
-      attributes: { &#x27;inetorgperson&#x27;: data.inetOrgPerson }
+      objectClasses: [&#x27;inetOrgPerson&#x27;],
+      attributes: { &#x27;inetOrgPerson&#x27;: data.inetOrgPerson }
     }
     //pour la validation le employeeNumber doit exister on en met un avec une valeur par defaut
-    check.attributes.inetorgperson.employeeNumber &#x3D; [&quot;1&quot;];
+    check.attributes.inetOrgPerson.employeeNumber &#x3D; [&quot;1&quot;];
     let validations &#x3D; await this._validation.validate(check);
     const created: Document&lt;T, any, T&gt; &#x3D; await super.create(data, options);
     return created;
   }
+
   public async update&lt;T extends AbstractSchema | Document&gt;(
     _id: Types.ObjectId | any,
     update: UpdateQuery&lt;T&gt;,
@@ -2745,8 +2776,8 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
 
       this.logger.log(&#x60;${logPrefix} Starting inetOrgPerson validation.&#x60;);
       const check &#x3D; {
-        objectClasses: [&#x27;inetorgperson&#x27;],
-        attributes: { &#x27;inetorgperson&#x27;: update.inetOrgPerson }
+        objectClasses: [&#x27;inetOrgPerson&#x27;],
+        attributes: { &#x27;inetOrgPerson&#x27;: update.inetOrgPerson }
       }
       let validationsInetOrg &#x3D; await this._validation.validate(check);
       let validationsAdFields &#x3D; await this._validation.validate(update.additionalFields);

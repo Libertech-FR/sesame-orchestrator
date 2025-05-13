@@ -83,8 +83,12 @@ export class AppController extends AbstractController {
     @Param('project') project?: string,
     @Query('current') current?: string,
   ): Promise<Response> {
+    const validProjects = ['sesame-orchestrator', 'sesame-daemon', 'sesame-app-manager'];
+    if (!validProjects.includes(project)) {
+      throw new BadRequestException(`Invalid project: ${project}`);
+    }
+
     let data = <GithubUpdate>{};
-    // console.log('this.storage', storage.get(project))
     if (storage.has(project)) {
       this.logger.log(`Fetching ${project} tags from cache`);
       data = storage.get(project) as GithubUpdate;
@@ -96,7 +100,6 @@ export class AppController extends AbstractController {
       data = await update.json();
       console.log('update', data)
       storage.set(project, data);
-      // console.log('this.storage', storage.get(project))
     }
     // if (!Array.isArray(data)) {
     //   throw new BadRequestException(`Invalid data from Github <${JSON.stringify(data)}>`);

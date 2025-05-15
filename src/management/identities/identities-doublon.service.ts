@@ -10,6 +10,7 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
         $match: {
           state: { $ne: IdentityState.DONT_SYNC },
           destFusionId: { $eq: null },
+          'inetOrgPerson.employeeType': {$ne: 'LOCAL'}
         },
       },
       {
@@ -54,6 +55,7 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
         $match: {
           state: { $ne: IdentityState.DONT_SYNC },
           destFusionId: { $eq: null },
+          'inetOrgPerson.employeeType': {$ne: 'LOCAL'},
         },
       },
       {

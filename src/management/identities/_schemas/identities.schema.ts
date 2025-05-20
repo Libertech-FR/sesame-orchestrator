@@ -16,7 +16,7 @@ export type IdentitiesDocument = Identities & Document;
 
 @Schema({ versionKey: false, minimize: false, })
 export class Identities extends AbstractSchema {
-  @Prop({ type: Number, enum: IdentityState, default: IdentityState.UNKNOWN })
+  @Prop({ type: Number, enum: IdentityState, default: IdentityState.TO_CREATE })
   public state: IdentityState;
 
   @Prop({ type: Number, enum: IdentityLifecycle, default: IdentityLifecycle.INACTIVE })

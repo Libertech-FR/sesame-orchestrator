@@ -14,6 +14,7 @@ export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, Metad
   @IsNumber()
   @IsEnum(IdentityState)
   @ApiProperty({ enum: IdentityState })
+  @IsOptional()
   public state: IdentityState;
 
   @IsNumber()

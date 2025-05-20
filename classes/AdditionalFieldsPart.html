@@ -302,7 +302,7 @@
 import { Document } from &#x27;mongoose&#x27;;
 import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
 
-@Schema({ _id: false })
+@Schema({ _id: false, minimize: false, })
 export class AdditionalFieldsPart extends Document {
   @Prop({ type: Array, of: String, required: true, default: [] })
   public objectClasses: string[];

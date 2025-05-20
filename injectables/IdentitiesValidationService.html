@@ -670,7 +670,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>transform(data: AdditionalFieldsPart | additionalFieldsPartDto)</code>
+                    <code>transform(data: Partial<AdditionalFieldsPart | additionalFieldsPartDto>)</code>
                 </td>
             </tr>
 
@@ -695,26 +695,30 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Default value</td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
                                                 <td>data</td>
                                             <td>
-                                                        <code>AdditionalFieldsPart | additionalFieldsPartDto</code>
+                                                        <code>Partial&lt;AdditionalFieldsPart | additionalFieldsPartDto&gt;</code>
                                             </td>
 
                                             <td>
                                                     No
                                             </td>
 
+                                            <td>
+                                                    <code>{}</code>
+                                            </td>
 
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;AdditionalFieldsPart | additionalFieldsPartDto&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;Partial&lt;AdditionalFieldsPart | additionalFieldsPartDto&gt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1271,7 +1275,7 @@ import validSchema from &#x27;./_config/validSchema&#x27;;
 import ajvErrors from &#x27;ajv-errors&#x27;;
 import { ValidationConfigException, ValidationSchemaException } from &#x27;~/_common/errors/ValidationException&#x27;;
 import { additionalFieldsPartDto } from &#x27;../_dto/_parts/additionalFields.dto&#x27;;
-import {ConfigService} from &quot;@nestjs/config&quot;;
+import { ConfigService } from &quot;@nestjs/config&quot;;
 
 /**
  * Service responsible for validating identities.
@@ -1332,7 +1336,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     return null;
   }
 
-  public async transform(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise&lt;AdditionalFieldsPart | additionalFieldsPartDto&gt; {
+  public async transform(data: Partial&lt;AdditionalFieldsPart | additionalFieldsPartDto&gt; &#x3D; {}): Promise&lt;Partial&lt;AdditionalFieldsPart | additionalFieldsPartDto&gt;&gt; {
     if (!data.objectClasses) {
       data.objectClasses &#x3D; [];
     }
@@ -1341,15 +1345,15 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     }
     data.validations &#x3D; {};
 
-    const objectClasses &#x3D; data.objectClasses || [];
     const attributes &#x3D; data.attributes || {};
     const attributesKeys &#x3D; Object.keys(attributes);
-    const validations &#x3D; {};
+
     //test si il y a les attributs sans attributes
     await this.checkAndCreateObjectClasses(data);
     for (const key of attributesKeys) {
       await this.transformAttribute(key, attributes[key], attributes);
     }
+
     return data
   }
 
@@ -1487,7 +1491,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
    * @param data - The additional fields data to validate.
    * @returns A promise that resolves if validation succeeds, or rejects with validation errors.
    */
-  public async validate(data: AdditionalFieldsPart | additionalFieldsPartDto,callException:boolean&#x3D;true): Promise&lt;object&gt; {
+  public async validate(data: AdditionalFieldsPart | additionalFieldsPartDto, callException: boolean &#x3D; true): Promise&lt;object&gt; {
     if (!data.objectClasses) {
       data.objectClasses &#x3D; [];
     }
@@ -1576,15 +1580,15 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     // mise de min length et minItems dans les champs requis
     if (schema.hasOwnProperty(&#x27;required&#x27;)) {
       for (const required of schema[&#x27;required&#x27;]) {
-        switch(schema[&#x27;properties&#x27;][required][&#x27;type&#x27;]){
+        switch (schema[&#x27;properties&#x27;][required][&#x27;type&#x27;]) {
           case &#x27;array&#x27;:
-            if (!schema[&#x27;properties&#x27;][required][&#x27;minItems&#x27;]){
-              schema[&#x27;properties&#x27;][required][&#x27;minItems&#x27;]&#x3D;1
+            if (!schema[&#x27;properties&#x27;][required][&#x27;minItems&#x27;]) {
+              schema[&#x27;properties&#x27;][required][&#x27;minItems&#x27;] &#x3D; 1
             }
             break;
           case &#x27;string&#x27;:
-            if (!schema[&#x27;properties&#x27;][required][&#x27;minLength&#x27;]){
-              schema[&#x27;properties&#x27;][required][&#x27;minLength&#x27;]&#x3D;1
+            if (!schema[&#x27;properties&#x27;][required][&#x27;minLength&#x27;]) {
+              schema[&#x27;properties&#x27;][required][&#x27;minLength&#x27;] &#x3D; 1
             }
             break;
         }
@@ -1704,8 +1708,8 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     }
     return parse(readFileSync(filePath, &#x27;utf-8&#x27;));
   }
-  private async translateAjv(messages){
-    switch(this.config.get(&#x27;application.lang&#x27;)){
+  private async translateAjv(messages) {
+    switch (this.config.get(&#x27;application.lang&#x27;)) {
       case &#x27;en&#x27;:
         break
       case &#x27;fr&#x27;:

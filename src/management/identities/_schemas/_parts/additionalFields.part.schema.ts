@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { MixedValue } from '~/_common/types/mixed-value.type';
 
-@Schema({ _id: false })
+@Schema({ _id: false, minimize: false, })
 export class AdditionalFieldsPart extends Document {
   @Prop({ type: Array, of: String, required: true, default: [] })
   public objectClasses: string[];

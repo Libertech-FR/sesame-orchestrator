@@ -14,7 +14,7 @@ import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 
 export type IdentitiesDocument = Identities & Document;
 
-@Schema({ versionKey: false })
+@Schema({ versionKey: false, minimize: false, })
 export class Identities extends AbstractSchema {
   @Prop({ type: Number, enum: IdentityState, default: IdentityState.UNKNOWN })
   public state: IdentityState;

@@ -11,7 +11,7 @@ import validSchema from './_config/validSchema';
 import ajvErrors from 'ajv-errors';
 import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
 import { additionalFieldsPartDto } from '../_dto/_parts/additionalFields.dto';
-import {ConfigService} from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 
 /**
  * Service responsible for validating identities.
@@ -72,7 +72,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     return null;
   }
 
-  public async transform(data: AdditionalFieldsPart | additionalFieldsPartDto): Promise<AdditionalFieldsPart | additionalFieldsPartDto> {
+  public async transform(data: Partial<AdditionalFieldsPart | additionalFieldsPartDto> = {}): Promise<Partial<AdditionalFieldsPart | additionalFieldsPartDto>> {
     if (!data.objectClasses) {
       data.objectClasses = [];
     }
@@ -81,15 +81,15 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     }
     data.validations = {};
 
-    const objectClasses = data.objectClasses || [];
     const attributes = data.attributes || {};
     const attributesKeys = Object.keys(attributes);
-    const validations = {};
+
     //test si il y a les attributs sans attributes
     await this.checkAndCreateObjectClasses(data);
     for (const key of attributesKeys) {
       await this.transformAttribute(key, attributes[key], attributes);
     }
+
     return data
   }
 
@@ -227,7 +227,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
    * @param data - The additional fields data to validate.
    * @returns A promise that resolves if validation succeeds, or rejects with validation errors.
    */
-  public async validate(data: AdditionalFieldsPart | additionalFieldsPartDto,callException:boolean=true): Promise<object> {
+  public async validate(data: AdditionalFieldsPart | additionalFieldsPartDto, callException: boolean = true): Promise<object> {
     if (!data.objectClasses) {
       data.objectClasses = [];
     }
@@ -316,15 +316,15 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     // mise de min length et minItems dans les champs requis
     if (schema.hasOwnProperty('required')) {
       for (const required of schema['required']) {
-        switch(schema['properties'][required]['type']){
+        switch (schema['properties'][required]['type']) {
           case 'array':
-            if (!schema['properties'][required]['minItems']){
-              schema['properties'][required]['minItems']=1
+            if (!schema['properties'][required]['minItems']) {
+              schema['properties'][required]['minItems'] = 1
             }
             break;
           case 'string':
-            if (!schema['properties'][required]['minLength']){
-              schema['properties'][required]['minLength']=1
+            if (!schema['properties'][required]['minLength']) {
+              schema['properties'][required]['minLength'] = 1
             }
             break;
         }
@@ -444,8 +444,8 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     }
     return parse(readFileSync(filePath, 'utf-8'));
   }
-  private async translateAjv(messages){
-    switch(this.config.get('application.lang')){
+  private async translateAjv(messages) {
+    switch (this.config.get('application.lang')) {
       case 'en':
         break
       case 'fr':

@@ -24,9 +24,9 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
         delete (data.metadata);
       }
 
-      await this._validation.transform(data.additionalFields);
+      await this._validation.transform(data.additionalFields || {});
 
-      let validationsAdFields = await this._validation.validate(data.additionalFields);
+      let validationsAdFields = await this._validation.validate(data.additionalFields || {});
 
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
       this.logger.log(`Validations Additional fields: ${validationsAdFields}`);

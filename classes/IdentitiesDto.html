@@ -188,6 +188,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                 <a href="#state" >state</a>
                             </li>
@@ -249,7 +250,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:59</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:60</a></code>
 </div>
                         </td>
                     </tr>
@@ -296,7 +297,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:29</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:30</a></code>
 </div>
                         </td>
                     </tr>
@@ -342,7 +343,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:40</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:41</a></code>
 </div>
                         </td>
                     </tr>
@@ -389,7 +390,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:23</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:24</a></code>
 </div>
                         </td>
                     </tr>
@@ -436,7 +437,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:35</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:36</a></code>
 </div>
                         </td>
                     </tr>
@@ -450,6 +451,7 @@
                 <td class="col-md-4">
                     <a name="state"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -470,7 +472,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsNumber()<br />@IsEnum(IdentityState)<br />@ApiProperty({enum: IdentityState})<br />
+                            @IsNumber()<br />@IsEnum(IdentityState)<br />@ApiProperty({enum: IdentityState})<br />@IsOptional()<br />
                         </code>
                     </td>
                 </tr>
@@ -482,7 +484,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:17</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/IdentitiesCreateDto.html#source" target="_self" >IdentitiesCreateDto:18</a></code>
 </div>
                         </td>
                     </tr>
@@ -518,6 +520,7 @@ export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, Metad
   @IsNumber()
   @IsEnum(IdentityState)
   @ApiProperty({ enum: IdentityState })
+  @IsOptional()
   public state: IdentityState;
 
   @IsNumber()

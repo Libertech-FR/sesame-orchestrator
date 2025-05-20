@@ -203,7 +203,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:69</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="70" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -238,6 +238,7 @@ export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, Metad
   @IsNumber()
   @IsEnum(IdentityState)
   @ApiProperty({ enum: IdentityState })
+  @IsOptional()
   public state: IdentityState;
 
   @IsNumber()

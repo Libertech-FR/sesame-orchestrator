@@ -188,6 +188,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                 <a href="#state" >state</a>
                             </li>
@@ -243,7 +244,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:59</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -283,7 +284,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -322,7 +323,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:40</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -362,7 +363,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -402,7 +403,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -415,6 +416,7 @@
                 <td class="col-md-4">
                     <a name="state"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -435,13 +437,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsNumber()<br />@IsEnum(IdentityState)<br />@ApiProperty({enum: IdentityState})<br />
+                            @IsNumber()<br />@IsEnum(IdentityState)<br />@ApiProperty({enum: IdentityState})<br />@IsOptional()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/management/identities/_dto/identities.dto.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -476,6 +478,7 @@ export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, Metad
   @IsNumber()
   @IsEnum(IdentityState)
   @ApiProperty({ enum: IdentityState })
+  @IsOptional()
   public state: IdentityState;
 
   @IsNumber()

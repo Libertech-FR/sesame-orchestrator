@@ -2647,11 +2647,11 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     let dataDup &#x3D; [];
     if (data.inetOrgPerson.hasOwnProperty(&#x27;mail&#x27;) &amp;&amp; data.inetOrgPerson.mail !&#x3D;&#x3D; &#x27;&#x27;) {
       const id &#x3D; new Types.ObjectId(data[&#x27;_id&#x27;]);
-      const f: any &#x3D; { &#x27;_id&#x27;: { $ne: id }, $or: [{ &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid }, { &#x27;inetOrgPerson.mail&#x27;: data.inetOrgPerson.mail }] };
+      const f: any &#x3D; { &#x27;_id&#x27;: { $ne: id },&#x27;deletedFlag&#x27;:{$ne:true}, $or: [{ &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid }, { &#x27;inetOrgPerson.mail&#x27;: data.inetOrgPerson.mail }] };
       dataDup &#x3D; await this._model.find(f).exec()
     } else {
       const id &#x3D; new Types.ObjectId(data[&#x27;_id&#x27;]);
-      const f: any &#x3D; { &#x27;_id&#x27;: { $ne: id }, &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid };
+      const f: any &#x3D; { &#x27;_id&#x27;: { $ne: id },&#x27;deletedFlag&#x27;:{$ne:true}, &#x27;inetOrgPerson.uid&#x27;: data.inetOrgPerson.uid };
       dataDup &#x3D; await this._model.find(f).exec()
     }
     if (dataDup.length &gt; 0) {

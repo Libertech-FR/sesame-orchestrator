@@ -509,8 +509,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="111"
-                                    class="link-to-prism">src/management/identities/identities-doublon.service.ts:111</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="116"
+                                    class="link-to-prism">src/management/identities/identities-doublon.service.ts:116</a></div>
                         </td>
                     </tr>
 
@@ -2536,7 +2536,7 @@
 import { IdentityState } from &#x27;~/management/identities/_enums/states.enum&#x27;;
 import { Identities } from &#x27;~/management/identities/_schemas/identities.schema&#x27;;
 import { BadRequestException } from &#x27;@nestjs/common&#x27;;
-
+import { sort } from &#x27;radash&#x27;
 export class IdentitiesDoublonService extends AbstractIdentitiesService {
   public async searchDoubles() {
     const agg1 &#x3D; [
@@ -2582,7 +2582,7 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
             $gt: 1,
           },
         },
-      },
+      }
     ];
     const agg2 &#x3D; [
       {
@@ -2637,6 +2637,11 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
       if (r &#x3D;&#x3D;&#x3D; undefined &amp;&amp; r1 &#x3D;&#x3D;&#x3D; undefined) {
         result3.push(x);
       }
+    });
+    result3.sort((a, b) &#x3D;&gt; {
+      const cnA &#x3D; a.data[0].cn?.toLowerCase() ?? &#x27;&#x27;;
+      const cnB &#x3D; b.data[0].cn?.toLowerCase() ?? &#x27;&#x27;;
+      return cnA.localeCompare(cnB);
     });
     return result3;
   }

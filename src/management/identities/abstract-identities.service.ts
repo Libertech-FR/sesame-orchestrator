@@ -217,11 +217,11 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     let dataDup = [];
     if (data.inetOrgPerson.hasOwnProperty('mail') && data.inetOrgPerson.mail !== '') {
       const id = new Types.ObjectId(data['_id']);
-      const f: any = { '_id': { $ne: id }, $or: [{ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, { 'inetOrgPerson.mail': data.inetOrgPerson.mail }] };
+      const f: any = { '_id': { $ne: id },'deletedFlag':{$ne:true}, $or: [{ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, { 'inetOrgPerson.mail': data.inetOrgPerson.mail }] };
       dataDup = await this._model.find(f).exec()
     } else {
       const id = new Types.ObjectId(data['_id']);
-      const f: any = { '_id': { $ne: id }, 'inetOrgPerson.uid': data.inetOrgPerson.uid };
+      const f: any = { '_id': { $ne: id },'deletedFlag':{$ne:true}, 'inetOrgPerson.uid': data.inetOrgPerson.uid };
       dataDup = await this._model.find(f).exec()
     }
     if (dataDup.length > 0) {

@@ -2,7 +2,7 @@ import { AbstractIdentitiesService } from '~/management/identities/abstract-iden
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { BadRequestException } from '@nestjs/common';
-
+import { sort } from 'radash'
 export class IdentitiesDoublonService extends AbstractIdentitiesService {
   public async searchDoubles() {
     const agg1 = [
@@ -48,7 +48,7 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
             $gt: 1,
           },
         },
-      },
+      }
     ];
     const agg2 = [
       {
@@ -103,6 +103,11 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
       if (r === undefined && r1 === undefined) {
         result3.push(x);
       }
+    });
+    result3.sort((a, b) => {
+      const cnA = a.data[0].cn?.toLowerCase() ?? '';
+      const cnB = b.data[0].cn?.toLowerCase() ?? '';
+      return cnA.localeCompare(cnB);
     });
     return result3;
   }

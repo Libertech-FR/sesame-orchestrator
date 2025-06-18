@@ -1,0 +1,15 @@
+etds:
+  rule: '"inetOrgPerson.departmentNumber" : "etd"'
+  steps:
+    atCreation: "W"
+  status:
+    WAIT : "W",
+    OFFICIAL : 'lastSyncBackup : { $ne : null}',
+    ACTIVE : ,
+    PROVISIONAL : ,
+    INACTIVE : 'lastSync: { $gt : new Date() - 30 }',
+    DELETED : ,
+
+
+
+

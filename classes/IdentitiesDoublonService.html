@@ -509,8 +509,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="116"
-                                    class="link-to-prism">src/management/identities/identities-doublon.service.ts:116</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">src/management/identities/identities-doublon.service.ts:119</a></div>
                         </td>
                     </tr>
 
@@ -2542,9 +2542,10 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
     const agg1 &#x3D; [
       {
         $match: {
+          deletedFlag: { $eq: false},
           state: { $ne: IdentityState.DONT_SYNC },
           destFusionId: { $eq: null },
-          &#x27;inetOrgPerson.employeeType&#x27;: {$ne: &#x27;LOCAL&#x27;}
+          &#x27;inetOrgPerson.employeeType&#x27;: {$ne: &#x27;LOCAL&#x27;},
         },
       },
       {
@@ -2587,9 +2588,11 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
     const agg2 &#x3D; [
       {
         $match: {
+          deletedFlag: { $eq: false},
           state: { $ne: IdentityState.DONT_SYNC },
           destFusionId: { $eq: null },
           &#x27;inetOrgPerson.employeeType&#x27;: {$ne: &#x27;LOCAL&#x27;},
+
         },
       },
       {

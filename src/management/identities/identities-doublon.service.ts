@@ -8,9 +8,10 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
     const agg1 = [
       {
         $match: {
+          deletedFlag: { $eq: false},
           state: { $ne: IdentityState.DONT_SYNC },
           destFusionId: { $eq: null },
-          'inetOrgPerson.employeeType': {$ne: 'LOCAL'}
+          'inetOrgPerson.employeeType': {$ne: 'LOCAL'},
         },
       },
       {
@@ -53,9 +54,11 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
     const agg2 = [
       {
         $match: {
+          deletedFlag: { $eq: false},
           state: { $ne: IdentityState.DONT_SYNC },
           destFusionId: { $eq: null },
           'inetOrgPerson.employeeType': {$ne: 'LOCAL'},
+
         },
       },
       {

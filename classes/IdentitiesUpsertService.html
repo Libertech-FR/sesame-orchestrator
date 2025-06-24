@@ -509,8 +509,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="135"
-                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:135</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">src/management/identities/identities-upsert.service.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -2692,8 +2692,9 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       );
     }
     //controle si l identité est fusionnée si c est la bonne à mettre à jour puisqu elle a 2 employeeNumber
+    //bug #54 si primaryEmployeeNumber &#x3D; &quot;&quot; considéré comme non null
     if (identity !&#x3D;&#x3D; null){
-      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null &amp;&amp; identity.primaryEmployeeNumber !&#x3D;&#x3D; employeeNumber) {
+      if (identity.primaryEmployeeNumber !&#x3D;&#x3D; null &amp;&amp; identity.primaryEmployeeNumber !&#x3D;&#x3D; &#x27;&#x27; &amp;&amp; identity.primaryEmployeeNumber !&#x3D;&#x3D; employeeNumber) {
         throw new HttpException(&#x27;Secondary identity&#x27;, HttpStatus.SEE_OTHER);
       }
     }

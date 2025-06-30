@@ -49,8 +49,9 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       );
     }
     //controle si l identité est fusionnée si c est la bonne à mettre à jour puisqu elle a 2 employeeNumber
+    //bug #54 si primaryEmployeeNumber = "" considéré comme non null
     if (identity !== null){
-      if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== employeeNumber) {
+      if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== '' && identity.primaryEmployeeNumber !== employeeNumber) {
         throw new HttpException('Secondary identity', HttpStatus.SEE_OTHER);
       }
     }

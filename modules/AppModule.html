@@ -319,8 +319,8 @@ import { MailerModule } from &#x27;@nestjs-modules/mailer&#x27;;
 import { HandlebarsAdapter } from &#x27;@nestjs-modules/mailer/dist/adapters/handlebars.adapter&#x27;;
 import { MailadmService } from &#x27;~/settings/mailadm.service&#x27;;
 import { FactorydriveModule } from &#x27;@the-software-compagny/nestjs_module_factorydrive&#x27;;
-import { MigrationsService } from &#x27;./migrations/migrations.service&#x27;;
 import { MigrationsModule } from &#x27;./migrations/migrations.module&#x27;;
+import { EventEmitterModule } from &#x27;@nestjs/event-emitter&#x27;;
 import { ShutdownObserver } from &#x27;./_common/observers/shutdown.observer&#x27;;
 
 @Module({
@@ -328,6 +328,13 @@ import { ShutdownObserver } from &#x27;./_common/observers/shutdown.observer&#x2
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
+    }),
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      delimiter: &#x27;.&#x27;,
+      maxListeners: 25,
+      verboseMemoryLeak: true,
+      ignoreErrors: false,
     }),
     MailerModule.forRootAsync({
       imports: [SettingsModule],

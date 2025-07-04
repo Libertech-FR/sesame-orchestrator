@@ -149,6 +149,13 @@
                                 </li>
                                 <li>
                                             <span class="modifier">Optional</span>
+                                        <a href="#moduleName" 
+>
+                                            moduleName
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#moduleRef" 
 >
                                             moduleRef
@@ -159,6 +166,13 @@
                                         <a href="#req" 
 >
                                             req
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
+                                        <a href="#serviceName" 
+>
+                                            serviceName
                                         </a>
                                 </li>
                             </ul>
@@ -213,6 +227,44 @@
                                     <tr>
                                         <td class="col-md-4">
                                             <i>Type : </i>    <code>EventEmitter2</code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="moduleName"></a>
+                                        <span class="name "><b>moduleName</b>
+                                            <a href="#moduleName">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>moduleName:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
                                         </td>
                                     </tr>
@@ -298,6 +350,44 @@
 
                         </tbody>
                     </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="serviceName"></a>
+                                        <span class="name "><b>serviceName</b>
+                                            <a href="#serviceName">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>serviceName:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
             </section>
     </div>
 
@@ -315,6 +405,8 @@ export interface AbstractServiceContext {
   moduleRef?: ModuleRef;
   req?: Request &amp; { user?: Express.User };
   eventEmitter?: EventEmitter2;
+  serviceName?: string;
+  moduleName?: string;
 }
 
 @Injectable()
@@ -324,16 +416,23 @@ export abstract class AbstractService {
   private readonly _req?: Request &amp; { user?: Express.User &amp; any } // eslint-disable-line
   protected eventEmitter?: EventEmitter2;
 
+  private _customServiceName: string;
+  private _customModuleName: string;
+
   protected constructor(context?: AbstractServiceContext) {
     this.moduleRef &#x3D; context?.moduleRef;
     this._req &#x3D; context?.req;
     this.logger &#x3D; new Logger(this.serviceName);
+    this.eventEmitter &#x3D; context?.eventEmitter;
+
+    this._customModuleName &#x3D; context?.moduleName
+    this._customServiceName &#x3D; context?.serviceName
   }
 
   protected get request():
     | (Request &amp; {
-        user?: Express.User &amp; any // eslint-disable-line
-      })
+      user?: Express.User &amp; any // eslint-disable-line
+    })
     | null {
     return this._req || RequestContext.currentContext?.req;
   }
@@ -342,11 +441,12 @@ export abstract class AbstractService {
     //TODO: change modulename from module ref ?
     if (!this.request) throw new Error(&#x27;Request is not defined in &#x27; + this.constructor.name);
     const moduleName &#x3D; this.request.path.split(&#x27;/&#x27;).slice(1).shift();
-    return moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
+    return this._customModuleName || moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
   }
 
   public get serviceName(): string {
-    return this.constructor.name.replace(/Service$/, &#x27;&#x27;);
+    if (!this.constructor.name) throw new Error(&#x27;Service name is not defined in &#x27; + this.constructor.name);
+    return this._customServiceName || this.constructor.name.replace(/Service$/, &#x27;&#x27;);
   }
 }
 </code></pre>

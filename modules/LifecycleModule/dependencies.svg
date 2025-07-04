@@ -21,44 +21,44 @@
 <polygon fill="#fb8072" stroke="transparent" points="406,-10 406,-30 426,-30 426,-10 406,-10"/>
 <text text-anchor="start" x="429.73" y="-15.4" font-family="Times-12" font-size="14.00"> &#160;Exports</text>
 <g id="clust1" class="cluster">
-<title>cluster_JobsModule</title>
-<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="175,-70 175,-268 321,-268 321,-70 175,-70"/>
-</g>
-<g id="clust4" class="cluster">
-<title>cluster_JobsModule_exports</title>
-<polygon fill="none" stroke="black" points="197,-208 197,-260 299,-260 299,-208 197,-208"/>
+<title>cluster_LifecycleModule</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="156,-70 156,-268 340,-268 340,-70 156,-70"/>
 </g>
 <g id="clust6" class="cluster">
-<title>cluster_JobsModule_providers</title>
-<polygon fill="none" stroke="black" points="183,-78 183,-130 313,-130 313,-78 183,-78"/>
+<title>cluster_LifecycleModule_providers</title>
+<polygon fill="none" stroke="black" points="164,-78 164,-130 332,-130 332,-78 164,-78"/>
 </g>
-<!-- JobsService  -->
+<g id="clust4" class="cluster">
+<title>cluster_LifecycleModule_exports</title>
+<polygon fill="none" stroke="black" points="183,-208 183,-260 313,-260 313,-208 183,-208"/>
+</g>
+<!-- LifecycleService  -->
 <g id="node1" class="node">
-<title>JobsService </title>
-<polygon fill="#fb8072" stroke="black" points="291.37,-252 204.63,-252 204.63,-216 291.37,-216 291.37,-252"/>
-<text text-anchor="middle" x="248" y="-229.8" font-family="Times,serif" font-size="14.00">JobsService </text>
+<title>LifecycleService </title>
+<polygon fill="#fb8072" stroke="black" points="305.33,-252 190.67,-252 190.67,-216 305.33,-216 305.33,-252"/>
+<text text-anchor="middle" x="248" y="-229.8" font-family="Times,serif" font-size="14.00">LifecycleService </text>
 </g>
-<!-- JobsModule -->
+<!-- LifecycleModule -->
 <g id="node2" class="node">
-<title>JobsModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="290.44,-187 287.44,-191 266.44,-191 263.44,-187 205.56,-187 205.56,-151 290.44,-151 290.44,-187"/>
-<text text-anchor="middle" x="248" y="-164.8" font-family="Times,serif" font-size="14.00">JobsModule</text>
+<title>LifecycleModule</title>
+<polygon fill="#8dd3c7" stroke="black" points="304.4,-187 301.4,-191 280.4,-191 277.4,-187 191.6,-187 191.6,-151 304.4,-151 304.4,-187"/>
+<text text-anchor="middle" x="248" y="-164.8" font-family="Times,serif" font-size="14.00">LifecycleModule</text>
 </g>
-<!-- JobsModule&#45;&gt;JobsService  -->
+<!-- LifecycleModule&#45;&gt;LifecycleService  -->
 <g id="edge1" class="edge">
-<title>JobsModule&#45;&gt;JobsService </title>
+<title>LifecycleModule&#45;&gt;LifecycleService </title>
 <path fill="none" stroke="black" stroke-dasharray="5,2" d="M248,-187.11C248,-187.11 248,-205.99 248,-205.99"/>
 <polygon fill="black" stroke="black" points="244.5,-205.99 248,-215.99 251.5,-205.99 244.5,-205.99"/>
 </g>
-<!-- JobsService -->
+<!-- LifecycleService -->
 <g id="node3" class="node">
-<title>JobsService</title>
-<ellipse fill="#fdb462" stroke="black" cx="248" cy="-104" rx="57.32" ry="18"/>
-<text text-anchor="middle" x="248" y="-99.8" font-family="Times,serif" font-size="14.00">JobsService</text>
+<title>LifecycleService</title>
+<ellipse fill="#fdb462" stroke="black" cx="248" cy="-104" rx="76.4" ry="18"/>
+<text text-anchor="middle" x="248" y="-99.8" font-family="Times,serif" font-size="14.00">LifecycleService</text>
 </g>
-<!-- JobsService&#45;&gt;JobsModule -->
+<!-- LifecycleService&#45;&gt;LifecycleModule -->
 <g id="edge2" class="edge">
-<title>JobsService&#45;&gt;JobsModule</title>
+<title>LifecycleService&#45;&gt;LifecycleModule</title>
 <path fill="none" stroke="black" d="M248,-122.11C248,-122.11 248,-140.99 248,-140.99"/>
 <polygon fill="black" stroke="black" points="244.5,-140.99 248,-150.99 251.5,-140.99 244.5,-140.99"/>
 </g>

@@ -6,6 +6,7 @@ import { Lifecycle, LifecycleDocument } from './_schemas/lifecycle.schema';
 import { LifecycleCreateDto, LifecycleUpdateDto } from './_dto/lifecycle.dto';
 import { IdentityLifecycle } from '~/management/identities/_enums/lifecycle.enum';
 import { OnEvent } from '@nestjs/event-emitter';
+import { Identities } from '../identities/_schemas/identities.schema';
 
 @Injectable()
 export class LifecycleService extends AbstractServiceSchema {
@@ -18,9 +19,25 @@ export class LifecycleService extends AbstractServiceSchema {
     this._model = model;
   }
 
-  @OnEvent('management.identities.service.beforeFindAndCount')
-  public async handleOrderCreatedEvent(event: any): Promise<void> {
-    console.log('Order created event received:', event);
+  @OnEvent('management.identities.service.afterUpsert')
+  public async handleOrderCreatedEvent(event: { result: Identities, before?: Identities }): Promise<void> {
+    this.logger.verbose(`Handling identity upsert event for identity <${event.result._id}>`);
+    if (!event.result || !event.result._id) {
+      this.logger.warn('No valid identity found in event data');
+      return;
+    }
+
+    if (event.before && event.before.lifecycle === event.result.lifecycle) {
+      this.logger.debug(`Lifecycle unchanged for identity <${event.result._id}>`);
+      return;
+    }
+
+    await this._model.create({
+      refId: event.result._id,
+      lifecycle: event.result.lifecycle,
+      date: new Date(),
+    })
+    this.logger.debug(`Lifecycle event recorded for identity <${event.result._id}>: ${event.result.lifecycle}`);
   }
 
   /**

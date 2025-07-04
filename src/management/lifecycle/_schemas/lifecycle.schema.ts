@@ -8,13 +8,13 @@ export type LifecycleDocument = Lifecycle & Document;
 @Schema({ versionKey: false, minimize: false })
 export class Lifecycle extends AbstractSchema {
   @Prop({ type: Types.ObjectId, ref: 'Identities', required: true })
-  public identityId: Types.ObjectId;
+  public refId: Types.ObjectId;
 
   @Prop({ type: Number, enum: IdentityLifecycle, required: true })
   public lifecycle: IdentityLifecycle;
 
   @Prop({ type: Date, default: Date.now })
-  public createdAt: Date;
+  public date: Date;
 }
 
 export const LifecycleSchema = SchemaFactory.createForClass(Lifecycle);

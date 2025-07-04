@@ -311,6 +311,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options = { ...options, ...beforeEvent.options };
       }
     }
+    const before = await this._model.findOne<Query<T | null, T, any, T>>(filter).exec();
     let result = await this._model
       .findOneAndUpdate<Query<T | null, T, any, T>>(
         filter,
@@ -339,7 +340,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterUpsert'].join(EventEmitterSeparator),
-        { result },
+        { result, before },
       );
       for (const afterEvent of afterEvents) {
         if (afterEvent?.result) result = { ...result, ...afterEvent.result };

@@ -37,13 +37,34 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     projection?: ProjectionType<T> | null | undefined,
     options?: QueryOptions<T> | null | undefined,
   ): Promise<Query<Array<T>, T, any, T>[]> {
-    //TODO: add event emitter
+    if (this.eventEmitter) {
+      const beforeEvents = await this.eventEmitter?.emitAsync(
+        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'beforeFind'].join(EventEmitterSeparator),
+        { filter, projection, options },
+      )
+      for (const beforeEvent of beforeEvents) {
+        if (beforeEvent?.stop) throw beforeEvent?.stop
+        if (beforeEvent?.filter) filter = { ...filter, ...beforeEvent.filter }
+        if (beforeEvent?.projection) projection = { ...(typeof projection === 'object' ? projection : {}), ...beforeEvent.projection }
+        if (beforeEvent?.options) options = { ...options, ...beforeEvent.options }
+      }
+    }
     this.logger.debug(['find', JSON.stringify(Object.values(arguments))].join(' '))
     return await this._model.find<Query<Array<T>, T, any, T>>(filter, projection, options).exec()
   }
 
   public async count<T extends AbstractSchema | Document>(filter?: FilterQuery<T>, options?: (mongodb.CountOptions & MongooseBaseQueryOptions<T>) | null): Promise<number> {
-    //TODO: add event emitter
+    if (this.eventEmitter) {
+      const beforeEvents = await this.eventEmitter?.emitAsync(
+        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'beforeCount'].join(EventEmitterSeparator),
+        { filter, options },
+      )
+      for (const beforeEvent of beforeEvents) {
+        if (beforeEvent?.stop) throw beforeEvent?.stop
+        if (beforeEvent?.filter) filter = { ...filter, ...beforeEvent.filter }
+        if (beforeEvent?.options) options = { ...options, ...beforeEvent.options }
+      }
+    }
     this.logger.debug(['count', JSON.stringify(Object.values(arguments))].join(' '))
     return await this._model.countDocuments(filter, options).exec()
   }
@@ -64,11 +85,11 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
   ): Promise<[Array<T & Query<T, T, any, T>>, number]> {
     this.logger.debug(['findAndCount', JSON.stringify(Object.values(arguments))].join(' '))
     if (this.eventEmitter) {
+      console.log('de', [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'beforeFindAndCount'].join(EventEmitterSeparator))
       const beforeEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'beforeFindAndCount'].join(EventEmitterSeparator),
         { filter, projection, options },
       )
-      // noinspection DuplicatedCode
       for (const beforeEvent of beforeEvents) {
         if (beforeEvent?.stop) throw beforeEvent?.stop
         if (beforeEvent?.filter) filter = { ...filter, ...beforeEvent.filter }
@@ -80,6 +101,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     filter = { ...filter, ...softDelete }
     let count = await this._model.countDocuments(filter).exec()
     let data = await this._model.find<T & Query<T, T, any, T>>(filter, projection, options).exec()
+
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterFindAndCount'].join(EventEmitterSeparator),
@@ -90,6 +112,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (afterEvent?.count) count += afterEvent.count
       }
     }
+
     return [data, count]
   }
 
@@ -99,6 +122,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     options?: QueryOptions<T> | null | undefined,
   ): Promise<Query<T, T, any, T>> {
     this.logger.debug(['findById', JSON.stringify(Object.values(arguments))].join(' '))
+
     if (this.eventEmitter) {
       const beforeEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'beforeFindById'].join(EventEmitterSeparator),
@@ -110,7 +134,9 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options = { ...options, ...beforeEvent.options }
       }
     }
+
     let data = await this._model.findById<Query<T | null, T, any, T>>(_id, projection, options).exec()
+
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterFindById'].join(EventEmitterSeparator),
@@ -120,6 +146,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (afterEvent?.data) data = { ...data, ...afterEvent.data }
       }
     }
+
     if (!data) {
       this.logger.debug(['findById', JSON.stringify(Object.values(arguments))].join(' '))
       throw new NotFoundException()

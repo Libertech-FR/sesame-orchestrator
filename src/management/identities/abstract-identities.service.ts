@@ -17,6 +17,7 @@ import { PasswdadmService } from "~/settings/passwdadm.service";
 import { DataStatusEnum } from "~/management/identities/_enums/data-status";
 import { JobState } from "~/core/jobs/_enums/state.enum";
 import { inetOrgPersonDto } from './_dto/_parts/inetOrgPerson.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
@@ -25,9 +26,13 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     protected readonly _validation: IdentitiesValidationService,
     protected readonly storage: FactorydriveService,
     protected readonly passwdAdmService: PasswdadmService,
+    protected readonly eventEmitter: EventEmitter2,
     @Inject(forwardRef(() => BackendsService)) protected readonly backends: BackendsService,
   ) {
-    super();
+    super({
+      eventEmitter,
+      serviceName: 'identities',
+    });
   }
 
   protected handleValidationError(
@@ -217,11 +222,11 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     let dataDup = [];
     if (data.inetOrgPerson.hasOwnProperty('mail') && data.inetOrgPerson.mail !== '') {
       const id = new Types.ObjectId(data['_id']);
-      const f: any = { '_id': { $ne: id },'deletedFlag':{$ne:true}, $or: [{ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, { 'inetOrgPerson.mail': data.inetOrgPerson.mail }] };
+      const f: any = { '_id': { $ne: id }, 'deletedFlag': { $ne: true }, $or: [{ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, { 'inetOrgPerson.mail': data.inetOrgPerson.mail }] };
       dataDup = await this._model.find(f).exec()
     } else {
       const id = new Types.ObjectId(data['_id']);
-      const f: any = { '_id': { $ne: id },'deletedFlag':{$ne:true}, 'inetOrgPerson.uid': data.inetOrgPerson.uid };
+      const f: any = { '_id': { $ne: id }, 'deletedFlag': { $ne: true }, 'inetOrgPerson.uid': data.inetOrgPerson.uid };
       dataDup = await this._model.find(f).exec()
     }
     if (dataDup.length > 0) {
@@ -234,8 +239,8 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
   protected async checkMail(identity, data): Promise<boolean> {
     let dataDup = 0;
     if (data.inetOrgPerson.hasOwnProperty('mail') && data.inetOrgPerson.mail !== '') {
-      if (identity){
-        const f: any = { '_id': { $ne: identity._id },'state':{$ne:IdentityState.DONT_SYNC},'deletedFlag':{$ne:true}, 'inetOrgPerson.mail': identity.inetOrgPerson.mail };
+      if (identity) {
+        const f: any = { '_id': { $ne: identity._id }, 'state': { $ne: IdentityState.DONT_SYNC }, 'deletedFlag': { $ne: true }, 'inetOrgPerson.mail': identity.inetOrgPerson.mail };
         dataDup = await this._model.countDocuments(f).exec()
       } else {
         const f: any = { 'inetOrgPerson.mail': data.inetOrgPerson.mail };
@@ -252,8 +257,8 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
 
   protected async checkUid(identity, data): Promise<boolean> {
     let dataDup = 0;
-    if (identity){
-      const f: any = { '_id': { $ne: identity._id } ,'state':{$ne:IdentityState.DONT_SYNC},'deletedFlag':{$ne:true},'inetOrgPerson.uid': identity.inetOrgPerson.uid };
+    if (identity) {
+      const f: any = { '_id': { $ne: identity._id }, 'state': { $ne: IdentityState.DONT_SYNC }, 'deletedFlag': { $ne: true }, 'inetOrgPerson.uid': identity.inetOrgPerson.uid };
       dataDup = await this._model.countDocuments(f).exec()
     } else {
       const f: any = { 'inetOrgPerson.uid': data.inetOrgPerson.uid };

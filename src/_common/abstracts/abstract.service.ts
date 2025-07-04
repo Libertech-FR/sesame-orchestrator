@@ -10,6 +10,8 @@ export interface AbstractServiceContext {
   moduleRef?: ModuleRef;
   req?: Request & { user?: Express.User };
   eventEmitter?: EventEmitter2;
+  serviceName?: string;
+  moduleName?: string;
 }
 
 @Injectable()
@@ -19,16 +21,23 @@ export abstract class AbstractService {
   private readonly _req?: Request & { user?: Express.User & any } // eslint-disable-line
   protected eventEmitter?: EventEmitter2;
 
+  private _customServiceName: string;
+  private _customModuleName: string;
+
   protected constructor(context?: AbstractServiceContext) {
     this.moduleRef = context?.moduleRef;
     this._req = context?.req;
     this.logger = new Logger(this.serviceName);
+    this.eventEmitter = context?.eventEmitter;
+
+    this._customModuleName = context?.moduleName
+    this._customServiceName = context?.serviceName
   }
 
   protected get request():
     | (Request & {
-        user?: Express.User & any // eslint-disable-line
-      })
+      user?: Express.User & any // eslint-disable-line
+    })
     | null {
     return this._req || RequestContext.currentContext?.req;
   }
@@ -37,10 +46,11 @@ export abstract class AbstractService {
     //TODO: change modulename from module ref ?
     if (!this.request) throw new Error('Request is not defined in ' + this.constructor.name);
     const moduleName = this.request.path.split('/').slice(1).shift();
-    return moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
+    return this._customModuleName || moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
   }
 
   public get serviceName(): string {
-    return this.constructor.name.replace(/Service$/, '');
+    if (!this.constructor.name) throw new Error('Service name is not defined in ' + this.constructor.name);
+    return this._customServiceName || this.constructor.name.replace(/Service$/, '');
   }
 }

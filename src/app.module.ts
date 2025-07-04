@@ -22,6 +22,7 @@ import { MailadmService } from '~/settings/mailadm.service';
 import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factorydrive';
 import { MigrationsService } from './migrations/migrations.service';
 import { MigrationsModule } from './migrations/migrations.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ShutdownObserver } from './_common/observers/shutdown.observer';
 
 @Module({
@@ -29,6 +30,13 @@ import { ShutdownObserver } from './_common/observers/shutdown.observer';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
+    }),
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      delimiter: '.',
+      maxListeners: 25,
+      verboseMemoryLeak: true,
+      ignoreErrors: false,
     }),
     MailerModule.forRootAsync({
       imports: [SettingsModule],

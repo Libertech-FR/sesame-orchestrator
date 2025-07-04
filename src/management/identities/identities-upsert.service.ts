@@ -24,11 +24,11 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
     this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
     const crushedUpdate = toPlainAndCrush(omit(data || {}, ['$setOnInsert']));
     const crushedSetOnInsert = toPlainAndCrush(data.$setOnInsert || {});
-    let employeeNumber=""
-    if (data?.$setOnInsert.inetOrgPerson.employeeNumber){
-      employeeNumber=data.$setOnInsert.inetOrgPerson.employeeNumber[0];
-    }else{
-      employeeNumber=data.inetOrgPerson.employeeNumber[0];
+    let employeeNumber = ""
+    if (data?.$setOnInsert?.inetOrgPerson?.employeeNumber) {
+      employeeNumber = data.$setOnInsert.inetOrgPerson.employeeNumber[0];
+    } else {
+      employeeNumber = data.inetOrgPerson?.employeeNumber[0];
     }
 
     data = construct({
@@ -50,13 +50,13 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
     }
     //controle si l identité est fusionnée si c est la bonne à mettre à jour puisqu elle a 2 employeeNumber
     //bug #54 si primaryEmployeeNumber = "" considéré comme non null
-    if (identity !== null){
+    if (identity !== null) {
       if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== '' && identity.primaryEmployeeNumber !== employeeNumber) {
         throw new HttpException('Secondary identity', HttpStatus.SEE_OTHER);
       }
     }
     //controle si l'identité a été supprimée
-    if (identity !== null && identity?.deletedFlag === true){
+    if (identity !== null && identity?.deletedFlag === true) {
       throw new HttpException('Identity deleted', HttpStatus.SEE_OTHER);
     }
 
@@ -67,12 +67,12 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       this.logger.log(`${logPrefix} Starting additionalFields transformation.`);
       await this._validation.transform(data.additionalFields);
       this.logger.log(`${logPrefix} Starting additionalFields validation.`);
-      let validations = await this._validation.validate(data.additionalFields,true);
+      let validations = await this._validation.validate(data.additionalFields, true);
       //validation email and uid
-      if (await this.checkMail(identity,data) === false) {
+      if (await this.checkMail(identity, data) === false) {
         validations['inetOrgPerson.mail'] = "Email déjà présent dans une autre identité"
       }
-      if (await this.checkUid(identity,data) === false) {
+      if (await this.checkUid(identity, data) === false) {
         validations['inetOrgPerson.uid'] = "Uid déjà présent dans une autre identité"
       }
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
@@ -85,12 +85,12 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       crushedUpdate['additionalFields.validations'] = data.additionalFields.validations;
     }
     //validation email and uid
-    if (await this.checkMail(identity,data) === false){
-      crushedUpdate['additionalFields.validations']['inetOrgPerson']={mail:"Email déjà présent dans une autre identité"}
+    if (await this.checkMail(identity, data) === false) {
+      crushedUpdate['additionalFields.validations']['inetOrgPerson'] = { mail: "Email déjà présent dans une autre identité" }
       crushedUpdate['state'] = IdentityState.TO_COMPLETE;
     }
-    if (await this.checkUid(identity,data) === false){
-      crushedUpdate['additionalFields.validations']['inetOrgPerson']= {uid:"Uid déjà présent dans une autre identité"}
+    if (await this.checkUid(identity, data) === false) {
+      crushedUpdate['additionalFields.validations']['inetOrgPerson'] = { uid: "Uid déjà présent dans une autre identité" }
       crushedUpdate['state'] = IdentityState.TO_COMPLETE;
     }
 

@@ -20,7 +20,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { MailadmService } from '~/settings/mailadm.service';
 import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factorydrive';
-import { MigrationsService } from './migrations/migrations.service';
 import { MigrationsModule } from './migrations/migrations.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ShutdownObserver } from './_common/observers/shutdown.observer';

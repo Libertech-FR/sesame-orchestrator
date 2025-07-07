@@ -1,22 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
-import { Lifecycle, LifecycleDocument } from './_schemas/lifecycle.schema';
-import { LifecycleCreateDto, LifecycleUpdateDto } from './_dto/lifecycle.dto';
-import { IdentityLifecycle } from '~/management/identities/_enums/lifecycle.enum';
 import { OnEvent } from '@nestjs/event-emitter';
+import { InjectModel } from '@nestjs/mongoose';
+import { FilterOptions } from '@the-software-compagny/nestjs_module_restools';
+import { Model, Query, Types } from 'mongoose';
+import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { Identities } from '../identities/_schemas/identities.schema';
+import { Lifecycle } from './_schemas/lifecycle.schema';
 
 @Injectable()
 export class LifecycleService extends AbstractServiceSchema {
-  protected _model: Model<LifecycleDocument>;
-
-  public constructor(
-    @InjectModel(Lifecycle.name) model: Model<LifecycleDocument>,
-  ) {
+  public constructor(@InjectModel(Lifecycle.name) protected _model: Model<Lifecycle>) {
     super();
-    this._model = model;
   }
 
   @OnEvent('management.identities.service.afterUpsert')
@@ -32,80 +26,44 @@ export class LifecycleService extends AbstractServiceSchema {
       return;
     }
 
-    await this._model.create({
+    await this.create({
       refId: event.result._id,
       lifecycle: event.result.lifecycle,
       date: new Date(),
-    })
+    });
+
     this.logger.debug(`Lifecycle event recorded for identity <${event.result._id}>: ${event.result.lifecycle}`);
   }
 
   /**
-   * Create a new lifecycle record
-   */
-  public async createLifecycle(dto: LifecycleCreateDto): Promise<Lifecycle> {
-    const lifecycleData = {
-      identityId: dto.identityId,
-      lifecycle: dto.lifecycle,
-      createdAt: new Date(),
-    };
-
-    const created = await this.create(lifecycleData);
-    return created as unknown as Lifecycle;
-  }
-
-  /**
-   * Update a lifecycle record
-   */
-  public async updateLifecycle(id: Types.ObjectId, dto: LifecycleUpdateDto): Promise<Lifecycle> {
-    const updateData = {
-      ...dto,
-      updatedAt: new Date(),
-    };
-
-    const updated = await this.update(id, updateData);
-    return updated.value as unknown as Lifecycle;
-  }
-
-  /**
    * Get lifecycle history for a specific identity
+   *
+   * @param refId - The ID of the identity to retrieve lifecycle history for
+   * @returns An array of lifecycle events for the specified identity, sorted by creation date in descending order
    */
-  public async getLifecycleHistory(identityId: Types.ObjectId): Promise<Lifecycle[]> {
-    const results = await this.find({ identityId }, null, { sort: { createdAt: -1 } });
-    return results as unknown as Lifecycle[];
-  }
+  public async getLifecycleHistory(
+    refId: Types.ObjectId,
+    options?: FilterOptions,
+  ): Promise<Query<Array<Lifecycle>, Lifecycle, any, Lifecycle>[]> {
+    const result = await this.find<Lifecycle>({ refId }, null, {
+      populate: 'refId',
+      sort: {
+        ...options?.sort,
+        createdAt: -1,
+      },
+      skip: options?.skip || 0,
+      limit: options?.limit || 100,
+    });
 
-  /**
-   * Get current lifecycle status for an identity
-   */
-  public async getCurrentLifecycle(identityId: Types.ObjectId): Promise<Lifecycle | null> {
-    try {
-      const result = await this.findOne({ identityId }, null, { sort: { createdAt: -1 } });
-      return result as unknown as Lifecycle;
-    } catch (error) {
-      return null;
-    }
-  }
-
-  /**
-   * Add a new lifecycle event for an identity
-   */
-  public async addLifecycleEvent(
-    identityId: Types.ObjectId,
-    lifecycle: IdentityLifecycle,
-  ): Promise<Lifecycle> {
-    const lifecycleData = {
-      identityId,
-      lifecycle,
-      createdAt: new Date(),
-    };
-
-    const created = await this.create(lifecycleData);
-    return created as unknown as Lifecycle;
+    return result;
   }
 
   /**
    * Get lifecycle statistics
+   * This method aggregates lifecycle events by their type and counts the occurrences.
+   * It returns an array of objects where each object contains the lifecycle type and the count of occurrences.
+   *
+   * @returns An array of lifecycle statistics, each containing the lifecycle type and count
    */
   public async getLifecycleStats(): Promise<any> {
     const stats = await this._model.aggregate([
@@ -125,15 +83,25 @@ export class LifecycleService extends AbstractServiceSchema {
 
   /**
    * Get recent lifecycle changes
+   * This method retrieves the most recent lifecycle changes, sorted by creation date in descending order.
+   * It allows for pagination through the `skip` and `limit` options.
+   *
+   * @param options - Optional parameters for filtering, sorting, and pagination
+   * @returns A promise that resolves to an array of lifecycle changes, each containing the lifecycle event details
    */
-  public async getRecentChanges(limit: number = 10): Promise<Lifecycle[]> {
-    const results = await this._model
-      .find()
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .populate('identityId', 'inetOrgPerson.cn inetOrgPerson.mail')
-      .exec();
+  public async getRecentChanges(
+    options?: FilterOptions,
+  ): Promise<Query<Array<Lifecycle>, Lifecycle, any, Lifecycle>[]> {
+    const result = await this.find<Lifecycle>({}, null, {
+      populate: 'refId',
+      sort: {
+        ...options?.sort,
+        createdAt: -1,
+      },
+      skip: options?.skip || 0,
+      limit: options?.limit || 100,
+    });
 
-    return results as unknown as Lifecycle[];
+    return result;
   }
 }

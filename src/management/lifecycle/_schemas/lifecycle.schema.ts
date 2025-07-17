@@ -15,7 +15,7 @@ export class Lifecycle extends AbstractSchema {
   public refId: Types.ObjectId;
 
   @Prop({
-    type: Number,
+    type: String,
     enum: IdentityLifecycle,
     required: true,
   })

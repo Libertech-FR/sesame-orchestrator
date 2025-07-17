@@ -19,7 +19,7 @@ export class Identities extends AbstractSchema {
   @Prop({ type: Number, enum: IdentityState, default: IdentityState.TO_CREATE })
   public state: IdentityState;
 
-  @Prop({ type: Number, enum: IdentityLifecycle, default: IdentityLifecycle.INACTIVE })
+  @Prop({ type: String, enum: IdentityLifecycle, default: IdentityLifecycle.ACTIVE })
   public lifecycle: IdentityLifecycle;
 
   @Prop({ type: Number, enum: DataStatusEnum, default: DataStatusEnum.NOTINITIALIZED })

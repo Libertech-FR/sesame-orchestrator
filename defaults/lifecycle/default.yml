@@ -1,0 +1,5 @@
+status:
+  - sources: ['INACTIVE']
+    rule:
+      lastSyncBackup: { $ne : null}
+    target: DELETED

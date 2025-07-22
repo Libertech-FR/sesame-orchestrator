@@ -14,6 +14,10 @@ export class AppController extends AbstractController {
     super();
   }
 
+  /**
+   * This endpoint returns the API information.
+   * It retrieves the package information from the AppService and returns it in the response.
+   */
   @Get()
   @ApiOperation({ summary: 'Get API infos' })
   @ApiResponse({ status: 200, description: 'Return API infos' })
@@ -23,6 +27,15 @@ export class AppController extends AbstractController {
     });
   }
 
+  /**
+   * This endpoint checks for updates of the specified project.
+   * It compares the current version with the latest version available on GitHub.
+   * If the project is not the same as the package name or if a current version is provided,
+   * it validates the current version format.
+   * If the current version is not in the format X.Y.Z, it throws a BadRequestException.
+   * It returns the project name, whether an update is available, the current version,
+   * and the last version available.
+   */
   @ApiQuery({ name: 'current', required: false })
   @Get('/get-update/:project(sesame-orchestrator|sesame-daemon|sesame-app-manager)')
   public async update(

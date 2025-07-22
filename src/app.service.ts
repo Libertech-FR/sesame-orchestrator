@@ -168,7 +168,7 @@ export class AppService extends AbstractService implements OnApplicationBootstra
 
     try {
       const { data } = await firstValueFrom(
-        this.httpService.get<GithubUpdate>(`https://api.github.com/repos/Libertech-FR/${project}/releasesppp/latest`).pipe(
+        this.httpService.get<GithubUpdate>(`https://api.github.com/repos/Libertech-FR/${project}/releases/latest`).pipe(
           catchError((error) => {
             this.logger.error(`Error fetching release for ${project}: ${error.message}`);
             throw error;

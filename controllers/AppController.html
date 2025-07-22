@@ -202,14 +202,17 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">src/app.controller.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">src/app.controller.ts:24</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>This endpoint returns the API information.
+It retrieves the package information from the AppService and returns it in the response.</p>
+</div>
 
                             <div class="io-description">
                                 <b>Parameters :</b>
@@ -281,14 +284,22 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">src/app.controller.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">src/app.controller.ts:41</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>This endpoint checks for updates of the specified project.
+It compares the current version with the latest version available on GitHub.
+If the project is not the same as the package name or if a current version is provided,
+it validates the current version format.
+If the current version is not in the format X.Y.Z, it throws a BadRequestException.
+It returns the project name, whether an update is available, the current version,
+and the last version available.</p>
+</div>
 
                             <div class="io-description">
                                 <b>Parameters :</b>
@@ -372,6 +383,10 @@ export class AppController extends AbstractController {
     super();
   }
 
+  /**
+   * This endpoint returns the API information.
+   * It retrieves the package information from the AppService and returns it in the response.
+   */
   @Get()
   @ApiOperation({ summary: &#x27;Get API infos&#x27; })
   @ApiResponse({ status: 200, description: &#x27;Return API infos&#x27; })
@@ -381,6 +396,15 @@ export class AppController extends AbstractController {
     });
   }
 
+  /**
+   * This endpoint checks for updates of the specified project.
+   * It compares the current version with the latest version available on GitHub.
+   * If the project is not the same as the package name or if a current version is provided,
+   * it validates the current version format.
+   * If the current version is not in the format X.Y.Z, it throws a BadRequestException.
+   * It returns the project name, whether an update is available, the current version,
+   * and the last version available.
+   */
   @ApiQuery({ name: &#x27;current&#x27;, required: false })
   @Get(&#x27;/get-update/:project(sesame-orchestrator|sesame-daemon|sesame-app-manager)&#x27;)
   public async update(

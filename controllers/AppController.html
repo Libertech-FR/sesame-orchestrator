@@ -202,8 +202,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">src/app.controller.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">src/app.controller.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -267,7 +267,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>update(res: Response, project?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, current?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>update(res: Response, project?: <a href="../undefineds/ProjectsList.html" target="_self">ProjectsList</a>, current?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -281,8 +281,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="81"
-                                    class="link-to-prism">src/app.controller.ts:81</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/app.controller.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -317,7 +317,7 @@
                                         <tr>
                                                 <td>project</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                            <code><a href="../miscellaneous/enumerations.html#ProjectsList" target="_self" >ProjectsList</a></code>
                                             </td>
 
                                             <td>
@@ -357,64 +357,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, Controller, Get, Param, Query, Res } from &#x27;@nestjs/common&#x27;;
-import { AppService } from &#x27;./app.service&#x27;;
+import { AppService, ProjectsList } from &#x27;./app.service&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
 import { Public } from &#x27;./_common/decorators/public.decorator&#x27;;
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
-import { LRUCache } from &#x27;lru-cache&#x27;;
-
-interface GithubAuthor {
-  login: string;
-  id: number;
-  node_id: string;
-  avatar_url: string;
-  gravatar_id: string;
-  url: string;
-  html_url: string;
-  followers_url: string;
-  following_url: string;
-  gists_url: string;
-  starred_url: string;
-  subscriptions_url: string;
-  organizations_url: string;
-  repos_url: string;
-  events_url: string;
-  received_events_url: string;
-  type: string;
-  user_view_type: string;
-  site_admin: boolean;
-}
-
-interface GithubAsset {
-  [key: string]: any;
-}
-
-interface GithubUpdate {
-  url: string;
-  assets_url: string;
-  upload_url: string;
-  html_url: string;
-  id: number;
-  author: GithubAuthor;
-  node_id: string;
-  tag_name: string;
-  target_commitish: string;
-  name: string;
-  draft: boolean;
-  prerelease: boolean;
-  created_at: string;
-  published_at: string;
-  assets: GithubAsset[];
-  tarball_url: string;
-  zipball_url: string;
-  body: string;
-}
-
-const storage &#x3D; new LRUCache({
-  ttl: 1000 * 60 * 60,
-  ttlAutopurge: true,
-});
 
 @Public()
 @Controller()
@@ -438,43 +385,35 @@ export class AppController extends AbstractController {
   @Get(&#x27;/get-update/:project(sesame-orchestrator|sesame-daemon|sesame-app-manager)&#x27;)
   public async update(
     @Res() res: Response,
-    @Param(&#x27;project&#x27;) project?: string,
+    @Param(&#x27;project&#x27;) project?: ProjectsList,
     @Query(&#x27;current&#x27;) current?: string,
   ): Promise&lt;Response&gt; {
-    const validProjects &#x3D; [&#x27;sesame-orchestrator&#x27;, &#x27;sesame-daemon&#x27;, &#x27;sesame-app-manager&#x27;];
-    if (!validProjects.includes(project)) {
-      throw new BadRequestException(&#x60;Invalid project: ${project}&#x60;);
-    }
-
-    let data &#x3D; &lt;GithubUpdate&gt;{};
-    if (storage.has(project)) {
-      this.logger.log(&#x60;Fetching ${project} tags from cache&#x60;);
-      data &#x3D; storage.get(project) as GithubUpdate;
-    } else {
-      this.logger.log(&#x60;Fetching ${project} tags&#x60;);
-      const update &#x3D; await fetch(&#x60;https://api.github.com/repos/Libertech-FR/${project}/releases/latest&#x60;, {
-        signal: AbortSignal.timeout(1000),
-      });
-      data &#x3D; await update.json();
-      console.log(&#x27;update&#x27;, data)
-      storage.set(project, data);
-    }
-    // if (!Array.isArray(data)) {
-    //   throw new BadRequestException(&#x60;Invalid data from Github &lt;${JSON.stringify(data)}&gt;&#x60;);
-    // }
-    const lastVersion &#x3D; data.tag_name.replace(/^v/, &#x27;&#x27;);
     const pkgInfo &#x3D; this.appService.getInfo();
     const currentVersion &#x3D; current || pkgInfo.version;
+    const [lastMajor, lastMinor, lastPatch] &#x3D; currentVersion.split(&#x27;.&#x27;).map(Number);
 
+    /**
+     * If the project is not the same as the package name or if a current version is provided,
+     * we validate the current version format.
+     * If the current version is not in the format X.Y.Z, we throw a BadRequestException.
+     *
+     * This ensures that the current version is always in a valid format before proceeding with the comparison.
+     */
     if (project !&#x3D;&#x3D; pkgInfo.name || current) {
       if (!/[0-9]+\.[0-9]+\.[0-9]+/.test(current)) {
         throw new BadRequestException(&#x27;Invalid version for current parameter&#x27;);
       }
     }
 
-    const [currentMajor, currentMinor, currentPatch] &#x3D; lastVersion.split(&#x27;.&#x27;).map(Number);
-    const [lastMajor, lastMinor, lastPatch] &#x3D; currentVersion.split(&#x27;.&#x27;).map(Number);
-    const updateAvailable &#x3D; currentMajor &gt; lastMajor || currentMinor &gt; lastMinor || currentPatch &gt; lastPatch;
+    let lastVersion &#x3D; &#x27;0.0.0&#x27;;
+    let updateAvailable &#x3D; false;
+    let data &#x3D; await this.appService.getProjectUpdate(project);
+
+    if (data) {
+      lastVersion &#x3D; data.tag_name.replace(/^v/, &#x27;&#x27;);
+      const [currentMajor, currentMinor, currentPatch] &#x3D; lastVersion.split(&#x27;.&#x27;).map(Number);
+      updateAvailable &#x3D; currentMajor &gt; lastMajor || currentMinor &gt; lastMinor || currentPatch &gt; lastPatch;
+    }
 
     return res.json({
       data: {

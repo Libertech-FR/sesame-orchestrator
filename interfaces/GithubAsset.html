@@ -122,7 +122,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app.controller.ts</code>
+            <code>src/app.service.ts</code>
         </p>
 
 
@@ -142,7 +142,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app.controller.ts:31</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app.service.ts:40</a></div>
                             </td>
                         </tr>
             </tbody>
@@ -153,15 +153,24 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, Controller, Get, Param, Query, Res } from &#x27;@nestjs/common&#x27;;
-import { AppService } from &#x27;./app.service&#x27;;
-import { Response } from &#x27;express&#x27;;
-import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;
-import { Public } from &#x27;./_common/decorators/public.decorator&#x27;;
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, Injectable, OnApplicationBootstrap } from &#x27;@nestjs/common&#x27;;
+import { PackageJson } from &#x27;types-package-json&#x27;;
+import { ModuleRef } from &#x27;@nestjs/core&#x27;;
+import { readFileSync } from &#x27;fs&#x27;;
+import { AbstractService } from &#x27;~/_common/abstracts/abstract.service&#x27;;
+import { pick } from &#x27;radash&#x27;;
+import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { LRUCache } from &#x27;lru-cache&#x27;;
+import { catchError, firstValueFrom } from &#x27;rxjs&#x27;;
+import { Cron, CronExpression } from &#x27;@nestjs/schedule&#x27;;
 
-interface GithubAuthor {
+export enum ProjectsList {
+  SESAME_ORCHESTRATOR &#x3D; &#x27;sesame-orchestrator&#x27;,
+  SESAME_DAEMON &#x3D; &#x27;sesame-daemon&#x27;,
+  SESAME_APP_MANAGER &#x3D; &#x27;sesame-app-manager&#x27;,
+}
+
+export interface GithubAuthor {
   login: string;
   id: number;
   node_id: string;
@@ -183,11 +192,11 @@ interface GithubAuthor {
   site_admin: boolean;
 }
 
-interface GithubAsset {
+export interface GithubAsset {
   [key: string]: any;
 }
 
-interface GithubUpdate {
+export interface GithubUpdate {
   url: string;
   assets_url: string;
   upload_url: string;
@@ -208,79 +217,133 @@ interface GithubUpdate {
   body: string;
 }
 
-const storage &#x3D; new LRUCache({
-  ttl: 1000 * 60 * 60,
-  ttlAutopurge: true,
-});
+@Injectable()
+export class AppService extends AbstractService implements OnApplicationBootstrap {
+  protected storage &#x3D; new LRUCache({
+    ttl: 1_000 * 60 * 60 * 6, // 6 hours
+    ttlAutopurge: true,
+  });
 
-@Public()
-@Controller()
-@ApiBearerAuth()
-// @see https://stackoverflow.com/questions/67314808/how-to-disable-security-for-a-specific-controller-method-in-nestjs-swagger
-export class AppController extends AbstractController {
-  constructor(private readonly appService: AppService) {
-    super();
+  protected package: Partial&lt;PackageJson&gt;;
+
+  public constructor(
+    protected moduleRef: ModuleRef,
+    private readonly httpService: HttpService,
+  ) {
+    super({ moduleRef });
+    this.package &#x3D; JSON.parse(readFileSync(&#x27;package.json&#x27;, &#x27;utf-8&#x27;));
   }
 
-  @Get()
-  @ApiOperation({ summary: &#x27;Get API infos&#x27; })
-  @ApiResponse({ status: 200, description: &#x27;Return API infos&#x27; })
-  public getInfo(@Res() res: Response): Response {
-    return res.json({
-      ...this.appService.getInfo(),
-    });
+  /**
+   * On application bootstrap, this method is called to initialize the service.
+   * It logs the start of the bootstrap process and fetches the latest releases for each project
+   * in the ProjectsList enum.
+   * It uses the fetchGithubRelease method to get the latest releases from GitHub.
+   *
+   * @returns {Promise&lt;void&gt;} A promise that resolves when the bootstrap process is complete.
+   */
+  public async onApplicationBootstrap(): Promise&lt;void&gt; {
+    this.logger.debug(&#x27;Application service bootstrap starting...&#x27;);
+
+    for (const project of Object.values(ProjectsList)) {
+      this.logger.verbose(&#x60;Checking for updates for project: ${project}&#x60;);
+
+      await this.fetchGithubRelease(project);
+    }
+
+    this.logger.log(&#x27;Application service bootstrap completed.&#x27;);
   }
 
-  @ApiQuery({ name: &#x27;current&#x27;, required: false })
-  @Get(&#x27;/get-update/:project(sesame-orchestrator|sesame-daemon|sesame-app-manager)&#x27;)
-  public async update(
-    @Res() res: Response,
-    @Param(&#x27;project&#x27;) project?: string,
-    @Query(&#x27;current&#x27;) current?: string,
-  ): Promise&lt;Response&gt; {
-    const validProjects &#x3D; [&#x27;sesame-orchestrator&#x27;, &#x27;sesame-daemon&#x27;, &#x27;sesame-app-manager&#x27;];
-    if (!validProjects.includes(project)) {
+  /**
+   * Cron job to fetch the latest releases of projects every 6 hours.
+   * This method logs the start and end of the job, and fetches updates for each project in the ProjectsList.
+   * It uses the fetchGithubRelease method to get the latest releases from GitHub.
+   * The job is scheduled using the CronExpression.EVERY_6_HOURS expression.
+   *
+   * @Cron(CronExpression.EVERY_6_HOURS)
+   * @returns {Promise&lt;void&gt;}
+   * @memberof AppService
+   */
+  @Cron(CronExpression.EVERY_6_HOURS)
+  public async handleCron(): Promise&lt;void&gt; {
+    this.logger.debug(&#x27;Cron job started.&#x27;);
+
+    for (const project of Object.values(ProjectsList)) {
+      this.logger.verbose(&#x60;Checking for updates for project: ${project}&#x60;);
+
+      await this.fetchGithubRelease(project);
+    }
+
+    this.logger.debug(&#x27;Cron job completed.&#x27;);
+  }
+
+  /**
+   * Returns basic information about the application, such as name and version.
+   *
+   * @returns {Partial&lt;PackageJson&gt;} Returns basic information about the application, such as name and version.
+   */
+  public getInfo(): Partial&lt;PackageJson&gt; {
+    return pick(this.package, [&#x27;name&#x27;, &#x27;version&#x27;]);
+  }
+
+  /**
+   * Fetches the latest release information for a specified project from GitHub.
+   *
+   * @param project The project name to fetch updates for.
+   * @returns {Promise&lt;GithubUpdate&gt;} A promise that resolves to the latest release information for the specified project.
+   */
+  public getProjectUpdate(project: ProjectsList): GithubUpdate {
+    if (!Object.values(ProjectsList).includes(project)) {
       throw new BadRequestException(&#x60;Invalid project: ${project}&#x60;);
     }
 
-    let data &#x3D; &lt;GithubUpdate&gt;{};
-    if (storage.has(project)) {
-      this.logger.log(&#x60;Fetching ${project} tags from cache&#x60;);
-      data &#x3D; storage.get(project) as GithubUpdate;
-    } else {
-      this.logger.log(&#x60;Fetching ${project} tags&#x60;);
-      const update &#x3D; await fetch(&#x60;https://api.github.com/repos/Libertech-FR/${project}/releases/latest&#x60;, {
-        signal: AbortSignal.timeout(1000),
-      });
-      data &#x3D; await update.json();
-      console.log(&#x27;update&#x27;, data)
-      storage.set(project, data);
-    }
-    // if (!Array.isArray(data)) {
-    //   throw new BadRequestException(&#x60;Invalid data from Github &lt;${JSON.stringify(data)}&gt;&#x60;);
-    // }
-    const lastVersion &#x3D; data.tag_name.replace(/^v/, &#x27;&#x27;);
-    const pkgInfo &#x3D; this.appService.getInfo();
-    const currentVersion &#x3D; current || pkgInfo.version;
+    if (this.storage.has(project)) {
+      this.logger.debug(&#x60;Fetching ${project} tags from cache&#x60;);
 
-    if (project !&#x3D;&#x3D; pkgInfo.name || current) {
-      if (!/[0-9]+\.[0-9]+\.[0-9]+/.test(current)) {
-        throw new BadRequestException(&#x27;Invalid version for current parameter&#x27;);
+      return this.storage.get(project) as GithubUpdate;
+    }
+
+    return null; // Return null if the project is not cached
+  }
+
+  /**
+   * Fetches the latest release information for a specified project from GitHub.
+   *
+   * @param project The project name to fetch updates for.
+   * @returns {Promise&lt;GithubUpdate&gt;} A promise that resolves to the latest release information for the specified project.
+   */
+  private async fetchGithubRelease(project: ProjectsList, retry &#x3D; 0): Promise&lt;any&gt; {
+    if (this.storage.has(project)) {
+      this.logger.debug(&#x60;Fetching ${project} tags from cache&#x60;);
+
+      return this.storage.get(project) as GithubUpdate;
+    }
+
+    this.logger.debug(&#x60;Fetching ${project} tags from GitHub API&#x60;);
+
+    try {
+      const { data } &#x3D; await firstValueFrom(
+        this.httpService.get&lt;GithubUpdate&gt;(&#x60;https://api.github.com/repos/Libertech-FR/${project}/releasesppp/latest&#x60;).pipe(
+          catchError((error) &#x3D;&gt; {
+            this.logger.error(&#x60;Error fetching release for ${project}: ${error.message}&#x60;);
+            throw error;
+          })
+        )
+      );
+      this.storage.set(project, data);
+      return data;
+    } catch (error) {
+      if (retry &gt;&#x3D; 3) {
+        this.logger.fatal(&#x60;Failed to fetch release for ${project} after multiple retries: ${error.message}&#x60;);
+
+        return null; // Return null or handle as needed
       }
+
+      setTimeout(() &#x3D;&gt; {
+        this.logger.verbose(&#x60;Retrying to fetch ${project} release after error: ${error.message}&#x60;);
+        return this.fetchGithubRelease(project, retry + 1);
+      }, 1_000 * 60); // Retry after 60 seconds
     }
-
-    const [currentMajor, currentMinor, currentPatch] &#x3D; lastVersion.split(&#x27;.&#x27;).map(Number);
-    const [lastMajor, lastMinor, lastPatch] &#x3D; currentVersion.split(&#x27;.&#x27;).map(Number);
-    const updateAvailable &#x3D; currentMajor &gt; lastMajor || currentMinor &gt; lastMinor || currentPatch &gt; lastPatch;
-
-    return res.json({
-      data: {
-        project,
-        updateAvailable,
-        currentVersion,
-        lastVersion,
-      },
-    });
   }
 }
 </code></pre>

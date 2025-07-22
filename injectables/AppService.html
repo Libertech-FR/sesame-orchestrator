@@ -145,6 +145,10 @@
                                 <a href="#package" >package</a>
                             </li>
                             <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#storage" >storage</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                 <a href="#_customModuleName" >_customModuleName</a>
                             </li>
@@ -184,8 +188,28 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#fetchGithubRelease" >fetchGithubRelease</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                 <a href="#getInfo" >getInfo</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getProjectUpdate" >getProjectUpdate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleCron" >handleCron</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#onApplicationBootstrap" >onApplicationBootstrap</a>
                             </li>
                         </ul>
                     </td>
@@ -206,12 +230,12 @@
                 <tr>
                     <td class="col-md-4">
                                 <span class="modifier">Public</span>
-                        <code>constructor(moduleRef: ModuleRef)</code>
+                        <code>constructor(moduleRef: ModuleRef, httpService: HttpService)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/app.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="72" class="link-to-prism">src/app.service.ts:72</a></div>
                             </td>
                         </tr>
 
@@ -240,6 +264,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>httpService</td>
+                                                  
+                                                        <td>
+                                                                    <code>HttpService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -254,6 +290,104 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetchGithubRelease"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>fetchGithubRelease</b></span>
+                        <a href="#fetchGithubRelease"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetchGithubRelease(project: <a href="../undefineds/ProjectsList.html" target="_self">ProjectsList</a>, retry: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="160"
+                                    class="link-to-prism">src/app.service.ts:160</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Fetches the latest release information for a specified project from GitHub.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>project</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#ProjectsList" target="_self" >ProjectsList</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    <p>The project name to fetch updates for.</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>retry</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>0</code>
+                                            </td>
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>A promise that resolves to the latest release information for the specified project.</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -276,19 +410,207 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">src/app.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="130"
+                                    class="link-to-prism">src/app.service.ts:130</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>Returns basic information about the application, such as name and version.</p>
+</div>
 
                         <div class="io-description">
                             <b>Returns : </b>    <code>Partial&lt;PackageJson&gt;</code>
 
                         </div>
+                            <div class="io-description">
+                                <p>Returns basic information about the application, such as name and version.</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getProjectUpdate"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getProjectUpdate</b></span>
+                        <a href="#getProjectUpdate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getProjectUpdate(project: <a href="../undefineds/ProjectsList.html" target="_self">ProjectsList</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="140"
+                                    class="link-to-prism">src/app.service.ts:140</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Fetches the latest release information for a specified project from GitHub.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>project</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#ProjectsList" target="_self" >ProjectsList</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>The project name to fetch updates for.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/GithubUpdate.html" target="_self" >GithubUpdate</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>A promise that resolves to the latest release information for the specified project.</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleCron"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleCron</b></span>
+                        <a href="#handleCron"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleCron()</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Cron(CronExpression.EVERY_6_HOURS)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">src/app.service.ts:113</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Cron job to fetch the latest releases of projects every 6 hours.
+This method logs the start and end of the job, and fetches updates for each project in the ProjectsList.
+It uses the fetchGithubRelease method to get the latest releases from GitHub.
+The job is scheduled using the CronExpression.EVERY_6_HOURS expression.</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onApplicationBootstrap"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>onApplicationBootstrap</b></span>
+                        <a href="#onApplicationBootstrap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onApplicationBootstrap()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">src/app.service.ts:90</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>On application bootstrap, this method is called to initialize the service.
+It logs the start of the bootstrap process and fetches the latest releases for each project
+in the ProjectsList enum.
+It uses the fetchGithubRelease method to get the latest releases from GitHub.</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>A promise that resolves when the bootstrap process is complete.</p>
+
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -319,7 +641,36 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/app.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="72" class="link-to-prism">src/app.service.ts:72</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="storage"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>storage</b></span>
+                        <a href="#storage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new LRUCache({
+    ttl: 1_000 * 60 * 60 * 6, // 6 hours
+    ttlAutopurge: true,
+  })</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="67" class="link-to-prism">src/app.service.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -533,24 +884,197 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, Injectable, OnApplicationBootstrap } from &#x27;@nestjs/common&#x27;;
 import { PackageJson } from &#x27;types-package-json&#x27;;
 import { ModuleRef } from &#x27;@nestjs/core&#x27;;
 import { readFileSync } from &#x27;fs&#x27;;
 import { AbstractService } from &#x27;~/_common/abstracts/abstract.service&#x27;;
 import { pick } from &#x27;radash&#x27;;
+import { HttpService } from &#x27;@nestjs/axios&#x27;;
+import { LRUCache } from &#x27;lru-cache&#x27;;
+import { catchError, firstValueFrom } from &#x27;rxjs&#x27;;
+import { Cron, CronExpression } from &#x27;@nestjs/schedule&#x27;;
+
+export enum ProjectsList {
+  SESAME_ORCHESTRATOR &#x3D; &#x27;sesame-orchestrator&#x27;,
+  SESAME_DAEMON &#x3D; &#x27;sesame-daemon&#x27;,
+  SESAME_APP_MANAGER &#x3D; &#x27;sesame-app-manager&#x27;,
+}
+
+export interface GithubAuthor {
+  login: string;
+  id: number;
+  node_id: string;
+  avatar_url: string;
+  gravatar_id: string;
+  url: string;
+  html_url: string;
+  followers_url: string;
+  following_url: string;
+  gists_url: string;
+  starred_url: string;
+  subscriptions_url: string;
+  organizations_url: string;
+  repos_url: string;
+  events_url: string;
+  received_events_url: string;
+  type: string;
+  user_view_type: string;
+  site_admin: boolean;
+}
+
+export interface GithubAsset {
+  [key: string]: any;
+}
+
+export interface GithubUpdate {
+  url: string;
+  assets_url: string;
+  upload_url: string;
+  html_url: string;
+  id: number;
+  author: GithubAuthor;
+  node_id: string;
+  tag_name: string;
+  target_commitish: string;
+  name: string;
+  draft: boolean;
+  prerelease: boolean;
+  created_at: string;
+  published_at: string;
+  assets: GithubAsset[];
+  tarball_url: string;
+  zipball_url: string;
+  body: string;
+}
 
 @Injectable()
-export class AppService extends AbstractService {
+export class AppService extends AbstractService implements OnApplicationBootstrap {
+  protected storage &#x3D; new LRUCache({
+    ttl: 1_000 * 60 * 60 * 6, // 6 hours
+    ttlAutopurge: true,
+  });
+
   protected package: Partial&lt;PackageJson&gt;;
 
-  public constructor(protected moduleRef: ModuleRef) {
+  public constructor(
+    protected moduleRef: ModuleRef,
+    private readonly httpService: HttpService,
+  ) {
     super({ moduleRef });
     this.package &#x3D; JSON.parse(readFileSync(&#x27;package.json&#x27;, &#x27;utf-8&#x27;));
   }
 
+  /**
+   * On application bootstrap, this method is called to initialize the service.
+   * It logs the start of the bootstrap process and fetches the latest releases for each project
+   * in the ProjectsList enum.
+   * It uses the fetchGithubRelease method to get the latest releases from GitHub.
+   *
+   * @returns {Promise&lt;void&gt;} A promise that resolves when the bootstrap process is complete.
+   */
+  public async onApplicationBootstrap(): Promise&lt;void&gt; {
+    this.logger.debug(&#x27;Application service bootstrap starting...&#x27;);
+
+    for (const project of Object.values(ProjectsList)) {
+      this.logger.verbose(&#x60;Checking for updates for project: ${project}&#x60;);
+
+      await this.fetchGithubRelease(project);
+    }
+
+    this.logger.log(&#x27;Application service bootstrap completed.&#x27;);
+  }
+
+  /**
+   * Cron job to fetch the latest releases of projects every 6 hours.
+   * This method logs the start and end of the job, and fetches updates for each project in the ProjectsList.
+   * It uses the fetchGithubRelease method to get the latest releases from GitHub.
+   * The job is scheduled using the CronExpression.EVERY_6_HOURS expression.
+   *
+   * @Cron(CronExpression.EVERY_6_HOURS)
+   * @returns {Promise&lt;void&gt;}
+   * @memberof AppService
+   */
+  @Cron(CronExpression.EVERY_6_HOURS)
+  public async handleCron(): Promise&lt;void&gt; {
+    this.logger.debug(&#x27;Cron job started.&#x27;);
+
+    for (const project of Object.values(ProjectsList)) {
+      this.logger.verbose(&#x60;Checking for updates for project: ${project}&#x60;);
+
+      await this.fetchGithubRelease(project);
+    }
+
+    this.logger.debug(&#x27;Cron job completed.&#x27;);
+  }
+
+  /**
+   * Returns basic information about the application, such as name and version.
+   *
+   * @returns {Partial&lt;PackageJson&gt;} Returns basic information about the application, such as name and version.
+   */
   public getInfo(): Partial&lt;PackageJson&gt; {
     return pick(this.package, [&#x27;name&#x27;, &#x27;version&#x27;]);
+  }
+
+  /**
+   * Fetches the latest release information for a specified project from GitHub.
+   *
+   * @param project The project name to fetch updates for.
+   * @returns {Promise&lt;GithubUpdate&gt;} A promise that resolves to the latest release information for the specified project.
+   */
+  public getProjectUpdate(project: ProjectsList): GithubUpdate {
+    if (!Object.values(ProjectsList).includes(project)) {
+      throw new BadRequestException(&#x60;Invalid project: ${project}&#x60;);
+    }
+
+    if (this.storage.has(project)) {
+      this.logger.debug(&#x60;Fetching ${project} tags from cache&#x60;);
+
+      return this.storage.get(project) as GithubUpdate;
+    }
+
+    return null; // Return null if the project is not cached
+  }
+
+  /**
+   * Fetches the latest release information for a specified project from GitHub.
+   *
+   * @param project The project name to fetch updates for.
+   * @returns {Promise&lt;GithubUpdate&gt;} A promise that resolves to the latest release information for the specified project.
+   */
+  private async fetchGithubRelease(project: ProjectsList, retry &#x3D; 0): Promise&lt;any&gt; {
+    if (this.storage.has(project)) {
+      this.logger.debug(&#x60;Fetching ${project} tags from cache&#x60;);
+
+      return this.storage.get(project) as GithubUpdate;
+    }
+
+    this.logger.debug(&#x60;Fetching ${project} tags from GitHub API&#x60;);
+
+    try {
+      const { data } &#x3D; await firstValueFrom(
+        this.httpService.get&lt;GithubUpdate&gt;(&#x60;https://api.github.com/repos/Libertech-FR/${project}/releasesppp/latest&#x60;).pipe(
+          catchError((error) &#x3D;&gt; {
+            this.logger.error(&#x60;Error fetching release for ${project}: ${error.message}&#x60;);
+            throw error;
+          })
+        )
+      );
+      this.storage.set(project, data);
+      return data;
+    } catch (error) {
+      if (retry &gt;&#x3D; 3) {
+        this.logger.fatal(&#x60;Failed to fetch release for ${project} after multiple retries: ${error.message}&#x60;);
+
+        return null; // Return null or handle as needed
+      }
+
+      setTimeout(() &#x3D;&gt; {
+        this.logger.verbose(&#x60;Retrying to fetch ${project} release after error: ${error.message}&#x60;);
+        return this.fetchGithubRelease(project, retry + 1);
+      }, 1_000 * 60); // Retry after 60 seconds
+    }
   }
 }
 </code></pre>

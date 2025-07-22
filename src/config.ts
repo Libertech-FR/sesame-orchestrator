@@ -7,6 +7,7 @@ import { JwtModuleOptions } from '@nestjs/jwt';
 import { StorageManagerConfig } from '@the-software-compagny/nestjs_module_factorydrive';
 import { AmazonWebServicesS3StorageConfig } from '@the-software-compagny/nestjs_module_factorydrive-s3';
 import { parse } from 'path';
+import { HttpModuleOptions } from '@nestjs/axios';
 
 export interface MongoosePlugin {
   package: string;
@@ -36,6 +37,9 @@ export interface ConfigInstance {
   ioredis: {
     uri: string;
     options: RedisOptions;
+  };
+  axios: {
+    options: HttpModuleOptions;
   };
   factorydrive: {
     options:
@@ -120,6 +124,12 @@ export default (): ConfigInstance => ({
     },
     plugins: [
     ],
+  },
+  axios: {
+    options: {
+      timeout: parseInt(process.env['SESAME_AXIOS_TIMEOUT'], 10) || 5_000,
+      maxRedirects: parseInt(process.env['SESAME_AXIOS_MAX_REDIRECTS'], 10) || 5,
+    },
   },
   factorydrive: {
     options: {

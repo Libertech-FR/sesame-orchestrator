@@ -23,6 +23,8 @@ import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factory
 import { MigrationsModule } from './migrations/migrations.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ShutdownObserver } from './_common/observers/shutdown.observer';
+import { ScheduleModule } from '@nestjs/schedule';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -118,7 +120,15 @@ import { ShutdownObserver } from './_common/observers/shutdown.observer';
         ...config.get('factorydrive.options'),
       }),
     }),
+    HttpModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        ...config.get('axios.options'),
+      }),
+    }),
     RequestContextModule,
+    ScheduleModule.forRoot(),
     CoreModule.register(),
     ManagementModule.register(),
     SettingsModule.register(),

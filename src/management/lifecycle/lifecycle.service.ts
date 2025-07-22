@@ -11,11 +11,10 @@ import { parse } from 'yaml';
 import { plainToInstance } from 'class-transformer';
 import { ConfigObjectIdentitiesDTO, ConfigObjectSchemaDTO } from './_dto/config.dto';
 import { validateOrReject } from 'class-validator';
-import { IdentityLifecycle } from '../identities/_enums/lifecycle.enum';
 import { omit } from 'radash';
 
 interface LifecycleSource {
-  [source: IdentityLifecycle | string]: Partial<ConfigObjectIdentitiesDTO>[];
+  [source: string]: Partial<ConfigObjectIdentitiesDTO>[];
 }
 
 @Injectable()

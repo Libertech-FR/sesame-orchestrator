@@ -85,7 +85,6 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
   ): Promise<[Array<T & Query<T, T, any, T>>, number]> {
     this.logger.debug(['findAndCount', JSON.stringify(Object.values(arguments))].join(' '))
     if (this.eventEmitter) {
-      console.log('de', [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'beforeFindAndCount'].join(EventEmitterSeparator))
       const beforeEvents = await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'beforeFindAndCount'].join(EventEmitterSeparator),
         { filter, projection, options },

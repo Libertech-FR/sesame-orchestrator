@@ -28,6 +28,9 @@ export class Identities extends AbstractSchema {
   @Prop({ type: Boolean, default: false })
   public deletedFlag: boolean;
 
+  @Prop({ type: Boolean, default: false })
+  public ignoreLifecycle: boolean;
+
   @Prop({ type: inetOrgPersonSchema, required: true })
   public inetOrgPerson: inetOrgPerson;
 

@@ -53,7 +53,10 @@ export default class LifeCycle1752765731 {
         this.mongo.collection('identities').updateOne(
           { _id: identity._id },
           {
-            $set: { 'inetOrgPerson.lifecycle': identity.lifecycle }
+            $set: {
+              'inetOrgPerson.lifecycle': identity.lifecycle,
+              ignoreLifecycle: false,
+            }
           },
         );
       }

@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Lifecycle, LifecycleSchema } from './_schemas/lifecycle.schema';
 import { LifecycleController } from './lifecycle.controller';
 import { LifecycleService } from './lifecycle.service';
+import { IdentitiesModule } from '../identities/identities.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { LifecycleService } from './lifecycle.service';
         schema: LifecycleSchema,
       },
     ]),
+    IdentitiesModule,
   ],
   providers: [LifecycleService],
   controllers: [LifecycleController],

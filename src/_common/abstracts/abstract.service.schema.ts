@@ -221,7 +221,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     let created = document.save(options)
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
-        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterFindAndCount'].join(EventEmitterSeparator),
+        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterCreate'].join(EventEmitterSeparator),
         { created },
       )
       for (const afterEvent of afterEvents) {
@@ -255,6 +255,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options = { ...options, ...beforeEvent.options }
       }
     }
+    const before = await this._model.findOne<Query<T | null, T, any, T>>({ _id }).exec();
     let updated = await this._model
       .findOneAndUpdate<Query<T | null, T, any, T>>(
         { _id },
@@ -283,8 +284,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     }
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
-        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterFindAndCount'].join(EventEmitterSeparator),
-        { updated },
+        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterUpdate'].join(EventEmitterSeparator),
+        { before, updated },
       )
       for (const afterEvent of afterEvents) {
         if (afterEvent?.updated) updated = { ...updated, ...afterEvent.updated }
@@ -367,6 +368,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options = { ...options, ...beforeEvent.options }
       }
     }
+    const before = await this._model.findOne<Query<T | null, T, any, T>>({ _id }).exec();
     let deleted = await this._model.findByIdAndDelete<Query<T | null, T, any, T>>({ _id }, options).exec()
     if (!deleted) {
       this.logger.debug(['findById', JSON.stringify(Object.values(arguments))].join(' '))
@@ -374,8 +376,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     }
     if (this.eventEmitter) {
       const afterEvents = await this.eventEmitter?.emitAsync(
-        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterFindAndCount'].join(EventEmitterSeparator),
-        { deleted },
+        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), 'service', 'afterDelete'].join(EventEmitterSeparator),
+        { before, deleted },
       )
       for (const afterEvent of afterEvents) {
         if (afterEvent?.deleted) deleted = { ...deleted, ...afterEvent.deleted }

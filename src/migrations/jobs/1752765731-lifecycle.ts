@@ -1,13 +1,12 @@
 import { Logger } from "@nestjs/common"
 import { InjectConnection, InjectModel } from "@nestjs/mongoose"
 import { Connection, Model } from "mongoose"
+import { isNumber } from "radash"
 
 export default class LifeCycle1752765731 {
   private readonly logger = new Logger(LifeCycle1752765731.name)
 
-  public constructor(
-    @InjectConnection() private mongo: Connection,
-  ) {
+  public constructor(@InjectConnection() private mongo: Connection) {
   }
 
   public async up(): Promise<void> {
@@ -20,10 +19,14 @@ export default class LifeCycle1752765731 {
     const identities = await this.mongo.collection('identities').find();
 
     for await (const identity of identities) {
-      const lifecycle = identity.lifecycle;
+      let lifecycle = identity.lifecycle;
 
-      if (typeof lifecycle === 'number') {
+      if (typeof lifecycle === 'number' || isNumber(lifecycle)) {
         this.logger.log(`Migrating lifecycle for identity ${identity._id}`);
+
+        if (typeof lifecycle === 'string') {
+          lifecycle = parseInt(lifecycle, 10);
+        }
 
         switch (lifecycle) {
           case 0:
@@ -54,7 +57,7 @@ export default class LifeCycle1752765731 {
           { _id: identity._id },
           {
             $set: {
-              'inetOrgPerson.lifecycle': identity.lifecycle,
+              lifecycle: identity.lifecycle,
               ignoreLifecycle: false,
             }
           },

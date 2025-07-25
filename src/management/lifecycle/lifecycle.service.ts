@@ -5,13 +5,14 @@ import { FilterOptions } from '@the-software-compagny/nestjs_module_restools';
 import { Model, Query, Types } from 'mongoose';
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { Identities } from '../identities/_schemas/identities.schema';
-import { Lifecycle } from './_schemas/lifecycle.schema';
+import { Lifecycle, LifecycleRefId } from './_schemas/lifecycle.schema';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { parse } from 'yaml';
 import { plainToInstance } from 'class-transformer';
 import { ConfigObjectIdentitiesDTO, ConfigObjectSchemaDTO } from './_dto/config.dto';
 import { validateOrReject } from 'class-validator';
 import { omit } from 'radash';
+import { IdentitiesCrudService } from '../identities/identities-crud.service';
 
 interface LifecycleSource {
   [source: string]: Partial<ConfigObjectIdentitiesDTO>[];
@@ -21,7 +22,10 @@ interface LifecycleSource {
 export class LifecycleService extends AbstractServiceSchema implements OnApplicationBootstrap, OnModuleInit {
   protected lifecycleSources: LifecycleSource = {};
 
-  public constructor(@InjectModel(Lifecycle.name) protected _model: Model<Lifecycle>) {
+  public constructor(
+    @InjectModel(Lifecycle.name) protected _model: Model<Lifecycle>,
+    protected readonly identitiesService: IdentitiesCrudService,
+  ) {
     super();
   }
 
@@ -154,8 +158,35 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
   }
 
   /**
+   * Handle identity update events
+   * This method listens for events emitted after an identity is updated.
+   * It checks if the identity has a valid ID and then processes the lifecycle event.
+   * If the identity's lifecycle has changed, it creates a new lifecycle event.
+   * It also logs the event handling process, including any warnings if the identity data is invalid.
+   * This method is triggered by the 'management.identities.service.afterUpdate' event.
+   *
+   * @param event - The event containing the identity update data
+   * @returns A promise that resolves when the lifecycle event is created
+   */
+  @OnEvent('management.identities.service.afterUpdate')
+  public async handle(event: { updated: Identities, before?: Identities }): Promise<void> {
+    this.logger.verbose(`Handling identity update event for identity <${event.updated._id}>`);
+
+    if (!event.updated || !event.updated._id) {
+      this.logger.warn('No valid identity found in event data');
+      return;
+    }
+
+    await this.fireLifecycleEvent(event.before, event.updated);
+  }
+
+  /**
    * Handle identity upsert events
    * This method listens for events emitted after an identity is upserted.
+   * It checks if the identity has a valid ID and then processes the lifecycle event.
+   * If the identity's lifecycle has changed, it creates a new lifecycle event.
+   * It also logs the event handling process, including any warnings if the identity data is invalid.
+   * This method is triggered by the 'management.identities.service.afterUpsert' event.
    *
    * @param event - The event containing the identity upsert data
    * @returns A promise that resolves when the lifecycle event is created
@@ -163,30 +194,75 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
   @OnEvent('management.identities.service.afterUpsert')
   public async handleOrderCreatedEvent(event: { result: Identities, before?: Identities }): Promise<void> {
     this.logger.verbose(`Handling identity upsert event for identity <${event.result._id}>`);
+
     if (!event.result || !event.result._id) {
       this.logger.warn('No valid identity found in event data');
       return;
     }
 
-    if (event.before && event.before.lifecycle !== event.result.lifecycle) {
+    await this.fireLifecycleEvent(event.before, event.result);
+  }
+
+  /**
+   * Fire a lifecycle event
+   * This method is responsible for processing the lifecycle event for a given identity.
+   * It checks if the lifecycle has changed and creates a new lifecycle event if necessary.
+   * It also processes the lifecycle sources associated with the new lifecycle.
+   * If the lifecycle has changed, it updates the identity's lifecycle based on the rules defined in the lifecycle sources.
+   * It logs the lifecycle event processing and any updates made to the identity.
+   * This method is called when an identity's lifecycle changes.
+   *
+   * @param before - The identity data before the update
+   * @param after - The identity data after the update
+   * @returns A promise that resolves when the lifecycle event is processed
+   */
+  private async fireLifecycleEvent(before: Identities, after: Identities): Promise<void> {
+    if (before.lifecycle !== after.lifecycle) {
       await this.create({
-        refId: event.result._id,
-        lifecycle: event.result.lifecycle,
+        refId: after._id,
+        lifecycle: after.lifecycle,
         date: new Date(),
       });
-      this.logger.debug(`Lifecycle event manualy recorded for identity <${event.result._id}>: ${event.result.lifecycle}`);
-      return;
+      this.logger.debug(`Lifecycle event manualy recorded for identity <${after._id}>: ${after.lifecycle}`);
+      // If the lifecycle has changed, we need to process the new lifecycle
     }
 
-    if (this.lifecycleSources[event.result.lifecycle]) {
-      for (const rule of this.lifecycleSources[event.result.lifecycle]) {
-        // TODO: changer le lifecycle de l'identité si la rule match avec un findOneAndUpdate
+    if (this.lifecycleSources[after.lifecycle]) {
+      this.logger.debug(`Processing lifecycle sources for identity <${after._id}> with lifecycle <${after.lifecycle}>`);
 
-        // await this.create({
-        //   refId: event.result._id,
-        //   lifecycle: event.result.lifecycle,
-        //   date: new Date(),
-        // });
+      for (const lcs of this.lifecycleSources[after.lifecycle]) {
+        this.logger.verbose(`Processing lifecycle source <${after.lifecycle}> with rules: ${JSON.stringify(lcs.rules)}`);
+
+        const res = await this.identitiesService.model.findOneAndUpdate(
+          {
+            ...lcs.rules,
+            _id: after._id,
+            ignoreLifecycle: { $ne: true },
+          },
+          {
+            $set: {
+              lifecycle: lcs.target,
+            },
+          },
+          {
+            new: true, // Return the updated document
+            upsert: false, // Do not create a new document if no match is found
+          }
+        );
+
+        if (!res) {
+          this.logger.debug(`No identity found matching rules for lifecycle <${after.lifecycle}>`);
+          continue;
+        }
+
+        await this.create({
+          refId: after._id,
+          lifecycle: lcs.target,
+          date: new Date(),
+        });
+
+        this.logger.log(`Identity <${res._id}> updated to lifecycle <${lcs.target}> based on rules from source <${after.lifecycle}>`);
+        return;
       }
     }
   }
@@ -202,9 +278,9 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
   public async getLifecycleHistory(
     refId: Types.ObjectId,
     options?: FilterOptions,
-  ): Promise<Query<Array<Lifecycle>, Lifecycle, any, Lifecycle>[]> {
+  ): Promise<[number, Query<Array<Lifecycle>, Lifecycle, any, Lifecycle>[]]> {
     const result = await this.find<Lifecycle>({ refId }, null, {
-      populate: 'refId',
+      populate: LifecycleRefId,
       sort: {
         ...options?.sort,
         createdAt: -1,
@@ -212,8 +288,9 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
       skip: options?.skip || 0,
       limit: options?.limit || 100,
     });
+    const total = await this.count({ refId });
 
-    return result;
+    return [total, result];
   }
 
   /**

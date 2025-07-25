@@ -5,6 +5,8 @@ import { IdentityLifecycle } from '~/management/identities/_enums/lifecycle.enum
 
 export type LifecycleDocument = Lifecycle & Document;
 
+export const LifecycleRefId = 'refId';
+
 @Schema({ versionKey: false, minimize: false })
 export class Lifecycle extends AbstractSchema {
   @Prop({

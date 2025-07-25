@@ -35,10 +35,14 @@ export class LifecycleController extends AbstractController {
   public async getLifecycleHistory(
     @Param('identityId', ObjectIdValidationPipe) identityId: Types.ObjectId,
     @Res() res: Response,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
   ): Promise<Response<Lifecycle[]>> {
+    const [total, data] = await this._service.getLifecycleHistory(identityId, searchFilterOptions);
+
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
-      data: await this._service.getLifecycleHistory(identityId),
+      data,
+      total,
     });
   }
 

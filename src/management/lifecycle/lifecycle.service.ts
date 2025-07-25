@@ -267,8 +267,6 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
     }
   }
 
-  // TODO: implémenter l'event update pour les changements de lifecycle
-
   /**
    * Get lifecycle history for a specific identity
    *

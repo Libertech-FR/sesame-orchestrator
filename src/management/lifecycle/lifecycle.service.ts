@@ -10,7 +10,7 @@ import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { parse } from 'yaml';
 import { plainToInstance } from 'class-transformer';
 import { ConfigObjectIdentitiesDTO, ConfigObjectSchemaDTO } from './_dto/config.dto';
-import { validateOrReject } from 'class-validator';
+import { validateOrReject, ValidationError } from 'class-validator';
 import { omit } from 'radash';
 import { IdentitiesCrudService } from '../identities/identities-crud.service';
 
@@ -144,9 +144,9 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
         })
         this.logger.debug(`Validated schema for file: ${file}`);
       } catch (errors) {
-        const err = new Error(`Validation failed for schema in file: ${file}`);
-        err.message = errors.map((e) => e.toString()).join(', ') //TODO: improve error message
-        throw err
+        const formattedErrors = this.formatValidationErrors(errors, file);
+        const err = new Error(`Validation errors in file '${file}':\n${formattedErrors}`);
+        throw err;
       }
 
       lifecycleRules.push(schema);
@@ -155,6 +155,69 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
 
     this.logger.log(`Loaded <${lifecycleRules.length}> lifecycle rules from configuration files.`);
     return lifecycleRules;
+  }
+
+  /**
+   * Format validation errors for better readability
+   *
+   * @param errors - Array of ValidationError objects from class-validator
+   * @param file - The file name where the validation failed
+   * @returns A formatted error message string
+   */
+  private formatValidationErrors(errors: ValidationError[], file: string, basePath: string = '', isInArrayContext: boolean = false): string {
+    const formatError = (error: ValidationError, currentPath: string, inArrayContext: boolean): string[] => {
+      let propertyPath = currentPath;
+
+      /**
+       * Check if error.property is defined, not null, not empty, and not the string 'undefined'.
+       * If it is, we construct the property path based on whether we are in an array context or not.
+       * If it is an array context, we use the index notation; otherwise, we use dot notation.
+       */
+      if (error.property !== undefined &&
+        error.property !== null &&
+        error.property !== '' &&
+        error.property !== 'undefined') {
+        if (inArrayContext && !isNaN(Number(error.property))) {
+          // C'est un index d'array
+          propertyPath = currentPath ? `${currentPath}[${error.property}]` : `[${error.property}]`;
+        } else {
+          // C'est une propriété normale
+          propertyPath = currentPath ? `${currentPath}.${error.property}` : error.property;
+        }
+      }
+
+      const errorMessages: string[] = [];
+
+      /**
+       * Check if error.constraints is defined and not empty.
+       * If it is, we iterate over each constraint and format the error message.
+       */
+      if (error.constraints) {
+        Object.entries(error.constraints).forEach(([constraintKey, message]) => {
+          errorMessages.push(`Property '${propertyPath}': ${message} (constraint: ${constraintKey})`);
+        });
+      }
+
+      /**
+       * If the error has children, we recursively format each child error.
+       * We check if the error has children and if they are defined.
+       */
+      if (error.children && error.children.length > 0) {
+        const isNextLevelArray = Array.isArray(error.value);
+        error.children.forEach(childError => {
+          errorMessages.push(...formatError(childError, propertyPath, isNextLevelArray));
+        });
+      }
+
+      return errorMessages;
+    };
+
+    const allErrorMessages: string[] = [];
+    errors.forEach(error => {
+      allErrorMessages.push(...formatError(error, basePath, isInArrayContext));
+    });
+
+    return allErrorMessages.map(msg => `• ${msg}`).join('\n');
   }
 
   /**

@@ -13,10 +13,16 @@ import { ConfigObjectIdentitiesDTO, ConfigObjectSchemaDTO } from './_dto/config.
 import { validateOrReject, ValidationError } from 'class-validator';
 import { omit } from 'radash';
 import { IdentitiesCrudService } from '../identities/identities-crud.service';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 
 interface LifecycleSource {
   [source: string]: Partial<ConfigObjectIdentitiesDTO>[];
 }
+
+type ConfigObjectIdentitiesDTOWithSource = Omit<ConfigObjectIdentitiesDTO, 'sources'> & {
+  source: string;
+};
 
 @Injectable()
 export class LifecycleService extends AbstractServiceSchema implements OnApplicationBootstrap, OnModuleInit {
@@ -25,6 +31,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
   public constructor(
     @InjectModel(Lifecycle.name) protected _model: Model<Lifecycle>,
     protected readonly identitiesService: IdentitiesCrudService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {
     super();
   }
@@ -95,12 +102,118 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
           if (!this.lifecycleSources[source]) {
             this.lifecycleSources[source] = [];
           }
-          this.lifecycleSources[source].push(omit(idRule, ['sources'])); // Exclude sources from the stored rules
+
+          const rule = omit(idRule, ['sources']);
+          if (rule.trigger) {
+            this.logger.log(`Trigger found for source <${source}>: ${-rule.trigger}, installing cron job !`);
+
+            if (this.schedulerRegistry.doesExist('cron', `lifecycle-trigger-${source}`)) {
+              this.logger.warn(`Cron job for source <${source}> already exists, skipping creation.`);
+              continue;
+            }
+
+            const cronExpression = this.convertSecondsToCron(-rule.trigger);
+            this.logger.debug(`Creating cron job with pattern: ${cronExpression}`);
+
+            const job = new CronJob(cronExpression, this.runJob.bind(this, {
+              source, // Pass the source to the job for context
+              ...rule,
+            }));
+
+            this.schedulerRegistry.addCronJob(`lifecycle-trigger-${source}`, job);
+            job.start();
+          }
+
+          this.lifecycleSources[source].push(rule);
         }
       }
     }
 
     this.logger.log('LifecycleService bootstraped');
+  }
+
+  protected async runJob(rule: ConfigObjectIdentitiesDTOWithSource): Promise<void> {
+    this.logger.debug(`Running LifecycleService job: <${JSON.stringify(rule)}>`);
+
+    try {
+      const identities = await this.identitiesService.model.find({
+        ...rule.rules,
+        lifecycle: rule.source,
+        ignoreLifecycle: { $ne: true },
+      });
+
+      this.logger.log(`Found ${identities.length} identities to process for trigger in source <${rule.source}>`);
+
+      for (const identity of identities) {
+        const updated = await this.identitiesService.model.findOneAndUpdate(
+          { _id: identity._id },
+          { $set: { lifecycle: rule.target } },
+          { new: true }
+        );
+
+        if (updated) {
+          await this.create({
+            refId: identity._id,
+            lifecycle: rule.target,
+            date: new Date(),
+          });
+
+          this.logger.log(`Identity <${identity._id}> updated to lifecycle <${rule.target}> by trigger from source <${rule.source}>`);
+        }
+      }
+    } catch (error) {
+      this.logger.error(`Error in lifecycle trigger job for source <${rule.source}>:`, error.message, error.stack);
+    }
+  }
+
+  /**
+   * Convert seconds to a proper cron expression
+   * This method converts a duration in seconds to the most appropriate cron expression.
+   * It optimizes for readability and performance by using the largest possible time unit.
+   *
+   * @param seconds - The number of seconds for the interval
+   * @returns A cron expression string in the format "second minute hour day month dayOfWeek"
+   */
+  private convertSecondsToCron(seconds: number): string {
+    // Ensure we have a valid positive number
+    const intervalSeconds = Math.max(1, Math.floor(seconds));
+
+    // If it's less than 60 seconds, use seconds
+    if (intervalSeconds < 60) {
+      return `*/${intervalSeconds} * * * * *`;
+    }
+
+    // If it's exactly divisible by 60 and less than 3600, use minutes
+    const minutes = intervalSeconds / 60;
+    if (intervalSeconds % 60 === 0 && minutes < 60) {
+      return `0 */${Math.floor(minutes)} * * * *`;
+    }
+
+    // If it's exactly divisible by 3600 and less than 86400, use hours
+    const hours = intervalSeconds / 3600;
+    if (intervalSeconds % 3600 === 0 && hours < 24) {
+      return `0 0 */${Math.floor(hours)} * * *`;
+    }
+
+    // If it's exactly divisible by 86400, use days
+    const days = intervalSeconds / 86400;
+    if (intervalSeconds % 86400 === 0 && days <= 30) {
+      return `0 0 0 */${Math.floor(days)} * *`;
+    }
+
+    // For very large intervals or non-standard intervals, fall back to the most appropriate unit
+    if (intervalSeconds >= 3600) {
+      // Use hours for intervals >= 1 hour
+      const hourInterval = Math.max(1, Math.floor(intervalSeconds / 3600));
+      return `0 0 */${hourInterval} * * *`;
+    } else if (intervalSeconds >= 60) {
+      // Use minutes for intervals >= 1 minute
+      const minuteInterval = Math.max(1, Math.floor(intervalSeconds / 60));
+      return `0 */${minuteInterval} * * * *`;
+    } else {
+      // Fall back to seconds
+      return `*/${intervalSeconds} * * * * *`;
+    }
   }
 
   /**

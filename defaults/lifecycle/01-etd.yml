@@ -1,0 +1,8 @@
+identities:
+  - sources: ['I', 'W']
+    # rules: {
+    #   'inetOrgPerson.employeeType': 'etd',
+    #   lastSyncBackup: { $ne : null }
+    # }
+    # trigger: null
+    target: D

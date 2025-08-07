@@ -187,10 +187,16 @@
                             <a href="#swagger" title="src/swagger.ts" ><b>swagger</b>&nbsp;&nbsp;&nbsp;(src/.../swagger.ts)</a>
                         </li>
                         <li>
+                            <a href="#transformTriggerToSeconds" title="src/management/lifecycle/_dto/config.dto.ts" ><b>transformTriggerToSeconds</b>&nbsp;&nbsp;&nbsp;(src/.../config.dto.ts)</a>
+                        </li>
+                        <li>
                             <a href="#updateAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>updateAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
                         </li>
                         <li>
                             <a href="#updateErrorAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>updateErrorAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ValidateRulesOrTrigger" title="src/management/lifecycle/_dto/config.dto.ts" ><b>ValidateRulesOrTrigger</b>&nbsp;&nbsp;&nbsp;(src/.../config.dto.ts)</a>
                         </li>
                     </ul>
                 </td>
@@ -2330,6 +2336,136 @@
 
                                             <td>
                                                     No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/management/lifecycle/_dto/config.dto.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="transformTriggerToSeconds"></a>
+                    <span class="name">
+                        <span ><b>transformTriggerToSeconds</b></span>
+                        <a href="#transformTriggerToSeconds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>transformTriggerToSeconds(value)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Transform trigger values to seconds.</p>
+<ul>
+<li>Numbers are interpreted as days and converted to seconds</li>
+<li>Strings with &#39;d&#39; suffix are interpreted as days and converted to seconds</li>
+<li>Strings with &#39;m&#39; suffix are interpreted as minutes and converted to seconds</li>
+<li>Strings with &#39;s&#39; suffix are already in seconds</li>
+</ul>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>value</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>The trigger value to transform</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>number | undefined</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>The value converted to seconds</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ValidateRulesOrTrigger"></a>
+                    <span class="name">
+                        <span ><b>ValidateRulesOrTrigger</b></span>
+                        <a href="#ValidateRulesOrTrigger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ValidateRulesOrTrigger(validationOptions?: ValidationOptions)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Custom decorator to validate that at least one of the properties &#39;rules&#39; or &#39;trigger&#39; is defined and not empty.
+This decorator can be applied to a class to enforce this validation rule.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>validationOptions</td>
+                                            <td>
+                                                        <code>ValidationOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
                                             </td>
 
 

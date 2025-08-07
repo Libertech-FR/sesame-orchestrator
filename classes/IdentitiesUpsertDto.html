@@ -223,7 +223,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, IntersectionType, PartialType } from &#x27;@nestjs/swagger&#x27;;
-import { IsOptional, IsObject, IsEnum, IsNumber, ValidateNested } from &#x27;class-validator&#x27;;
+import { IsOptional, IsObject, IsEnum, IsNumber, ValidateNested, IsString } from &#x27;class-validator&#x27;;
 import { inetOrgPersonDto } from &#x27;./_parts/inetOrgPerson.dto&#x27;;
 import { IdentityState } from &#x27;../_enums/states.enum&#x27;;
 import { IdentityLifecycle } from &#x27;../_enums/lifecycle.enum&#x27;;
@@ -253,11 +253,11 @@ export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, Metad
   @ApiProperty({ enum: DataStatusEnum })
   public dataStatus: DataStatusEnum;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
   @IsEnum(IdentityLifecycle)
   @ApiProperty({ enum: IdentityLifecycle })
-  public lifecycle: number;
+  public lifecycle: string;
 
   @IsObject()
   @Type(() &#x3D;&gt; inetOrgPersonDto)

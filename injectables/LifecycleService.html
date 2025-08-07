@@ -91,7 +91,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >PasswdadmService</li>
+  <li class="breadcrumb-item" >LifecycleService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -115,7 +115,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/settings/passwdadm.service.ts</code>
+            <code>src/management/lifecycle/lifecycle.service.ts</code>
         </p>
 
 
@@ -124,7 +124,7 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                            <code><a href="../classes/AbstractSettingsService.html" target="_self" >AbstractSettingsService</a></code>
+                            <code><a href="../injectables/AbstractServiceSchema.html" target="_self" >AbstractServiceSchema</a></code>
             </p>
 
 
@@ -142,7 +142,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Protected</span>
-                                <a href="#settingsName" >settingsName</a>
+                                <a href="#lifecycleSources" >lifecycleSources</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
@@ -189,34 +189,63 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#convertSecondsToCron" >convertSecondsToCron</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#fireLifecycleEvent" >fireLifecycleEvent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#formatValidationErrors" >formatValidationErrors</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#checkPolicies" >checkPolicies</a>
+                                <a href="#getLifecycleHistory" >getLifecycleHistory</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getLifecycleStats" >getLifecycleStats</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getRecentChanges" >getRecentChanges</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handle" >handle</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleOrderCreatedEvent" >handleOrderCreatedEvent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#loadLifecycleRules" >loadLifecycleRules</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#onApplicationBootstrap" >onApplicationBootstrap</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onModuleInit" >onModuleInit</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
                                     <span class="modifier">Async</span>
-                                <a href="#defaultValues" >defaultValues</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getPolicies" >getPolicies</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#setPolicies" >setPolicies</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getParameter" >getParameter</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#setParameter" >setParameter</a>
+                                <a href="#runJob" >runJob</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -280,6 +309,79 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                                <span class="modifier">Public</span>
+                        <code>constructor(_model: <a href="../classes/Lifecycle.html" target="_self">Model&lt;Lifecycle&gt;</a>, identitiesService: <a href="../classes/IdentitiesCrudService.html" target="_self">IdentitiesCrudService</a>, schedulerRegistry: SchedulerRegistry)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:29</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>_model</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/Lifecycle.html" target="_self" >Model&lt;Lifecycle&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>identitiesService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/IdentitiesCrudService.html" target="_self" >IdentitiesCrudService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schedulerRegistry</td>
+                                                  
+                                                        <td>
+                                                                    <code>SchedulerRegistry</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
             <section data-compodoc="block-methods">
     
@@ -290,33 +392,36 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="checkPolicies"></a>
+                    <a name="convertSecondsToCron"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>checkPolicies</b></span>
-                        <a href="#checkPolicies"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Private</span>
+                        <span ><b>convertSecondsToCron</b></span>
+                        <a href="#convertSecondsToCron"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkPolicies(password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>convertSecondsToCron(seconds: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">src/settings/passwdadm.service.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="177"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:177</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>Convert seconds to a proper cron expression
+This method converts a duration in seconds to the most appropriate cron expression.
+It optimizes for readability and performance by using the largest possible time unit.</p>
+</div>
 
                             <div class="io-description">
                                 <b>Parameters :</b>
@@ -327,11 +432,216 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Description</td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>password</td>
+                                                <td>seconds</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>The number of seconds for the interval</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>A cron expression string in the format &quot;second minute hour day month dayOfWeek&quot;</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fireLifecycleEvent"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>fireLifecycleEvent</b></span>
+                        <a href="#fireLifecycleEvent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fireLifecycleEvent(before: <a href="../classes/Identities.html" target="_self">Identities</a>, after: <a href="../classes/Identities.html" target="_self">Identities</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="395"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:395</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Fire a lifecycle event
+This method is responsible for processing the lifecycle event for a given identity.
+It checks if the lifecycle has changed and creates a new lifecycle event if necessary.
+It also processes the lifecycle sources associated with the new lifecycle.
+If the lifecycle has changed, it updates the identity&#39;s lifecycle based on the rules defined in the lifecycle sources.
+It logs the lifecycle event processing and any updates made to the identity.
+This method is called when an identity&#39;s lifecycle changes.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>before</td>
+                                            <td>
+                                                            <code><a href="../classes/Identities.html" target="_self" >Identities</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>The identity data before the update</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>after</td>
+                                            <td>
+                                                            <code><a href="../classes/Identities.html" target="_self" >Identities</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>The identity data after the update</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>A promise that resolves when the lifecycle event is processed</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="formatValidationErrors"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>formatValidationErrors</b></span>
+                        <a href="#formatValidationErrors"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>formatValidationErrors(errors: ValidationError[], file: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, basePath: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, isInArrayContext: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="280"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:280</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Format validation errors for better readability</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>errors</td>
+                                            <td>
+                                                        <code>ValidationError[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    <ul>
+<li>Array of ValidationError objects from class-validator</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>file</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
@@ -340,17 +650,60 @@
                                                     No
                                             </td>
 
+                                            <td>
+                                            </td>
 
+                                            <td>
+                                                    <ul>
+<li>The file name where the validation failed</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>basePath</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>&#x27;&#x27;</code>
+                                            </td>
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>isInArrayContext</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>false</code>
+                                            </td>
+
+                                            <td>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
                         </div>
                             <div class="io-description">
-                                
+                                <p>A formatted error message string</p>
+
                             </div>
                 </td>
             </tr>
@@ -360,127 +713,35 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="defaultValues"></a>
-                    <span class="name">
-                            <span class="modifier">Protected</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>defaultValues</b></span>
-                        <a href="#defaultValues"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>defaultValues()</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/AbstractSettingsService.html" target="_self" >AbstractSettingsService</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractSettingsService.html#source" target="_self" >AbstractSettingsService:68</a></code>
-</div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <b>Type parameters :</b>
-                            <ul class="type-parameters">
-                                    <li>T</li>
-                            </ul>
-                        </td>
-                    </tr>
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;T&gt;</code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getPolicies"></a>
+                    <a name="getLifecycleHistory"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>getPolicies</b></span>
-                        <a href="#getPolicies"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLifecycleHistory</b></span>
+                        <a href="#getLifecycleHistory"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getPolicies()</code>
+                    <code>getLifecycleHistory(refId: Types.ObjectId, options?: FilterOptions)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="9"
-                                    class="link-to-prism">src/settings/passwdadm.service.ts:9</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="452"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:452</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/PasswordPoliciesDto.html" target="_self" >Promise&lt;PasswordPoliciesDto&gt;</a></code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="setPolicies"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>setPolicies</b></span>
-                        <a href="#setPolicies"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>setPolicies(policies: <a href="../classes/PasswordPoliciesDto.html" target="_self">PasswordPoliciesDto</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">src/settings/passwdadm.service.ts:14</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
+                        <div class="io-description"><p>Get lifecycle history for a specific identity</p>
+</div>
 
                             <div class="io-description">
                                 <b>Parameters :</b>
@@ -491,13 +752,14 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Description</td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>policies</td>
+                                                <td>refId</td>
                                             <td>
-                                                            <code><a href="../classes/PasswordPoliciesDto.html" target="_self" >PasswordPoliciesDto</a></code>
+                                                        <code>Types.ObjectId</code>
                                             </td>
 
                                             <td>
@@ -505,16 +767,85 @@
                                             </td>
 
 
+                                            <td>
+                                                    <ul>
+<li>The ID of the identity to retrieve lifecycle history for</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>FilterOptions</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>An array of lifecycle events for the specified identity, sorted by creation date in descending order</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLifecycleStats"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getLifecycleStats</b></span>
+                        <a href="#getLifecycleStats"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getLifecycleStats()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="477"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:477</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get lifecycle statistics
+This method aggregates lifecycle events by their type and counts the occurrences.
+It returns an array of objects where each object contains the lifecycle type and the count of occurrences.</p>
+</div>
+
                         <div class="io-description">
                             <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
 
                         </div>
                             <div class="io-description">
-                                
+                                <p>An array of lifecycle statistics, each containing the lifecycle type and count</p>
+
                             </div>
                 </td>
             </tr>
@@ -524,39 +855,37 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getParameter"></a>
+                    <a name="getRecentChanges"></a>
                     <span class="name">
-                            <span class="modifier">Protected</span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>getParameter</b></span>
-                        <a href="#getParameter"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getRecentChanges</b></span>
+                        <a href="#getRecentChanges"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getParameter(settingName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>getRecentChanges(options?: FilterOptions)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/AbstractSettingsService.html" target="_self" >AbstractSettingsService</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractSettingsService.html#source" target="_self" >AbstractSettingsService:13</a></code>
-</div>
+                            <div class="io-line">Defined in <a href="" data-line="501"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:501</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>Get recent lifecycle changes
+This method retrieves the most recent lifecycle changes, sorted by creation date in descending order.
+It allows for pagination through the <code>skip</code> and <code>limit</code> options.</p>
+</div>
 
                             <div class="io-description">
                                 <b>Parameters :</b>
@@ -567,30 +896,38 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Description</td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>settingName</td>
+                                                <td>options</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                        <code>FilterOptions</code>
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
 
+                                            <td>
+                                                    <ul>
+<li>Optional parameters for filtering, sorting, and pagination</li>
+</ul>
+
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;object | null&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;&gt;</code>
 
                         </div>
                             <div class="io-description">
-                                
+                                <p>A promise that resolves to an array of lifecycle changes, each containing the lifecycle event details</p>
+
                             </div>
                 </td>
             </tr>
@@ -600,33 +937,348 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="setParameter"></a>
+                    <a name="handle"></a>
                     <span class="name">
-                            <span class="modifier">Protected</span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>setParameter</b></span>
-                        <a href="#setParameter"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>handle</b></span>
+                        <a href="#handle"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>setParameter(settingName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, parameters: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank">object</a>)</code>
+                    <code>handle(event: literal type)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@OnEvent(&#x27;management.identities.service.afterUpdate&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="348"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:348</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Handle identity update events
+This method listens for events emitted after an identity is updated.
+It checks if the identity has a valid ID and then processes the lifecycle event.
+If the identity&#39;s lifecycle has changed, it creates a new lifecycle event.
+It also logs the event handling process, including any warnings if the identity data is invalid.
+This method is triggered by the &#39;management.identities.service.afterUpdate&#39; event.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>The event containing the identity update data</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>A promise that resolves when the lifecycle event is created</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleOrderCreatedEvent"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleOrderCreatedEvent</b></span>
+                        <a href="#handleOrderCreatedEvent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleOrderCreatedEvent(event: literal type)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@OnEvent(&#x27;management.identities.service.afterUpsert&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="371"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:371</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Handle identity upsert events
+This method listens for events emitted after an identity is upserted.
+It checks if the identity has a valid ID and then processes the lifecycle event.
+If the identity&#39;s lifecycle has changed, it creates a new lifecycle event.
+It also logs the event handling process, including any warnings if the identity data is invalid.
+This method is triggered by the &#39;management.identities.service.afterUpsert&#39; event.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>The event containing the identity upsert data</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>A promise that resolves when the lifecycle event is created</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadLifecycleRules"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>loadLifecycleRules</b></span>
+                        <a href="#loadLifecycleRules"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>loadLifecycleRules()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/AbstractSettingsService.html" target="_self" >AbstractSettingsService</a></code>
-</div>
+                            <div class="io-line">Defined in <a href="" data-line="226"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:226</a></div>
                         </td>
                     </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Load lifecycle rules from configuration files</p>
+<p>This method reads all YAML files from the <code>configs/lifecycle</code> directory,
+parses them into DTOs, validates them, and stores them in the <code>lifecycleRules</code> array.
+It logs the process of loading and validating each file, and handles any errors that occur during file reading or validation.</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ConfigObjectSchemaDTO[]&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onApplicationBootstrap"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>onApplicationBootstrap</b></span>
+                        <a href="#onApplicationBootstrap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onApplicationBootstrap()</code>
+                </td>
+            </tr>
+
+
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractSettingsService.html#source" target="_self" >AbstractSettingsService:22</a></code>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Bootstrap the LifecycleService application</p>
+<p>This method is called when the application starts.
+It loads lifecycle rules from configuration files and creates a map of lifecycle sources.
+The map will help to quickly find which identities are associated with each lifecycle source.
+It also logs the lifecycle sources for debugging purposes.</p>
 </div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onModuleInit"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>onModuleInit</b></span>
+                        <a href="#onModuleInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onModuleInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:46</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Initialize the LifecycleService</p>
+<p>This method is called when the module is initialized.
+It reads the lifecycle validation files from the <code>configs/lifecycle</code> directory and copies default files from <code>defaults/lifecycle</code> if they do not exist.
+It logs the initialization process and any errors encountered during file reading or copying.</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="runJob"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>runJob</b></span>
+                        <a href="#runJob"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>runJob(rule: <a href="../undefineds/ConfigObjectIdentitiesDTOWithSource.html" target="_self">ConfigObjectIdentitiesDTOWithSource</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="135"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:135</a></div>
                         </td>
                     </tr>
 
@@ -647,21 +1299,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>settingName</td>
+                                                <td>rule</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>parameters</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#ConfigObjectIdentitiesDTOWithSource" target="_self" >ConfigObjectIdentitiesDTOWithSource</a></code>
                                             </td>
 
                                             <td>
@@ -674,7 +1314,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1726,30 +2366,28 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="settingsName"></a>
+                    <a name="lifecycleSources"></a>
                     <span class="name">
                             <span class="modifier">Protected</span>
-                        <span ><b>settingsName</b></span>
-                        <a href="#settingsName"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>lifecycleSources</b></span>
+                        <a href="#lifecycleSources"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <i>Type : </i>        <code><a href="../interfaces/LifecycleSource.html" target="_self" >LifecycleSource</a></code>
 
                     </td>
                 </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Inherited from         <code><a href="../classes/AbstractSettingsService.html" target="_self" >AbstractSettingsService</a></code>
-</div>
-                            </td>
-                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{}</code>
+                    </td>
+                </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractSettingsService.html#source" target="_self" >AbstractSettingsService:7</a></code>
-</div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -1998,75 +2636,521 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import stringEntropy from &#x27;fast-password-entropy&#x27;;
-import { pwnedPassword } from &#x27;hibp&#x27;;
-import { AbstractSettingsService } from &#x27;~/settings/_abstracts/abstract-settings.service&#x27;;
-import { PasswordPoliciesDto } from &#x27;~/settings/_dto/password-policy.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, OnApplicationBootstrap, OnModuleInit } from &#x27;@nestjs/common&#x27;;
+import { OnEvent } from &#x27;@nestjs/event-emitter&#x27;;
+import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
+import { FilterOptions } from &#x27;@the-software-compagny/nestjs_module_restools&#x27;;
+import { Model, Query, Types } from &#x27;mongoose&#x27;;
+import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
+import { Identities } from &#x27;../identities/_schemas/identities.schema&#x27;;
+import { Lifecycle, LifecycleRefId } from &#x27;./_schemas/lifecycle.schema&#x27;;
+import { readdirSync, readFileSync, writeFileSync } from &#x27;node:fs&#x27;;
+import { parse } from &#x27;yaml&#x27;;
+import { plainToInstance } from &#x27;class-transformer&#x27;;
+import { ConfigObjectIdentitiesDTO, ConfigObjectSchemaDTO } from &#x27;./_dto/config.dto&#x27;;
+import { validateOrReject, ValidationError } from &#x27;class-validator&#x27;;
+import { omit } from &#x27;radash&#x27;;
+import { IdentitiesCrudService } from &#x27;../identities/identities-crud.service&#x27;;
+import { SchedulerRegistry } from &#x27;@nestjs/schedule&#x27;;
+import { CronJob } from &#x27;cron&#x27;;
+
+interface LifecycleSource {
+  [source: string]: Partial&lt;ConfigObjectIdentitiesDTO&gt;[];
+}
+
+type ConfigObjectIdentitiesDTOWithSource &#x3D; Omit&lt;ConfigObjectIdentitiesDTO, &#x27;sources&#x27;&gt; &amp; {
+  source: string;
+};
 
 @Injectable()
-export class PasswdadmService extends AbstractSettingsService {
-  public async getPolicies(): Promise&lt;PasswordPoliciesDto&gt; {
-    const parameters &#x3D; this.getParameter&lt;PasswordPoliciesDto&gt;(&#x27;passwordpolicies&#x27;);
-    return parameters;
+export class LifecycleService extends AbstractServiceSchema implements OnApplicationBootstrap, OnModuleInit {
+  protected lifecycleSources: LifecycleSource &#x3D; {};
+
+  public constructor(
+    @InjectModel(Lifecycle.name) protected _model: Model&lt;Lifecycle&gt;,
+    protected readonly identitiesService: IdentitiesCrudService,
+    private schedulerRegistry: SchedulerRegistry,
+  ) {
+    super();
   }
 
-  public async setPolicies(policies: PasswordPoliciesDto): Promise&lt;any&gt; {
-    return this.setParameter(&#x27;passwordpolicies&#x27;, policies);
+  /**
+   * Initialize the LifecycleService
+   *
+   * This method is called when the module is initialized.
+   * It reads the lifecycle validation files from the &#x60;configs/lifecycle&#x60; directory and copies default files from &#x60;defaults/lifecycle&#x60; if they do not exist.
+   * It logs the initialization process and any errors encountered during file reading or copying.
+   */
+  public onModuleInit(): void {
+    let files &#x3D; [];
+    let defaultFiles &#x3D; [];
+
+    this.logger.verbose(&#x27;Initializing LifecycleService...&#x27;);
+
+    try {
+      files &#x3D; readdirSync(&#x60;${process.cwd()}/configs/lifecycle&#x60;);
+      defaultFiles &#x3D; readdirSync(&#x60;${process.cwd()}/defaults/lifecycle&#x60;);
+    } catch (error) {
+      this.logger.error(&#x27;Error reading lifecycle validations files&#x27;, error.message, error.stack);
+    }
+
+    for (const file of defaultFiles) {
+      if (!files.includes(file)) {
+        try {
+          const defaultFile &#x3D; readFileSync(&#x60;${process.cwd()}/defaults/lifecycle/${file}&#x60;, &#x27;utf-8&#x27;);
+          writeFileSync(&#x60;${process.cwd()}/configs/lifecycle/${file}&#x60;, defaultFile);
+          this.logger.warn(&#x60;Copied default validation file: ${file}&#x60;);
+        } catch (error) {
+          this.logger.error(&#x60;Error copying default validation file: ${file}&#x60;, error.message, error.stack);
+        }
+      }
+    }
+
+    this.logger.log(&#x27;LifecycleService initialized&#x27;);
   }
 
-  public async checkPolicies(password: string): Promise&lt;boolean&gt; {
-    const policies &#x3D; await this.getPolicies();
-    if (password.length &lt; policies.len) {
-      this.logger.error(&#x27;Password too short&#x27;);
-      return false;
-    }
-    //tes caracteres speciaux
-    if (policies.hasSpecialChars &gt; 0) {
-      if (/[!@#\$%\^\&amp;*\)\(+&#x3D;._-]/.test(password) &#x3D;&#x3D;&#x3D; false) {
-        this.logger.error(&#x27;must have special characters&#x27;);
-        return false;
-      }
-    }
-    if (policies.hasLowerCase &gt; 0) {
-      if (/[a-z]/.test(password) &#x3D;&#x3D;&#x3D; false) {
-        this.logger.error(&#x27;must have lower case characters&#x27;);
-        return false;
-      }
-    }
-    if (policies.hasUpperCase &gt; 0) {
-      if (/[A-Z]/.test(password) &#x3D;&#x3D;&#x3D; false) {
-        this.logger.error(&#x27;must have upper case characters&#x27;);
-        return false;
-      }
-    }
-    if (policies.hasNumbers &gt; 0) {
-      if (/[A-Z]/.test(password) &#x3D;&#x3D;&#x3D; false) {
-        this.logger.error(&#x27;must have number&#x27;);
-        return false;
-      }
-    }
-    //calcul de l&#x27;entropie
-    if (policies.minComplexity &gt; 0) {
-      const c &#x3D; stringEntropy(password);
-      if (c &lt; policies.minComplexity) {
-        this.logger.error(&#x27;entropie trop faible&#x27;);
-        return false;
+  /**
+   * Bootstrap the LifecycleService application
+   *
+   * This method is called when the application starts.
+   * It loads lifecycle rules from configuration files and creates a map of lifecycle sources.
+   * The map will help to quickly find which identities are associated with each lifecycle source.
+   * It also logs the lifecycle sources for debugging purposes.
+   */
+  public async onApplicationBootstrap(): Promise&lt;void&gt; {
+    this.logger.verbose(&#x27;Bootstrap LifecycleService application...&#x27;);
+
+    const lifecycleRules &#x3D; await this.loadLifecycleRules();
+
+    /**
+     * Create a map of lifecycle sources
+     * This map will help to quickly find which identities are associated with each lifecycle source.
+     * It will be used to optimize the lifecycle processing logic.
+     * The structure will be:
+     * {
+     *   &#x27;source1&#x27;: [identityRule1, identityRule2, ...],
+     *   &#x27;source2&#x27;: [identityRule3, identityRule4, ...],
+     *   ...
+     * }
+     * This will allow us to quickly access all identity rules associated with a specific lifecycle source.
+     */
+    for (const lfr of lifecycleRules) {
+      for (const idRule of lfr.identities) {
+        for (const source of idRule.sources) {
+          if (!this.lifecycleSources[source]) {
+            this.lifecycleSources[source] &#x3D; [];
+          }
+
+          const rule &#x3D; omit(idRule, [&#x27;sources&#x27;]);
+          if (rule.trigger) {
+            this.logger.log(&#x60;Trigger found for source &lt;${source}&gt;: ${-rule.trigger}, installing cron job !&#x60;);
+
+            if (this.schedulerRegistry.doesExist(&#x27;cron&#x27;, &#x60;lifecycle-trigger-${source}&#x60;)) {
+              this.logger.warn(&#x60;Cron job for source &lt;${source}&gt; already exists, skipping creation.&#x60;);
+              continue;
+            }
+
+            const cronExpression &#x3D; this.convertSecondsToCron(-rule.trigger);
+            this.logger.debug(&#x60;Creating cron job with pattern: ${cronExpression}&#x60;);
+
+            const job &#x3D; new CronJob(cronExpression, this.runJob.bind(this, {
+              source, // Pass the source to the job for context
+              ...rule,
+            }));
+
+            this.schedulerRegistry.addCronJob(&#x60;lifecycle-trigger-${source}&#x60;, job);
+            job.start();
+          }
+
+          this.lifecycleSources[source].push(rule);
+        }
       }
     }
 
-    // check si le mdp est pwned
-    if (policies.checkPwned &#x3D;&#x3D;&#x3D; true) {
-      const numPwns &#x3D; await pwnedPassword(password);
-      if (numPwns &gt; 0) {
-        return false;
-      }
-    }
-    return true;
+    this.logger.log(&#x27;LifecycleService bootstraped&#x27;);
   }
 
-  protected async defaultValues&lt;T &#x3D; PasswordPoliciesDto&gt;(): Promise&lt;T&gt; {
-    return &lt;T&gt;new PasswordPoliciesDto();
+  protected async runJob(rule: ConfigObjectIdentitiesDTOWithSource): Promise&lt;void&gt; {
+    this.logger.debug(&#x60;Running LifecycleService job: &lt;${JSON.stringify(rule)}&gt;&#x60;);
+
+    try {
+      const identities &#x3D; await this.identitiesService.model.find({
+        ...rule.rules,
+        lifecycle: rule.source,
+        ignoreLifecycle: { $ne: true },
+      });
+
+      this.logger.log(&#x60;Found ${identities.length} identities to process for trigger in source &lt;${rule.source}&gt;&#x60;);
+
+      for (const identity of identities) {
+        const updated &#x3D; await this.identitiesService.model.findOneAndUpdate(
+          { _id: identity._id },
+          { $set: { lifecycle: rule.target } },
+          { new: true }
+        );
+
+        if (updated) {
+          await this.create({
+            refId: identity._id,
+            lifecycle: rule.target,
+            date: new Date(),
+          });
+
+          this.logger.log(&#x60;Identity &lt;${identity._id}&gt; updated to lifecycle &lt;${rule.target}&gt; by trigger from source &lt;${rule.source}&gt;&#x60;);
+        }
+      }
+    } catch (error) {
+      this.logger.error(&#x60;Error in lifecycle trigger job for source &lt;${rule.source}&gt;:&#x60;, error.message, error.stack);
+    }
+  }
+
+  /**
+   * Convert seconds to a proper cron expression
+   * This method converts a duration in seconds to the most appropriate cron expression.
+   * It optimizes for readability and performance by using the largest possible time unit.
+   *
+   * @param seconds - The number of seconds for the interval
+   * @returns A cron expression string in the format &quot;second minute hour day month dayOfWeek&quot;
+   */
+  private convertSecondsToCron(seconds: number): string {
+    // Ensure we have a valid positive number
+    const intervalSeconds &#x3D; Math.max(1, Math.floor(seconds));
+
+    // If it&#x27;s less than 60 seconds, use seconds
+    if (intervalSeconds &lt; 60) {
+      return &#x60;*/${intervalSeconds} * * * * *&#x60;;
+    }
+
+    // If it&#x27;s exactly divisible by 60 and less than 3600, use minutes
+    const minutes &#x3D; intervalSeconds / 60;
+    if (intervalSeconds % 60 &#x3D;&#x3D;&#x3D; 0 &amp;&amp; minutes &lt; 60) {
+      return &#x60;0 */${Math.floor(minutes)} * * * *&#x60;;
+    }
+
+    // If it&#x27;s exactly divisible by 3600 and less than 86400, use hours
+    const hours &#x3D; intervalSeconds / 3600;
+    if (intervalSeconds % 3600 &#x3D;&#x3D;&#x3D; 0 &amp;&amp; hours &lt; 24) {
+      return &#x60;0 0 */${Math.floor(hours)} * * *&#x60;;
+    }
+
+    // If it&#x27;s exactly divisible by 86400, use days
+    const days &#x3D; intervalSeconds / 86400;
+    if (intervalSeconds % 86400 &#x3D;&#x3D;&#x3D; 0 &amp;&amp; days &lt;&#x3D; 30) {
+      return &#x60;0 0 0 */${Math.floor(days)} * *&#x60;;
+    }
+
+    // For very large intervals or non-standard intervals, fall back to the most appropriate unit
+    if (intervalSeconds &gt;&#x3D; 3600) {
+      // Use hours for intervals &gt;&#x3D; 1 hour
+      const hourInterval &#x3D; Math.max(1, Math.floor(intervalSeconds / 3600));
+      return &#x60;0 0 */${hourInterval} * * *&#x60;;
+    } else if (intervalSeconds &gt;&#x3D; 60) {
+      // Use minutes for intervals &gt;&#x3D; 1 minute
+      const minuteInterval &#x3D; Math.max(1, Math.floor(intervalSeconds / 60));
+      return &#x60;0 */${minuteInterval} * * * *&#x60;;
+    } else {
+      // Fall back to seconds
+      return &#x60;*/${intervalSeconds} * * * * *&#x60;;
+    }
+  }
+
+  /**
+   * Load lifecycle rules from configuration files
+   *
+   * This method reads all YAML files from the &#x60;configs/lifecycle&#x60; directory,
+   * parses them into DTOs, validates them, and stores them in the &#x60;lifecycleRules&#x60; array.
+   * It logs the process of loading and validating each file, and handles any errors that occur during file reading or validation.
+   */
+  private async loadLifecycleRules(): Promise&lt;ConfigObjectSchemaDTO[]&gt; {
+    const lifecycleRules: ConfigObjectSchemaDTO[] &#x3D; [];
+    this.logger.verbose(&#x27;Loading lifecycle rules from configuration files...&#x27;);
+
+    for (const file of readdirSync(&#x60;${process.cwd()}/configs/lifecycle&#x60;)) {
+      let schema: ConfigObjectSchemaDTO;
+      if (!file.endsWith(&#x27;.yml&#x27;) &amp;&amp; !file.endsWith(&#x27;.yaml&#x27;)) {
+        this.logger.warn(&#x60;Skipping non-YAML file: ${file}&#x60;);
+        continue;
+      }
+
+      try {
+        const data &#x3D; readFileSync(&#x60;${process.cwd()}/configs/lifecycle/${file}&#x60;, &#x27;utf-8&#x27;);
+        this.logger.debug(&#x60;Loaded lifecycle config: ${file}&#x60;);
+        const yml &#x3D; parse(data)
+        schema &#x3D; plainToInstance(ConfigObjectSchemaDTO, yml)
+
+      } catch (error) {
+        this.logger.error(&#x60;Error loading lifecycle config file: ${file}&#x60;, error.message, error.stack);
+        continue;
+      }
+
+      if (!schema || !schema.identities || !Array.isArray(schema.identities)) {
+        this.logger.error(&#x60;Invalid schema in file: ${file}&#x60;);
+        continue;
+      }
+
+      try {
+        this.logger.verbose(&#x60;Validating schema for file: ${file}&#x60;, JSON.stringify(schema, null, 2));
+        await validateOrReject(schema, {
+          whitelist: true,
+        })
+        this.logger.debug(&#x60;Validated schema for file: ${file}&#x60;);
+      } catch (errors) {
+        const formattedErrors &#x3D; this.formatValidationErrors(errors, file);
+        const err &#x3D; new Error(&#x60;Validation errors in file &#x27;${file}&#x27;:\n${formattedErrors}&#x60;);
+        throw err;
+      }
+
+      lifecycleRules.push(schema);
+      this.logger.debug(&#x60;Lifecycle activated from file: ${file}&#x60;);
+    }
+
+    this.logger.log(&#x60;Loaded &lt;${lifecycleRules.length}&gt; lifecycle rules from configuration files.&#x60;);
+    return lifecycleRules;
+  }
+
+  /**
+   * Format validation errors for better readability
+   *
+   * @param errors - Array of ValidationError objects from class-validator
+   * @param file - The file name where the validation failed
+   * @returns A formatted error message string
+   */
+  private formatValidationErrors(errors: ValidationError[], file: string, basePath: string &#x3D; &#x27;&#x27;, isInArrayContext: boolean &#x3D; false): string {
+    const formatError &#x3D; (error: ValidationError, currentPath: string, inArrayContext: boolean): string[] &#x3D;&gt; {
+      let propertyPath &#x3D; currentPath;
+
+      /**
+       * Check if error.property is defined, not null, not empty, and not the string &#x27;undefined&#x27;.
+       * If it is, we construct the property path based on whether we are in an array context or not.
+       * If it is an array context, we use the index notation; otherwise, we use dot notation.
+       */
+      if (error.property !&#x3D;&#x3D; undefined &amp;&amp;
+        error.property !&#x3D;&#x3D; null &amp;&amp;
+        error.property !&#x3D;&#x3D; &#x27;&#x27; &amp;&amp;
+        error.property !&#x3D;&#x3D; &#x27;undefined&#x27;) {
+        if (inArrayContext &amp;&amp; !isNaN(Number(error.property))) {
+          // C&#x27;est un index d&#x27;array
+          propertyPath &#x3D; currentPath ? &#x60;${currentPath}[${error.property}]&#x60; : &#x60;[${error.property}]&#x60;;
+        } else {
+          // C&#x27;est une propriété normale
+          propertyPath &#x3D; currentPath ? &#x60;${currentPath}.${error.property}&#x60; : error.property;
+        }
+      }
+
+      const errorMessages: string[] &#x3D; [];
+
+      /**
+       * Check if error.constraints is defined and not empty.
+       * If it is, we iterate over each constraint and format the error message.
+       */
+      if (error.constraints) {
+        Object.entries(error.constraints).forEach(([constraintKey, message]) &#x3D;&gt; {
+          errorMessages.push(&#x60;Property &#x27;${propertyPath}&#x27;: ${message} (constraint: ${constraintKey})&#x60;);
+        });
+      }
+
+      /**
+       * If the error has children, we recursively format each child error.
+       * We check if the error has children and if they are defined.
+       */
+      if (error.children &amp;&amp; error.children.length &gt; 0) {
+        const isNextLevelArray &#x3D; Array.isArray(error.value);
+        error.children.forEach(childError &#x3D;&gt; {
+          errorMessages.push(...formatError(childError, propertyPath, isNextLevelArray));
+        });
+      }
+
+      return errorMessages;
+    };
+
+    const allErrorMessages: string[] &#x3D; [];
+    errors.forEach(error &#x3D;&gt; {
+      allErrorMessages.push(...formatError(error, basePath, isInArrayContext));
+    });
+
+    return allErrorMessages.map(msg &#x3D;&gt; &#x60;• ${msg}&#x60;).join(&#x27;\n&#x27;);
+  }
+
+  /**
+   * Handle identity update events
+   * This method listens for events emitted after an identity is updated.
+   * It checks if the identity has a valid ID and then processes the lifecycle event.
+   * If the identity&#x27;s lifecycle has changed, it creates a new lifecycle event.
+   * It also logs the event handling process, including any warnings if the identity data is invalid.
+   * This method is triggered by the &#x27;management.identities.service.afterUpdate&#x27; event.
+   *
+   * @param event - The event containing the identity update data
+   * @returns A promise that resolves when the lifecycle event is created
+   */
+  @OnEvent(&#x27;management.identities.service.afterUpdate&#x27;)
+  public async handle(event: { updated: Identities, before?: Identities }): Promise&lt;void&gt; {
+    this.logger.verbose(&#x60;Handling identity update event for identity &lt;${event.updated._id}&gt;&#x60;);
+
+    if (!event.updated || !event.updated._id) {
+      this.logger.warn(&#x27;No valid identity found in event data&#x27;);
+      return;
+    }
+
+    await this.fireLifecycleEvent(event.before, event.updated);
+  }
+
+  /**
+   * Handle identity upsert events
+   * This method listens for events emitted after an identity is upserted.
+   * It checks if the identity has a valid ID and then processes the lifecycle event.
+   * If the identity&#x27;s lifecycle has changed, it creates a new lifecycle event.
+   * It also logs the event handling process, including any warnings if the identity data is invalid.
+   * This method is triggered by the &#x27;management.identities.service.afterUpsert&#x27; event.
+   *
+   * @param event - The event containing the identity upsert data
+   * @returns A promise that resolves when the lifecycle event is created
+   */
+  @OnEvent(&#x27;management.identities.service.afterUpsert&#x27;)
+  public async handleOrderCreatedEvent(event: { result: Identities, before?: Identities }): Promise&lt;void&gt; {
+    this.logger.verbose(&#x60;Handling identity upsert event for identity &lt;${event.result._id}&gt;&#x60;);
+
+    if (!event.result || !event.result._id) {
+      this.logger.warn(&#x27;No valid identity found in event data&#x27;);
+      return;
+    }
+
+    await this.fireLifecycleEvent(event.before, event.result);
+  }
+
+  /**
+   * Fire a lifecycle event
+   * This method is responsible for processing the lifecycle event for a given identity.
+   * It checks if the lifecycle has changed and creates a new lifecycle event if necessary.
+   * It also processes the lifecycle sources associated with the new lifecycle.
+   * If the lifecycle has changed, it updates the identity&#x27;s lifecycle based on the rules defined in the lifecycle sources.
+   * It logs the lifecycle event processing and any updates made to the identity.
+   * This method is called when an identity&#x27;s lifecycle changes.
+   *
+   * @param before - The identity data before the update
+   * @param after - The identity data after the update
+   * @returns A promise that resolves when the lifecycle event is processed
+   */
+  private async fireLifecycleEvent(before: Identities, after: Identities): Promise&lt;void&gt; {
+    if (before.lifecycle !&#x3D;&#x3D; after.lifecycle) {
+      await this.create({
+        refId: after._id,
+        lifecycle: after.lifecycle,
+        date: new Date(),
+      });
+      this.logger.debug(&#x60;Lifecycle event manualy recorded for identity &lt;${after._id}&gt;: ${after.lifecycle}&#x60;);
+      // If the lifecycle has changed, we need to process the new lifecycle
+    }
+
+    if (this.lifecycleSources[after.lifecycle]) {
+      this.logger.debug(&#x60;Processing lifecycle sources for identity &lt;${after._id}&gt; with lifecycle &lt;${after.lifecycle}&gt;&#x60;);
+
+      for (const lcs of this.lifecycleSources[after.lifecycle]) {
+        this.logger.verbose(&#x60;Processing lifecycle source &lt;${after.lifecycle}&gt; with rules: ${JSON.stringify(lcs.rules)}&#x60;);
+
+        const res &#x3D; await this.identitiesService.model.findOneAndUpdate(
+          {
+            ...lcs.rules,
+            _id: after._id,
+            ignoreLifecycle: { $ne: true },
+          },
+          {
+            $set: {
+              lifecycle: lcs.target,
+            },
+          },
+          {
+            new: true, // Return the updated document
+            upsert: false, // Do not create a new document if no match is found
+          }
+        );
+
+        if (!res) {
+          this.logger.debug(&#x60;No identity found matching rules for lifecycle &lt;${after.lifecycle}&gt;&#x60;);
+          continue;
+        }
+
+        await this.create({
+          refId: after._id,
+          lifecycle: lcs.target,
+          date: new Date(),
+        });
+
+        this.logger.log(&#x60;Identity &lt;${res._id}&gt; updated to lifecycle &lt;${lcs.target}&gt; based on rules from source &lt;${after.lifecycle}&gt;&#x60;);
+        return;
+      }
+    }
+  }
+
+  /**
+   * Get lifecycle history for a specific identity
+   *
+   * @param refId - The ID of the identity to retrieve lifecycle history for
+   * @returns An array of lifecycle events for the specified identity, sorted by creation date in descending order
+   */
+  public async getLifecycleHistory(
+    refId: Types.ObjectId,
+    options?: FilterOptions,
+  ): Promise&lt;[number, Query&lt;Array&lt;Lifecycle&gt;, Lifecycle, any, Lifecycle&gt;[]]&gt; {
+    const result &#x3D; await this.find&lt;Lifecycle&gt;({ refId }, null, {
+      populate: LifecycleRefId,
+      sort: {
+        ...options?.sort,
+        createdAt: -1,
+      },
+      skip: options?.skip || 0,
+      limit: options?.limit || 100,
+    });
+    const total &#x3D; await this.count({ refId });
+
+    return [total, result];
+  }
+
+  /**
+   * Get lifecycle statistics
+   * This method aggregates lifecycle events by their type and counts the occurrences.
+   * It returns an array of objects where each object contains the lifecycle type and the count of occurrences.
+   *
+   * @returns An array of lifecycle statistics, each containing the lifecycle type and count
+   */
+  public async getLifecycleStats(): Promise&lt;any&gt; {
+    const stats &#x3D; await this._model.aggregate([
+      {
+        $group: {
+          _id: &#x27;$lifecycle&#x27;,
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+
+    return stats;
+  }
+
+  /**
+   * Get recent lifecycle changes
+   * This method retrieves the most recent lifecycle changes, sorted by creation date in descending order.
+   * It allows for pagination through the &#x60;skip&#x60; and &#x60;limit&#x60; options.
+   *
+   * @param options - Optional parameters for filtering, sorting, and pagination
+   * @returns A promise that resolves to an array of lifecycle changes, each containing the lifecycle event details
+   */
+  public async getRecentChanges(
+    options?: FilterOptions,
+  ): Promise&lt;[number, Query&lt;Array&lt;Lifecycle&gt;, Lifecycle, any, Lifecycle&gt;[]]&gt; {
+    const total &#x3D; await this.count({});
+    const result &#x3D; await this.find&lt;Lifecycle&gt;({}, null, {
+      populate: &#x27;refId&#x27;,
+      sort: {
+        ...options?.sort,
+        createdAt: -1,
+      },
+      skip: options?.skip || 0,
+      limit: options?.limit || 100,
+    });
+
+    return [total, result];
   }
 }
 </code></pre>
@@ -2112,7 +3196,7 @@ export class PasswdadmService extends AbstractSettingsService {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'PasswdadmService.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'LifecycleService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -428,8 +428,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="192"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:192</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="191"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:191</a></div>
                         </td>
                     </tr>
 
@@ -518,8 +518,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="357"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:357</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="358"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:358</a></div>
                         </td>
                     </tr>
 
@@ -812,8 +812,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="119"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:119</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:118</a></div>
                         </td>
                     </tr>
 
@@ -914,8 +914,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="157"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:157</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="156"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:156</a></div>
                         </td>
                     </tr>
 
@@ -1106,8 +1106,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="234"
-                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:234</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="233"
+                                    class="link-to-prism">src/_common/abstracts/abstract.service.schema.ts:233</a></div>
                         </td>
                     </tr>
 
@@ -1642,7 +1642,6 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
   ): Promise&lt;[Array&lt;T &amp; Query&lt;T, T, any, T&gt;&gt;, number]&gt; {
     this.logger.debug([&#x27;findAndCount&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;))
     if (this.eventEmitter) {
-      console.log(&#x27;de&#x27;, [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;beforeFindAndCount&#x27;].join(EventEmitterSeparator))
       const beforeEvents &#x3D; await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;beforeFindAndCount&#x27;].join(EventEmitterSeparator),
         { filter, projection, options },
@@ -1778,7 +1777,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     let created &#x3D; document.save(options)
     if (this.eventEmitter) {
       const afterEvents &#x3D; await this.eventEmitter?.emitAsync(
-        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;afterFindAndCount&#x27;].join(EventEmitterSeparator),
+        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;afterCreate&#x27;].join(EventEmitterSeparator),
         { created },
       )
       for (const afterEvent of afterEvents) {
@@ -1812,6 +1811,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options &#x3D; { ...options, ...beforeEvent.options }
       }
     }
+    const before &#x3D; await this._model.findOne&lt;Query&lt;T | null, T, any, T&gt;&gt;({ _id }).exec();
     let updated &#x3D; await this._model
       .findOneAndUpdate&lt;Query&lt;T | null, T, any, T&gt;&gt;(
         { _id },
@@ -1840,8 +1840,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     }
     if (this.eventEmitter) {
       const afterEvents &#x3D; await this.eventEmitter?.emitAsync(
-        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;afterFindAndCount&#x27;].join(EventEmitterSeparator),
-        { updated },
+        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;afterUpdate&#x27;].join(EventEmitterSeparator),
+        { before, updated },
       )
       for (const afterEvent of afterEvents) {
         if (afterEvent?.updated) updated &#x3D; { ...updated, ...afterEvent.updated }
@@ -1868,6 +1868,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options &#x3D; { ...options, ...beforeEvent.options };
       }
     }
+    const before &#x3D; await this._model.findOne&lt;Query&lt;T | null, T, any, T&gt;&gt;(filter).exec();
     let result &#x3D; await this._model
       .findOneAndUpdate&lt;Query&lt;T | null, T, any, T&gt;&gt;(
         filter,
@@ -1896,7 +1897,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     if (this.eventEmitter) {
       const afterEvents &#x3D; await this.eventEmitter?.emitAsync(
         [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;afterUpsert&#x27;].join(EventEmitterSeparator),
-        { result },
+        { result, before },
       );
       for (const afterEvent of afterEvents) {
         if (afterEvent?.result) result &#x3D; { ...result, ...afterEvent.result };
@@ -1923,6 +1924,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
         if (beforeEvent?.options) options &#x3D; { ...options, ...beforeEvent.options }
       }
     }
+    const before &#x3D; await this._model.findOne&lt;Query&lt;T | null, T, any, T&gt;&gt;({ _id }).exec();
     let deleted &#x3D; await this._model.findByIdAndDelete&lt;Query&lt;T | null, T, any, T&gt;&gt;({ _id }, options).exec()
     if (!deleted) {
       this.logger.debug([&#x27;findById&#x27;, JSON.stringify(Object.values(arguments))].join(&#x27; &#x27;))
@@ -1930,8 +1932,8 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
     }
     if (this.eventEmitter) {
       const afterEvents &#x3D; await this.eventEmitter?.emitAsync(
-        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;afterFindAndCount&#x27;].join(EventEmitterSeparator),
-        { deleted },
+        [this.moduleName.toLowerCase(), this.serviceName.toLowerCase(), &#x27;service&#x27;, &#x27;afterDelete&#x27;].join(EventEmitterSeparator),
+        { before, deleted },
       )
       for (const afterEvent of afterEvents) {
         if (afterEvent?.deleted) deleted &#x3D; { ...deleted, ...afterEvent.deleted }

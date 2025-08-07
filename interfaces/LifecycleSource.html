@@ -1,0 +1,754 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Sesame Orchestrator</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">Sesame Orchestrator</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content interface">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Interfaces</li>
+  <li class="breadcrumb-item"
+  >
+  LifecycleSource</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/management/lifecycle/lifecycle.service.ts</code>
+        </p>
+
+
+
+
+
+
+            <section data-compodoc="block-indexables">
+    <h3 id="inputs">Indexable</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <code>[source: string]:    <code>Partial[]</code>
+</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:19</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, OnApplicationBootstrap, OnModuleInit } from &#x27;@nestjs/common&#x27;;
+import { OnEvent } from &#x27;@nestjs/event-emitter&#x27;;
+import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
+import { FilterOptions } from &#x27;@the-software-compagny/nestjs_module_restools&#x27;;
+import { Model, Query, Types } from &#x27;mongoose&#x27;;
+import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
+import { Identities } from &#x27;../identities/_schemas/identities.schema&#x27;;
+import { Lifecycle, LifecycleRefId } from &#x27;./_schemas/lifecycle.schema&#x27;;
+import { readdirSync, readFileSync, writeFileSync } from &#x27;node:fs&#x27;;
+import { parse } from &#x27;yaml&#x27;;
+import { plainToInstance } from &#x27;class-transformer&#x27;;
+import { ConfigObjectIdentitiesDTO, ConfigObjectSchemaDTO } from &#x27;./_dto/config.dto&#x27;;
+import { validateOrReject, ValidationError } from &#x27;class-validator&#x27;;
+import { omit } from &#x27;radash&#x27;;
+import { IdentitiesCrudService } from &#x27;../identities/identities-crud.service&#x27;;
+import { SchedulerRegistry } from &#x27;@nestjs/schedule&#x27;;
+import { CronJob } from &#x27;cron&#x27;;
+
+interface LifecycleSource {
+  [source: string]: Partial&lt;ConfigObjectIdentitiesDTO&gt;[];
+}
+
+type ConfigObjectIdentitiesDTOWithSource &#x3D; Omit&lt;ConfigObjectIdentitiesDTO, &#x27;sources&#x27;&gt; &amp; {
+  source: string;
+};
+
+@Injectable()
+export class LifecycleService extends AbstractServiceSchema implements OnApplicationBootstrap, OnModuleInit {
+  protected lifecycleSources: LifecycleSource &#x3D; {};
+
+  public constructor(
+    @InjectModel(Lifecycle.name) protected _model: Model&lt;Lifecycle&gt;,
+    protected readonly identitiesService: IdentitiesCrudService,
+    private schedulerRegistry: SchedulerRegistry,
+  ) {
+    super();
+  }
+
+  /**
+   * Initialize the LifecycleService
+   *
+   * This method is called when the module is initialized.
+   * It reads the lifecycle validation files from the &#x60;configs/lifecycle&#x60; directory and copies default files from &#x60;defaults/lifecycle&#x60; if they do not exist.
+   * It logs the initialization process and any errors encountered during file reading or copying.
+   */
+  public onModuleInit(): void {
+    let files &#x3D; [];
+    let defaultFiles &#x3D; [];
+
+    this.logger.verbose(&#x27;Initializing LifecycleService...&#x27;);
+
+    try {
+      files &#x3D; readdirSync(&#x60;${process.cwd()}/configs/lifecycle&#x60;);
+      defaultFiles &#x3D; readdirSync(&#x60;${process.cwd()}/defaults/lifecycle&#x60;);
+    } catch (error) {
+      this.logger.error(&#x27;Error reading lifecycle validations files&#x27;, error.message, error.stack);
+    }
+
+    for (const file of defaultFiles) {
+      if (!files.includes(file)) {
+        try {
+          const defaultFile &#x3D; readFileSync(&#x60;${process.cwd()}/defaults/lifecycle/${file}&#x60;, &#x27;utf-8&#x27;);
+          writeFileSync(&#x60;${process.cwd()}/configs/lifecycle/${file}&#x60;, defaultFile);
+          this.logger.warn(&#x60;Copied default validation file: ${file}&#x60;);
+        } catch (error) {
+          this.logger.error(&#x60;Error copying default validation file: ${file}&#x60;, error.message, error.stack);
+        }
+      }
+    }
+
+    this.logger.log(&#x27;LifecycleService initialized&#x27;);
+  }
+
+  /**
+   * Bootstrap the LifecycleService application
+   *
+   * This method is called when the application starts.
+   * It loads lifecycle rules from configuration files and creates a map of lifecycle sources.
+   * The map will help to quickly find which identities are associated with each lifecycle source.
+   * It also logs the lifecycle sources for debugging purposes.
+   */
+  public async onApplicationBootstrap(): Promise&lt;void&gt; {
+    this.logger.verbose(&#x27;Bootstrap LifecycleService application...&#x27;);
+
+    const lifecycleRules &#x3D; await this.loadLifecycleRules();
+
+    /**
+     * Create a map of lifecycle sources
+     * This map will help to quickly find which identities are associated with each lifecycle source.
+     * It will be used to optimize the lifecycle processing logic.
+     * The structure will be:
+     * {
+     *   &#x27;source1&#x27;: [identityRule1, identityRule2, ...],
+     *   &#x27;source2&#x27;: [identityRule3, identityRule4, ...],
+     *   ...
+     * }
+     * This will allow us to quickly access all identity rules associated with a specific lifecycle source.
+     */
+    for (const lfr of lifecycleRules) {
+      for (const idRule of lfr.identities) {
+        for (const source of idRule.sources) {
+          if (!this.lifecycleSources[source]) {
+            this.lifecycleSources[source] &#x3D; [];
+          }
+
+          const rule &#x3D; omit(idRule, [&#x27;sources&#x27;]);
+          if (rule.trigger) {
+            this.logger.log(&#x60;Trigger found for source &lt;${source}&gt;: ${-rule.trigger}, installing cron job !&#x60;);
+
+            if (this.schedulerRegistry.doesExist(&#x27;cron&#x27;, &#x60;lifecycle-trigger-${source}&#x60;)) {
+              this.logger.warn(&#x60;Cron job for source &lt;${source}&gt; already exists, skipping creation.&#x60;);
+              continue;
+            }
+
+            const cronExpression &#x3D; this.convertSecondsToCron(-rule.trigger);
+            this.logger.debug(&#x60;Creating cron job with pattern: ${cronExpression}&#x60;);
+
+            const job &#x3D; new CronJob(cronExpression, this.runJob.bind(this, {
+              source, // Pass the source to the job for context
+              ...rule,
+            }));
+
+            this.schedulerRegistry.addCronJob(&#x60;lifecycle-trigger-${source}&#x60;, job);
+            job.start();
+          }
+
+          this.lifecycleSources[source].push(rule);
+        }
+      }
+    }
+
+    this.logger.log(&#x27;LifecycleService bootstraped&#x27;);
+  }
+
+  protected async runJob(rule: ConfigObjectIdentitiesDTOWithSource): Promise&lt;void&gt; {
+    this.logger.debug(&#x60;Running LifecycleService job: &lt;${JSON.stringify(rule)}&gt;&#x60;);
+
+    try {
+      const identities &#x3D; await this.identitiesService.model.find({
+        ...rule.rules,
+        lifecycle: rule.source,
+        ignoreLifecycle: { $ne: true },
+      });
+
+      this.logger.log(&#x60;Found ${identities.length} identities to process for trigger in source &lt;${rule.source}&gt;&#x60;);
+
+      for (const identity of identities) {
+        const updated &#x3D; await this.identitiesService.model.findOneAndUpdate(
+          { _id: identity._id },
+          { $set: { lifecycle: rule.target } },
+          { new: true }
+        );
+
+        if (updated) {
+          await this.create({
+            refId: identity._id,
+            lifecycle: rule.target,
+            date: new Date(),
+          });
+
+          this.logger.log(&#x60;Identity &lt;${identity._id}&gt; updated to lifecycle &lt;${rule.target}&gt; by trigger from source &lt;${rule.source}&gt;&#x60;);
+        }
+      }
+    } catch (error) {
+      this.logger.error(&#x60;Error in lifecycle trigger job for source &lt;${rule.source}&gt;:&#x60;, error.message, error.stack);
+    }
+  }
+
+  /**
+   * Convert seconds to a proper cron expression
+   * This method converts a duration in seconds to the most appropriate cron expression.
+   * It optimizes for readability and performance by using the largest possible time unit.
+   *
+   * @param seconds - The number of seconds for the interval
+   * @returns A cron expression string in the format &quot;second minute hour day month dayOfWeek&quot;
+   */
+  private convertSecondsToCron(seconds: number): string {
+    // Ensure we have a valid positive number
+    const intervalSeconds &#x3D; Math.max(1, Math.floor(seconds));
+
+    // If it&#x27;s less than 60 seconds, use seconds
+    if (intervalSeconds &lt; 60) {
+      return &#x60;*/${intervalSeconds} * * * * *&#x60;;
+    }
+
+    // If it&#x27;s exactly divisible by 60 and less than 3600, use minutes
+    const minutes &#x3D; intervalSeconds / 60;
+    if (intervalSeconds % 60 &#x3D;&#x3D;&#x3D; 0 &amp;&amp; minutes &lt; 60) {
+      return &#x60;0 */${Math.floor(minutes)} * * * *&#x60;;
+    }
+
+    // If it&#x27;s exactly divisible by 3600 and less than 86400, use hours
+    const hours &#x3D; intervalSeconds / 3600;
+    if (intervalSeconds % 3600 &#x3D;&#x3D;&#x3D; 0 &amp;&amp; hours &lt; 24) {
+      return &#x60;0 0 */${Math.floor(hours)} * * *&#x60;;
+    }
+
+    // If it&#x27;s exactly divisible by 86400, use days
+    const days &#x3D; intervalSeconds / 86400;
+    if (intervalSeconds % 86400 &#x3D;&#x3D;&#x3D; 0 &amp;&amp; days &lt;&#x3D; 30) {
+      return &#x60;0 0 0 */${Math.floor(days)} * *&#x60;;
+    }
+
+    // For very large intervals or non-standard intervals, fall back to the most appropriate unit
+    if (intervalSeconds &gt;&#x3D; 3600) {
+      // Use hours for intervals &gt;&#x3D; 1 hour
+      const hourInterval &#x3D; Math.max(1, Math.floor(intervalSeconds / 3600));
+      return &#x60;0 0 */${hourInterval} * * *&#x60;;
+    } else if (intervalSeconds &gt;&#x3D; 60) {
+      // Use minutes for intervals &gt;&#x3D; 1 minute
+      const minuteInterval &#x3D; Math.max(1, Math.floor(intervalSeconds / 60));
+      return &#x60;0 */${minuteInterval} * * * *&#x60;;
+    } else {
+      // Fall back to seconds
+      return &#x60;*/${intervalSeconds} * * * * *&#x60;;
+    }
+  }
+
+  /**
+   * Load lifecycle rules from configuration files
+   *
+   * This method reads all YAML files from the &#x60;configs/lifecycle&#x60; directory,
+   * parses them into DTOs, validates them, and stores them in the &#x60;lifecycleRules&#x60; array.
+   * It logs the process of loading and validating each file, and handles any errors that occur during file reading or validation.
+   */
+  private async loadLifecycleRules(): Promise&lt;ConfigObjectSchemaDTO[]&gt; {
+    const lifecycleRules: ConfigObjectSchemaDTO[] &#x3D; [];
+    this.logger.verbose(&#x27;Loading lifecycle rules from configuration files...&#x27;);
+
+    for (const file of readdirSync(&#x60;${process.cwd()}/configs/lifecycle&#x60;)) {
+      let schema: ConfigObjectSchemaDTO;
+      if (!file.endsWith(&#x27;.yml&#x27;) &amp;&amp; !file.endsWith(&#x27;.yaml&#x27;)) {
+        this.logger.warn(&#x60;Skipping non-YAML file: ${file}&#x60;);
+        continue;
+      }
+
+      try {
+        const data &#x3D; readFileSync(&#x60;${process.cwd()}/configs/lifecycle/${file}&#x60;, &#x27;utf-8&#x27;);
+        this.logger.debug(&#x60;Loaded lifecycle config: ${file}&#x60;);
+        const yml &#x3D; parse(data)
+        schema &#x3D; plainToInstance(ConfigObjectSchemaDTO, yml)
+
+      } catch (error) {
+        this.logger.error(&#x60;Error loading lifecycle config file: ${file}&#x60;, error.message, error.stack);
+        continue;
+      }
+
+      if (!schema || !schema.identities || !Array.isArray(schema.identities)) {
+        this.logger.error(&#x60;Invalid schema in file: ${file}&#x60;);
+        continue;
+      }
+
+      try {
+        this.logger.verbose(&#x60;Validating schema for file: ${file}&#x60;, JSON.stringify(schema, null, 2));
+        await validateOrReject(schema, {
+          whitelist: true,
+        })
+        this.logger.debug(&#x60;Validated schema for file: ${file}&#x60;);
+      } catch (errors) {
+        const formattedErrors &#x3D; this.formatValidationErrors(errors, file);
+        const err &#x3D; new Error(&#x60;Validation errors in file &#x27;${file}&#x27;:\n${formattedErrors}&#x60;);
+        throw err;
+      }
+
+      lifecycleRules.push(schema);
+      this.logger.debug(&#x60;Lifecycle activated from file: ${file}&#x60;);
+    }
+
+    this.logger.log(&#x60;Loaded &lt;${lifecycleRules.length}&gt; lifecycle rules from configuration files.&#x60;);
+    return lifecycleRules;
+  }
+
+  /**
+   * Format validation errors for better readability
+   *
+   * @param errors - Array of ValidationError objects from class-validator
+   * @param file - The file name where the validation failed
+   * @returns A formatted error message string
+   */
+  private formatValidationErrors(errors: ValidationError[], file: string, basePath: string &#x3D; &#x27;&#x27;, isInArrayContext: boolean &#x3D; false): string {
+    const formatError &#x3D; (error: ValidationError, currentPath: string, inArrayContext: boolean): string[] &#x3D;&gt; {
+      let propertyPath &#x3D; currentPath;
+
+      /**
+       * Check if error.property is defined, not null, not empty, and not the string &#x27;undefined&#x27;.
+       * If it is, we construct the property path based on whether we are in an array context or not.
+       * If it is an array context, we use the index notation; otherwise, we use dot notation.
+       */
+      if (error.property !&#x3D;&#x3D; undefined &amp;&amp;
+        error.property !&#x3D;&#x3D; null &amp;&amp;
+        error.property !&#x3D;&#x3D; &#x27;&#x27; &amp;&amp;
+        error.property !&#x3D;&#x3D; &#x27;undefined&#x27;) {
+        if (inArrayContext &amp;&amp; !isNaN(Number(error.property))) {
+          // C&#x27;est un index d&#x27;array
+          propertyPath &#x3D; currentPath ? &#x60;${currentPath}[${error.property}]&#x60; : &#x60;[${error.property}]&#x60;;
+        } else {
+          // C&#x27;est une propriété normale
+          propertyPath &#x3D; currentPath ? &#x60;${currentPath}.${error.property}&#x60; : error.property;
+        }
+      }
+
+      const errorMessages: string[] &#x3D; [];
+
+      /**
+       * Check if error.constraints is defined and not empty.
+       * If it is, we iterate over each constraint and format the error message.
+       */
+      if (error.constraints) {
+        Object.entries(error.constraints).forEach(([constraintKey, message]) &#x3D;&gt; {
+          errorMessages.push(&#x60;Property &#x27;${propertyPath}&#x27;: ${message} (constraint: ${constraintKey})&#x60;);
+        });
+      }
+
+      /**
+       * If the error has children, we recursively format each child error.
+       * We check if the error has children and if they are defined.
+       */
+      if (error.children &amp;&amp; error.children.length &gt; 0) {
+        const isNextLevelArray &#x3D; Array.isArray(error.value);
+        error.children.forEach(childError &#x3D;&gt; {
+          errorMessages.push(...formatError(childError, propertyPath, isNextLevelArray));
+        });
+      }
+
+      return errorMessages;
+    };
+
+    const allErrorMessages: string[] &#x3D; [];
+    errors.forEach(error &#x3D;&gt; {
+      allErrorMessages.push(...formatError(error, basePath, isInArrayContext));
+    });
+
+    return allErrorMessages.map(msg &#x3D;&gt; &#x60;• ${msg}&#x60;).join(&#x27;\n&#x27;);
+  }
+
+  /**
+   * Handle identity update events
+   * This method listens for events emitted after an identity is updated.
+   * It checks if the identity has a valid ID and then processes the lifecycle event.
+   * If the identity&#x27;s lifecycle has changed, it creates a new lifecycle event.
+   * It also logs the event handling process, including any warnings if the identity data is invalid.
+   * This method is triggered by the &#x27;management.identities.service.afterUpdate&#x27; event.
+   *
+   * @param event - The event containing the identity update data
+   * @returns A promise that resolves when the lifecycle event is created
+   */
+  @OnEvent(&#x27;management.identities.service.afterUpdate&#x27;)
+  public async handle(event: { updated: Identities, before?: Identities }): Promise&lt;void&gt; {
+    this.logger.verbose(&#x60;Handling identity update event for identity &lt;${event.updated._id}&gt;&#x60;);
+
+    if (!event.updated || !event.updated._id) {
+      this.logger.warn(&#x27;No valid identity found in event data&#x27;);
+      return;
+    }
+
+    await this.fireLifecycleEvent(event.before, event.updated);
+  }
+
+  /**
+   * Handle identity upsert events
+   * This method listens for events emitted after an identity is upserted.
+   * It checks if the identity has a valid ID and then processes the lifecycle event.
+   * If the identity&#x27;s lifecycle has changed, it creates a new lifecycle event.
+   * It also logs the event handling process, including any warnings if the identity data is invalid.
+   * This method is triggered by the &#x27;management.identities.service.afterUpsert&#x27; event.
+   *
+   * @param event - The event containing the identity upsert data
+   * @returns A promise that resolves when the lifecycle event is created
+   */
+  @OnEvent(&#x27;management.identities.service.afterUpsert&#x27;)
+  public async handleOrderCreatedEvent(event: { result: Identities, before?: Identities }): Promise&lt;void&gt; {
+    this.logger.verbose(&#x60;Handling identity upsert event for identity &lt;${event.result._id}&gt;&#x60;);
+
+    if (!event.result || !event.result._id) {
+      this.logger.warn(&#x27;No valid identity found in event data&#x27;);
+      return;
+    }
+
+    await this.fireLifecycleEvent(event.before, event.result);
+  }
+
+  /**
+   * Fire a lifecycle event
+   * This method is responsible for processing the lifecycle event for a given identity.
+   * It checks if the lifecycle has changed and creates a new lifecycle event if necessary.
+   * It also processes the lifecycle sources associated with the new lifecycle.
+   * If the lifecycle has changed, it updates the identity&#x27;s lifecycle based on the rules defined in the lifecycle sources.
+   * It logs the lifecycle event processing and any updates made to the identity.
+   * This method is called when an identity&#x27;s lifecycle changes.
+   *
+   * @param before - The identity data before the update
+   * @param after - The identity data after the update
+   * @returns A promise that resolves when the lifecycle event is processed
+   */
+  private async fireLifecycleEvent(before: Identities, after: Identities): Promise&lt;void&gt; {
+    if (before.lifecycle !&#x3D;&#x3D; after.lifecycle) {
+      await this.create({
+        refId: after._id,
+        lifecycle: after.lifecycle,
+        date: new Date(),
+      });
+      this.logger.debug(&#x60;Lifecycle event manualy recorded for identity &lt;${after._id}&gt;: ${after.lifecycle}&#x60;);
+      // If the lifecycle has changed, we need to process the new lifecycle
+    }
+
+    if (this.lifecycleSources[after.lifecycle]) {
+      this.logger.debug(&#x60;Processing lifecycle sources for identity &lt;${after._id}&gt; with lifecycle &lt;${after.lifecycle}&gt;&#x60;);
+
+      for (const lcs of this.lifecycleSources[after.lifecycle]) {
+        this.logger.verbose(&#x60;Processing lifecycle source &lt;${after.lifecycle}&gt; with rules: ${JSON.stringify(lcs.rules)}&#x60;);
+
+        const res &#x3D; await this.identitiesService.model.findOneAndUpdate(
+          {
+            ...lcs.rules,
+            _id: after._id,
+            ignoreLifecycle: { $ne: true },
+          },
+          {
+            $set: {
+              lifecycle: lcs.target,
+            },
+          },
+          {
+            new: true, // Return the updated document
+            upsert: false, // Do not create a new document if no match is found
+          }
+        );
+
+        if (!res) {
+          this.logger.debug(&#x60;No identity found matching rules for lifecycle &lt;${after.lifecycle}&gt;&#x60;);
+          continue;
+        }
+
+        await this.create({
+          refId: after._id,
+          lifecycle: lcs.target,
+          date: new Date(),
+        });
+
+        this.logger.log(&#x60;Identity &lt;${res._id}&gt; updated to lifecycle &lt;${lcs.target}&gt; based on rules from source &lt;${after.lifecycle}&gt;&#x60;);
+        return;
+      }
+    }
+  }
+
+  /**
+   * Get lifecycle history for a specific identity
+   *
+   * @param refId - The ID of the identity to retrieve lifecycle history for
+   * @returns An array of lifecycle events for the specified identity, sorted by creation date in descending order
+   */
+  public async getLifecycleHistory(
+    refId: Types.ObjectId,
+    options?: FilterOptions,
+  ): Promise&lt;[number, Query&lt;Array&lt;Lifecycle&gt;, Lifecycle, any, Lifecycle&gt;[]]&gt; {
+    const result &#x3D; await this.find&lt;Lifecycle&gt;({ refId }, null, {
+      populate: LifecycleRefId,
+      sort: {
+        ...options?.sort,
+        createdAt: -1,
+      },
+      skip: options?.skip || 0,
+      limit: options?.limit || 100,
+    });
+    const total &#x3D; await this.count({ refId });
+
+    return [total, result];
+  }
+
+  /**
+   * Get lifecycle statistics
+   * This method aggregates lifecycle events by their type and counts the occurrences.
+   * It returns an array of objects where each object contains the lifecycle type and the count of occurrences.
+   *
+   * @returns An array of lifecycle statistics, each containing the lifecycle type and count
+   */
+  public async getLifecycleStats(): Promise&lt;any&gt; {
+    const stats &#x3D; await this._model.aggregate([
+      {
+        $group: {
+          _id: &#x27;$lifecycle&#x27;,
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+
+    return stats;
+  }
+
+  /**
+   * Get recent lifecycle changes
+   * This method retrieves the most recent lifecycle changes, sorted by creation date in descending order.
+   * It allows for pagination through the &#x60;skip&#x60; and &#x60;limit&#x60; options.
+   *
+   * @param options - Optional parameters for filtering, sorting, and pagination
+   * @returns A promise that resolves to an array of lifecycle changes, each containing the lifecycle event details
+   */
+  public async getRecentChanges(
+    options?: FilterOptions,
+  ): Promise&lt;[number, Query&lt;Array&lt;Lifecycle&gt;, Lifecycle, any, Lifecycle&gt;[]]&gt; {
+    const total &#x3D; await this.count({});
+    const result &#x3D; await this.find&lt;Lifecycle&gt;({}, null, {
+      populate: &#x27;refId&#x27;,
+      sort: {
+        ...options?.sort,
+        createdAt: -1,
+      },
+      skip: options?.skip || 0,
+      limit: options?.limit || 100,
+    });
+
+    return [total, result];
+  }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'LifecycleSource.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

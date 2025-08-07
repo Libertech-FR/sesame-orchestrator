@@ -950,10 +950,13 @@ export class AppService extends AbstractService implements OnApplicationBootstra
   public async onApplicationBootstrap(): Promise&lt;void&gt; {
     this.logger.debug(&#x27;Application service bootstrap starting...&#x27;);
 
-    for (const project of Object.values(ProjectsList)) {
-      this.logger.verbose(&#x60;Checking for updates for project: ${project}&#x60;);
-
-      await this.fetchGithubRelease(project);
+    if (process.env.NODE_ENV &#x3D;&#x3D;&#x3D; &#x27;development&#x27;) {
+      this.logger.warn(&#x27;Skipping GitHub release fetch in development mode.&#x27;);
+    } else {
+      for (const project of Object.values(ProjectsList)) {
+        this.logger.verbose(&#x60;Checking for updates for project: ${project}&#x60;);
+        await this.fetchGithubRelease(project);
+      }
     }
 
     this.logger.log(&#x27;Application service bootstrap completed.&#x27;);
@@ -973,10 +976,13 @@ export class AppService extends AbstractService implements OnApplicationBootstra
   public async handleCron(): Promise&lt;void&gt; {
     this.logger.debug(&#x27;Cron job started.&#x27;);
 
-    for (const project of Object.values(ProjectsList)) {
-      this.logger.verbose(&#x60;Checking for updates for project: ${project}&#x60;);
-
-      await this.fetchGithubRelease(project);
+    if (process.env.NODE_ENV &#x3D;&#x3D;&#x3D; &#x27;development&#x27;) {
+      this.logger.warn(&#x27;Skipping GitHub release fetch in development mode.&#x27;);
+    } else {
+      for (const project of Object.values(ProjectsList)) {
+        this.logger.verbose(&#x60;Checking for updates for project: ${project}&#x60;);
+        await this.fetchGithubRelease(project);
+      }
     }
 
     this.logger.debug(&#x27;Cron job completed.&#x27;);

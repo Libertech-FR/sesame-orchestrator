@@ -500,7 +500,8 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    */
   public async getRecentChanges(
     options?: FilterOptions,
-  ): Promise<Query<Array<Lifecycle>, Lifecycle, any, Lifecycle>[]> {
+  ): Promise<[number, Query<Array<Lifecycle>, Lifecycle, any, Lifecycle>[]]> {
+    const total = await this.count({});
     const result = await this.find<Lifecycle>({}, null, {
       populate: 'refId',
       sort: {
@@ -511,6 +512,6 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
       limit: options?.limit || 100,
     });
 
-    return result;
+    return [total, result];
   }
 }

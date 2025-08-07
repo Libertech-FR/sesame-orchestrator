@@ -74,9 +74,11 @@ export class LifecycleController extends AbstractController {
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
     @Res() res: Response,
   ): Promise<Response<Lifecycle[]>> {
+    const [total, data] = await this._service.getRecentChanges(searchFilterOptions);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
-      data: await this._service.getRecentChanges(searchFilterOptions),
+      data,
+      total,
     });
   }
 }

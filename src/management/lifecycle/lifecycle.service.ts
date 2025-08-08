@@ -224,10 +224,19 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    * It logs the process of loading and validating each file, and handles any errors that occur during file reading or validation.
    */
   private async loadLifecycleRules(): Promise<ConfigObjectSchemaDTO[]> {
+    let files: string[] = [];
+
     const lifecycleRules: ConfigObjectSchemaDTO[] = [];
     this.logger.verbose('Loading lifecycle rules from configuration files...');
+    this.logger.verbose('Initializing LifecycleService...');
 
-    for (const file of readdirSync(`${process.cwd()}/configs/lifecycle`)) {
+    try {
+      files = readdirSync(`${process.cwd()}/configs/lifecycle`);
+    } catch (error) {
+      this.logger.error('Error reading lifecycle files', error.message, error.stack);
+    }
+
+    for (const file of files) {
       let schema: ConfigObjectSchemaDTO;
       if (!file.endsWith('.yml') && !file.endsWith('.yaml')) {
         this.logger.warn(`Skipping non-YAML file: ${file}`);

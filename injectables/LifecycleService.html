@@ -492,8 +492,8 @@ It optimizes for readability and performance by using the largest possible time 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="395"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:395</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="404"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:404</a></div>
                         </td>
                     </tr>
 
@@ -595,8 +595,8 @@ This method is called when an identity&#39;s lifecycle changes.</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="280"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:280</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="289"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:289</a></div>
                         </td>
                     </tr>
 
@@ -732,8 +732,8 @@ This method is called when an identity&#39;s lifecycle changes.</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="452"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:452</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="461"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:461</a></div>
                         </td>
                     </tr>
 
@@ -826,8 +826,8 @@ This method is called when an identity&#39;s lifecycle changes.</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="477"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:477</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="486"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:486</a></div>
                         </td>
                     </tr>
 
@@ -874,8 +874,8 @@ It returns an array of objects where each object contains the lifecycle type and
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="501"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:501</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="510"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:510</a></div>
                         </td>
                     </tr>
 
@@ -964,8 +964,8 @@ It allows for pagination through the <code>skip</code> and <code>limit</code> op
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="348"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:348</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="357"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:357</a></div>
                         </td>
                     </tr>
 
@@ -1057,8 +1057,8 @@ This method is triggered by the &#39;management.identities.service.afterUpdate&#
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="371"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:371</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="380"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:380</a></div>
                         </td>
                     </tr>
 
@@ -2862,10 +2862,19 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    * It logs the process of loading and validating each file, and handles any errors that occur during file reading or validation.
    */
   private async loadLifecycleRules(): Promise&lt;ConfigObjectSchemaDTO[]&gt; {
+    let files: string[] &#x3D; [];
+
     const lifecycleRules: ConfigObjectSchemaDTO[] &#x3D; [];
     this.logger.verbose(&#x27;Loading lifecycle rules from configuration files...&#x27;);
+    this.logger.verbose(&#x27;Initializing LifecycleService...&#x27;);
 
-    for (const file of readdirSync(&#x60;${process.cwd()}/configs/lifecycle&#x60;)) {
+    try {
+      files &#x3D; readdirSync(&#x60;${process.cwd()}/configs/lifecycle&#x60;);
+    } catch (error) {
+      this.logger.error(&#x27;Error reading lifecycle files&#x27;, error.message, error.stack);
+    }
+
+    for (const file of files) {
       let schema: ConfigObjectSchemaDTO;
       if (!file.endsWith(&#x27;.yml&#x27;) &amp;&amp; !file.endsWith(&#x27;.yaml&#x27;)) {
         this.logger.warn(&#x60;Skipping non-YAML file: ${file}&#x60;);

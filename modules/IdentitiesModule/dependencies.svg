@@ -28,13 +28,13 @@
 <title>cluster_IdentitiesModule_imports</title>
 <polygon fill="none" stroke="black" points="809,-78 809,-130 1186,-130 1186,-78 809,-78"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_IdentitiesModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 801,-130 801,-78 16,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_IdentitiesModule_exports</title>
 <polygon fill="none" stroke="black" points="599,-208 599,-260 925,-260 925,-208 599,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_IdentitiesModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 801,-130 801,-78 16,-78"/>
 </g>
 <!-- AgentsModule -->
 <g id="node1" class="node">

@@ -114,16 +114,25 @@ dbs: ## Start databases
 		--health-retries=3 \
 		--health-cmd="redis-cli ping || exit 1" \
 		redis || true
+	@docker run -d --rm \
+		--name $(BASE_NAME)-maildev \
+		--platform $(PLATFORM) \
+		--network dev \
+		-p 1080:1080 \
+		-p 1025:1025 \
+		maildev/maildev || true
 	@docker exec -it $(BASE_NAME)-mongodb mongosh --eval "rs.initiate({_id: \"rs0\", members: [{_id: 0, host: \"$(BASE_NAME)-mongodb\"}]})" || true
 
 stop: ## Stop the container
 	@docker stop $(APP_NAME) || true
 	@docker stop $(BASE_NAME)-mongodb || true
 	@docker stop $(BASE_NAME)-redis || true
+	@docker stop $(BASE_NAME)-maildev || true
 
 stop-dbs: ## Stop databases
 	@docker stop $(BASE_NAME)-mongodb || true
 	@docker stop $(BASE_NAME)-redis || true
+	@docker stop $(BASE_NAME)-maildev || true
 
 
 run-test: ## Run tests

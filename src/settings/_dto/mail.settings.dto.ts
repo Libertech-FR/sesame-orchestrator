@@ -2,7 +2,7 @@ import { IsEmail, IsString, IsUrl } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class MailSettingsDto {
-  @IsUrl({ protocols: ['smtp', 'smtps'], require_protocol: true })
+  @IsUrl({ protocols: ['smtp', 'smtps'], require_protocol: true, require_tld: false })
   @ApiProperty({ example: 'smtp://smscsim.smpp.org:25', description: 'Serveur SMTP', type: String })
   public host: string = 'smtp://localhost:25';
 

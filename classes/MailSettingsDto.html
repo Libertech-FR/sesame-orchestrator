@@ -212,7 +212,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsUrl({protocols: undefined, require_protocol: true})<br />@ApiProperty({example: &#x27;smtp://smscsim.smpp.org:25&#x27;, description: &#x27;Serveur SMTP&#x27;, type: String})<br />
+                            @IsUrl({protocols: undefined, require_protocol: true, require_tld: false})<br />@ApiProperty({example: &#x27;smtp://smscsim.smpp.org:25&#x27;, description: &#x27;Serveur SMTP&#x27;, type: String})<br />
                         </code>
                     </td>
                 </tr>
@@ -355,7 +355,7 @@
 import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 
 export class MailSettingsDto {
-  @IsUrl({ protocols: [&#x27;smtp&#x27;, &#x27;smtps&#x27;], require_protocol: true })
+  @IsUrl({ protocols: [&#x27;smtp&#x27;, &#x27;smtps&#x27;], require_protocol: true, require_tld: false })
   @ApiProperty({ example: &#x27;smtp://smscsim.smpp.org:25&#x27;, description: &#x27;Serveur SMTP&#x27;, type: String })
   public host: string &#x3D; &#x27;smtp://localhost:25&#x27;;
 

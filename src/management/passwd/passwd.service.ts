@@ -1,4 +1,4 @@
-import {InjectRedis} from '@nestjs-modules/ioredis';
+import { InjectRedis } from '@nestjs-modules/ioredis';
 import {
   BadRequestException,
   HttpException,
@@ -8,30 +8,31 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as crypto from 'crypto';
-import {randomInt} from 'crypto';
+import { randomInt } from 'crypto';
 import Redis from 'ioredis';
-import {AbstractService} from '~/_common/abstracts/abstract.service';
-import {ActionType} from '~/core/backends/_enum/action-type.enum';
-import {BackendsService} from '~/core/backends/backends.service';
-import {Jobs} from '~/core/jobs/_schemas/jobs.schema';
-import {AskTokenDto} from './_dto/ask-token.dto';
-import {ChangePasswordDto} from './_dto/change-password.dto';
-import {ResetPasswordDto} from './_dto/reset-password.dto';
-import {IdentitiesCrudService} from '../identities/identities-crud.service';
-import {get} from 'radash';
-import {Identities} from '../identities/_schemas/identities.schema';
-import {MailerService} from '@nestjs-modules/mailer';
-import {InitAccountDto} from '~/management/passwd/_dto/init-account.dto';
-import {ConfigService} from '@nestjs/config';
-import {ResetByCodeDto} from '~/management/passwd/_dto/reset-by-code.dto';
-import {PasswdadmService} from '~/settings/passwdadm.service';
-import {IdentityState} from '~/management/identities/_enums/states.enum';
-import {InitResetDto} from '~/management/passwd/_dto/init-reset.dto';
-import {SmsadmService} from '~/settings/smsadm.service';
-import {InitManyDto} from '~/management/passwd/_dto/init-many.dto';
-import {InitStatesEnum} from '~/management/identities/_enums/init-state.enum';
-import {MailadmService} from '~/settings/mailadm.service';
-import {DataStatusEnum} from "~/management/identities/_enums/data-status";
+import { AbstractService } from '~/_common/abstracts/abstract.service';
+import { ActionType } from '~/core/backends/_enum/action-type.enum';
+import { BackendsService } from '~/core/backends/backends.service';
+import { Jobs } from '~/core/jobs/_schemas/jobs.schema';
+import { AskTokenDto } from './_dto/ask-token.dto';
+import { ChangePasswordDto } from './_dto/change-password.dto';
+import { ResetPasswordDto } from './_dto/reset-password.dto';
+import { IdentitiesCrudService } from '../identities/identities-crud.service';
+import { get } from 'radash';
+import { Identities } from '../identities/_schemas/identities.schema';
+import { MailerService } from '@nestjs-modules/mailer';
+import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
+import { ConfigService } from '@nestjs/config';
+import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
+import { PasswdadmService } from '~/settings/passwdadm.service';
+import { IdentityState } from '~/management/identities/_enums/states.enum';
+import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
+import { SmsadmService } from '~/settings/smsadm.service';
+import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
+import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
+import { MailadmService } from '~/settings/mailadm.service';
+import { DataStatusEnum } from "~/management/identities/_enums/data-status";
+import { SentMessageInfo } from 'nodemailer';
 
 interface TokenData {
   k: string;
@@ -63,6 +64,7 @@ export class PasswdService extends AbstractService {
   ) {
     super();
   }
+
   //Initialisation du reset de mot de passe envoie un email ou par sms  un code et fourni un token au front.
   // Le code est la clé du token
   public async initReset(initDto: InitResetDto): Promise<any> {
@@ -70,7 +72,7 @@ export class PasswdService extends AbstractService {
     try {
       const identity = (await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid })) as Identities;
       //test si on peu reninitialiser le compte
-      if ( identity.dataStatus  === DataStatusEnum.INACTIVE ||  identity.dataStatus  === DataStatusEnum.DELETED){
+      if (identity.dataStatus === DataStatusEnum.INACTIVE || identity.dataStatus === DataStatusEnum.DELETED) {
         throw new BadRequestException(
           'Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible',
         );
@@ -143,67 +145,70 @@ export class PasswdService extends AbstractService {
       return falseToken;
     }
   }
-  //Initialisation du compte. Envoi d' un mail avec un token pour l'init du compte
-  public async initAccount(initDto: InitAccountDto): Promise<any> {
-    //recherche de l'identity
-    try {
-      const identity = (await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid })) as Identities;
-      //test si on peu reninitialiser le compte
-      if ( identity.dataStatus  === DataStatusEnum.INACTIVE || identity.dataStatus  === DataStatusEnum.DELETED){
-        throw new BadRequestException(
-          'Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible',
-        );
-      }
-      //envoi du mail
-      const params = await this.passwdadmService.getPolicies();
-      const mailAttribute = params.emailAttribute;
-      this.logger.log('mailer.identityMailAttribute : ' + mailAttribute);
-      if (mailAttribute !== '') {
-        const mail = <string>get(identity.toObject(), mailAttribute);
-        if (mail) {
-          const smtpParams = await this.mailadmService.getParams();
-          //demande du token
-          const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
-          const token = await this.askToken({ mail: mail, uid: initDto.uid }, k, params.initTokenTTL);
-          //envoi du token
-          this.mailer
-            .sendMail({
-              from: smtpParams.sender,
-              to: mail,
-              subject: 'Activation de votre compte',
-              template: 'initaccount',
-              context: {
-                displayName: identity.inetOrgPerson.displayName,
-                uid: initDto.uid,
-                url: this.config.get('frontPwd.url') + '/initaccount/' + token,
-                mail: identity.inetOrgPerson.mail
-              },
-            })
-            .then(() => {
-              this.logger.log('Init compte envoyé  pour uid' + initDto.uid + ' à ' + mail);
-              this.setInitState(identity, InitStatesEnum.SENT);
-            })
-            .catch((e) => {
-              this.logger.error('Erreur serveur lors de l envoi du mail' + e);
-              throw new BadRequestException({
-                message: 'Erreur serveur lors de l envoi du mail' + e,
-                error: 'Bad Request',
-                statusCode: 400,
-              });
-            });
 
-          return true;
-        } else {
-          this.logger.error('Error while initAccount identityMailAttribute Empty');
-          return false;
-        }
-      } else {
-        this.logger.error('Error while initAccount identityMailAttribute not defined');
-        return false;
-      }
+  //Initialisation du compte. Envoi d' un mail avec un token pour l'init du compte
+  public async initAccount(initDto: InitAccountDto): Promise<SentMessageInfo> {
+    const identity = (await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid })) as Identities;
+    //test si on peu reninitialiser le compte
+    if (identity.dataStatus === DataStatusEnum.INACTIVE || identity.dataStatus === DataStatusEnum.DELETED) {
+      throw new BadRequestException(
+        'Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible',
+      );
+    }
+    //envoi du mail
+    const params = await this.passwdadmService.getPolicies();
+    const mailAttribute = params.emailAttribute;
+    this.logger.log('mailer.identityMailAttribute : ' + mailAttribute);
+
+    if (!mailAttribute) {
+      this.logger.error('Error while initAccount identityMailAttribute Empty');
+      throw new BadRequestException({
+        message: "Une erreur est survenue : l'attribut de l'adresse mail n'est pas défini",
+        error: 'Bad Request',
+        statusCode: 400,
+      });
+    }
+
+    const mail = <string>get(identity.toObject(), mailAttribute);
+    if (!mail) {
+      this.logger.error('Error while initAccount identityMailAttribute not defined');
+      throw new BadRequestException({
+        message: "Une erreur est survenue : L'identité <" + (identity.inetOrgPerson?.cn || identity._id) + "> n'a pas d'adresse mail",
+        error: 'Bad Request',
+        statusCode: 400,
+      });
+    }
+
+    const smtpParams = await this.mailadmService.getParams();
+    //demande du token
+    const k = crypto.randomBytes(PasswdService.RANDOM_BYTES_K).toString('hex');
+    const token = await this.askToken({ mail: mail, uid: initDto.uid }, k, params.initTokenTTL);
+    //envoi du token
+
+    try {
+      const send = await this.mailer.sendMail({
+        from: smtpParams.sender,
+        to: mail,
+        subject: 'Activation de votre compte',
+        template: 'initaccount',
+        context: {
+          displayName: identity.inetOrgPerson.displayName,
+          uid: initDto.uid,
+          url: this.config.get('frontPwd.url') + '/initaccount/' + token,
+          mail: identity.inetOrgPerson.mail
+        },
+      })
+      this.logger.log('Init compte envoyé pour uid ' + initDto.uid + ' à ' + mail);
+      this.setInitState(identity, InitStatesEnum.SENT);
+
+      return send;
     } catch (e) {
-      this.logger.error('Error while initialize password. ' + e + ` (uid=${initDto?.uid})`);
-      return false;
+      this.logger.error('Error while sending init account email: ' + e);
+      throw new BadRequestException({
+        message: 'Erreur serveur lors de l envoi du mail',
+        error: 'Bad Request',
+        statusCode: 400,
+      });
     }
   }
 
@@ -214,7 +219,7 @@ export class PasswdService extends AbstractService {
         'inetOrgPerson.uid': passwdDto.uid,
         state: IdentityState.SYNCED,
       })) as Identities;
-      if ( identity.dataStatus  === DataStatusEnum.INACTIVE ||  identity.dataStatus  === DataStatusEnum.DELETED){
+      if (identity.dataStatus === DataStatusEnum.INACTIVE || identity.dataStatus === DataStatusEnum.DELETED) {
         throw new BadRequestException(
           'Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible',
         );
@@ -246,7 +251,7 @@ export class PasswdService extends AbstractService {
         },
       );
       // on met actif l'identité
-      await this.identities.model.updateOne({ _id:identity._id},{dataStatus: DataStatusEnum.ACTIVE})
+      await this.identities.model.updateOne({ _id: identity._id }, { dataStatus: DataStatusEnum.ACTIVE })
       return result;
     } catch (e) {
       let job = undefined;
@@ -446,12 +451,19 @@ export class PasswdService extends AbstractService {
     if (identities.length === 0) {
       throw new HttpException('Aucune identité trouvée.', 404);
     }
+
     const updated = await Promise.all(
-      identities.map((identity) => {
+      identities.map(async (identity) => {
         this.logger.verbose('send To :' + identity.get('inetOrgPerson.uid'));
-        return this.initAccount({ uid: identity.get('inetOrgPerson.uid') });
+        try {
+          return await this.initAccount({ uid: identity.get('inetOrgPerson.uid') });
+        } catch (e) {
+          this.logger.error('Error while init account for ' + identity.get('inetOrgPerson.uid') + ': ' + e);
+          return null;
+        }
       }),
     );
+
     return updated as any;
   }
 

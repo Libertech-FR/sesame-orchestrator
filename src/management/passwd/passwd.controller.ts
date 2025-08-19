@@ -48,7 +48,7 @@ export class PasswdController {
   public async resetbycode(@Body() body: ResetByCodeDto, @Res() res: Response): Promise<Response> {
     const debug = {};
     this.logger.log('Reset by code : ' + body.token + ' code : ' + body.code);
-    try{
+    try {
       const [_, data] = await this.passwdService.resetByCode(body);
       if (process.env.NODE_ENV === 'development') {
         debug['_debug'] = data;
@@ -97,30 +97,24 @@ export class PasswdController {
   @ApiOperation({ summary: "Initialise le compte envoi un jeton par mail à l'identité" })
   @ApiResponse({ status: HttpStatus.OK })
   public async init(@Body() body: InitAccountDto, @Res() res: Response): Promise<Response> {
-    const debug = {};
-    const ok = await this.passwdService.initAccount(body);
-    if (ok){
-      return res.status(HttpStatus.OK).json({
-        message: 'Email envoyé verifiez votre boite mail alternative et vos spam',
-        ...debug,
-      });
-    }else{
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Erreur serveur impossible d\'envoyer le mail',
-        ...debug,
-      });
-    }
-
+    const data = await this.passwdService.initAccount(body);
+    return res.status(HttpStatus.OK).json({
+      message: 'Email envoyé verifiez votre boite mail alternative et vos spam',
+      data,
+    });
   }
+
   @Post('initmany')
   @ApiOperation({ summary: "Initialise plusieurs identités. envoi un jeton par mail à l'identité" })
   @ApiResponse({ status: HttpStatus.OK })
   public async initMany(@Body() body: InitManyDto, @Res() res: Response): Promise<Response> {
-    const result = await this.passwdService.initMany(body);
+    const data = await this.passwdService.initMany(body);
     return res.status(HttpStatus.OK).json({
       message: 'identités initialisées',
+      data,
     });
   }
+
   @Post('initreset')
   @ApiOperation({ summary: 'Demande l envoi de mail pour le reset' })
   @ApiResponse({ status: HttpStatus.OK })
@@ -134,6 +128,7 @@ export class PasswdController {
       ...debug,
     });
   }
+
   @Get('ioutdated')
   @ApiOperation({ summary: 'Compte donc l invitation d init n a pas été repondue dans les temps' })
   public async search(@Res() res: Response): Promise<

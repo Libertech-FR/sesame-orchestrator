@@ -436,8 +436,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="167"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:167</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="163"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:163</a></div>
                         </td>
                     </tr>
 
@@ -518,8 +518,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="202"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:202</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="198"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:198</a></div>
                         </td>
                     </tr>
 
@@ -588,8 +588,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:85</a></div>
                         </td>
                     </tr>
 
@@ -658,8 +658,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="239"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:239</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="235"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:235</a></div>
                         </td>
                     </tr>
 
@@ -733,8 +733,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="221"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:221</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="217"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:217</a></div>
                         </td>
                     </tr>
 
@@ -801,8 +801,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="258"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:258</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="254"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:254</a></div>
                         </td>
                     </tr>
 
@@ -876,8 +876,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="106"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:106</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -1059,8 +1059,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="145"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:145</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="141"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:141</a></div>
                         </td>
                     </tr>
 
@@ -1128,8 +1128,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="131"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:131</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="127"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:127</a></div>
                         </td>
                     </tr>
 
@@ -1193,8 +1193,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="66"
-                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:66</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">src/management/identities/abstract-identities.service.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -2564,17 +2564,13 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     }
 
     if (error instanceof ValidationSchemaException) {
-      this.logger.warn(&#x60;${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}&#x60;);
-      identity.additionalFields.validations &#x3D; error.getValidations() as any;
-      // console.log(&#x27;identity.state&#x27;, identity.state)
-      if (identity.state &#x3D;&#x3D;&#x3D; IdentityState.TO_CREATE) {
-        this.logger.warn(&#x60;${logPrefix} State set to TO_COMPLETE.&#x60;);
-        identity.state &#x3D; IdentityState.TO_COMPLETE;
-        return identity;
-      } else {
-        this.logger.error(&#x60;${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}&#x60;);
-        throw new ValidationSchemaException(error.getPayload());
-      }
+      this.logger.warn(&#x60;${logPrefix} Validation handleValidationError schema error. ${JSON.stringify(error.getValidations())}&#x60;);
+      identity.additionalFields.validations &#x3D; error.getValidations();
+
+      this.logger.warn(&#x60;${logPrefix} State set to TO_COMPLETE.&#x60;);
+      identity.state &#x3D; IdentityState.TO_COMPLETE;
+
+      return identity;
     } else {
       this.logger.error(&#x60;${logPrefix} Unhandled error: ${error.message}&#x60;);
       throw error; // Rethrow the original error if it&#x27;s not one of the handled types.

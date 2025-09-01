@@ -37,7 +37,7 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
         throw new ValidationConfigException(error.getPayload());
       }
       if (error instanceof ValidationSchemaException) {
-        this.logger.warn(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
+        this.logger.warn(`${logPrefix} Validation create schema error. ${JSON.stringify(error.getValidations())}`);
         data.additionalFields.validations = error.getValidations();
         throw new ValidationSchemaException(error.getPayload());
       } else {
@@ -100,7 +100,7 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
         throw new ValidationConfigException(error.getPayload());
       }
       if (error instanceof ValidationSchemaException) {
-        this.logger.warn(`${logPrefix} Validation schema error. ${JSON.stringify(error.getValidations())}`);
+        this.logger.warn(`${logPrefix} Validation update schema error. ${JSON.stringify(error.getValidations())}`);
         update.additionalFields.validations = error.getValidations();
         throw new ValidationSchemaException(error.getPayload());
       } else {

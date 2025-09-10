@@ -25,6 +25,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ShutdownObserver } from './_common/observers/shutdown.observer';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
+import { ExtensionsModule } from './extensions/extensions.module';
 
 @Module({
   imports: [
@@ -133,6 +134,7 @@ import { HttpModule } from '@nestjs/axios';
     ManagementModule.register(),
     SettingsModule.register(),
     MigrationsModule.register(),
+    ExtensionsModule.register(),
   ],
   controllers: [AppController],
   providers: [

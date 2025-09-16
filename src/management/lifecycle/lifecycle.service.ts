@@ -418,6 +418,11 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
       for (const lcs of this.lifecycleSources[after.lifecycle]) {
         this.logger.verbose(`Processing lifecycle source <${after.lifecycle}> with rules: ${JSON.stringify(lcs.rules)}`);
 
+        if (lcs.trigger) {
+          this.logger.debug(`Skipping lifecycle source <${after.lifecycle}> with trigger: ${lcs.trigger}`);
+          continue; // Skip processing if it's a trigger-based rule
+        }
+
         const res = await this.identitiesService.model.findOneAndUpdate(
           {
             ...lcs.rules,

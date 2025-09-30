@@ -115,7 +115,6 @@ export function historyPlugin(schema: Schema, options: HistoryPluginOptions) {
 
   schema.post('save', async function (after: Document | null) {
     const before: Document | null = this.$locals[HISTORY_PLUGIN_BEFORE_KEY] as Document | null
-    console.log('post save fired', before)
     const [hasChanged, changes] = detectChanges(before, after, mergedOptions)
     logger.verbose(`Audit after state: ${JSON.stringify(after)}`)
 

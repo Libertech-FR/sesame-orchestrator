@@ -3,6 +3,7 @@ import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
 import { StatePart, StatePartSchema } from '~/core/agents/_schemas/_parts/state.part.schema';
 import { SecurityPart, SecurityPartSchema } from '~/core/agents/_schemas/_parts/security.part.schema';
 import { MixedValue } from '~/_common/types/mixed-value.type';
+import { historyPlugin } from '~/_common/plugins/mongoose/history.plugin';
 
 const DEFAULT_THIRD_PARTY_AUTH = 'local';
 
@@ -70,4 +71,10 @@ export class Agents extends AbstractSchema {
   public customFields?: { [key: string]: MixedValue };
 }
 
-export const AgentsSchema = SchemaFactory.createForClass(Agents);
+export const AgentsSchema = SchemaFactory.createForClass(Agents)
+  .plugin(historyPlugin, {
+    collectionName: Agents.name,
+    ignoredFields: [
+      'password',
+    ],
+  });

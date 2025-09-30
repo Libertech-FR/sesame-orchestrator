@@ -135,8 +135,8 @@ export function historyPlugin(schema: Schema, options: HistoryPluginOptions) {
       data: after,
       changes,
       metadata: {
-        'metadata.createdBy': agent.name || 'anonymous',
-        'metadata.createdAt': new Date(),
+        createdBy: agent.name || 'anonymous',
+        createdAt: new Date(),
       },
     })
   })
@@ -168,8 +168,8 @@ export function historyPlugin(schema: Schema, options: HistoryPluginOptions) {
       data: after,
       changes,
       metadata: {
-        'metadata.createdBy': agent.name || 'anonymous',
-        'metadata.createdAt': new Date(),
+        createdBy: agent.name || 'anonymous',
+        createdAt: new Date(),
       },
     })
   })

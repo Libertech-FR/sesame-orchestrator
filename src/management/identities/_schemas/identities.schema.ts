@@ -11,6 +11,7 @@ import { MixedValue } from '~/_common/types/mixed-value.type';
 import { AutoIncrementPlugin } from '~/_common/plugins/mongoose/auto-increment.plugin';
 import { AutoIncrementPluginOptions } from '~/_common/plugins/mongoose/auto-increment.interface';
 import { DataStatusEnum } from '~/management/identities/_enums/data-status';
+import { historyPlugin } from '~/_common/plugins/mongoose/history.plugin';
 
 export type IdentitiesDocument = Identities & Document;
 
@@ -70,6 +71,13 @@ export class Identities extends AbstractSchema {
 }
 
 export const IdentitiesSchema = SchemaFactory.createForClass(Identities)
+  .plugin(historyPlugin, {
+    collectionName: Identities.name,
+    ignoredFields: [
+      'lastSync',
+      'fingerprint',
+    ],
+  })
   .plugin(AutoIncrementPlugin, <AutoIncrementPluginOptions>{
     incrementBy: 1,
     field: 'inetOrgPerson.employeeNumber',

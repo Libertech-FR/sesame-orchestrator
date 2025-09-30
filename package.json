@@ -80,7 +80,6 @@
     "helmet": "^7.1.0",
     "hibp": "^14.1.2",
     "ioredis": "^5.4.1",
-    "jsondiffpatch": "^0.7.3",
     "loglevel": "^1.9.1",
     "lru-cache": "^11.0.2",
     "microdiff": "^1.5.0",

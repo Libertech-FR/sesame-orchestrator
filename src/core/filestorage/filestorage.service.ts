@@ -1,7 +1,7 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { InjectModel } from '@nestjs/mongoose';
-import { FactorydriveService } from '@the-software-compagny/nestjs_module_factorydrive';
+import { FactorydriveService } from '~/_common/factorydrive';
 import {
   Document,
   FilterQuery,

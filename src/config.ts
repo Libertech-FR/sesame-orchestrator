@@ -4,8 +4,8 @@ import { HelmetOptions } from 'helmet';
 import { SwaggerCustomOptions } from '@nestjs/swagger';
 import { IAuthModuleOptions } from '@nestjs/passport';
 import { JwtModuleOptions } from '@nestjs/jwt';
-import { StorageManagerConfig } from '@the-software-compagny/nestjs_module_factorydrive';
-import { AmazonWebServicesS3StorageConfig } from '@the-software-compagny/nestjs_module_factorydrive-s3';
+import { StorageManagerConfig } from '~/_common/factorydrive';
+import { AmazonWebServicesS3StorageConfig } from '~/_common/factorydrive';
 import { parse } from 'path';
 import { HttpModuleOptions } from '@nestjs/axios';
 

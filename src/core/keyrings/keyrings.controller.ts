@@ -12,7 +12,7 @@ import {
   FilterSchema,
   SearchFilterOptions,
   SearchFilterSchema,
-} from '@the-software-compagny/nestjs_module_restools';
+} from '~/_common/restools';
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator';
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
 import { PartialProjectionType } from '~/_common/types/partial-projection.type';

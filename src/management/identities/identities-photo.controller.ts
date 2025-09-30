@@ -12,7 +12,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags, getSchemaPath, PartialType } from '@nestjs/swagger';
-import { FilterSchema, SearchFilterSchema } from '@the-software-compagny/nestjs_module_restools';
+import { FilterSchema, SearchFilterSchema } from '~/_common/restools';
 import { Response } from 'express';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator';

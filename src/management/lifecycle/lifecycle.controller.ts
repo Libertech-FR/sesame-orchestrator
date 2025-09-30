@@ -6,7 +6,7 @@ import {
   Res
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { FilterOptions, SearchFilterOptions } from '@the-software-compagny/nestjs_module_restools';
+import { FilterOptions, SearchFilterOptions } from '~/_common/restools';
 import { Response } from 'express';
 import { Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';

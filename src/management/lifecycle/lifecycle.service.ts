@@ -1,7 +1,7 @@
 import { Injectable, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterOptions } from '@the-software-compagny/nestjs_module_restools';
+import { FilterOptions } from '~/_common/restools';
 import { Model, Query, Types } from 'mongoose';
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { Identities } from '../identities/_schemas/identities.schema';

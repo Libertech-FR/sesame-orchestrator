@@ -80,12 +80,12 @@ function detectChanges<T = Query<any, any>>(
 }
 
 function resolveAgent(): any {
-  const user = RequestContext.currentContext.req?.user
+  const user = RequestContext.currentContext?.req?.user || {}
 
   return {
     $ref: user.$ref ?? 'System',
     id: Types.ObjectId.createFromHexString(user._id ?? '000000000000000000000000'),
-    name: user.username ?? 'console',
+    name: user.username ?? 'system',
   }
 }
 

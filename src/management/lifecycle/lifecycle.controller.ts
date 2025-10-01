@@ -47,10 +47,9 @@ export class LifecycleController extends AbstractController {
   }
 
   /**
-   * Get lifecycle history for an agent
+   * Get lifecycle statistics
    *
-   * @param agentId - The ID of the agent to retrieve lifecycle history for
-   * @returns A response containing the lifecycle history of the specified agent
+   * @returns A response containing lifecycle statistics
    */
   @ApiOperation({ summary: 'Get lifecycle statistics' })
   @Get('stats')
@@ -60,6 +59,44 @@ export class LifecycleController extends AbstractController {
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: await this._service.getLifecycleStats(),
+    });
+  }
+
+  /**
+   * Get all available lifecycle states
+   *
+   * @returns A response containing all available lifecycle states (default + custom)
+   */
+  @ApiOperation({ 
+    summary: 'Get all available lifecycle states',
+    description: 'Returns all lifecycle states including default states from enum and custom states from configuration'
+  })
+  @Get('states')
+  public async getAllStates(
+    @Res() res: Response,
+  ): Promise<Response<Array<{ key: string; label: string; description: string }>>> {
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: this._service.getAllAvailableStates(),
+    });
+  }
+
+  /**
+   * Get only custom lifecycle states
+   *
+   * @returns A response containing only custom lifecycle states from configuration
+   */
+  @ApiOperation({ 
+    summary: 'Get custom lifecycle states',
+    description: 'Returns only custom lifecycle states loaded from states.yml configuration file'
+  })
+  @Get('states/custom')
+  public async getCustomStates(
+    @Res() res: Response,
+  ): Promise<Response<Array<{ key: string; label: string; description: string }>>> {
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: this._service.getCustomStates(),
     });
   }
 

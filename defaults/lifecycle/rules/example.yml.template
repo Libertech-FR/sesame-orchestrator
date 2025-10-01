@@ -4,5 +4,5 @@ identities:
     #   'inetOrgPerson.employeeType': 'etd',
     #   lastSyncBackup: { $ne : null }
     # }
-    # trigger: null
+    # trigger: 30d
     target: D

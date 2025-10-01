@@ -2,7 +2,7 @@ import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger';
 import { IsOptional, IsObject, IsEnum, IsNumber, ValidateNested, IsString } from 'class-validator';
 import { inetOrgPersonDto } from './_parts/inetOrgPerson.dto';
 import { IdentityState } from '../_enums/states.enum';
-import { IdentityLifecycle } from '../_enums/lifecycle.enum';
+import { IdentityLifecycleDefault } from '../_enums/lifecycle.enum';
 import { Type } from 'class-transformer';
 import { additionalFieldsPartDto } from './_parts/additionalFields.dto';
 import { MetadataDto } from '~/_common/abstracts/dto/metadata.dto';
@@ -31,8 +31,7 @@ export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, Metad
 
   @IsString()
   @IsOptional()
-  @IsEnum(IdentityLifecycle)
-  @ApiProperty({ enum: IdentityLifecycle })
+  @ApiProperty({ enum: IdentityLifecycleDefault })
   public lifecycle: string;
 
   @IsObject()

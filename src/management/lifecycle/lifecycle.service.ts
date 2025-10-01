@@ -12,18 +12,21 @@ import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.sche
 import { FilterOptions } from '~/_common/restools';
 import { Identities } from '../identities/_schemas/identities.schema';
 import { IdentitiesCrudService } from '../identities/identities-crud.service';
-import { ConfigObjectIdentitiesDTO, ConfigObjectSchemaDTO } from './_dto/config.dto';
+import { ConfigRulesObjectIdentitiesDTO, ConfigRulesObjectSchemaDTO } from './_dto/config-rules.dto';
+import { ConfigStatesDTO, LifecycleStateDTO } from './_dto/config-states.dto';
+import { IdentityLifecycleDefault } from '../identities/_enums/lifecycle.enum';
 import { Lifecycle, LifecycleRefId } from './_schemas/lifecycle.schema';
 import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
 
 interface LifecycleSource {
-  [source: string]: Partial<ConfigObjectIdentitiesDTO>[];
+  [source: string]: Partial<ConfigRulesObjectIdentitiesDTO>[];
 }
 
 @Injectable()
 export class LifecycleService extends AbstractServiceSchema implements OnApplicationBootstrap, OnModuleInit {
   protected lifecycleSources: LifecycleSource = {};
+  protected customStates: LifecycleStateDTO[] = [];
 
   public constructor(
     @InjectModel(Lifecycle.name) protected _model: Model<Lifecycle>,
@@ -43,13 +46,18 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    */
   public onModuleInit(): void {
     let files = [];
+    let filesRules = [];
     let defaultFiles = [];
+    let defaultFilesRules = [];
 
     this.logger.verbose('Initializing LifecycleService...');
 
     try {
       files = readdirSync(`${process.cwd()}/configs/lifecycle`);
       defaultFiles = readdirSync(`${process.cwd()}/defaults/lifecycle`);
+
+      filesRules = readdirSync(`${process.cwd()}/configs/lifecycle/rules`);
+      defaultFilesRules = readdirSync(`${process.cwd()}/defaults/lifecycle/rules`);
     } catch (error) {
       this.logger.error('Error reading lifecycle validations files', error.message, error.stack);
     }
@@ -62,6 +70,20 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
           this.logger.warn(`Copied default validation file: ${file}`);
         } catch (error) {
           this.logger.error(`Error copying default validation file: ${file}`, error.message, error.stack);
+        }
+      }
+    }
+
+    if (files.length === 0) {
+      for (const file of defaultFilesRules) {
+        if (!files.includes(file)) {
+          try {
+            const defaultFile = readFileSync(`${process.cwd()}/defaults/lifecycle/rules/${file}`, 'utf-8');
+            writeFileSync(`${process.cwd()}/configs/lifecycle/rules/${file}`, defaultFile);
+            this.logger.warn(`Copied default validation file: ${file}`);
+          } catch (error) {
+            this.logger.error(`Error copying default validation file: ${file}`, error.message, error.stack);
+          }
         }
       }
     }
@@ -81,6 +103,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
     this.logger.verbose('Bootstrap LifecycleService application...');
 
     const lifecycleRules = await this.loadLifecycleRules();
+    await this.loadCustomStates();
 
     const cronExpression = this.configService.get<string>('lifecycle.triggerCronExpression') || '*/5 * * * *';
     const job = new CronJob(cronExpression, this.handleCron.bind(this, { lifecycleRules }));
@@ -99,7 +122,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
     this.logger.log('LifecycleService bootstraped');
   }
 
-  private async handleCron({ lifecycleRules }: { lifecycleRules: ConfigObjectSchemaDTO[] }): Promise<void> {
+  private async handleCron({ lifecycleRules }: { lifecycleRules: ConfigRulesObjectSchemaDTO[] }): Promise<void> {
     this.logger.debug(`Running lifecycle trigger cron job...`);
 
     for (const lfr of lifecycleRules) {
@@ -160,31 +183,31 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    * parses them into DTOs, validates them, and stores them in the `lifecycleRules` array.
    * It logs the process of loading and validating each file, and handles any errors that occur during file reading or validation.
    */
-  private async loadLifecycleRules(): Promise<ConfigObjectSchemaDTO[]> {
+  private async loadLifecycleRules(): Promise<ConfigRulesObjectSchemaDTO[]> {
     let files: string[] = [];
 
-    const lifecycleRules: ConfigObjectSchemaDTO[] = [];
+    const lifecycleRules: ConfigRulesObjectSchemaDTO[] = [];
     this.logger.verbose('Loading lifecycle rules from configuration files...');
     this.logger.verbose('Initializing LifecycleService...');
 
     try {
-      files = readdirSync(`${process.cwd()}/configs/lifecycle`);
+      files = readdirSync(`${process.cwd()}/configs/lifecycle/rules`);
     } catch (error) {
       this.logger.error('Error reading lifecycle files', error.message, error.stack);
     }
 
     for (const file of files) {
-      let schema: ConfigObjectSchemaDTO;
+      let schema: ConfigRulesObjectSchemaDTO;
       if (!file.endsWith('.yml') && !file.endsWith('.yaml')) {
         this.logger.warn(`Skipping non-YAML file: ${file}`);
         continue;
       }
 
       try {
-        const data = readFileSync(`${process.cwd()}/configs/lifecycle/${file}`, 'utf-8');
+        const data = readFileSync(`${process.cwd()}/configs/lifecycle/rules/${file}`, 'utf-8');
         this.logger.debug(`Loaded lifecycle config: ${file}`);
         const yml = parse(data)
-        schema = plainToInstance(ConfigObjectSchemaDTO, yml)
+        schema = plainToInstance(ConfigRulesObjectSchemaDTO, yml)
 
       } catch (error) {
         this.logger.error(`Error loading lifecycle config file: ${file}`, error.message, error.stack);
@@ -214,6 +237,143 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
 
     this.logger.log(`Loaded <${lifecycleRules.length}> lifecycle rules from configuration files.`);
     return lifecycleRules;
+  }
+
+  /**
+   * Load custom lifecycle states from states.yml configuration file
+   *
+   * This method reads the states.yml file from the `configs/lifecycle` directory,
+   * parses it into a DTO, validates it, and stores the custom states.
+   * It logs the process of loading and validating the file, and handles any errors that occur during file reading or validation.
+   */
+  private async loadCustomStates(): Promise<LifecycleStateDTO[]> {
+    const customStates: LifecycleStateDTO[] = [];
+    this.logger.verbose('Loading custom lifecycle states from states.yml...');
+
+    try {
+      const statesFilePath = `${process.cwd()}/configs/lifecycle/states.yml`;
+      const data = readFileSync(statesFilePath, 'utf-8');
+      this.logger.debug('Loaded custom states config: states.yml');
+
+      const yml = parse(data);
+      const configStates = plainToInstance(ConfigStatesDTO, yml);
+
+      if (!configStates || !configStates.states || !Array.isArray(configStates.states)) {
+        this.logger.error('Invalid schema in states.yml file');
+        return customStates;
+      }
+
+      try {
+        this.logger.verbose('Validating schema for states.yml', JSON.stringify(configStates, null, 2));
+        await validateOrReject(configStates, {
+          whitelist: true,
+        });
+        this.logger.debug('Validated schema for states.yml');
+      } catch (errors) {
+        const formattedErrors = this.formatValidationErrors(errors, 'states.yml');
+        const err = new Error(`Validation errors in states.yml:\n${formattedErrors}`);
+        throw err;
+      }
+
+      // Valider que chaque clé est unique et d'une seule lettre
+      const usedKeys = new Set<string>();
+      for (const state of configStates.states) {
+        if (state.key.length !== 1) {
+          throw new Error(`State key '${state.key}' must be exactly one character`);
+        }
+
+        if (usedKeys.has(state.key)) {
+          throw new Error(`Duplicate state key '${state.key}' found in states.yml`);
+        }
+
+        // Vérifier que la clé n'existe pas déjà dans l'enum par défaut
+        if (Object.values(IdentityLifecycleDefault).includes(state.key as IdentityLifecycleDefault)) {
+          throw new Error(`State key '${state.key}' conflicts with default lifecycle state`);
+        }
+
+        usedKeys.add(state.key);
+        customStates.push(state);
+      }
+
+      this.customStates = customStates;
+      this.logger.log(`Loaded <${customStates.length}> custom lifecycle states from states.yml`);
+
+    } catch (error) {
+      this.logger.error('Error loading custom states from states.yml', error.message, error.stack);
+    }
+
+    return customStates;
+  }
+
+  /**
+   * Get all available lifecycle states (default enum + custom states)
+   *
+   * This method combines the default lifecycle states from the enum with custom states loaded from states.yml.
+   * It returns an array of all available states with their keys, labels, and descriptions.
+   *
+   * @returns An array containing all available lifecycle states
+   */
+  public getAllAvailableStates(): Array<{ key: string; label: string; description: string }> {
+    const allStates: Array<{ key: string; label: string; description: string }> = [];
+
+    // Ajouter les états par défaut de l'enum
+    Object.entries(IdentityLifecycleDefault).forEach(([enumKey, enumValue]) => {
+      allStates.push({
+        key: enumValue,
+        label: enumKey,
+        description: `Default lifecycle state: ${enumKey}`,
+      });
+    });
+
+    // Ajouter les états custom
+    this.customStates.forEach(customState => {
+      allStates.push({
+        key: customState.key,
+        label: customState.label,
+        description: customState.description,
+      });
+    });
+
+    this.logger.debug(`Retrieved <${allStates.length}> total available lifecycle states`);
+    return allStates;
+  }
+
+  /**
+   * Get all available lifecycle state keys
+   *
+   * This method returns only the keys of all available lifecycle states.
+   *
+   * @returns An array of all available lifecycle state keys
+   */
+  public getAllAvailableStateKeys(): string[] {
+    const defaultKeys = Object.values(IdentityLifecycleDefault);
+    const customKeys = this.customStates.map(state => state.key);
+
+    return [...defaultKeys, ...customKeys];
+  }
+
+  /**
+   * Get only custom lifecycle states
+   *
+   * This method returns the list of custom lifecycle states loaded from states.yml,
+   * excluding the default states from the enum.
+   *
+   * @returns An array of custom lifecycle states with their details
+   */
+  public getCustomStates(): LifecycleStateDTO[] {
+    this.logger.debug(`Retrieved <${this.customStates.length}> custom lifecycle states`);
+    return [...this.customStates]; // Return a copy to prevent external modification
+  }
+
+  /**
+   * Get only custom lifecycle state keys
+   *
+   * This method returns only the keys of custom lifecycle states.
+   *
+   * @returns An array of custom lifecycle state keys
+   */
+  public getCustomStateKeys(): string[] {
+    return this.customStates.map(state => state.key);
   }
 
   /**

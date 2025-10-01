@@ -1,4 +1,4 @@
-import { IdentityLifecycle } from './../_enums/lifecycle.enum';
+import { IdentityLifecycleDefault } from './../_enums/lifecycle.enum';
 import { inetOrgPerson, inetOrgPersonSchema } from './_parts/inetOrgPerson.part';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
@@ -20,8 +20,8 @@ export class Identities extends AbstractSchema {
   @Prop({ type: Number, enum: IdentityState, default: IdentityState.TO_CREATE })
   public state: IdentityState;
 
-  @Prop({ type: String, enum: IdentityLifecycle, default: IdentityLifecycle.OFFICIAL })
-  public lifecycle: IdentityLifecycle;
+  @Prop({ type: String, default: IdentityLifecycleDefault.OFFICIAL })
+  public lifecycle: IdentityLifecycleDefault | string;
 
   @Prop({ type: Number, enum: DataStatusEnum, default: DataStatusEnum.NOTINITIALIZED })
   public dataStatus: DataStatusEnum;

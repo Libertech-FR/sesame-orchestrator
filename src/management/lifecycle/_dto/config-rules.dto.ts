@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type, Transform } from 'class-transformer';
-import { IsArray, IsEnum, IsNegative, IsNotEmpty, IsNumber, IsObject, IsOptional, ValidateNested, registerDecorator, ValidationOptions, ValidationArguments, isString, isNumber, IsString } from 'class-validator';
-import { IdentityLifecycle } from '~/management/identities/_enums/lifecycle.enum';
+import { IsArray, IsNotEmpty, IsNumber, IsObject, IsOptional, ValidateNested, registerDecorator, ValidationOptions, ValidationArguments, isString, isNumber, IsString } from 'class-validator';
+import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecycle.enum';
 
 /**
  * Transform trigger values to seconds.
@@ -102,7 +102,7 @@ function ValidateRulesOrTrigger(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(_: any, args: ValidationArguments) {
-          const obj = args.object as ConfigObjectIdentitiesDTO;
+          const obj = args.object as ConfigRulesObjectIdentitiesDTO;
 
           /**
            * Check if either 'rules' or 'trigger' is defined and not empty.
@@ -122,16 +122,15 @@ function ValidateRulesOrTrigger(validationOptions?: ValidationOptions) {
 }
 
 @ValidateRulesOrTrigger({ message: 'Either rules or trigger must be provided' })
-export class ConfigObjectIdentitiesDTO {
-  @IsEnum(IdentityLifecycle, { each: true })
+export class ConfigRulesObjectIdentitiesDTO {
   @ApiProperty({
     type: String,
-    enum: IdentityLifecycle,
+    enum: IdentityLifecycleDefault,
     description: 'Lifecycle state of the identity',
-    example: IdentityLifecycle.OFFICIAL,
+    example: IdentityLifecycleDefault.OFFICIAL,
     required: true,
   })
-  public sources: IdentityLifecycle[];
+  public sources: IdentityLifecycleDefault[];
 
   @IsOptional()
   @IsString()
@@ -160,25 +159,24 @@ export class ConfigObjectIdentitiesDTO {
   public trigger: number;
 
   @IsNotEmpty()
-  @IsEnum(IdentityLifecycle)
   @ApiProperty({
     type: String,
-    enum: IdentityLifecycle,
+    enum: IdentityLifecycleDefault,
     description: 'Target lifecycle state for the identity',
-    example: IdentityLifecycle.MANUAL,
+    example: IdentityLifecycleDefault.MANUAL,
     required: true,
   })
-  public target: IdentityLifecycle;
+  public target: IdentityLifecycleDefault;
 }
 
-export class ConfigObjectSchemaDTO {
+export class ConfigRulesObjectSchemaDTO {
   @IsOptional()
   @IsArray()
   @ApiProperty({
-    type: ConfigObjectIdentitiesDTO,
+    type: ConfigRulesObjectIdentitiesDTO,
     required: false,
   })
   @ValidateNested({ each: true })
-  @Type(() => ConfigObjectIdentitiesDTO)
-  public identities: ConfigObjectIdentitiesDTO[]
+  @Type(() => ConfigRulesObjectIdentitiesDTO)
+  public identities: ConfigRulesObjectIdentitiesDTO[]
 }

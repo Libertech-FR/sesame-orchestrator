@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
-import { IdentityLifecycle } from '~/management/identities/_enums/lifecycle.enum';
+import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecycle.enum';
 
 export type LifecycleDocument = Lifecycle & Document;
 
@@ -18,10 +18,9 @@ export class Lifecycle extends AbstractSchema {
 
   @Prop({
     type: String,
-    enum: IdentityLifecycle,
     required: true,
   })
-  public lifecycle: IdentityLifecycle;
+  public lifecycle: IdentityLifecycleDefault | string;
 
   @Prop({
     type: Date,

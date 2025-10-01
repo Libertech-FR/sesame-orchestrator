@@ -1,7 +1,7 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsMongoId, IsNotEmpty } from 'class-validator';
+import { IsDateString, IsMongoId, IsNotEmpty } from 'class-validator';
 import { Types } from 'mongoose';
-import { IdentityLifecycle } from '~/management/identities/_enums/lifecycle.enum';
+import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecycle.enum';
 
 export class LifecycleCreateDto {
   @ApiProperty({
@@ -13,11 +13,10 @@ export class LifecycleCreateDto {
 
   @ApiProperty({
     description: 'Lifecycle state',
-    enum: IdentityLifecycle,
+    enum: IdentityLifecycleDefault,
   })
-  @IsEnum(IdentityLifecycle)
   @IsNotEmpty()
-  public lifecycle: IdentityLifecycle;
+  public lifecycle: IdentityLifecycleDefault | string;
 
   @ApiProperty({
     description: 'Date of the lifecycle event',

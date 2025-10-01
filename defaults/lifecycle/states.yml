@@ -1,0 +1,20 @@
+states:
+  # En Attente -> supannRessourceEtat : {COMPTE} A SupannAnticipe
+  - key: A
+    label: "En Attente"
+    description: "supannRessourceEtat : {COMPTE} A SupannAnticipe"
+
+  # PROV -> supannResourceEtat : {COMTE} A SupannSursis et supannRessourceEtatDate: Date de passage en PROV
+  - key: P
+    label: "PROV"
+    description: "supannResourceEtat : {COMTE} A SupannSursis et supannRessourceEtatDate: Date de passage en PROV"
+
+  # A Détruire -> supannRessourceEtat : {COMPTE} I SupannSupprCompte
+  - key: D
+    label: "A Détruire"
+    description: "supannRessourceEtat : {COMPTE} I SupannSupprCompte"
+
+  # Verrouillé -> supannRessourceEtat : {COMPTE} S SupannVerrouille
+  - key: V
+    label: "Verrouillé"
+    description: "supannRessourceEtat : {COMPTE} S SupannVerrouille"

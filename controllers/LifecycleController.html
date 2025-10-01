@@ -203,7 +203,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getLifecycleHistory(identityId: Types.ObjectId, res: Response, searchFilterOptions: FilterOptions)</code>
+                    <code>getLifecycleHistory(identityId: Types.ObjectId, res: <a href="../interfaces/Response.html" target="_self">Response</a>, searchFilterOptions: <a href="../interfaces/FilterOptions.html" target="_self">FilterOptions</a>)</code>
                 </td>
             </tr>
 
@@ -262,7 +262,7 @@
                                         <tr>
                                                 <td>res</td>
                                             <td>
-                                                        <code>Response</code>
+                                                            <code><a href="../interfaces/Response.html" target="_self" >Response</a></code>
                                             </td>
 
                                             <td>
@@ -276,7 +276,7 @@
                                         <tr>
                                                 <td>searchFilterOptions</td>
                                             <td>
-                                                        <code>FilterOptions</code>
+                                                            <code><a href="../interfaces/FilterOptions.html" target="_self" >FilterOptions</a></code>
                                             </td>
 
                                             <td>
@@ -291,7 +291,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Lifecycle.html" target="_self" >Promise&lt;Response&lt;Lifecycle[]&gt;&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/Response.html" target="_self" >Promise&lt;Response&lt;Lifecycle[]&gt;&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -320,7 +320,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getRecentChanges(searchFilterOptions: FilterOptions, res: Response)</code>
+                    <code>getRecentChanges(searchFilterOptions: <a href="../interfaces/FilterOptions.html" target="_self">FilterOptions</a>, res: <a href="../interfaces/Response.html" target="_self">Response</a>)</code>
                 </td>
             </tr>
 
@@ -360,7 +360,7 @@
                                         <tr>
                                                 <td>searchFilterOptions</td>
                                             <td>
-                                                        <code>FilterOptions</code>
+                                                            <code><a href="../interfaces/FilterOptions.html" target="_self" >FilterOptions</a></code>
                                             </td>
 
                                             <td>
@@ -372,7 +372,7 @@
                                         <tr>
                                                 <td>res</td>
                                             <td>
-                                                        <code>Response</code>
+                                                            <code><a href="../interfaces/Response.html" target="_self" >Response</a></code>
                                             </td>
 
                                             <td>
@@ -385,7 +385,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Lifecycle.html" target="_self" >Promise&lt;Response&lt;Lifecycle[]&gt;&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/Response.html" target="_self" >Promise&lt;Response&lt;Lifecycle[]&gt;&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -414,7 +414,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getStats(res: Response)</code>
+                    <code>getStats(res: <a href="../interfaces/Response.html" target="_self">Response</a>)</code>
                 </td>
             </tr>
 
@@ -454,7 +454,7 @@
                                         <tr>
                                                 <td>res</td>
                                             <td>
-                                                        <code>Response</code>
+                                                            <code><a href="../interfaces/Response.html" target="_self" >Response</a></code>
                                             </td>
 
                                             <td>
@@ -467,7 +467,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Lifecycle.html" target="_self" >Promise&lt;Response&lt;Lifecycle[]&gt;&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/Response.html" target="_self" >Promise&lt;Response&lt;Lifecycle[]&gt;&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -490,7 +490,7 @@
   Res
 } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiParam, ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { FilterOptions, SearchFilterOptions } from &#x27;@the-software-compagny/nestjs_module_restools&#x27;;
+import { FilterOptions, SearchFilterOptions } from &#x27;~/_common/restools&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { Types } from &#x27;mongoose&#x27;;
 import { AbstractController } from &#x27;~/_common/abstracts/abstract.controller&#x27;;

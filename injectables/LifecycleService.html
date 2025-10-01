@@ -190,10 +190,6 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#convertSecondsToCron" >convertSecondsToCron</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#fireLifecycleEvent" >fireLifecycleEvent</a>
                             </li>
@@ -223,6 +219,11 @@
                                 <a href="#handle" >handle</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleCron" >handleCron</a>
+                            </li>
+                            <li>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
@@ -241,11 +242,6 @@
                             <li>
                                     <span class="modifier">Public</span>
                                 <a href="#onModuleInit" >onModuleInit</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#runJob" >runJob</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -321,7 +317,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:24</a></div>
                             </td>
                         </tr>
 
@@ -392,87 +388,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="convertSecondsToCron"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>convertSecondsToCron</b></span>
-                        <a href="#convertSecondsToCron"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>convertSecondsToCron(seconds: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="177"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:177</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-description"><p>Convert seconds to a proper cron expression
-This method converts a duration in seconds to the most appropriate cron expression.
-It optimizes for readability and performance by using the largest possible time unit.</p>
-</div>
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                                <td>Description</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>seconds</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                            <td>
-                                                    <ul>
-<li>The number of seconds for the interval</li>
-</ul>
-
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                <p>A cron expression string in the format &quot;second minute hour day month dayOfWeek&quot;</p>
-
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="fireLifecycleEvent"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -492,8 +407,8 @@ It optimizes for readability and performance by using the largest possible time 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="404"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:404</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="328"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:328</a></div>
                         </td>
                     </tr>
 
@@ -595,8 +510,8 @@ This method is called when an identity&#39;s lifecycle changes.</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="289"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:289</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="213"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:213</a></div>
                         </td>
                     </tr>
 
@@ -725,15 +640,15 @@ This method is called when an identity&#39;s lifecycle changes.</p>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getLifecycleHistory(refId: Types.ObjectId, options?: FilterOptions)</code>
+                    <code>getLifecycleHistory(refId: Types.ObjectId, options?: <a href="../interfaces/FilterOptions.html" target="_self">FilterOptions</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="461"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:461</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="390"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:390</a></div>
                         </td>
                     </tr>
 
@@ -777,7 +692,7 @@ This method is called when an identity&#39;s lifecycle changes.</p>
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                        <code>FilterOptions</code>
+                                                            <code><a href="../interfaces/FilterOptions.html" target="_self" >FilterOptions</a></code>
                                             </td>
 
                                             <td>
@@ -826,8 +741,8 @@ This method is called when an identity&#39;s lifecycle changes.</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="486"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:486</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="415"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:415</a></div>
                         </td>
                     </tr>
 
@@ -867,15 +782,15 @@ It returns an array of objects where each object contains the lifecycle type and
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getRecentChanges(options?: FilterOptions)</code>
+                    <code>getRecentChanges(options?: <a href="../interfaces/FilterOptions.html" target="_self">FilterOptions</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="510"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:510</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="439"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:439</a></div>
                         </td>
                     </tr>
 
@@ -903,7 +818,7 @@ It allows for pagination through the <code>skip</code> and <code>limit</code> op
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                        <code>FilterOptions</code>
+                                                            <code><a href="../interfaces/FilterOptions.html" target="_self" >FilterOptions</a></code>
                                             </td>
 
                                             <td>
@@ -964,8 +879,8 @@ It allows for pagination through the <code>skip</code> and <code>limit</code> op
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="357"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:357</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="281"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:281</a></div>
                         </td>
                     </tr>
 
@@ -1030,6 +945,75 @@ This method is triggered by the &#39;management.identities.service.afterUpdate&#
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="handleCron"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleCron</b></span>
+                        <a href="#handleCron"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleCron(undefined: literal type)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:89</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="handleOrderCreatedEvent"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -1057,8 +1041,8 @@ This method is triggered by the &#39;management.identities.service.afterUpdate&#
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="380"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:380</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="304"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:304</a></div>
                         </td>
                     </tr>
 
@@ -1142,8 +1126,8 @@ This method is triggered by the &#39;management.identities.service.afterUpsert&#
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="226"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:226</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="150"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:150</a></div>
                         </td>
                     </tr>
 
@@ -1187,8 +1171,8 @@ It logs the process of loading and validating each file, and handles any errors 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -1232,8 +1216,8 @@ It also logs the lifecycle sources for debugging purposes.</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -1250,76 +1234,6 @@ It logs the initialization process and any errors encountered during file readin
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                         </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="runJob"></a>
-                    <span class="name">
-                            <span class="modifier">Protected</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>runJob</b></span>
-                        <a href="#runJob"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>runJob(rule: <a href="../undefineds/ConfigObjectIdentitiesDTOWithSource.html" target="_self">ConfigObjectIdentitiesDTOWithSource</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="135"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:135</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>rule</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#ConfigObjectIdentitiesDTOWithSource" target="_self" >ConfigObjectIdentitiesDTOWithSource</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
@@ -1353,7 +1267,7 @@ It logs the initialization process and any errors encountered during file readin
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:56</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:58</a></code>
 </div>
                         </td>
                     </tr>
@@ -1449,7 +1363,7 @@ It logs the initialization process and any errors encountered during file readin
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:191</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:200</a></code>
 </div>
                         </td>
                     </tr>
@@ -1545,7 +1459,7 @@ It logs the initialization process and any errors encountered during file readin
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:358</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:373</a></code>
 </div>
                         </td>
                     </tr>
@@ -1641,7 +1555,7 @@ It logs the initialization process and any errors encountered during file readin
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:35</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:36</a></code>
 </div>
                         </td>
                     </tr>
@@ -1749,7 +1663,7 @@ It logs the initialization process and any errors encountered during file readin
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:81</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:84</a></code>
 </div>
                         </td>
                     </tr>
@@ -1857,7 +1771,7 @@ It logs the initialization process and any errors encountered during file readin
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:118</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:123</a></code>
 </div>
                         </td>
                     </tr>
@@ -1965,7 +1879,7 @@ It logs the initialization process and any errors encountered during file readin
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:156</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:163</a></code>
 </div>
                         </td>
                     </tr>
@@ -2073,7 +1987,7 @@ It logs the initialization process and any errors encountered during file readin
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:72</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:75</a></code>
 </div>
                         </td>
                     </tr>
@@ -2169,7 +2083,7 @@ It logs the initialization process and any errors encountered during file readin
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:233</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:244</a></code>
 </div>
                         </td>
                     </tr>
@@ -2277,7 +2191,7 @@ It logs the initialization process and any errors encountered during file readin
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:296</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:309</a></code>
 </div>
                         </td>
                     </tr>
@@ -2387,7 +2301,7 @@ It logs the initialization process and any errors encountered during file readin
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -2421,7 +2335,7 @@ It logs the initialization process and any errors encountered during file readin
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:24</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractServiceSchema.html#source" target="_self" >AbstractServiceSchema:25</a></code>
 </div>
                         </td>
                     </tr>
@@ -2639,28 +2553,23 @@ It logs the initialization process and any errors encountered during file readin
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, OnApplicationBootstrap, OnModuleInit } from &#x27;@nestjs/common&#x27;;
 import { OnEvent } from &#x27;@nestjs/event-emitter&#x27;;
 import { InjectModel } from &#x27;@nestjs/mongoose&#x27;;
-import { FilterOptions } from &#x27;@the-software-compagny/nestjs_module_restools&#x27;;
+import { SchedulerRegistry } from &#x27;@nestjs/schedule&#x27;;
+import { plainToInstance } from &#x27;class-transformer&#x27;;
+import { validateOrReject, ValidationError } from &#x27;class-validator&#x27;;
+import { CronJob } from &#x27;cron&#x27;;
 import { Model, Query, Types } from &#x27;mongoose&#x27;;
-import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
-import { Identities } from &#x27;../identities/_schemas/identities.schema&#x27;;
-import { Lifecycle, LifecycleRefId } from &#x27;./_schemas/lifecycle.schema&#x27;;
 import { readdirSync, readFileSync, writeFileSync } from &#x27;node:fs&#x27;;
 import { parse } from &#x27;yaml&#x27;;
-import { plainToInstance } from &#x27;class-transformer&#x27;;
-import { ConfigObjectIdentitiesDTO, ConfigObjectSchemaDTO } from &#x27;./_dto/config.dto&#x27;;
-import { validateOrReject, ValidationError } from &#x27;class-validator&#x27;;
-import { omit } from &#x27;radash&#x27;;
+import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service.schema&#x27;;
+import { FilterOptions } from &#x27;~/_common/restools&#x27;;
+import { Identities } from &#x27;../identities/_schemas/identities.schema&#x27;;
 import { IdentitiesCrudService } from &#x27;../identities/identities-crud.service&#x27;;
-import { SchedulerRegistry } from &#x27;@nestjs/schedule&#x27;;
-import { CronJob } from &#x27;cron&#x27;;
+import { ConfigObjectIdentitiesDTO, ConfigObjectSchemaDTO } from &#x27;./_dto/config.dto&#x27;;
+import { Lifecycle, LifecycleRefId } from &#x27;./_schemas/lifecycle.schema&#x27;;
 
 interface LifecycleSource {
   [source: string]: Partial&lt;ConfigObjectIdentitiesDTO&gt;[];
 }
-
-type ConfigObjectIdentitiesDTOWithSource &#x3D; Omit&lt;ConfigObjectIdentitiesDTO, &#x27;sources&#x27;&gt; &amp; {
-  source: string;
-};
 
 @Injectable()
 export class LifecycleService extends AbstractServiceSchema implements OnApplicationBootstrap, OnModuleInit {
@@ -2722,136 +2631,65 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
 
     const lifecycleRules &#x3D; await this.loadLifecycleRules();
 
-    /**
-     * Create a map of lifecycle sources
-     * This map will help to quickly find which identities are associated with each lifecycle source.
-     * It will be used to optimize the lifecycle processing logic.
-     * The structure will be:
-     * {
-     *   &#x27;source1&#x27;: [identityRule1, identityRule2, ...],
-     *   &#x27;source2&#x27;: [identityRule3, identityRule4, ...],
-     *   ...
-     * }
-     * This will allow us to quickly access all identity rules associated with a specific lifecycle source.
-     */
-    for (const lfr of lifecycleRules) {
-      for (const idRule of lfr.identities) {
-        for (const source of idRule.sources) {
-          if (!this.lifecycleSources[source]) {
-            this.lifecycleSources[source] &#x3D; [];
-          }
-
-          const rule &#x3D; omit(idRule, [&#x27;sources&#x27;]);
-          if (rule.trigger) {
-            this.logger.log(&#x60;Trigger found for source &lt;${source}&gt;: ${-rule.trigger}, installing cron job !&#x60;);
-
-            if (this.schedulerRegistry.doesExist(&#x27;cron&#x27;, &#x60;lifecycle-trigger-${source}&#x60;)) {
-              this.logger.warn(&#x60;Cron job for source &lt;${source}&gt; already exists, skipping creation.&#x60;);
-              continue;
-            }
-
-            const cronExpression &#x3D; this.convertSecondsToCron(-rule.trigger);
-            this.logger.debug(&#x60;Creating cron job with pattern: ${cronExpression}&#x60;);
-
-            const job &#x3D; new CronJob(cronExpression, this.runJob.bind(this, {
-              source, // Pass the source to the job for context
-              ...rule,
-            }));
-
-            this.schedulerRegistry.addCronJob(&#x60;lifecycle-trigger-${source}&#x60;, job);
-            job.start();
-          }
-
-          this.lifecycleSources[source].push(rule);
-        }
-      }
-    }
+    const job &#x3D; new CronJob(&#x27;*/5 * * * * *&#x27;, this.handleCron.bind(this, { lifecycleRules }));
+    this.schedulerRegistry.addCronJob(&#x60;lifecycle-trigger&#x60;, job);
+    job.start();
 
     this.logger.log(&#x27;LifecycleService bootstraped&#x27;);
   }
 
-  protected async runJob(rule: ConfigObjectIdentitiesDTOWithSource): Promise&lt;void&gt; {
-    this.logger.debug(&#x60;Running LifecycleService job: &lt;${JSON.stringify(rule)}&gt;&#x60;);
+  private async handleCron({ lifecycleRules }: { lifecycleRules: ConfigObjectSchemaDTO[] }): Promise&lt;void&gt; {
+    this.logger.debug(&#x60;Running lifecycle trigger cron job...&#x60;);
 
-    try {
-      const identities &#x3D; await this.identitiesService.model.find({
-        ...rule.rules,
-        lifecycle: rule.source,
-        ignoreLifecycle: { $ne: true },
-      });
+    for (const lfr of lifecycleRules) {
+      for (const idRule of lfr.identities) {
+        if (idRule.trigger) {
+          const dateKey &#x3D; idRule.dateKey || &#x27;lastSync&#x27;;
 
-      this.logger.log(&#x60;Found ${identities.length} identities to process for trigger in source &lt;${rule.source}&gt;&#x60;);
+          try {
+            const identities &#x3D; await this.identitiesService.model.find({
+              ...idRule.rules,
+              lifecycle: {
+                $in: idRule.sources,
+              },
+              ignoreLifecycle: { $ne: true },
+              [dateKey]: {
+                $lte: new Date(Date.now() - (idRule.trigger * 1000)),
+              },
+            });
+            this.logger.log(&#x60;Found ${identities.length} identities to process for trigger in source &lt;${idRule.sources}&gt;&#x60;);
 
-      for (const identity of identities) {
-        const updated &#x3D; await this.identitiesService.model.findOneAndUpdate(
-          { _id: identity._id },
-          { $set: { lifecycle: rule.target } },
-          { new: true }
-        );
+            for (const identity of identities) {
+              const updated &#x3D; await this.identitiesService.model.findOneAndUpdate(
+                { _id: identity._id },
+                {
+                  $set: {
+                    ...idRule.mutation,
+                    lifecycle: idRule.target,
+                  },
+                },
+                { new: true },
+              );
 
-        if (updated) {
-          await this.create({
-            refId: identity._id,
-            lifecycle: rule.target,
-            date: new Date(),
-          });
+              if (updated) {
+                await this.create({
+                  refId: identity._id,
+                  lifecycle: idRule.target,
+                  date: new Date(),
+                });
 
-          this.logger.log(&#x60;Identity &lt;${identity._id}&gt; updated to lifecycle &lt;${rule.target}&gt; by trigger from source &lt;${rule.source}&gt;&#x60;);
+                this.logger.log(&#x60;Identity &lt;${identity._id}&gt; updated to lifecycle &lt;${idRule.target}&gt; by trigger from source &lt;${idRule.sources}&gt;&#x60;);
+              }
+            }
+
+          } catch (error) {
+            this.logger.error(&#x60;Error in lifecycle trigger job for source &lt;${idRule.sources}&gt;:&#x60;, error.message, error.stack);
+          }
         }
       }
-    } catch (error) {
-      this.logger.error(&#x60;Error in lifecycle trigger job for source &lt;${rule.source}&gt;:&#x60;, error.message, error.stack);
-    }
-  }
-
-  /**
-   * Convert seconds to a proper cron expression
-   * This method converts a duration in seconds to the most appropriate cron expression.
-   * It optimizes for readability and performance by using the largest possible time unit.
-   *
-   * @param seconds - The number of seconds for the interval
-   * @returns A cron expression string in the format &quot;second minute hour day month dayOfWeek&quot;
-   */
-  private convertSecondsToCron(seconds: number): string {
-    // Ensure we have a valid positive number
-    const intervalSeconds &#x3D; Math.max(1, Math.floor(seconds));
-
-    // If it&#x27;s less than 60 seconds, use seconds
-    if (intervalSeconds &lt; 60) {
-      return &#x60;*/${intervalSeconds} * * * * *&#x60;;
     }
 
-    // If it&#x27;s exactly divisible by 60 and less than 3600, use minutes
-    const minutes &#x3D; intervalSeconds / 60;
-    if (intervalSeconds % 60 &#x3D;&#x3D;&#x3D; 0 &amp;&amp; minutes &lt; 60) {
-      return &#x60;0 */${Math.floor(minutes)} * * * *&#x60;;
-    }
-
-    // If it&#x27;s exactly divisible by 3600 and less than 86400, use hours
-    const hours &#x3D; intervalSeconds / 3600;
-    if (intervalSeconds % 3600 &#x3D;&#x3D;&#x3D; 0 &amp;&amp; hours &lt; 24) {
-      return &#x60;0 0 */${Math.floor(hours)} * * *&#x60;;
-    }
-
-    // If it&#x27;s exactly divisible by 86400, use days
-    const days &#x3D; intervalSeconds / 86400;
-    if (intervalSeconds % 86400 &#x3D;&#x3D;&#x3D; 0 &amp;&amp; days &lt;&#x3D; 30) {
-      return &#x60;0 0 0 */${Math.floor(days)} * *&#x60;;
-    }
-
-    // For very large intervals or non-standard intervals, fall back to the most appropriate unit
-    if (intervalSeconds &gt;&#x3D; 3600) {
-      // Use hours for intervals &gt;&#x3D; 1 hour
-      const hourInterval &#x3D; Math.max(1, Math.floor(intervalSeconds / 3600));
-      return &#x60;0 0 */${hourInterval} * * *&#x60;;
-    } else if (intervalSeconds &gt;&#x3D; 60) {
-      // Use minutes for intervals &gt;&#x3D; 1 minute
-      const minuteInterval &#x3D; Math.max(1, Math.floor(intervalSeconds / 60));
-      return &#x60;0 */${minuteInterval} * * * *&#x60;;
-    } else {
-      // Fall back to seconds
-      return &#x60;*/${intervalSeconds} * * * * *&#x60;;
-    }
+    this.logger.log(&#x60;Lifecycle trigger cron job completed.&#x60;);
   }
 
   /**
@@ -3055,6 +2893,11 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
 
       for (const lcs of this.lifecycleSources[after.lifecycle]) {
         this.logger.verbose(&#x60;Processing lifecycle source &lt;${after.lifecycle}&gt; with rules: ${JSON.stringify(lcs.rules)}&#x60;);
+
+        if (lcs.trigger) {
+          this.logger.debug(&#x60;Skipping lifecycle source &lt;${after.lifecycle}&gt; with trigger: ${lcs.trigger}&#x60;);
+          continue; // Skip processing if it&#x27;s a trigger-based rule
+        }
 
         const res &#x3D; await this.identitiesService.model.findOneAndUpdate(
           {

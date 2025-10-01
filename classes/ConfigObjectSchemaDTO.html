@@ -201,7 +201,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="175" class="link-to-prism">src/management/lifecycle/_dto/config.dto.ts:175</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="183" class="link-to-prism">src/management/lifecycle/_dto/config.dto.ts:183</a></div>
                         </td>
                     </tr>
 
@@ -222,7 +222,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { Type, Transform } from &#x27;class-transformer&#x27;;
-import { IsArray, IsEnum, IsNegative, IsNotEmpty, IsNumber, IsObject, IsOptional, ValidateNested, registerDecorator, ValidationOptions, ValidationArguments, isString, isNumber } from &#x27;class-validator&#x27;;
+import { IsArray, IsEnum, IsNegative, IsNotEmpty, IsNumber, IsObject, IsOptional, ValidateNested, registerDecorator, ValidationOptions, ValidationArguments, isString, isNumber, IsString } from &#x27;class-validator&#x27;;
 import { IdentityLifecycle } from &#x27;~/management/identities/_enums/lifecycle.enum&#x27;;
 
 /**
@@ -243,24 +243,24 @@ function transformTriggerToSeconds(value: number | string): number | undefined {
   }
 
   /**
-   * Check if the value is a negative number.
-   * If it&#x27;s a number, we check if it&#x27;s less than 0.
-   * If it&#x27;s a string, we check if it matches the regex for negative time strings.
+   * Check if the value is a number.
+   * If it&#x27;s a number, we check if it&#x27;s upper than 0.
+   * If it&#x27;s a string, we check if it matches the regex for time strings.
    */
   if (isNumber(value)) {
     isValid &#x3D; value &lt; 0;
   } else if (isString(value)) {
-    const timeRegex &#x3D; /^-?\d+[dms]$/;
+    const timeRegex &#x3D; /^\d+[dms]$/;
     if (timeRegex.test(value)) {
-      // Extract the number part and check if it&#x27;s negative
+      // Extract the number part and check if it&#x27;s
       const numberPart &#x3D; value.replace(/[dms]$/, &#x27;&#x27;);
       const num &#x3D; parseInt(numberPart, 10);
-      isValid &#x3D; num &lt; 0;
+      isValid &#x3D; num &gt; 0;
     }
   }
 
   if (!isValid) {
-    throw new Error(&#x27;Trigger must be a negative number (days) or a negative time string with units (e.g., &quot;-90d&quot;, &quot;-10m&quot;, &quot;-45s&quot;)&#x27;);
+    throw new Error(&#x27;Trigger must be a number (days) or a time string with units (e.g., &quot;90d&quot;, &quot;10m&quot;, &quot;45s&quot;)&#x27;);
   }
 
   /**
@@ -283,7 +283,7 @@ function transformTriggerToSeconds(value: number | string): number | undefined {
    * so if the input is negative, the output will also be negative.
    */
   if (isString(value)) {
-    const match &#x3D; value.match(/^(-?\d+)([dms])$/);
+    const match &#x3D; value.match(/^(\d+)([dms])$/);
     if (match) {
       const numValue &#x3D; parseInt(match[1], 10);
       const unit &#x3D; match[2];
@@ -356,20 +356,28 @@ export class ConfigObjectIdentitiesDTO {
   public sources: IdentityLifecycle[];
 
   @IsOptional()
+  @IsString()
+  public dateKey: string &#x3D; &#x27;lastSync&#x27;;
+
+  @IsOptional()
   @IsObject()
   public rules: object;
+
+  @IsOptional()
+  @IsObject()
+  public mutation: object;
 
   @IsOptional()
   @Transform(({ value }) &#x3D;&gt; transformTriggerToSeconds(value))
   @IsNumber()
   @ApiProperty({
     oneOf: [
-      { type: &#x27;number&#x27;, description: &#x27;Negative number representing days&#x27; },
-      { type: &#x27;string&#x27;, description: &#x27;Negative time string with units (d&#x3D;days, m&#x3D;minutes, s&#x3D;seconds)&#x27; }
+      { type: &#x27;number&#x27;, description: &#x27;Number representing days&#x27; },
+      { type: &#x27;string&#x27;, description: &#x27;Time string with units (d&#x3D;days, m&#x3D;minutes, s&#x3D;seconds)&#x27; }
     ],
     required: false,
-    description: &#x27;Trigger time as negative number (days) or negative time string with units (converted to negative seconds internally)&#x27;,
-    examples: [-90, &#x27;-90d&#x27;, &#x27;-10m&#x27;, &#x27;-45s&#x27;]
+    description: &#x27;Trigger time as number (days) or time string with units&#x27;,
+    examples: [90, &#x27;90d&#x27;, &#x27;10m&#x27;, &#x27;45s&#x27;]
   })
   public trigger: number;
 

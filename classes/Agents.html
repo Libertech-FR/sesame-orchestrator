@@ -234,7 +234,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:60</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -272,7 +272,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="70" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:70</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -309,7 +309,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:28</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -346,7 +346,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -383,7 +383,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:41</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -420,7 +420,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:65</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -457,7 +457,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:54</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:55</a></div>
                         </td>
                     </tr>
 
@@ -494,7 +494,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:47</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -531,7 +531,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/core/agents/_schemas/agents.schema.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -555,6 +555,7 @@ import { AbstractSchema } from &#x27;~/_common/abstracts/schemas/abstract.schema
 import { StatePart, StatePartSchema } from &#x27;~/core/agents/_schemas/_parts/state.part.schema&#x27;;
 import { SecurityPart, SecurityPartSchema } from &#x27;~/core/agents/_schemas/_parts/security.part.schema&#x27;;
 import { MixedValue } from &#x27;~/_common/types/mixed-value.type&#x27;;
+import { historyPlugin } from &#x27;~/_common/plugins/mongoose/history.plugin&#x27;;
 
 const DEFAULT_THIRD_PARTY_AUTH &#x3D; &#x27;local&#x27;;
 
@@ -622,7 +623,13 @@ export class Agents extends AbstractSchema {
   public customFields?: { [key: string]: MixedValue };
 }
 
-export const AgentsSchema &#x3D; SchemaFactory.createForClass(Agents);
+export const AgentsSchema &#x3D; SchemaFactory.createForClass(Agents)
+  .plugin(historyPlugin, {
+    collectionName: Agents.name,
+    ignoredFields: [
+      &#x27;password&#x27;,
+    ],
+  });
 </code></pre>
     </div>
 </div>

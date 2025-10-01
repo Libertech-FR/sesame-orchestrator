@@ -184,7 +184,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/core/auth/_strategies/jwt.strategy.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/core/auth/_strategies/jwt.strategy.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -262,8 +262,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">src/core/auth/_strategies/jwt.strategy.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">src/core/auth/_strategies/jwt.strategy.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -363,7 +363,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/core/auth/_strategies/jwt.strategy.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/core/auth/_strategies/jwt.strategy.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -384,6 +384,8 @@ import { AuthService } from &#x27;../auth.service&#x27;;
 import { Request } from &#x27;express&#x27;;
 import { AgentType } from &#x27;~/_common/types/agent.type&#x27;;
 import { JwtPayload } from &#x27;jsonwebtoken&#x27;;
+import { Keyrings } from &#x27;~/core/keyrings/_schemas/keyrings.schema&#x27;;
+import { Agents } from &#x27;~/core/agents/_schemas/agents.schema&#x27;;
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, &#x27;jwt&#x27;) {
@@ -412,7 +414,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, &#x27;jwt&#x27;) {
     const user &#x3D; await this.auth.verifyIdentity(payload);
 
     if (!user) return done(new ForbiddenException(), false);
-    return done(null, payload?.identity);
+    return done(null, {
+      $ref: !payload.scopes.includes(&#x27;api&#x27;)
+        ? Agents.name
+        : Keyrings.name,
+      ...payload?.identity,
+    });
   }
 }
 </code></pre>

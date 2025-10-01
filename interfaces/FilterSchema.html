@@ -1,0 +1,481 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Sesame Orchestrator</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">Sesame Orchestrator</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content interface">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Interfaces</li>
+  <li class="breadcrumb-item"
+  >
+  FilterSchema</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/_common/restools/search-filter-schema.decorator.ts</code>
+        </p>
+
+
+
+
+
+
+            <section data-compodoc="block-indexables">
+    <h3 id="inputs">Indexable</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <code>[key: string | number]:        <code><a href="../interfaces/FilterSchema.html" target="_self" >FilterSchema</a></code>
+</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/_common/restools/search-filter-schema.decorator.ts:57</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, ExecutionContext, Logger, createParamDecorator } from &#x27;@nestjs/common&#x27;
+import dayjs from &#x27;dayjs&#x27;
+import merge from &#x27;deepmerge&#x27;
+import { Request } from &#x27;express&#x27;
+import { ParsedQs } from &#x27;qs&#x27;
+import { isPlainObject } from &#x27;is-plain-object&#x27;
+
+let ObjectId: any
+(async () &#x3D;&gt; {
+  try {
+    const mongooseModule &#x3D; await import(&#x27;mongoose&#x27;)
+    ObjectId &#x3D; mongooseModule.Types.ObjectId
+  } catch (error) {
+    Logger.debug(&#x60;Mongoose module not found&#x60;, &#x27;SearchFilterSchema&#x27;)
+  }
+})()
+
+export const FILTER_SYMBOL_EQUAL &#x3D; &#x27;:&#x27;
+export const FILTER_SYMBOL_GREATER &#x3D; &#x27;&gt;&#x27;
+export const FILTER_SYMBOL_LESS &#x3D; &#x27;&lt;&#x27;
+export const FILTER_SYMBOL_NOT_EQUAL &#x3D; &#x27;!&#x27;
+export const FILTER_SYMBOL_IN &#x3D; &#x27;@&#x27;
+export const FILTER_SYMBOL_REGEX &#x3D; &#x27;^&#x27;
+export const FILTER_SYMBOL_BOOLEAN &#x3D; &#x27;?&#x27;
+export const FILTER_SYMBOL_NUMBER &#x3D; &#x27;#&#x27;
+
+export const DEFAULT_ALLOWED_FILTERS &#x3D; [
+  FILTER_SYMBOL_EQUAL,
+  FILTER_SYMBOL_BOOLEAN,
+  FILTER_SYMBOL_NUMBER,
+  FILTER_SYMBOL_NOT_EQUAL,
+  FILTER_SYMBOL_GREATER,
+  FILTER_SYMBOL_LESS,
+  FILTER_SYMBOL_REGEX,
+  FILTER_SYMBOL_IN,
+]
+
+export const DEFAULT_SCHEMA_OPTIONS &#x3D; {
+  loggerType: &#x27;FilterSchemaControl&#x27;,
+  unsafe: false,
+  queryKey: &#x27;filters&#x27;,
+  strict: true,
+  convertNull: true,
+  convertObjectId: true,
+}
+
+export interface FilterSchemaOptions {
+  loggerType?: string
+  dayjsLocale?: string
+  unsafe?: boolean
+  queryKey?: string
+  strict?: boolean
+  convertNull?: boolean
+  convertObjectId?: boolean
+}
+
+export interface FilterSchema {
+  [key: string | number]: FilterSchema
+}
+
+/* istanbul ignore next */
+export const SearchFilterSchema &#x3D; createParamDecorator((options: FilterSchemaOptions, ctx: ExecutionContext): FilterSchema &#x3D;&gt; {
+  options &#x3D; { ...DEFAULT_SCHEMA_OPTIONS, ...options }
+  const req &#x3D; ctx.switchToHttp().getRequest&lt;Request&gt;()
+
+  try {
+    return filterSchema(req.query[options.queryKey], options)
+  } catch (error) {
+    throw new BadRequestException(error.message)
+  }
+})
+
+export function filterSchema(
+  filters: string | string[] | ParsedQs | ParsedQs[],
+  options?: FilterSchemaOptions,
+): FilterSchema {
+  options &#x3D; { ...DEFAULT_SCHEMA_OPTIONS, ...options }
+  let conditions &#x3D; {}
+  if (typeof filters &#x3D;&#x3D;&#x3D; &#x27;object&#x27;) {
+    for (const key of Object.keys(filters)) {
+      const data &#x3D; filters[key]
+      conditions &#x3D; merge(conditions, internalFilterbyType(key, data, DEFAULT_ALLOWED_FILTERS, options), {
+        isMergeableObject: isPlainObject,
+      })
+    }
+  }
+  return conditions
+}
+
+function internalFilterbyType(
+  key: string,
+  data: string,
+  allowed: string[],
+  options: FilterSchemaOptions,
+) {
+  const parsed &#x3D; {}
+  const keyCheck &#x3D; key.replace(new RegExp(&#x60;[${allowed.join(&#x27;&#x27;)}]&#x60;, &#x27;g&#x27;), &#x27;&#x27;)
+  if (keyCheck.length &#x3D;&#x3D;&#x3D; 0 || (!allowed.includes(key[0]) &amp;&amp; !/[a-zA-Z0-9-_]/.test(key[0]))) return {}
+  switch (key[0]) {
+    case FILTER_SYMBOL_BOOLEAN: {
+      parsed[key.slice(1)] &#x3D; /true|on|yes|1/i.test(data)
+      break
+    }
+
+    case FILTER_SYMBOL_NUMBER: {
+      const valueHashtag &#x3D; Number(data)
+      if (isNaN(valueHashtag)) {
+        if (options.strict) throw new Error(&#x60;Invalid filter key ${keyCheck} with number: ${data}&#x60;)
+        Logger.verbose(&#x60;Invalid filter key ${keyCheck} with number: ${data}&#x60;, options.loggerType)
+        break
+      }
+      parsed[key.slice(1)] &#x3D; valueHashtag
+      break
+    }
+
+    case FILTER_SYMBOL_NOT_EQUAL: {
+      const valueExclamation &#x3D; internalFilterbyType(key.slice(1), data, [
+        FILTER_SYMBOL_NUMBER,
+        FILTER_SYMBOL_IN,
+        FILTER_SYMBOL_EQUAL,
+      ], options)
+      if (Object.keys(valueExclamation).length &#x3D;&#x3D;&#x3D; 0) break
+      const typeExclamation &#x3D; Object.keys(valueExclamation[keyCheck] || {})[0]
+      if (typeExclamation &#x3D;&#x3D;&#x3D; &#x27;$in&#x27;) {
+        parsed[keyCheck] &#x3D; { $nin: valueExclamation[keyCheck][&#x27;$in&#x27;] }
+        break
+      }
+      parsed[keyCheck] &#x3D; { $ne: valueExclamation[keyCheck] }
+      break
+    }
+
+    case FILTER_SYMBOL_LESS:
+    case FILTER_SYMBOL_GREATER: {
+      let upperLowerType &#x3D; key[0] &#x3D;&#x3D;&#x3D; FILTER_SYMBOL_GREATER ? &#x27;$gt&#x27; : &#x27;$lt&#x27;
+      if (key[1] &#x3D;&#x3D;&#x3D; &#x27;|&#x27;) upperLowerType &#x3D; &#x60;${upperLowerType}e&#x60;
+      const upperLowerKey &#x3D; key.slice(upperLowerType.length - 2)
+      const valueGreater &#x3D; internalFiltersByTypeUpperLower(upperLowerType, upperLowerKey, data, options)
+      if (Object.keys(valueGreater).length &#x3D;&#x3D;&#x3D; 0) break
+      const subKeyGreater &#x3D; Object.keys(valueGreater)[0]
+      // parsed[subKeyGreater] &#x3D; { ...parsed[subKeyGreater], ...valueGreater[subKeyGreater] }
+      parsed[subKeyGreater] &#x3D; valueGreater[subKeyGreater]
+      break
+    }
+
+    case FILTER_SYMBOL_REGEX: {
+      const re &#x3D; data.trim().split(&#x27;/&#x27;)
+      if (re[0] !&#x3D;&#x3D; &#x27;&#x27; || re.length &lt; 3) {
+        if (options.strict) throw new Error(&#x60;Invalid filter key ${keyCheck} with regex: ${data}&#x60;)
+        Logger.verbose(&#x60;Invalid filter key ${keyCheck} with regex: ${data}&#x60;, options.loggerType)
+        break
+      }
+      re.shift()
+      const $options &#x3D; re.pop()
+      parsed[key.slice(1)] &#x3D; { $regex: re.join(&#x27;&#x27;) }
+      if ($options) parsed[key.slice(1)][&#x27;$options&#x27;] &#x3D; $options
+      break
+    }
+
+    case FILTER_SYMBOL_IN: {
+      let subKeyAt
+      const $in &#x3D; []
+      if (!Array.isArray(data)) {
+        if (options.strict) throw new Error(&#x60;Invalid filter key ${keyCheck} with bad array: ${data}&#x60;)
+        Logger.verbose(&#x60;Invalid filter key ${keyCheck} with bad array: ${data}&#x60;, options.loggerType)
+        break
+      }
+      for (const d of data) {
+        const valueAt &#x3D; internalFilterbyType(key.slice(1), d, [FILTER_SYMBOL_NUMBER], options)
+        if (Object.keys(valueAt).length &#x3D;&#x3D;&#x3D; 0) break
+        subKeyAt &#x3D; Object.keys(valueAt)[0]
+        $in.push(valueAt[subKeyAt])
+      }
+      if (!subKeyAt) {
+        if (options.strict) throw new Error(&#x60;Invalid filter key ${keyCheck} with array: ${JSON.stringify(data)}&#x60;)
+        Logger.verbose(&#x60;Invalid filter key ${keyCheck} with array: ${JSON.stringify(data)}&#x60;, options.loggerType)
+        break
+      }
+      parsed[subKeyAt] &#x3D; { $in }
+      break
+    }
+
+    case FILTER_SYMBOL_EQUAL: {
+      if (Array.isArray(data)) {
+        if (options.strict) throw new Error(&#x60;Invalid filter key ${keyCheck} with strict array: ${JSON.stringify(data)}&#x60;)
+        Logger.verbose(&#x60;Invalid filter key ${keyCheck} with strict string: ${JSON.stringify(data)}&#x60;, options.loggerType)
+        break
+      }
+
+      if (options.convertObjectId &amp;&amp; ObjectId.isValid(data)) {
+        parsed[key.slice(1)] &#x3D; new ObjectId(data)
+        break
+      }
+
+      if (options.convertNull &amp;&amp; data &#x3D;&#x3D;&#x3D; &#x27;null&#x27;) {
+        parsed[key.slice(1)] &#x3D; null
+        break
+      }
+
+      parsed[key.slice(1)] &#x3D; &#x60;${data}&#x60;
+      break
+    }
+
+    default: {
+      if (!options.unsafe &amp;&amp; Array.isArray(data)) {
+        if (options.strict) throw new Error(&#x60;Invalid filter key ${keyCheck} with unsafe: ${JSON.stringify(data)}&#x60;)
+        Logger.verbose(&#x60;Invalid filter key ${keyCheck} with unsafe: ${JSON.stringify(data)}&#x60;, options.loggerType)
+        break
+      }
+      parsed[key] &#x3D; data
+      break
+    }
+  }
+  return parsed
+}
+
+function internalFiltersByTypeUpperLower(
+  type: string,
+  key: string,
+  data: string,
+  options?: FilterSchemaOptions,
+): FilterSchema {
+  const parsed &#x3D; {}
+  if (key[0] !&#x3D;&#x3D; FILTER_SYMBOL_NUMBER) {
+    const dayjsDate &#x3D; dayjs(data, options.dayjsLocale)
+    if (!dayjsDate.isValid() || dayjsDate.toDate().toString() &#x3D;&#x3D;&#x3D; &#x27;Invalid Date&#x27;) {
+      if (options.strict) throw new Error(&#x60;Invalid filter key ${key} with date: ${data}&#x60;)
+      Logger.verbose(&#x60;Invalid filter key ${key} with date: ${data}&#x60;, options.loggerType)
+      return {}
+    }
+    parsed[key] &#x3D; {}
+    parsed[key][type] &#x3D; dayjsDate.toDate()
+    return parsed
+  }
+
+  const value &#x3D; internalFilterbyType(key, data, [FILTER_SYMBOL_NUMBER], options)
+  if (Object.keys(value).length &#x3D;&#x3D;&#x3D; 0) return {}
+
+  const subKey &#x3D; Object.keys(value)[0]
+  parsed[subKey] &#x3D; {}
+  parsed[subKey][type] &#x3D; {}
+  parsed[subKey][type] &#x3D; value[subKey]
+
+  return parsed
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'FilterSchema.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

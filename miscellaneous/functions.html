@@ -136,7 +136,19 @@
                             <a href="#deleteErrorAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>deleteErrorAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
                         </li>
                         <li>
+                            <a href="#detectChanges" title="src/_common/plugins/mongoose/history.plugin.ts" ><b>detectChanges</b>&nbsp;&nbsp;&nbsp;(src/.../history.plugin.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#extensionParseFile" title="src/extensions/extensions.service.setup.ts" ><b>extensionParseFile</b>&nbsp;&nbsp;&nbsp;(src/.../extensions.service.setup.ts)</a>
+                        </li>
+                        <li>
                             <a href="#FileRawBodyInterceptor" title="src/_common/interceptors/file-raw-body.interceptor.ts" ><b>FileRawBodyInterceptor</b>&nbsp;&nbsp;&nbsp;(src/.../file-raw-body.interceptor.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#filterOptions" title="src/_common/restools/search-filter-options.decorator.ts" ><b>filterOptions</b>&nbsp;&nbsp;&nbsp;(src/.../search-filter-options.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#filterSchema" title="src/_common/restools/search-filter-schema.decorator.ts" ><b>filterSchema</b>&nbsp;&nbsp;&nbsp;(src/.../search-filter-schema.decorator.ts)</a>
                         </li>
                         <li>
                             <a href="#findAndCountAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>findAndCountAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
@@ -163,19 +175,43 @@
                             <a href="#getLogLevel" title="src/_common/functions/get-log-level.ts" ><b>getLogLevel</b>&nbsp;&nbsp;&nbsp;(src/.../get-log-level.ts)</a>
                         </li>
                         <li>
+                            <a href="#handleError" title="src/_common/factorydrive/factorydrive/aws-s3.storage.ts" ><b>handleError</b>&nbsp;&nbsp;&nbsp;(src/.../aws-s3.storage.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#handleError" title="src/_common/factorydrive/factorydrive/local-file-system.storage.ts" ><b>handleError</b>&nbsp;&nbsp;&nbsp;(src/.../local-file-system.storage.ts)</a>
+                        </li>
+                        <li>
                             <a href="#hasFileExtension" title="src/core/filestorage/filestorage.service.ts" ><b>hasFileExtension</b>&nbsp;&nbsp;&nbsp;(src/.../filestorage.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#historyPlugin" title="src/_common/plugins/mongoose/history.plugin.ts" ><b>historyPlugin</b>&nbsp;&nbsp;&nbsp;(src/.../history.plugin.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#internalFilterbyType" title="src/_common/restools/search-filter-schema.decorator.ts" ><b>internalFilterbyType</b>&nbsp;&nbsp;&nbsp;(src/.../search-filter-schema.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#internalFiltersByTypeUpperLower" title="src/_common/restools/search-filter-schema.decorator.ts" ><b>internalFiltersByTypeUpperLower</b>&nbsp;&nbsp;&nbsp;(src/.../search-filter-schema.decorator.ts)</a>
                         </li>
                         <li>
                             <a href="#isNullOrUndefined" title="src/_common/plugins/mongoose/auto-increment.plugin.ts" ><b>isNullOrUndefined</b>&nbsp;&nbsp;&nbsp;(src/.../auto-increment.plugin.ts)</a>
                         </li>
                         <li>
+                            <a href="#isReadableStream" title="src/_common/factorydrive/factorydrive/utils.ts" ><b>isReadableStream</b>&nbsp;&nbsp;&nbsp;(src/.../utils.ts)</a>
+                        </li>
+                        <li>
                             <a href="#isUnique" title="src/_common/validators/uniqueness-example.validator.ts" ><b>isUnique</b>&nbsp;&nbsp;&nbsp;(src/.../uniqueness-example.validator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#parseExtensionsList" title="src/extensions/extensions.service.setup.ts" ><b>parseExtensionsList</b>&nbsp;&nbsp;&nbsp;(src/.../extensions.service.setup.ts)</a>
                         </li>
                         <li>
                             <a href="#PickProjectionHelper" title="src/_common/helpers/pick-projection.helper.ts" ><b>PickProjectionHelper</b>&nbsp;&nbsp;&nbsp;(src/.../pick-projection.helper.ts)</a>
                         </li>
                         <li>
                             <a href="#rawBodyBuffer" title="src/_common/middlewares/raw-body-buffer.middleware.ts" ><b>rawBodyBuffer</b>&nbsp;&nbsp;&nbsp;(src/.../raw-body-buffer.middleware.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#resolveAgent" title="src/_common/plugins/mongoose/history.plugin.ts" ><b>resolveAgent</b>&nbsp;&nbsp;&nbsp;(src/.../history.plugin.ts)</a>
                         </li>
                         <li>
                             <a href="#startLoader" title="src/migrations/migration-loader.function.ts" ><b>startLoader</b>&nbsp;&nbsp;&nbsp;(src/.../migration-loader.function.ts)</a>
@@ -188,6 +224,9 @@
                         </li>
                         <li>
                             <a href="#transformTriggerToSeconds" title="src/management/lifecycle/_dto/config.dto.ts" ><b>transformTriggerToSeconds</b>&nbsp;&nbsp;&nbsp;(src/.../config.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#Unnamed function" title="src/extensions/extensions.service.setup.ts" ><b>Unnamed function</b>&nbsp;&nbsp;&nbsp;(src/.../extensions.service.setup.ts)</a>
                         </li>
                         <li>
                             <a href="#updateAssertions" title="src/_common/tests/service.assertions.utils.ts" ><b>updateAssertions</b>&nbsp;&nbsp;&nbsp;(src/.../service.assertions.utils.ts)</a>
@@ -1698,6 +1737,306 @@
             </tr>
         </tbody>
     </table>
+</section>    <h3>src/_common/plugins/mongoose/history.plugin.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="detectChanges"></a>
+                    <span class="name">
+                        <span ><b>detectChanges</b></span>
+                        <a href="#detectChanges"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>detectChanges(before, after, options?: <a href="../interfaces/HistoryPluginOptions.html" target="_self">HistoryPluginOptions</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>before</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>after</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="../interfaces/HistoryPluginOptions.html" target="_self" >HistoryPluginOptions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="historyPlugin"></a>
+                    <span class="name">
+                        <span ><b>historyPlugin</b></span>
+                        <a href="#historyPlugin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>historyPlugin(schema: Schema, options: <a href="../interfaces/HistoryPluginOptions.html" target="_self">HistoryPluginOptions</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>schema</td>
+                                            <td>
+                                                        <code>Schema</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="../interfaces/HistoryPluginOptions.html" target="_self" >HistoryPluginOptions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="resolveAgent"></a>
+                    <span class="name">
+                        <span ><b>resolveAgent</b></span>
+                        <a href="#resolveAgent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>resolveAgent()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/extensions/extensions.service.setup.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="extensionParseFile"></a>
+                    <span class="name">
+                        <span ><b>extensionParseFile</b></span>
+                        <a href="#extensionParseFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>extensionParseFile(path: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>path</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ExtensionFileV1.html" target="_self" >Promise&lt;ExtensionFileV1&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="parseExtensionsList"></a>
+                    <span class="name">
+                        <span ><b>parseExtensionsList</b></span>
+                        <a href="#parseExtensionsList"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>parseExtensionsList()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ExtensionsListV1.html" target="_self" >Promise&lt;ExtensionsListV1[]&gt;</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="Unnamed function"></a>
+                    <span class="name">
+                        <span ><b>Unnamed function</b></span>
+                        <a href="#Unnamed function"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>Unnamed function()</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;DynamicModule[]&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    <h3>src/_common/interceptors/file-raw-body.interceptor.ts</h3>
     <section data-compodoc="block-methods">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -1764,6 +2103,340 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>Type&lt;NestInterceptor&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/_common/restools/search-filter-options.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterOptions"></a>
+                    <span class="name">
+                        <span ><b>filterOptions</b></span>
+                        <a href="#filterOptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>filterOptions(queries, options?: <a href="../interfaces/FilterSearchOptions.html" target="_self">FilterSearchOptions</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>queries</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="../interfaces/FilterSearchOptions.html" target="_self" >FilterSearchOptions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/FilterOptions.html" target="_self" >FilterOptions</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/_common/restools/search-filter-schema.decorator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterSchema"></a>
+                    <span class="name">
+                        <span ><b>filterSchema</b></span>
+                        <a href="#filterSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>filterSchema(filters, options?: <a href="../interfaces/FilterSchemaOptions.html" target="_self">FilterSchemaOptions</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>filters</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="../interfaces/FilterSchemaOptions.html" target="_self" >FilterSchemaOptions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/FilterSchema.html" target="_self" >FilterSchema</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="internalFilterbyType"></a>
+                    <span class="name">
+                        <span ><b>internalFilterbyType</b></span>
+                        <a href="#internalFilterbyType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>internalFilterbyType(key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, allowed, options: <a href="../interfaces/FilterSchemaOptions.html" target="_self">FilterSchemaOptions</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>key</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>allowed</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="../interfaces/FilterSchemaOptions.html" target="_self" >FilterSchemaOptions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="internalFiltersByTypeUpperLower"></a>
+                    <span class="name">
+                        <span ><b>internalFiltersByTypeUpperLower</b></span>
+                        <a href="#internalFiltersByTypeUpperLower"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>internalFiltersByTypeUpperLower(type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="../interfaces/FilterSchemaOptions.html" target="_self">FilterSchemaOptions</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>type</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>key</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="../interfaces/FilterSchemaOptions.html" target="_self" >FilterSchemaOptions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/FilterSchema.html" target="_self" >FilterSchema</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1928,6 +2601,167 @@
             </tr>
         </tbody>
     </table>
+</section>    <h3>src/_common/factorydrive/factorydrive/aws-s3.storage.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleError"></a>
+                    <span class="name">
+                        <span ><b>handleError</b></span>
+                        <a href="#handleError"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>handleError(err: Error, path: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, bucket: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>err</td>
+                                            <td>
+                                                        <code>Error</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>path</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>bucket</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Error</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/_common/factorydrive/factorydrive/local-file-system.storage.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleError"></a>
+                    <span class="name">
+                        <span ><b>handleError</b></span>
+                        <a href="#handleError"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>handleError(err, location: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>err</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>location</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Error</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    <h3>src/core/filestorage/filestorage.service.ts</h3>
     <section data-compodoc="block-methods">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -1982,6 +2816,69 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>src/_common/factorydrive/factorydrive/utils.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isReadableStream"></a>
+                    <span class="name">
+                        <span ><b>isReadableStream</b></span>
+                        <a href="#isReadableStream"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>isReadableStream(stream: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>stream</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>NodeJS.ReadableStream</code>
 
                         </div>
                             <div class="io-description">

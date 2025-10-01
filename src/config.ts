@@ -6,7 +6,6 @@ import { IAuthModuleOptions } from '@nestjs/passport';
 import { JwtModuleOptions } from '@nestjs/jwt';
 import { StorageManagerConfig } from '~/_common/factorydrive';
 import { AmazonWebServicesS3StorageConfig } from '~/_common/factorydrive';
-import { parse } from 'path';
 import { HttpModuleOptions } from '@nestjs/axios';
 
 export interface MongoosePlugin {

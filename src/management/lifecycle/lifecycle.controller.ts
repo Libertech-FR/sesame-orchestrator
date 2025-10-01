@@ -67,7 +67,7 @@ export class LifecycleController extends AbstractController {
    *
    * @returns A response containing all available lifecycle states (default + custom)
    */
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get all available lifecycle states',
     description: 'Returns all lifecycle states including default states from enum and custom states from configuration'
   })
@@ -86,7 +86,7 @@ export class LifecycleController extends AbstractController {
    *
    * @returns A response containing only custom lifecycle states from configuration
    */
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get custom lifecycle states',
     description: 'Returns only custom lifecycle states loaded from states.yml configuration file'
   })

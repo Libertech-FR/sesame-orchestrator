@@ -82,6 +82,7 @@
     "hibp": "^14.1.2",
     "ioredis": "^5.4.1",
     "is-plain-object": "^5.0.0",
+    "joi": "^18.0.1",
     "loglevel": "^1.9.1",
     "lru-cache": "^11.0.2",
     "microdiff": "^1.5.0",

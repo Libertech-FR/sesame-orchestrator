@@ -150,7 +150,7 @@
 import { IsOptional, IsObject, IsEnum, IsNumber, ValidateNested, IsString } from &#x27;class-validator&#x27;;
 import { inetOrgPersonDto } from &#x27;./_parts/inetOrgPerson.dto&#x27;;
 import { IdentityState } from &#x27;../_enums/states.enum&#x27;;
-import { IdentityLifecycle } from &#x27;../_enums/lifecycle.enum&#x27;;
+import { IdentityLifecycleDefault } from &#x27;../_enums/lifecycle.enum&#x27;;
 import { Type } from &#x27;class-transformer&#x27;;
 import { additionalFieldsPartDto } from &#x27;./_parts/additionalFields.dto&#x27;;
 import { MetadataDto } from &#x27;~/_common/abstracts/dto/metadata.dto&#x27;;
@@ -179,8 +179,7 @@ export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, Metad
 
   @IsString()
   @IsOptional()
-  @IsEnum(IdentityLifecycle)
-  @ApiProperty({ enum: IdentityLifecycle })
+  @ApiProperty({ enum: IdentityLifecycleDefault })
   public lifecycle: string;
 
   @IsObject()

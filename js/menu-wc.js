@@ -926,16 +926,19 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ConfigObjectAttributeDTO.html" data-type="entity-link" >ConfigObjectAttributeDTO</a>
                             </li>
                             <li class="link">
-                                <a href="classes/ConfigObjectIdentitiesDTO.html" data-type="entity-link" >ConfigObjectIdentitiesDTO</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/ConfigObjectObjectClassDTO.html" data-type="entity-link" >ConfigObjectObjectClassDTO</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ConfigObjectSchemaDTO.html" data-type="entity-link" >ConfigObjectSchemaDTO</a>
                             </li>
                             <li class="link">
-                                <a href="classes/ConfigObjectSchemaDTO-1.html" data-type="entity-link" >ConfigObjectSchemaDTO</a>
+                                <a href="classes/ConfigRulesObjectIdentitiesDTO.html" data-type="entity-link" >ConfigRulesObjectIdentitiesDTO</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ConfigRulesObjectSchemaDTO.html" data-type="entity-link" >ConfigRulesObjectSchemaDTO</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ConfigStatesDTO.html" data-type="entity-link" >ConfigStatesDTO</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ConsoleSession.html" data-type="entity-link" >ConsoleSession</a>
@@ -1131,6 +1134,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/LifecycleDto.html" data-type="entity-link" >LifecycleDto</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/LifecycleStateDTO.html" data-type="entity-link" >LifecycleStateDTO</a>
                             </li>
                             <li class="link">
                                 <a href="classes/LifecycleUpdateDto.html" data-type="entity-link" >LifecycleUpdateDto</a>

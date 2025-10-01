@@ -95,7 +95,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >ConfigObjectIdentitiesDTO</li>
+  <li class="breadcrumb-item" >ConfigRulesObjectSchemaDTO</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -119,7 +119,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/management/lifecycle/_dto/config.dto.ts</code>
+            <code>src/management/lifecycle/_dto/config-rules.dto.ts</code>
         </p>
 
 
@@ -142,41 +142,11 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                <a href="#dateKey" >dateKey</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                <a href="#mutation" >mutation</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                <a href="#rules" >rules</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                <a href="#sources" >sources</a>
-                            </li>
-                            <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
-                                <a href="#target" >target</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                <a href="#trigger" >trigger</a>
+                                <a href="#identities" >identities</a>
                             </li>
                         </ul>
                     </td>
@@ -201,62 +171,22 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="dateKey"></a>
+                    <a name="identities"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
-                        <span ><b>dateKey</b></span>
-                        <a href="#dateKey"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>identities</b></span>
+                        <a href="#identities"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>&#x27;lastSync&#x27;</code>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @IsOptional()<br />@IsString()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="138" class="link-to-prism">src/management/lifecycle/_dto/config.dto.ts:138</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mutation"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                        <span ><b>mutation</b></span>
-                        <a href="#mutation"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+                        <i>Type : </i>    <code>ConfigRulesObjectIdentitiesDTO[]</code>
 
                     </td>
                 </tr>
@@ -265,168 +195,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsOptional()<br />@IsObject()<br />
+                            @IsOptional()<br />@IsArray()<br />@ApiProperty({type: ConfigRulesObjectIdentitiesDTO, required: false})<br />@ValidateNested({each: true})<br />@Type(undefined)<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="146" class="link-to-prism">src/management/lifecycle/_dto/config.dto.ts:146</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="rules"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                        <span ><b>rules</b></span>
-                        <a href="#rules"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @IsOptional()<br />@IsObject()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="142" class="link-to-prism">src/management/lifecycle/_dto/config.dto.ts:142</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="sources"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                        <span ><b>sources</b></span>
-                        <a href="#sources"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../classes/Lifecycle.html" target="_self" >IdentityLifecycle[]</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @IsEnum(IdentityLifecycle, {each: true})<br />@ApiProperty({type: String, enum: IdentityLifecycle, description: &#x27;Lifecycle state of the identity&#x27;, example: undefined, required: true})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="134" class="link-to-prism">src/management/lifecycle/_dto/config.dto.ts:134</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="target"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                        <span ><b>target</b></span>
-                        <a href="#target"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#IdentityLifecycle" target="_self" >IdentityLifecycle</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @IsNotEmpty()<br />@IsEnum(IdentityLifecycle)<br />@ApiProperty({type: String, enum: IdentityLifecycle, description: &#x27;Target lifecycle state for the identity&#x27;, example: undefined, required: true})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="171" class="link-to-prism">src/management/lifecycle/_dto/config.dto.ts:171</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="trigger"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                        <span ><b>trigger</b></span>
-                        <a href="#trigger"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @IsOptional()<br />@Transform( &#x3D;&gt; )<br />@IsNumber()<br />@ApiProperty({oneOf: undefined, required: false, description: &#x27;Trigger time as number (days) or time string with units&#x27;, examples: undefined})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="160" class="link-to-prism">src/management/lifecycle/_dto/config.dto.ts:160</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="181" class="link-to-prism">src/management/lifecycle/_dto/config-rules.dto.ts:181</a></div>
                         </td>
                     </tr>
 
@@ -447,8 +222,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { Type, Transform } from &#x27;class-transformer&#x27;;
-import { IsArray, IsEnum, IsNegative, IsNotEmpty, IsNumber, IsObject, IsOptional, ValidateNested, registerDecorator, ValidationOptions, ValidationArguments, isString, isNumber, IsString } from &#x27;class-validator&#x27;;
-import { IdentityLifecycle } from &#x27;~/management/identities/_enums/lifecycle.enum&#x27;;
+import { IsArray, IsNotEmpty, IsNumber, IsObject, IsOptional, ValidateNested, registerDecorator, ValidationOptions, ValidationArguments, isString, isNumber, IsString } from &#x27;class-validator&#x27;;
+import { IdentityLifecycleDefault } from &#x27;~/management/identities/_enums/lifecycle.enum&#x27;;
 
 /**
  * Transform trigger values to seconds.
@@ -549,7 +324,7 @@ function ValidateRulesOrTrigger(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(_: any, args: ValidationArguments) {
-          const obj &#x3D; args.object as ConfigObjectIdentitiesDTO;
+          const obj &#x3D; args.object as ConfigRulesObjectIdentitiesDTO;
 
           /**
            * Check if either &#x27;rules&#x27; or &#x27;trigger&#x27; is defined and not empty.
@@ -569,16 +344,15 @@ function ValidateRulesOrTrigger(validationOptions?: ValidationOptions) {
 }
 
 @ValidateRulesOrTrigger({ message: &#x27;Either rules or trigger must be provided&#x27; })
-export class ConfigObjectIdentitiesDTO {
-  @IsEnum(IdentityLifecycle, { each: true })
+export class ConfigRulesObjectIdentitiesDTO {
   @ApiProperty({
     type: String,
-    enum: IdentityLifecycle,
+    enum: IdentityLifecycleDefault,
     description: &#x27;Lifecycle state of the identity&#x27;,
-    example: IdentityLifecycle.OFFICIAL,
+    example: IdentityLifecycleDefault.OFFICIAL,
     required: true,
   })
-  public sources: IdentityLifecycle[];
+  public sources: IdentityLifecycleDefault[];
 
   @IsOptional()
   @IsString()
@@ -607,27 +381,26 @@ export class ConfigObjectIdentitiesDTO {
   public trigger: number;
 
   @IsNotEmpty()
-  @IsEnum(IdentityLifecycle)
   @ApiProperty({
     type: String,
-    enum: IdentityLifecycle,
+    enum: IdentityLifecycleDefault,
     description: &#x27;Target lifecycle state for the identity&#x27;,
-    example: IdentityLifecycle.MANUAL,
+    example: IdentityLifecycleDefault.MANUAL,
     required: true,
   })
-  public target: IdentityLifecycle;
+  public target: IdentityLifecycleDefault;
 }
 
-export class ConfigObjectSchemaDTO {
+export class ConfigRulesObjectSchemaDTO {
   @IsOptional()
   @IsArray()
   @ApiProperty({
-    type: ConfigObjectIdentitiesDTO,
+    type: ConfigRulesObjectIdentitiesDTO,
     required: false,
   })
   @ValidateNested({ each: true })
-  @Type(() &#x3D;&gt; ConfigObjectIdentitiesDTO)
-  public identities: ConfigObjectIdentitiesDTO[]
+  @Type(() &#x3D;&gt; ConfigRulesObjectIdentitiesDTO)
+  public identities: ConfigRulesObjectIdentitiesDTO[]
 }
 </code></pre>
     </div>
@@ -667,7 +440,7 @@ export class ConfigObjectSchemaDTO {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'ConfigObjectIdentitiesDTO.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ConfigRulesObjectSchemaDTO.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -95,7 +95,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >LifecycleDto</li>
+  <li class="breadcrumb-item" >ConfigStatesDTO</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -119,17 +119,19 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/management/lifecycle/_dto/lifecycle.dto.ts</code>
+            <code>src/management/lifecycle/_dto/config-states.dto.ts</code>
         </p>
 
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>DTO pour la configuration des états de cycle de vie
+Correspond à la structure du fichier configs/lifecycle/states.yml</p>
 
-            <p class="comment">
-                <h3>Extends</h3>
             </p>
-            <p class="comment">
-                            <code><a href="../classes/LifecycleCreateDto.html" target="_self" >LifecycleCreateDto</a></code>
-            </p>
+
 
 
 
@@ -148,26 +150,10 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                <a href="#_id" >_id</a>
-                            </li>
-                            <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
-                                <a href="#date" >date</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                <a href="#lifecycle" >lifecycle</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Public</span>
-                                <a href="#refId" >refId</a>
+                                <a href="#states" >states</a>
                             </li>
                         </ul>
                     </td>
@@ -192,19 +178,21 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="_id"></a>
+                    <a name="states"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
-                        <span ><b>_id</b></span>
-                        <a href="#_id"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>states</b></span>
+                        <a href="#states"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <i>Type : </i>    <code>LifecycleStateDTO[]</code>
 
                     </td>
                 </tr>
@@ -213,148 +201,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsMongoId()<br />@ApiProperty({type: String})<br />
+                            @IsArray()<br />@ValidateNested({each: true})<br />@Type(undefined)<br />@ApiProperty({type: undefined, description: &#x27;Liste des états de cycle de vie disponibles&#x27;, required: true})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/management/lifecycle/_dto/lifecycle.dto.ts:32</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="date"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                        <span ><b>date</b></span>
-                        <a href="#date"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({description: &#x27;Date of the lifecycle event&#x27;, type: Date})<br />@IsDateString()<br />
-                        </code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Inherited from         <code><a href="../classes/LifecycleCreateDto.html" target="_self" >LifecycleCreateDto</a></code>
-</div>
-                            </td>
-                        </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/LifecycleCreateDto.html#source" target="_self" >LifecycleCreateDto:26</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="lifecycle"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                        <span ><b>lifecycle</b></span>
-                        <a href="#lifecycle"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../classes/Lifecycle.html" target="_self" >IdentityLifecycleDefault | string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({description: &#x27;Lifecycle state&#x27;, enum: IdentityLifecycleDefault})<br />@IsNotEmpty()<br />
-                        </code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Inherited from         <code><a href="../classes/LifecycleCreateDto.html" target="_self" >LifecycleCreateDto</a></code>
-</div>
-                            </td>
-                        </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/LifecycleCreateDto.html#source" target="_self" >LifecycleCreateDto:19</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="refId"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Public</span>
-                        <span ><b>refId</b></span>
-                        <a href="#refId"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>Types.ObjectId</code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({description: &#x27;Reference to the identity&#x27;, type: String})<br />@IsNotEmpty()<br />
-                        </code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Inherited from         <code><a href="../classes/LifecycleCreateDto.html" target="_self" >LifecycleCreateDto</a></code>
-</div>
-                            </td>
-                        </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/LifecycleCreateDto.html#source" target="_self" >LifecycleCreateDto:12</a></code>
-</div>
+                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">src/management/lifecycle/_dto/config-states.dto.ts:55</a></div>
                         </td>
                     </tr>
 
@@ -373,41 +226,62 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;;
-import { IsDateString, IsMongoId, IsNotEmpty } from &#x27;class-validator&#x27;;
-import { Types } from &#x27;mongoose&#x27;;
-import { IdentityLifecycleDefault } from &#x27;~/management/identities/_enums/lifecycle.enum&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+import { IsArray, IsNotEmpty, IsString, ValidateNested } from &#x27;class-validator&#x27;;
+import { Type } from &#x27;class-transformer&#x27;;
 
-export class LifecycleCreateDto {
+/**
+ * DTO pour un état de cycle de vie individuel
+ * Basé sur la structure du fichier states.yml
+ */
+export class LifecycleStateDTO {
+  @IsNotEmpty()
+  @IsString()
   @ApiProperty({
-    description: &#x27;Reference to the identity&#x27;,
     type: String,
+    description: &#x27;Clé unique de l\&#x27;état (une seule lettre)&#x27;,
+    example: &#x27;A&#x27;,
+    maxLength: 1,
+    required: true,
   })
-  @IsNotEmpty()
-  public refId: Types.ObjectId;
+  public key: string;
 
-  @ApiProperty({
-    description: &#x27;Lifecycle state&#x27;,
-    enum: IdentityLifecycleDefault,
-  })
   @IsNotEmpty()
-  public lifecycle: IdentityLifecycleDefault | string;
-
+  @IsString()
   @ApiProperty({
-    description: &#x27;Date of the lifecycle event&#x27;,
-    type: Date,
+    type: String,
+    description: &#x27;Label/nom de l\&#x27;état&#x27;,
+    example: &#x27;En Attente&#x27;,
+    required: true,
   })
-  @IsDateString()
-  public date: Date;
+  public label: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    type: String,
+    description: &#x27;Description détaillée de l\&#x27;état avec correspondances supann&#x27;,
+    example: &#x27;supannRessourceEtat : {COMPTE} A SupannAnticipe&#x27;,
+    required: true,
+  })
+  public description: string;
 }
 
-export class LifecycleDto extends LifecycleCreateDto {
-  @IsMongoId()
-  @ApiProperty({ type: String })
-  public _id: string;
+/**
+ * DTO pour la configuration des états de cycle de vie
+ * Correspond à la structure du fichier configs/lifecycle/states.yml
+ */
+export class ConfigStatesDTO {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() &#x3D;&gt; LifecycleStateDTO)
+  @ApiProperty({
+    type: [LifecycleStateDTO],
+    description: &#x27;Liste des états de cycle de vie disponibles&#x27;,
+    required: true,
+  })
+  public states: LifecycleStateDTO[];
 }
-
-export class LifecycleUpdateDto extends PartialType(LifecycleCreateDto) { }
 </code></pre>
     </div>
 </div>
@@ -446,7 +320,7 @@ export class LifecycleUpdateDto extends PartialType(LifecycleCreateDto) { }
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'LifecycleDto.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ConfigStatesDTO.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

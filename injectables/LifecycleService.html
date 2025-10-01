@@ -142,6 +142,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Protected</span>
+                                <a href="#customStates" >customStates</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
                                 <a href="#lifecycleSources" >lifecycleSources</a>
                             </li>
                             <li>
@@ -199,6 +203,22 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#getAllAvailableStateKeys" >getAllAvailableStateKeys</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getAllAvailableStates" >getAllAvailableStates</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getCustomStateKeys" >getCustomStateKeys</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getCustomStates" >getCustomStates</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getLifecycleHistory" >getLifecycleHistory</a>
                             </li>
@@ -228,6 +248,11 @@
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#handleOrderCreatedEvent" >handleOrderCreatedEvent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#loadCustomStates" >loadCustomStates</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -317,7 +342,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:29</a></div>
                             </td>
                         </tr>
 
@@ -419,8 +444,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="341"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:341</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="501"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:501</a></div>
                         </td>
                     </tr>
 
@@ -522,8 +547,8 @@ This method is called when an identity&#39;s lifecycle changes.</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="226"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:226</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="386"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:386</a></div>
                         </td>
                     </tr>
 
@@ -640,6 +665,192 @@ This method is called when an identity&#39;s lifecycle changes.</p>
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getAllAvailableStateKeys"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getAllAvailableStateKeys</b></span>
+                        <a href="#getAllAvailableStateKeys"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAllAvailableStateKeys()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="348"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:348</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get all available lifecycle state keys</p>
+<p>This method returns only the keys of all available lifecycle states.</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string[]</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>An array of all available lifecycle state keys</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAllAvailableStates"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getAllAvailableStates</b></span>
+                        <a href="#getAllAvailableStates"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAllAvailableStates()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="316"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:316</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get all available lifecycle states (default enum + custom states)</p>
+<p>This method combines the default lifecycle states from the enum with custom states loaded from states.yml.
+It returns an array of all available states with their keys, labels, and descriptions.</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Array&lt;literal type&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>An array containing all available lifecycle states</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getCustomStateKeys"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getCustomStateKeys</b></span>
+                        <a href="#getCustomStateKeys"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getCustomStateKeys()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="375"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:375</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get only custom lifecycle state keys</p>
+<p>This method returns only the keys of custom lifecycle states.</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string[]</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>An array of custom lifecycle state keys</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getCustomStates"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getCustomStates</b></span>
+                        <a href="#getCustomStates"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getCustomStates()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="363"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:363</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get only custom lifecycle states</p>
+<p>This method returns the list of custom lifecycle states loaded from states.yml,
+excluding the default states from the enum.</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>LifecycleStateDTO[]</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>An array of custom lifecycle states with their details</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getLifecycleHistory"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -659,8 +870,8 @@ This method is called when an identity&#39;s lifecycle changes.</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="403"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:403</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="563"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:563</a></div>
                         </td>
                     </tr>
 
@@ -753,8 +964,8 @@ This method is called when an identity&#39;s lifecycle changes.</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="428"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:428</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="588"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:588</a></div>
                         </td>
                     </tr>
 
@@ -801,8 +1012,8 @@ It returns an array of objects where each object contains the lifecycle type and
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="452"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:452</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="612"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:612</a></div>
                         </td>
                     </tr>
 
@@ -891,8 +1102,8 @@ It allows for pagination through the <code>skip</code> and <code>limit</code> op
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="294"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:294</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="454"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:454</a></div>
                         </td>
                     </tr>
 
@@ -976,8 +1187,8 @@ This method is triggered by the &#39;management.identities.service.afterUpdate&#
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="102"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:102</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="125"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:125</a></div>
                         </td>
                     </tr>
 
@@ -1053,8 +1264,8 @@ This method is triggered by the &#39;management.identities.service.afterUpdate&#
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="317"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:317</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="477"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:477</a></div>
                         </td>
                     </tr>
 
@@ -1119,6 +1330,51 @@ This method is triggered by the &#39;management.identities.service.afterUpsert&#
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="loadCustomStates"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>loadCustomStates</b></span>
+                        <a href="#loadCustomStates"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>loadCustomStates()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="249"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:249</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Load custom lifecycle states from states.yml configuration file</p>
+<p>This method reads the states.yml file from the <code>configs/lifecycle</code> directory,
+parses it into a DTO, validates it, and stores the custom states.
+It logs the process of loading and validating the file, and handles any errors that occur during file reading or validation.</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;LifecycleStateDTO[]&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="loadLifecycleRules"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -1138,8 +1394,8 @@ This method is triggered by the &#39;management.identities.service.afterUpsert&#
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="163"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:163</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="186"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:186</a></div>
                         </td>
                     </tr>
 
@@ -1153,7 +1409,7 @@ It logs the process of loading and validating each file, and handles any errors 
 </div>
 
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ConfigObjectSchemaDTO[]&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/ConfigRulesObjectSchemaDTO.html" target="_self" >Promise&lt;ConfigRulesObjectSchemaDTO[]&gt;</a></code>
 
                         </div>
                 </td>
@@ -1183,8 +1439,8 @@ It logs the process of loading and validating each file, and handles any errors 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -1228,8 +1484,8 @@ It also logs the lifecycle sources for debugging purposes.</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -2292,6 +2548,38 @@ It logs the initialization process and any errors encountered during file readin
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="customStates"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>customStates</b></span>
+                        <a href="#customStates"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>LifecycleStateDTO[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:29</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="lifecycleSources"></a>
                     <span class="name">
                             <span class="modifier">Protected</span>
@@ -2313,7 +2601,7 @@ It logs the initialization process and any errors encountered during file readin
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -2576,18 +2864,21 @@ import { AbstractServiceSchema } from &#x27;~/_common/abstracts/abstract.service
 import { FilterOptions } from &#x27;~/_common/restools&#x27;;
 import { Identities } from &#x27;../identities/_schemas/identities.schema&#x27;;
 import { IdentitiesCrudService } from &#x27;../identities/identities-crud.service&#x27;;
-import { ConfigObjectIdentitiesDTO, ConfigObjectSchemaDTO } from &#x27;./_dto/config.dto&#x27;;
+import { ConfigRulesObjectIdentitiesDTO, ConfigRulesObjectSchemaDTO } from &#x27;./_dto/config-rules.dto&#x27;;
+import { ConfigStatesDTO, LifecycleStateDTO } from &#x27;./_dto/config-states.dto&#x27;;
+import { IdentityLifecycleDefault } from &#x27;../identities/_enums/lifecycle.enum&#x27;;
 import { Lifecycle, LifecycleRefId } from &#x27;./_schemas/lifecycle.schema&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import dayjs from &#x27;dayjs&#x27;;
 
 interface LifecycleSource {
-  [source: string]: Partial&lt;ConfigObjectIdentitiesDTO&gt;[];
+  [source: string]: Partial&lt;ConfigRulesObjectIdentitiesDTO&gt;[];
 }
 
 @Injectable()
 export class LifecycleService extends AbstractServiceSchema implements OnApplicationBootstrap, OnModuleInit {
   protected lifecycleSources: LifecycleSource &#x3D; {};
+  protected customStates: LifecycleStateDTO[] &#x3D; [];
 
   public constructor(
     @InjectModel(Lifecycle.name) protected _model: Model&lt;Lifecycle&gt;,
@@ -2607,13 +2898,18 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    */
   public onModuleInit(): void {
     let files &#x3D; [];
+    let filesRules &#x3D; [];
     let defaultFiles &#x3D; [];
+    let defaultFilesRules &#x3D; [];
 
     this.logger.verbose(&#x27;Initializing LifecycleService...&#x27;);
 
     try {
       files &#x3D; readdirSync(&#x60;${process.cwd()}/configs/lifecycle&#x60;);
       defaultFiles &#x3D; readdirSync(&#x60;${process.cwd()}/defaults/lifecycle&#x60;);
+
+      filesRules &#x3D; readdirSync(&#x60;${process.cwd()}/configs/lifecycle/rules&#x60;);
+      defaultFilesRules &#x3D; readdirSync(&#x60;${process.cwd()}/defaults/lifecycle/rules&#x60;);
     } catch (error) {
       this.logger.error(&#x27;Error reading lifecycle validations files&#x27;, error.message, error.stack);
     }
@@ -2626,6 +2922,20 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
           this.logger.warn(&#x60;Copied default validation file: ${file}&#x60;);
         } catch (error) {
           this.logger.error(&#x60;Error copying default validation file: ${file}&#x60;, error.message, error.stack);
+        }
+      }
+    }
+
+    if (files.length &#x3D;&#x3D;&#x3D; 0) {
+      for (const file of defaultFilesRules) {
+        if (!files.includes(file)) {
+          try {
+            const defaultFile &#x3D; readFileSync(&#x60;${process.cwd()}/defaults/lifecycle/rules/${file}&#x60;, &#x27;utf-8&#x27;);
+            writeFileSync(&#x60;${process.cwd()}/configs/lifecycle/rules/${file}&#x60;, defaultFile);
+            this.logger.warn(&#x60;Copied default validation file: ${file}&#x60;);
+          } catch (error) {
+            this.logger.error(&#x60;Error copying default validation file: ${file}&#x60;, error.message, error.stack);
+          }
         }
       }
     }
@@ -2645,6 +2955,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
     this.logger.verbose(&#x27;Bootstrap LifecycleService application...&#x27;);
 
     const lifecycleRules &#x3D; await this.loadLifecycleRules();
+    await this.loadCustomStates();
 
     const cronExpression &#x3D; this.configService.get&lt;string&gt;(&#x27;lifecycle.triggerCronExpression&#x27;) || &#x27;*/5 * * * *&#x27;;
     const job &#x3D; new CronJob(cronExpression, this.handleCron.bind(this, { lifecycleRules }));
@@ -2663,7 +2974,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
     this.logger.log(&#x27;LifecycleService bootstraped&#x27;);
   }
 
-  private async handleCron({ lifecycleRules }: { lifecycleRules: ConfigObjectSchemaDTO[] }): Promise&lt;void&gt; {
+  private async handleCron({ lifecycleRules }: { lifecycleRules: ConfigRulesObjectSchemaDTO[] }): Promise&lt;void&gt; {
     this.logger.debug(&#x60;Running lifecycle trigger cron job...&#x60;);
 
     for (const lfr of lifecycleRules) {
@@ -2724,31 +3035,31 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    * parses them into DTOs, validates them, and stores them in the &#x60;lifecycleRules&#x60; array.
    * It logs the process of loading and validating each file, and handles any errors that occur during file reading or validation.
    */
-  private async loadLifecycleRules(): Promise&lt;ConfigObjectSchemaDTO[]&gt; {
+  private async loadLifecycleRules(): Promise&lt;ConfigRulesObjectSchemaDTO[]&gt; {
     let files: string[] &#x3D; [];
 
-    const lifecycleRules: ConfigObjectSchemaDTO[] &#x3D; [];
+    const lifecycleRules: ConfigRulesObjectSchemaDTO[] &#x3D; [];
     this.logger.verbose(&#x27;Loading lifecycle rules from configuration files...&#x27;);
     this.logger.verbose(&#x27;Initializing LifecycleService...&#x27;);
 
     try {
-      files &#x3D; readdirSync(&#x60;${process.cwd()}/configs/lifecycle&#x60;);
+      files &#x3D; readdirSync(&#x60;${process.cwd()}/configs/lifecycle/rules&#x60;);
     } catch (error) {
       this.logger.error(&#x27;Error reading lifecycle files&#x27;, error.message, error.stack);
     }
 
     for (const file of files) {
-      let schema: ConfigObjectSchemaDTO;
+      let schema: ConfigRulesObjectSchemaDTO;
       if (!file.endsWith(&#x27;.yml&#x27;) &amp;&amp; !file.endsWith(&#x27;.yaml&#x27;)) {
         this.logger.warn(&#x60;Skipping non-YAML file: ${file}&#x60;);
         continue;
       }
 
       try {
-        const data &#x3D; readFileSync(&#x60;${process.cwd()}/configs/lifecycle/${file}&#x60;, &#x27;utf-8&#x27;);
+        const data &#x3D; readFileSync(&#x60;${process.cwd()}/configs/lifecycle/rules/${file}&#x60;, &#x27;utf-8&#x27;);
         this.logger.debug(&#x60;Loaded lifecycle config: ${file}&#x60;);
         const yml &#x3D; parse(data)
-        schema &#x3D; plainToInstance(ConfigObjectSchemaDTO, yml)
+        schema &#x3D; plainToInstance(ConfigRulesObjectSchemaDTO, yml)
 
       } catch (error) {
         this.logger.error(&#x60;Error loading lifecycle config file: ${file}&#x60;, error.message, error.stack);
@@ -2778,6 +3089,143 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
 
     this.logger.log(&#x60;Loaded &lt;${lifecycleRules.length}&gt; lifecycle rules from configuration files.&#x60;);
     return lifecycleRules;
+  }
+
+  /**
+   * Load custom lifecycle states from states.yml configuration file
+   *
+   * This method reads the states.yml file from the &#x60;configs/lifecycle&#x60; directory,
+   * parses it into a DTO, validates it, and stores the custom states.
+   * It logs the process of loading and validating the file, and handles any errors that occur during file reading or validation.
+   */
+  private async loadCustomStates(): Promise&lt;LifecycleStateDTO[]&gt; {
+    const customStates: LifecycleStateDTO[] &#x3D; [];
+    this.logger.verbose(&#x27;Loading custom lifecycle states from states.yml...&#x27;);
+
+    try {
+      const statesFilePath &#x3D; &#x60;${process.cwd()}/configs/lifecycle/states.yml&#x60;;
+      const data &#x3D; readFileSync(statesFilePath, &#x27;utf-8&#x27;);
+      this.logger.debug(&#x27;Loaded custom states config: states.yml&#x27;);
+
+      const yml &#x3D; parse(data);
+      const configStates &#x3D; plainToInstance(ConfigStatesDTO, yml);
+
+      if (!configStates || !configStates.states || !Array.isArray(configStates.states)) {
+        this.logger.error(&#x27;Invalid schema in states.yml file&#x27;);
+        return customStates;
+      }
+
+      try {
+        this.logger.verbose(&#x27;Validating schema for states.yml&#x27;, JSON.stringify(configStates, null, 2));
+        await validateOrReject(configStates, {
+          whitelist: true,
+        });
+        this.logger.debug(&#x27;Validated schema for states.yml&#x27;);
+      } catch (errors) {
+        const formattedErrors &#x3D; this.formatValidationErrors(errors, &#x27;states.yml&#x27;);
+        const err &#x3D; new Error(&#x60;Validation errors in states.yml:\n${formattedErrors}&#x60;);
+        throw err;
+      }
+
+      // Valider que chaque clé est unique et d&#x27;une seule lettre
+      const usedKeys &#x3D; new Set&lt;string&gt;();
+      for (const state of configStates.states) {
+        if (state.key.length !&#x3D;&#x3D; 1) {
+          throw new Error(&#x60;State key &#x27;${state.key}&#x27; must be exactly one character&#x60;);
+        }
+
+        if (usedKeys.has(state.key)) {
+          throw new Error(&#x60;Duplicate state key &#x27;${state.key}&#x27; found in states.yml&#x60;);
+        }
+
+        // Vérifier que la clé n&#x27;existe pas déjà dans l&#x27;enum par défaut
+        if (Object.values(IdentityLifecycleDefault).includes(state.key as IdentityLifecycleDefault)) {
+          throw new Error(&#x60;State key &#x27;${state.key}&#x27; conflicts with default lifecycle state&#x60;);
+        }
+
+        usedKeys.add(state.key);
+        customStates.push(state);
+      }
+
+      this.customStates &#x3D; customStates;
+      this.logger.log(&#x60;Loaded &lt;${customStates.length}&gt; custom lifecycle states from states.yml&#x60;);
+
+    } catch (error) {
+      this.logger.error(&#x27;Error loading custom states from states.yml&#x27;, error.message, error.stack);
+    }
+
+    return customStates;
+  }
+
+  /**
+   * Get all available lifecycle states (default enum + custom states)
+   *
+   * This method combines the default lifecycle states from the enum with custom states loaded from states.yml.
+   * It returns an array of all available states with their keys, labels, and descriptions.
+   *
+   * @returns An array containing all available lifecycle states
+   */
+  public getAllAvailableStates(): Array&lt;{ key: string; label: string; description: string }&gt; {
+    const allStates: Array&lt;{ key: string; label: string; description: string }&gt; &#x3D; [];
+
+    // Ajouter les états par défaut de l&#x27;enum
+    Object.entries(IdentityLifecycleDefault).forEach(([enumKey, enumValue]) &#x3D;&gt; {
+      allStates.push({
+        key: enumValue,
+        label: enumKey,
+        description: &#x60;Default lifecycle state: ${enumKey}&#x60;,
+      });
+    });
+
+    // Ajouter les états custom
+    this.customStates.forEach(customState &#x3D;&gt; {
+      allStates.push({
+        key: customState.key,
+        label: customState.label,
+        description: customState.description,
+      });
+    });
+
+    this.logger.debug(&#x60;Retrieved &lt;${allStates.length}&gt; total available lifecycle states&#x60;);
+    return allStates;
+  }
+
+  /**
+   * Get all available lifecycle state keys
+   *
+   * This method returns only the keys of all available lifecycle states.
+   *
+   * @returns An array of all available lifecycle state keys
+   */
+  public getAllAvailableStateKeys(): string[] {
+    const defaultKeys &#x3D; Object.values(IdentityLifecycleDefault);
+    const customKeys &#x3D; this.customStates.map(state &#x3D;&gt; state.key);
+
+    return [...defaultKeys, ...customKeys];
+  }
+
+  /**
+   * Get only custom lifecycle states
+   *
+   * This method returns the list of custom lifecycle states loaded from states.yml,
+   * excluding the default states from the enum.
+   *
+   * @returns An array of custom lifecycle states with their details
+   */
+  public getCustomStates(): LifecycleStateDTO[] {
+    this.logger.debug(&#x60;Retrieved &lt;${this.customStates.length}&gt; custom lifecycle states&#x60;);
+    return [...this.customStates]; // Return a copy to prevent external modification
+  }
+
+  /**
+   * Get only custom lifecycle state keys
+   *
+   * This method returns only the keys of custom lifecycle states.
+   *
+   * @returns An array of custom lifecycle state keys
+   */
+  public getCustomStateKeys(): string[] {
+    return this.customStates.map(state &#x3D;&gt; state.key);
   }
 
   /**

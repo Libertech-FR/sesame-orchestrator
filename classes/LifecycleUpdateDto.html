@@ -147,9 +147,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, PartialType } from &#x27;@nestjs/swagger&#x27;;
-import { IsDateString, IsEnum, IsMongoId, IsNotEmpty } from &#x27;class-validator&#x27;;
+import { IsDateString, IsMongoId, IsNotEmpty } from &#x27;class-validator&#x27;;
 import { Types } from &#x27;mongoose&#x27;;
-import { IdentityLifecycle } from &#x27;~/management/identities/_enums/lifecycle.enum&#x27;;
+import { IdentityLifecycleDefault } from &#x27;~/management/identities/_enums/lifecycle.enum&#x27;;
 
 export class LifecycleCreateDto {
   @ApiProperty({
@@ -161,11 +161,10 @@ export class LifecycleCreateDto {
 
   @ApiProperty({
     description: &#x27;Lifecycle state&#x27;,
-    enum: IdentityLifecycle,
+    enum: IdentityLifecycleDefault,
   })
-  @IsEnum(IdentityLifecycle)
   @IsNotEmpty()
-  public lifecycle: IdentityLifecycle;
+  public lifecycle: IdentityLifecycleDefault | string;
 
   @ApiProperty({
     description: &#x27;Date of the lifecycle event&#x27;,

@@ -148,6 +148,20 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getAllStates" >getAllStates</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getCustomStates" >getCustomStates</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
@@ -184,6 +198,170 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAllStates"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getAllStates</b></span>
+                        <a href="#getAllStates"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAllStates(res: <a href="../interfaces/Response.html" target="_self">Response</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Get all available lifecycle states&#x27;, description: &#x27;Returns all lifecycle states including default states from enum and custom states from configuration&#x27;})<br />@Get(&#x27;states&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.controller.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get all available lifecycle states</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Response.html" target="_self" >Response</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Response.html" target="_self" >Promise&lt;Response&lt;Array&lt;literal type&gt;&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>A response containing all available lifecycle states (default + custom)</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getCustomStates"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getCustomStates</b></span>
+                        <a href="#getCustomStates"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getCustomStates(res: <a href="../interfaces/Response.html" target="_self">Response</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Get custom lifecycle states&#x27;, description: &#x27;Returns only custom lifecycle states loaded from states.yml configuration file&#x27;})<br />@Get(&#x27;states/custom&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.controller.ts:94</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Get only custom lifecycle states</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Response.html" target="_self" >Response</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Response.html" target="_self" >Promise&lt;Response&lt;Array&lt;literal type&gt;&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>A response containing only custom lifecycle states from configuration</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -334,8 +512,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.controller.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="110"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.controller.ts:110</a></div>
                         </td>
                     </tr>
 
@@ -428,15 +606,15 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="57"
-                                    class="link-to-prism">src/management/lifecycle/lifecycle.controller.ts:57</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">src/management/lifecycle/lifecycle.controller.ts:56</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                        <div class="io-description"><p>Get lifecycle history for an agent</p>
+                        <div class="io-description"><p>Get lifecycle statistics</p>
 </div>
 
                             <div class="io-description">
@@ -471,7 +649,7 @@
 
                         </div>
                             <div class="io-description">
-                                <p>A response containing the lifecycle history of the specified agent</p>
+                                <p>A response containing lifecycle statistics</p>
 
                             </div>
                 </td>
@@ -531,10 +709,9 @@ export class LifecycleController extends AbstractController {
   }
 
   /**
-   * Get lifecycle history for an agent
+   * Get lifecycle statistics
    *
-   * @param agentId - The ID of the agent to retrieve lifecycle history for
-   * @returns A response containing the lifecycle history of the specified agent
+   * @returns A response containing lifecycle statistics
    */
   @ApiOperation({ summary: &#x27;Get lifecycle statistics&#x27; })
   @Get(&#x27;stats&#x27;)
@@ -544,6 +721,44 @@ export class LifecycleController extends AbstractController {
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: await this._service.getLifecycleStats(),
+    });
+  }
+
+  /**
+   * Get all available lifecycle states
+   *
+   * @returns A response containing all available lifecycle states (default + custom)
+   */
+  @ApiOperation({
+    summary: &#x27;Get all available lifecycle states&#x27;,
+    description: &#x27;Returns all lifecycle states including default states from enum and custom states from configuration&#x27;
+  })
+  @Get(&#x27;states&#x27;)
+  public async getAllStates(
+    @Res() res: Response,
+  ): Promise&lt;Response&lt;Array&lt;{ key: string; label: string; description: string }&gt;&gt;&gt; {
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: this._service.getAllAvailableStates(),
+    });
+  }
+
+  /**
+   * Get only custom lifecycle states
+   *
+   * @returns A response containing only custom lifecycle states from configuration
+   */
+  @ApiOperation({
+    summary: &#x27;Get custom lifecycle states&#x27;,
+    description: &#x27;Returns only custom lifecycle states loaded from states.yml configuration file&#x27;
+  })
+  @Get(&#x27;states/custom&#x27;)
+  public async getCustomStates(
+    @Res() res: Response,
+  ): Promise&lt;Response&lt;Array&lt;{ key: string; label: string; description: string }&gt;&gt;&gt; {
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: this._service.getCustomStates(),
     });
   }
 

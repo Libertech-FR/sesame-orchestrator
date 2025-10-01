@@ -2300,7 +2300,7 @@
                         <i>Default value : </i><code>(): IdentitiesDto &#x3D;&gt; {
   return {
     state: IdentityState.TO_CREATE,
-    lifecycle: IdentityLifecycle.INACTIVE,
+    lifecycle: IdentityLifecycleDefault.INACTIVE,
     inetOrgPerson: inetOrgPersonDtoStub(),
     additionalFields: additionalFieldsPartDtoStub(),
     initState: InitStatesEnum.NOSENT,
@@ -2331,7 +2331,7 @@
   inetOrgPerson.cn &#x3D; &#x27;updated-cn&#x27;;
   return {
     state: IdentityState.TO_COMPLETE,
-    lifecycle: IdentityLifecycle.INACTIVE,
+    lifecycle: IdentityLifecycleDefault.INACTIVE,
     initState: InitStatesEnum.NOSENT,
     dataStatus: DataStatusEnum.ACTIVE,
     inetOrgPerson,

@@ -289,11 +289,132 @@
 import { RedisOptions } from &#x27;ioredis&#x27;;
 import { HelmetOptions } from &#x27;helmet&#x27;;
 import { SwaggerCustomOptions } from &#x27;@nestjs/swagger&#x27;;
+import Joi from &#x27;joi&#x27;;
 import { IAuthModuleOptions } from &#x27;@nestjs/passport&#x27;;
 import { JwtModuleOptions } from &#x27;@nestjs/jwt&#x27;;
 import { StorageManagerConfig } from &#x27;~/_common/factorydrive&#x27;;
 import { AmazonWebServicesS3StorageConfig } from &#x27;~/_common/factorydrive&#x27;;
 import { HttpModuleOptions } from &#x27;@nestjs/axios&#x27;;
+
+export const validationSchema &#x3D; Joi.object({
+  LANG: Joi
+    .string()
+    .default(&#x27;en&#x27;),
+
+  SESAME_LOG_LEVEL: Joi
+    .string()
+    .valid(&#x27;error&#x27;, &#x27;warn&#x27;, &#x27;info&#x27;, &#x27;debug&#x27;)
+    .default(&#x27;info&#x27;),
+
+  SESAME_NAME_QUEUE: Joi
+    .string()
+    .default(&#x27;sesame&#x27;),
+
+  SESAME_HTTPS_ENABLED: Joi
+    .string()
+    .valid(&#x27;0&#x27;, &#x27;1&#x27;, &#x27;true&#x27;, &#x27;false&#x27;, &#x27;on&#x27;, &#x27;off&#x27;)
+    .default(&#x27;false&#x27;),
+
+  SESAME_HTTPS_PATH_KEY: Joi
+    .string()
+    .when(&#x27;SESAME_HTTPS_ENABLED&#x27;, {
+      is: /yes|1|on|true/i,
+      then: Joi.required(),
+      otherwise: Joi.optional().allow(&#x27;&#x27;),
+    })
+    .default(&#x27;&#x27;),
+
+  SESAME_HTTPS_PATH_CERT: Joi
+    .string()
+    .when(&#x27;SESAME_HTTPS_ENABLED&#x27;, {
+      is: /yes|1|on|true/i,
+      then: Joi.required(),
+      otherwise: Joi.optional().allow(&#x27;&#x27;),
+    })
+    .default(&#x27;&#x27;),
+
+  SESAME_REDIS_URI: Joi
+    .string()
+    .uri()
+    .default(&#x27;redis://localhost:6379/0&#x27;),
+
+  SESAME_MONGO_URI: Joi
+    .string()
+    .uri()
+    .default(&#x27;mongodb://localhost:27017/backend&#x27;),
+
+  SESAME_AXIOS_TIMEOUT: Joi
+    .number()
+    .integer()
+    .min(1)
+    .default(5000),
+
+  SESAME_AXIOS_MAX_REDIRECTS: Joi
+    .number()
+    .integer()
+    .min(0)
+    .default(5),
+
+  SESAME_JWT_SECRET: Joi
+    .string()
+    .required(),
+
+  SESAME_SMTP_SERVER: Joi
+    .string()
+    .hostname()
+    .required(),
+
+  SESAME_SMTP_PORT: Joi
+    .number()
+    .integer()
+    .min(1)
+    .max(65535)
+    .default(25),
+
+  SESAME_MDP_SENDER: Joi
+    .string()
+    .email()
+    .default(&#x27;&#x27;),
+
+  SESAME_FRONT_MDP: Joi
+    .string()
+    .uri()
+    .required(),
+
+  SESAME_RESET_PWD_MAIL: Joi
+    .string()
+    .default(&#x27;&#x27;),
+
+  SESAME_RESET_PWD_MOBILE: Joi
+    .string()
+    .default(&#x27;&#x27;),
+
+  SESAME_LIFECYCLE_TRIGGER_CRON: Joi
+    .string()
+    .pattern(/^(\*|([0-5]?\d))(\/\d+)? (\*|([01]?\d|2[0-3]))(\/\d+)? (\*|([01]?\d|2[0-9]|3[01]))(\/\d+)? (\*|(1[0-2]|0?[1-9]))(\/\d+)? (\*|([0-6]))(\/\d+)?$/)
+    .default(&#x27;*/5 * * * *&#x27;),
+
+  SESAME_SMPP_SERVER: Joi
+    .string()
+    .hostname()
+    .default(&#x27;&#x27;),
+
+  SESAME_SMPP_SYSTEMID: Joi
+    .string()
+    .default(&#x27;&#x27;),
+
+  SESAME_SMPP_PASSWORD: Joi
+    .string()
+    .default(&#x27;&#x27;),
+
+  SESAME_SMPP_SOURCEADDR: Joi
+    .string()
+    .default(&#x27;&#x27;),
+
+  SESAME_SMPP_REGIONCODE: Joi
+    .string()
+    .default(&#x27;FR&#x27;),
+});
 
 export interface MongoosePlugin {
   package: string;
@@ -361,6 +482,9 @@ export interface ConfigInstance {
     url: string;
     identityMailAttribute: string;
     identityMobileAttribute: string;
+  };
+  lifecycle: {
+    triggerCronExpression: string;
   };
   swagger: {
     path: string;
@@ -470,6 +594,9 @@ export default (): ConfigInstance &#x3D;&gt; ({
     url: process.env[&#x27;SESAME_FRONT_MDP&#x27;],
     identityMailAttribute: process.env[&#x27;SESAME_RESET_PWD_MAIL&#x27;] || &#x27;&#x27;,
     identityMobileAttribute: process.env[&#x27;SESAME_RESET_PWD_MOBILE&#x27;] || &#x27;&#x27;,
+  },
+  lifecycle: {
+    triggerCronExpression: process.env[&#x27;SESAME_LIFECYCLE_TRIGGER_CRON&#x27;] || &#x27;*/5 * * * *&#x27;,
   },
   sms: {
     host: process.env[&#x27;SESAME_SMPP_SERVER&#x27;] || &#x27;&#x27;,

@@ -385,6 +385,9 @@
                             <a href="#validAdditionalFieldsStub" title="src/management/identities/validations/_stubs/identities.validation.stub.ts" ><b>validAdditionalFieldsStub</b>&nbsp;&nbsp;&nbsp;(src/.../identities.validation.stub.ts)</a>
                         </li>
                         <li>
+                            <a href="#validationSchema" title="src/config.ts" ><b>validationSchema</b>&nbsp;&nbsp;&nbsp;(src/.../config.ts)</a>
+                        </li>
+                        <li>
                             <a href="#validSchema" title="src/management/identities/validations/_config/validSchema.ts" ><b>validSchema</b>&nbsp;&nbsp;&nbsp;(src/.../validSchema.ts)</a>
                         </li>
                         <li>
@@ -3183,6 +3186,147 @@
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>SchemaFactory.createForClass(Tasks)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/config.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="validationSchema"></a>
+                    <span class="name">
+                        <span ><b>validationSchema</b></span>
+                        <a href="#validationSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Joi.object({
+  LANG: Joi
+    .string()
+    .default(&#x27;en&#x27;),
+
+  SESAME_LOG_LEVEL: Joi
+    .string()
+    .valid(&#x27;error&#x27;, &#x27;warn&#x27;, &#x27;info&#x27;, &#x27;debug&#x27;)
+    .default(&#x27;info&#x27;),
+
+  SESAME_NAME_QUEUE: Joi
+    .string()
+    .default(&#x27;sesame&#x27;),
+
+  SESAME_HTTPS_ENABLED: Joi
+    .string()
+    .valid(&#x27;0&#x27;, &#x27;1&#x27;, &#x27;true&#x27;, &#x27;false&#x27;, &#x27;on&#x27;, &#x27;off&#x27;)
+    .default(&#x27;false&#x27;),
+
+  SESAME_HTTPS_PATH_KEY: Joi
+    .string()
+    .when(&#x27;SESAME_HTTPS_ENABLED&#x27;, {
+      is: /yes|1|on|true/i,
+      then: Joi.required(),
+      otherwise: Joi.optional().allow(&#x27;&#x27;),
+    })
+    .default(&#x27;&#x27;),
+
+  SESAME_HTTPS_PATH_CERT: Joi
+    .string()
+    .when(&#x27;SESAME_HTTPS_ENABLED&#x27;, {
+      is: /yes|1|on|true/i,
+      then: Joi.required(),
+      otherwise: Joi.optional().allow(&#x27;&#x27;),
+    })
+    .default(&#x27;&#x27;),
+
+  SESAME_REDIS_URI: Joi
+    .string()
+    .uri()
+    .default(&#x27;redis://localhost:6379/0&#x27;),
+
+  SESAME_MONGO_URI: Joi
+    .string()
+    .uri()
+    .default(&#x27;mongodb://localhost:27017/backend&#x27;),
+
+  SESAME_AXIOS_TIMEOUT: Joi
+    .number()
+    .integer()
+    .min(1)
+    .default(5000),
+
+  SESAME_AXIOS_MAX_REDIRECTS: Joi
+    .number()
+    .integer()
+    .min(0)
+    .default(5),
+
+  SESAME_JWT_SECRET: Joi
+    .string()
+    .required(),
+
+  SESAME_SMTP_SERVER: Joi
+    .string()
+    .hostname()
+    .required(),
+
+  SESAME_SMTP_PORT: Joi
+    .number()
+    .integer()
+    .min(1)
+    .max(65535)
+    .default(25),
+
+  SESAME_MDP_SENDER: Joi
+    .string()
+    .email()
+    .default(&#x27;&#x27;),
+
+  SESAME_FRONT_MDP: Joi
+    .string()
+    .uri()
+    .required(),
+
+  SESAME_RESET_PWD_MAIL: Joi
+    .string()
+    .default(&#x27;&#x27;),
+
+  SESAME_RESET_PWD_MOBILE: Joi
+    .string()
+    .default(&#x27;&#x27;),
+
+  SESAME_LIFECYCLE_TRIGGER_CRON: Joi
+    .string()
+    .pattern(/^(\*|([0-5]?\d))(\/\d+)? (\*|([01]?\d|2[0-3]))(\/\d+)? (\*|([01]?\d|2[0-9]|3[01]))(\/\d+)? (\*|(1[0-2]|0?[1-9]))(\/\d+)? (\*|([0-6]))(\/\d+)?$/)
+    .default(&#x27;*/5 * * * *&#x27;),
+
+  SESAME_SMPP_SERVER: Joi
+    .string()
+    .hostname()
+    .default(&#x27;&#x27;),
+
+  SESAME_SMPP_SYSTEMID: Joi
+    .string()
+    .default(&#x27;&#x27;),
+
+  SESAME_SMPP_PASSWORD: Joi
+    .string()
+    .default(&#x27;&#x27;),
+
+  SESAME_SMPP_SOURCEADDR: Joi
+    .string()
+    .default(&#x27;&#x27;),
+
+  SESAME_SMPP_REGIONCODE: Joi
+    .string()
+    .default(&#x27;FR&#x27;),
+})</code>
                     </td>
                 </tr>
 

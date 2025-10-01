@@ -142,7 +142,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/management/lifecycle/lifecycle.service.ts:19</a></div>
                             </td>
                         </tr>
             </tbody>
@@ -169,6 +169,7 @@ import { Identities } from &#x27;../identities/_schemas/identities.schema&#x27;;
 import { IdentitiesCrudService } from &#x27;../identities/identities-crud.service&#x27;;
 import { ConfigObjectIdentitiesDTO, ConfigObjectSchemaDTO } from &#x27;./_dto/config.dto&#x27;;
 import { Lifecycle, LifecycleRefId } from &#x27;./_schemas/lifecycle.schema&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 
 interface LifecycleSource {
   [source: string]: Partial&lt;ConfigObjectIdentitiesDTO&gt;[];
@@ -182,6 +183,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
     @InjectModel(Lifecycle.name) protected _model: Model&lt;Lifecycle&gt;,
     protected readonly identitiesService: IdentitiesCrudService,
     private schedulerRegistry: SchedulerRegistry,
+    private configService: ConfigService,
   ) {
     super();
   }
@@ -234,8 +236,10 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
 
     const lifecycleRules &#x3D; await this.loadLifecycleRules();
 
-    const job &#x3D; new CronJob(&#x27;*/5 * * * * *&#x27;, this.handleCron.bind(this, { lifecycleRules }));
+    const cronExpression &#x3D; this.configService.get&lt;string&gt;(&#x27;lifecycle.triggerCronExpression&#x27;) || &#x27;*/5 * * * *&#x27;;
+    const job &#x3D; new CronJob(cronExpression, this.handleCron.bind(this, { lifecycleRules }));
     this.schedulerRegistry.addCronJob(&#x60;lifecycle-trigger&#x60;, job);
+    this.logger.warn(&#x60;Lifecycle trigger cron job scheduled with expression: &lt;${cronExpression}&gt;&#x60;);
     job.start();
 
     this.logger.log(&#x27;LifecycleService bootstraped&#x27;);

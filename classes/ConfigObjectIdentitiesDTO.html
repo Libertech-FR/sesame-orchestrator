@@ -575,7 +575,7 @@ export class ConfigObjectIdentitiesDTO {
     type: String,
     enum: IdentityLifecycle,
     description: &#x27;Lifecycle state of the identity&#x27;,
-    example: IdentityLifecycle.ACTIVE,
+    example: IdentityLifecycle.OFFICIAL,
     required: true,
   })
   public sources: IdentityLifecycle[];
@@ -612,7 +612,7 @@ export class ConfigObjectIdentitiesDTO {
     type: String,
     enum: IdentityLifecycle,
     description: &#x27;Target lifecycle state for the identity&#x27;,
-    example: IdentityLifecycle.DELETED,
+    example: IdentityLifecycle.MANUAL,
     required: true,
   })
   public target: IdentityLifecycle;

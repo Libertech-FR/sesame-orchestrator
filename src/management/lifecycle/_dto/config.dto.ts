@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type, Transform } from 'class-transformer';
-import { IsArray, IsEnum, IsNegative, IsNotEmpty, IsNumber, IsObject, IsOptional, ValidateNested, registerDecorator, ValidationOptions, ValidationArguments, isString, isNumber } from 'class-validator';
+import { IsArray, IsEnum, IsNegative, IsNotEmpty, IsNumber, IsObject, IsOptional, ValidateNested, registerDecorator, ValidationOptions, ValidationArguments, isString, isNumber, IsString } from 'class-validator';
 import { IdentityLifecycle } from '~/management/identities/_enums/lifecycle.enum';
 
 /**
@@ -21,24 +21,24 @@ function transformTriggerToSeconds(value: number | string): number | undefined {
   }
 
   /**
-   * Check if the value is a negative number.
-   * If it's a number, we check if it's less than 0.
-   * If it's a string, we check if it matches the regex for negative time strings.
+   * Check if the value is a number.
+   * If it's a number, we check if it's upper than 0.
+   * If it's a string, we check if it matches the regex for time strings.
    */
   if (isNumber(value)) {
     isValid = value < 0;
   } else if (isString(value)) {
-    const timeRegex = /^-?\d+[dms]$/;
+    const timeRegex = /^\d+[dms]$/;
     if (timeRegex.test(value)) {
-      // Extract the number part and check if it's negative
+      // Extract the number part and check if it's
       const numberPart = value.replace(/[dms]$/, '');
       const num = parseInt(numberPart, 10);
-      isValid = num < 0;
+      isValid = num > 0;
     }
   }
 
   if (!isValid) {
-    throw new Error('Trigger must be a negative number (days) or a negative time string with units (e.g., "-90d", "-10m", "-45s")');
+    throw new Error('Trigger must be a number (days) or a time string with units (e.g., "90d", "10m", "45s")');
   }
 
   /**
@@ -61,7 +61,7 @@ function transformTriggerToSeconds(value: number | string): number | undefined {
    * so if the input is negative, the output will also be negative.
    */
   if (isString(value)) {
-    const match = value.match(/^(-?\d+)([dms])$/);
+    const match = value.match(/^(\d+)([dms])$/);
     if (match) {
       const numValue = parseInt(match[1], 10);
       const unit = match[2];
@@ -134,20 +134,28 @@ export class ConfigObjectIdentitiesDTO {
   public sources: IdentityLifecycle[];
 
   @IsOptional()
+  @IsString()
+  public dateKey: string = 'lastSync';
+
+  @IsOptional()
   @IsObject()
   public rules: object;
+
+  @IsOptional()
+  @IsObject()
+  public mutation: object;
 
   @IsOptional()
   @Transform(({ value }) => transformTriggerToSeconds(value))
   @IsNumber()
   @ApiProperty({
     oneOf: [
-      { type: 'number', description: 'Negative number representing days' },
-      { type: 'string', description: 'Negative time string with units (d=days, m=minutes, s=seconds)' }
+      { type: 'number', description: 'Number representing days' },
+      { type: 'string', description: 'Time string with units (d=days, m=minutes, s=seconds)' }
     ],
     required: false,
-    description: 'Trigger time as negative number (days) or negative time string with units (converted to negative seconds internally)',
-    examples: [-90, '-90d', '-10m', '-45s']
+    description: 'Trigger time as number (days) or time string with units',
+    examples: [90, '90d', '10m', '45s']
   })
   public trigger: number;
 

@@ -13,7 +13,7 @@ import { KeyringsModule } from '~/core/keyrings/keyrings.module';
 import { BackendsCommand } from './backends.command';
 import { BackendsModule } from '~/core/backends/backends.module';
 import { AuthModule } from '~/core/auth/auth.module';
-import { FactorydriveModule } from '@the-software-compagny/nestjs_module_factorydrive';
+import { FactorydriveModule } from '~/_common/factorydrive';
 import { IdentitiesCommand } from './identities.command';
 import { IdentitiesModule } from '~/management/identities/identities.module';
 

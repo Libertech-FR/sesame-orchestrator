@@ -8,7 +8,7 @@ import { IdentitiesUpsertDto } from './_dto/identities.dto';
 import { IdentityState } from './_enums/states.enum';
 import { Identities } from './_schemas/identities.schema';
 import { IdentitiesValidationService } from './validations/identities.validation.service';
-import { FactorydriveService } from '@the-software-compagny/nestjs_module_factorydrive';
+import { FactorydriveService } from '~/_common/factorydrive';
 import { BackendsService } from '~/core/backends/backends.service';
 import { construct, omit } from 'radash';
 import { toPlainAndCrush } from '~/_common/functions/to-plain-and-crush';

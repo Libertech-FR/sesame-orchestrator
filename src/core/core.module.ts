@@ -10,6 +10,7 @@ import { KeyringsModule } from './keyrings/keyrings.module';
 import { LoggerModule } from './logger/logger.module';
 import { TasksModule } from './tasks/tasks.module';
 import { FilestorageModule } from './filestorage/filestorage.module';
+import { AuditsModule } from './audits/audits.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { FilestorageModule } from './filestorage/filestorage.module';
     JobsModule,
     TasksModule,
     FilestorageModule,
+    AuditsModule,
   ],
   providers: [CoreService],
   controllers: [CoreController],

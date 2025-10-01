@@ -6,6 +6,8 @@ import { AuthService } from '../auth.service';
 import { Request } from 'express';
 import { AgentType } from '~/_common/types/agent.type';
 import { JwtPayload } from 'jsonwebtoken';
+import { Keyrings } from '~/core/keyrings/_schemas/keyrings.schema';
+import { Agents } from '~/core/agents/_schemas/agents.schema';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -34,6 +36,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     const user = await this.auth.verifyIdentity(payload);
 
     if (!user) return done(new ForbiddenException(), false);
-    return done(null, payload?.identity);
+    return done(null, {
+      $ref: !payload.scopes.includes('api')
+        ? Agents.name
+        : Keyrings.name,
+      ...payload?.identity,
+    });
   }
 }

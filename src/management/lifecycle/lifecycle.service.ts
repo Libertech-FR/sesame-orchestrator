@@ -15,6 +15,7 @@ import { IdentitiesCrudService } from '../identities/identities-crud.service';
 import { ConfigObjectIdentitiesDTO, ConfigObjectSchemaDTO } from './_dto/config.dto';
 import { Lifecycle, LifecycleRefId } from './_schemas/lifecycle.schema';
 import { ConfigService } from '@nestjs/config';
+import dayjs from 'dayjs';
 
 interface LifecycleSource {
   [source: string]: Partial<ConfigObjectIdentitiesDTO>[];
@@ -85,6 +86,14 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
     const job = new CronJob(cronExpression, this.handleCron.bind(this, { lifecycleRules }));
     this.schedulerRegistry.addCronJob(`lifecycle-trigger`, job);
     this.logger.warn(`Lifecycle trigger cron job scheduled with expression: <${cronExpression}>`);
+
+    job.addCallback(async (): Promise<void> => {
+      const now = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss');
+      this.logger.debug(`Lifecycle trigger cron job executed at <${now}> !`);
+
+      const nextDate = dayjs(job.nextDate().toJSDate()).format('YYYY-MM-DD HH:mm:ss');
+      this.logger.verbose(`Next execution at <${nextDate}>`);
+    });
     job.start();
 
     this.logger.log('LifecycleService bootstraped');

@@ -169,7 +169,7 @@ import { Identities } from &#x27;../identities/_schemas/identities.schema&#x27;;
 import { IdentitiesCrudService } from &#x27;../identities/identities-crud.service&#x27;;
 import { ConfigRulesObjectIdentitiesDTO, ConfigRulesObjectSchemaDTO } from &#x27;./_dto/config-rules.dto&#x27;;
 import { ConfigStatesDTO, LifecycleStateDTO } from &#x27;./_dto/config-states.dto&#x27;;
-import { IdentityLifecycleDefault, IdentityLifecycleDefaultList } from &#x27;../identities/_enums/lifecycle.enum&#x27;;
+import { IdentityLifecycleDefault, IdentityLifecycleDefaultList, IdentityLifecycleState } from &#x27;../identities/_enums/lifecycle.enum&#x27;;
 import { Lifecycle, LifecycleRefId } from &#x27;./_schemas/lifecycle.schema&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import dayjs from &#x27;dayjs&#x27;;
@@ -468,26 +468,11 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    *
    * @returns An array containing all available lifecycle states
    */
-  public getAllAvailableStates(): Array&lt;{ key: string; label: string; description: string }&gt; {
-    const allStates: Array&lt;{ key: string; label: string; description: string, icon: string }&gt; &#x3D; [];
-
-    IdentityLifecycleDefaultList.forEach(state &#x3D;&gt; {
-      allStates.push({
-        key: state.key,
-        label: state.label,
-        description: state.description,
-        icon: state.icon,
-      });
-    });
-
-    this.customStates.forEach(customState &#x3D;&gt; {
-      allStates.push({
-        key: customState.key,
-        label: customState.label,
-        description: customState.description,
-        icon: customState.icon || &#x27;mdi-help-rhombus-outline&#x27;,
-      });
-    });
+  public getAllAvailableStates(): Array&lt;IdentityLifecycleState&gt; {
+    const allStates: Array&lt;IdentityLifecycleState&gt; &#x3D; [
+      ...IdentityLifecycleDefaultList,
+      ...this.customStates,
+    ];
 
     return allStates;
   }
@@ -514,7 +499,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    *
    * @returns An array of custom lifecycle states with their details
    */
-  public getCustomStates(): LifecycleStateDTO[] {
+  public getCustomStates(): IdentityLifecycleState[] {
     return [...this.customStates];
   }
 

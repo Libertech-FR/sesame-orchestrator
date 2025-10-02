@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 /**
@@ -37,6 +37,16 @@ export class LifecycleStateDTO {
     required: true,
   })
   public description: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'Icône associée à l\'état (optionnel)',
+    example: 'mdi-account-clock',
+    required: false,
+  })
+  public icon?: string;
 }
 
 /**

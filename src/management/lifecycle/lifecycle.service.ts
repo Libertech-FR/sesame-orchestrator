@@ -14,7 +14,7 @@ import { Identities } from '../identities/_schemas/identities.schema';
 import { IdentitiesCrudService } from '../identities/identities-crud.service';
 import { ConfigRulesObjectIdentitiesDTO, ConfigRulesObjectSchemaDTO } from './_dto/config-rules.dto';
 import { ConfigStatesDTO, LifecycleStateDTO } from './_dto/config-states.dto';
-import { IdentityLifecycleDefault } from '../identities/_enums/lifecycle.enum';
+import { IdentityLifecycleDefault, IdentityLifecycleDefaultList } from '../identities/_enums/lifecycle.enum';
 import { Lifecycle, LifecycleRefId } from './_schemas/lifecycle.schema';
 import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
@@ -316,16 +316,14 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
   public getAllAvailableStates(): Array<{ key: string; label: string; description: string }> {
     const allStates: Array<{ key: string; label: string; description: string }> = [];
 
-    // Ajouter les états par défaut de l'enum
-    Object.entries(IdentityLifecycleDefault).forEach(([enumKey, enumValue]) => {
+    IdentityLifecycleDefaultList.forEach(state => {
       allStates.push({
-        key: enumValue,
-        label: enumKey,
-        description: `Default lifecycle state: ${enumKey}`,
+        key: state.key,
+        label: state.label,
+        description: state.description,
       });
     });
 
-    // Ajouter les états custom
     this.customStates.forEach(customState => {
       allStates.push({
         key: customState.key,
@@ -334,7 +332,6 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
       });
     });
 
-    this.logger.debug(`Retrieved <${allStates.length}> total available lifecycle states`);
     return allStates;
   }
 
@@ -361,8 +358,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    * @returns An array of custom lifecycle states with their details
    */
   public getCustomStates(): LifecycleStateDTO[] {
-    this.logger.debug(`Retrieved <${this.customStates.length}> custom lifecycle states`);
-    return [...this.customStates]; // Return a copy to prevent external modification
+    return [...this.customStates];
   }
 
   /**

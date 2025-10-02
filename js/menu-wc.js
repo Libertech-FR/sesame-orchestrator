@@ -1390,6 +1390,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/HistoryPluginOptions.html" data-type="entity-link" >HistoryPluginOptions</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/IdentityLifecycleState.html" data-type="entity-link" >IdentityLifecycleState</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/InternalLoggerOptions.html" data-type="entity-link" >InternalLoggerOptions</a>
                             </li>
                             <li class="link">

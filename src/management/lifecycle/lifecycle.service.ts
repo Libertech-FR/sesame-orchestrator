@@ -314,13 +314,14 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    * @returns An array containing all available lifecycle states
    */
   public getAllAvailableStates(): Array<{ key: string; label: string; description: string }> {
-    const allStates: Array<{ key: string; label: string; description: string }> = [];
+    const allStates: Array<{ key: string; label: string; description: string, icon: string }> = [];
 
     IdentityLifecycleDefaultList.forEach(state => {
       allStates.push({
         key: state.key,
         label: state.label,
         description: state.description,
+        icon: state.icon,
       });
     });
 
@@ -329,6 +330,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
         key: customState.key,
         label: customState.label,
         description: customState.description,
+        icon: customState.icon || 'mdi-help-rhombus-outline',
       });
     });
 

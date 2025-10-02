@@ -14,7 +14,7 @@ import { Identities } from '../identities/_schemas/identities.schema';
 import { IdentitiesCrudService } from '../identities/identities-crud.service';
 import { ConfigRulesObjectIdentitiesDTO, ConfigRulesObjectSchemaDTO } from './_dto/config-rules.dto';
 import { ConfigStatesDTO, LifecycleStateDTO } from './_dto/config-states.dto';
-import { IdentityLifecycleDefault, IdentityLifecycleDefaultList } from '../identities/_enums/lifecycle.enum';
+import { IdentityLifecycleDefault, IdentityLifecycleDefaultList, IdentityLifecycleState } from '../identities/_enums/lifecycle.enum';
 import { Lifecycle, LifecycleRefId } from './_schemas/lifecycle.schema';
 import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
@@ -313,26 +313,11 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    *
    * @returns An array containing all available lifecycle states
    */
-  public getAllAvailableStates(): Array<{ key: string; label: string; description: string }> {
-    const allStates: Array<{ key: string; label: string; description: string, icon: string }> = [];
-
-    IdentityLifecycleDefaultList.forEach(state => {
-      allStates.push({
-        key: state.key,
-        label: state.label,
-        description: state.description,
-        icon: state.icon,
-      });
-    });
-
-    this.customStates.forEach(customState => {
-      allStates.push({
-        key: customState.key,
-        label: customState.label,
-        description: customState.description,
-        icon: customState.icon || 'mdi-help-rhombus-outline',
-      });
-    });
+  public getAllAvailableStates(): Array<IdentityLifecycleState> {
+    const allStates: Array<IdentityLifecycleState> = [
+      ...IdentityLifecycleDefaultList,
+      ...this.customStates,
+    ];
 
     return allStates;
   }
@@ -359,7 +344,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    *
    * @returns An array of custom lifecycle states with their details
    */
-  public getCustomStates(): LifecycleStateDTO[] {
+  public getCustomStates(): IdentityLifecycleState[] {
     return [...this.customStates];
   }
 

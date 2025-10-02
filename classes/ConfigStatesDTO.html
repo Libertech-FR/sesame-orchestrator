@@ -207,7 +207,7 @@ Correspond à la structure du fichier configs/lifecycle/states.yml</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">src/management/lifecycle/_dto/config-states.dto.ts:55</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">src/management/lifecycle/_dto/config-states.dto.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -227,7 +227,7 @@ Correspond à la structure du fichier configs/lifecycle/states.yml</p>
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from &#x27;class-validator&#x27;;
+import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from &#x27;class-validator&#x27;;
 import { Type } from &#x27;class-transformer&#x27;;
 
 /**
@@ -265,6 +265,16 @@ export class LifecycleStateDTO {
     required: true,
   })
   public description: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    type: String,
+    description: &#x27;Icône associée à l\&#x27;état (optionnel)&#x27;,
+    example: &#x27;mdi-account-clock&#x27;,
+    required: false,
+  })
+  public icon?: string;
 }
 
 /**

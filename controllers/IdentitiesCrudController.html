@@ -207,6 +207,14 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#updateLifecycle" >updateLifecycle</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#updateState" >updateState</a>
                             </li>
                             <li>
@@ -736,8 +744,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="288"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:288</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="307"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:307</a></div>
                         </td>
                     </tr>
 
@@ -1006,6 +1014,110 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="updateLifecycle"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateLifecycle</b></span>
+                        <a href="#updateLifecycle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateLifecycle(_id: Types.ObjectId, body: <a href="../classes/IdentitiesUpdateDto.html" target="_self">IdentitiesUpdateDto</a>, res: <a href="../interfaces/Response.html" target="_self">Response</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Patch(&#x27;:_id([0-9a-fA-F]{24})/lifecycle&#x27;)<br />@ApiParam({name: &#x27;_id&#x27;, type: String})<br />@ApiUpdateDecorator(IdentitiesUpdateDto, IdentitiesDto)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="270"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:270</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>_id</td>
+                                            <td>
+                                                        <code>Types.ObjectId</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../classes/IdentitiesUpdateDto.html" target="_self" >IdentitiesUpdateDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Response.html" target="_self" >Response</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Response.html" target="_self" >Promise&lt;Response&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateState"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -1138,8 +1250,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="269"
-                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:269</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="288"
+                                    class="link-to-prism">src/management/identities/identities-crud.controller.ts:288</a></div>
                         </td>
                     </tr>
 
@@ -1461,6 +1573,25 @@ export class IdentitiesCrudController extends AbstractController {
       throw new BadRequestException(&quot;La validation de l&#x27;identité est déjà complétée.&quot;);
     }
     const data &#x3D; await this._service.updateState(_id, body.state);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
+  @Patch(&#x27;:_id([0-9a-fA-F]{24})/lifecycle&#x27;)
+  @ApiParam({ name: &#x27;_id&#x27;, type: String })
+  @ApiUpdateDecorator(IdentitiesUpdateDto, IdentitiesDto)
+  public async updateLifecycle(
+    @Param(&#x27;_id&#x27;, ObjectIdValidationPipe) _id: Types.ObjectId,
+    @Body() body: IdentitiesUpdateDto,
+    @Res() res: Response,
+  ): Promise&lt;Response&gt; {
+    const identity &#x3D; await this._service.findById&lt;Identities&gt;(_id);
+    if (!identity) {
+      throw new BadRequestException(&#x27;Identity not found&#x27;);
+    }
+    const data &#x3D; await this._service.updateLifecycle(_id, body.lifecycle);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,

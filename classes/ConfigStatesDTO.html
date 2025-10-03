@@ -207,7 +207,7 @@ Correspond à la structure du fichier configs/lifecycle/states.yml</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">src/management/lifecycle/_dto/config-states.dto.ts:65</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="75" class="link-to-prism">src/management/lifecycle/_dto/config-states.dto.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -275,6 +275,16 @@ export class LifecycleStateDTO {
     required: false,
   })
   public icon?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    type: String,
+    description: &#x27;Couleur associée à l\&#x27;état (optionnel, en hexadécimal)&#x27;,
+    example: &#x27;#f0ad4e&#x27;,
+    required: false,
+  })
+  public color?: string;
 }
 
 /**

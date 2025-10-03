@@ -152,6 +152,14 @@ Basé sur la structure du fichier states.yml</p>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#color" >color</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
                                 <a href="#description" >description</a>
                             </li>
                             <li>
@@ -195,6 +203,46 @@ Basé sur la structure du fichier states.yml</p>
     <h3 id="inputs">
         Properties
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="color"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>color</b></span>
+                        <a href="#color"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsOptional()<br />@IsString()<br />@ApiProperty({type: String, description: &#x27;Couleur associée à l&#x27;état (optionnel, en hexadécimal)&#x27;, example: &#x27;#f0ad4e&#x27;, required: false})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">src/management/lifecycle/_dto/config-states.dto.ts:59</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -413,6 +461,16 @@ export class LifecycleStateDTO {
     required: false,
   })
   public icon?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    type: String,
+    description: &#x27;Couleur associée à l\&#x27;état (optionnel, en hexadécimal)&#x27;,
+    example: &#x27;#f0ad4e&#x27;,
+    required: false,
+  })
+  public color?: string;
 }
 
 /**

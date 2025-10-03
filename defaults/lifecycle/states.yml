@@ -4,21 +4,25 @@ states:
     label: "En Attente"
     description: "supannRessourceEtat : {COMPTE} A SupannAnticipe"
     icon: "mdi-account-clock"
+    color: "#f0ad4e"
 
   # PROV -> supannResourceEtat : {COMPTE} A SupannSursis et supannRessourceEtatDate: Date de passage en PROV
   - key: P
     label: "Provisoire"
     description: "supannResourceEtat : {COMPTE} A SupannSursis et supannRessourceEtatDate: Date de passage en PROV"
     icon: "mdi-account-alert"
+    color: "#5bc0de"
 
   # A Détruire -> supannRessourceEtat : {COMPTE} I SupannSupprCompte
   - key: D
     label: "A Détruire"
     description: "supannRessourceEtat : {COMPTE} I SupannSupprCompte"
     icon: "mdi-account-remove"
+    color: "#d9534f"
 
   # Verrouillé -> supannRessourceEtat : {COMPTE} S SupannVerrouille
   - key: V
     label: "Verrouillé"
     description: "supannRessourceEtat : {COMPTE} S SupannVerrouille"
     icon: "mdi-account-lock"
+    color: "#292b2c"

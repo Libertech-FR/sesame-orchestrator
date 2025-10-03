@@ -47,6 +47,16 @@ export class LifecycleStateDTO {
     required: false,
   })
   public icon?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'Couleur associée à l\'état (optionnel, en hexadécimal)',
+    example: '#f0ad4e',
+    required: false,
+  })
+  public color?: string;
 }
 
 /**

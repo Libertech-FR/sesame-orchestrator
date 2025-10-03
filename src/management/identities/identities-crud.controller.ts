@@ -264,6 +264,25 @@ export class IdentitiesCrudController extends AbstractController {
     });
   }
 
+  @Patch(':_id([0-9a-fA-F]{24})/lifecycle')
+  @ApiParam({ name: '_id', type: String })
+  @ApiUpdateDecorator(IdentitiesUpdateDto, IdentitiesDto)
+  public async updateLifecycle(
+    @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
+    @Body() body: IdentitiesUpdateDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const identity = await this._service.findById<Identities>(_id);
+    if (!identity) {
+      throw new BadRequestException('Identity not found');
+    }
+    const data = await this._service.updateLifecycle(_id, body.lifecycle);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
   @Patch('state')
   @ApiOperation({ summary: "Met à jour l'état d'une ou plusieurs <Identitées> en masse" })
   public async updateStateMany(

@@ -6,6 +6,7 @@ import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { BadRequestException, HttpException } from '@nestjs/common';
 import { CountOptions } from 'mongodb';
+import { IdentityLifecycleDefault, IdentityLifecycleState } from './_enums/lifecycle.enum';
 
 export const COUNT_ALL_MAX_ITERATIONS = 500;
 
@@ -128,6 +129,15 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     return await this.generateFingerprint(updated as unknown as Identities);
   }
 
+  public async updateLifecycle<T extends AbstractSchema | Document>(
+    _id: Types.ObjectId | any,
+    lifecycle: IdentityLifecycleDefault | string,
+    options?: QueryOptions<T> & { rawResult: true },
+  ): Promise<ModifyResult<Query<T, T, any, T>>> {
+    const updated = await super.update(_id, { lifecycle }, options);
+    return updated;
+  }
+
   public async updateState<T extends AbstractSchema | Document>(
     _id: Types.ObjectId | any,
     state: IdentityState,
@@ -136,6 +146,7 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     const updated = await super.update(_id, { state }, options);
     return updated;
   }
+
   public async updateStateMany<T extends AbstractSchema | Document>(body: {
     ids: Types.ObjectId[];
     targetState: IdentityState;

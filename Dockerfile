@@ -46,6 +46,7 @@ COPY ./templates/* ./templates
 COPY ./configs/* ./configs
 COPY ./defaults/identities/jsonforms/* ./defaults/identities/jsonforms
 COPY ./defaults/identities/validations/* ./defaults/identities/validations
+COPY ./defaults/lifecycle/* ./defaults/lifecycle
 
 RUN apt clean -y \
   && apt update -y \

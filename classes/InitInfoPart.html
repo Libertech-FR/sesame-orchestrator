@@ -123,6 +123,15 @@
         </p>
 
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>Information related to the account/identity initialization process.</p>
+<p>This schema is stored as a subdocument (no own _id) and
+keeps track of the initialization timestamps.</p>
+
+            </p>
 
 
 
@@ -201,10 +210,17 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/management/identities/_schemas/_parts/init-info.part.schema.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/management/identities/_schemas/_parts/init-info.part.schema.ts:24</a></div>
                         </td>
                     </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Date when the user actually completed the initialization.
+Undefined if the initialization has not been completed yet.</p>
+</div>
+                </td>
+            </tr>
 
         </tbody>
     </table>
@@ -239,10 +255,17 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">src/management/identities/_schemas/_parts/init-info.part.schema.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/management/identities/_schemas/_parts/init-info.part.schema.ts:17</a></div>
                         </td>
                     </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Date when the initialization request/link was sent (email, SMS, etc.).
+Undefined if no request has been sent yet.</p>
+</div>
+                </td>
+            </tr>
 
         </tbody>
     </table>
@@ -261,11 +284,25 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Prop, Schema, SchemaFactory } from &#x27;@nestjs/mongoose&#x27;;
 import { Document } from &#x27;mongoose&#x27;;
 
+/**
+ * Information related to the account/identity initialization process.
+ *
+ * This schema is stored as a subdocument (no own _id) and
+ * keeps track of the initialization timestamps.
+ */
 @Schema({ _id: false })
 export class InitInfoPart extends Document {
+  /**
+   * Date when the initialization request/link was sent (email, SMS, etc.).
+   * Undefined if no request has been sent yet.
+   */
   @Prop({ type: Date })
   public sentDate?: Date;
 
+  /**
+   * Date when the user actually completed the initialization.
+   * Undefined if the initialization has not been completed yet.
+   */
   @Prop({ type: Date })
   public initDate?: Date;
 }

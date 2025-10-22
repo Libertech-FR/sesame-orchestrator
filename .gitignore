@@ -1,6 +1,15 @@
 node_modules/
 .turbo/
 dist/
-.env
 .nuxt/
 .output/
+.nitro/
+.cache/
+.data/
+certificates/
+node_modules/
+.DS_Store/
+
+.env
+.env.*
+!.env.example

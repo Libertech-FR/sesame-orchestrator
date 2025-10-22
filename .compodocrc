@@ -1,8 +1,0 @@
-{
-    "tsconfig": "tsconfig.json",
-    "output": "docs",
-    "includes": "./docs",
-    "includesName": "Documentation complémentaire",
-    "name": "Sesame Orchestrator",
-    "language": "fr-FR"
-}

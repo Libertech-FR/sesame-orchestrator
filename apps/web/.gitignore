@@ -1,0 +1,15 @@
+.output/
+.data/
+.nuxt/
+.nitro/
+.cache/
+certificates/
+dist/
+node_modules/
+.DS_Store/
+.fleet
+.idea/
+.env
+.env.*
+!.env.example
+.DS_Store

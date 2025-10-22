@@ -1,0 +1,52 @@
+@import "quasar/src/css/variables.sass"
+
+blockquote
+  padding: 10px 20px
+  margin: 0 0 20px
+  border-left: 4px solid $primary
+
+.sesame-sticky-last-column-table
+  thead
+    tr:last-child
+      th:last-child
+        background-color: $tooltip-color
+  td:last-child
+    background-color: $tooltip-color
+  th:last-child,
+  td:last-child
+    position: sticky
+    right: -1px
+    z-index: 1
+
+body
+  background-color: #fff
+body.body--dark
+  background-color: $dark-page
+  .q-editor__content
+    color: $dark
+    background-color: $tooltip-color
+  .sesame-sticky-last-column-table
+    thead
+      tr:last-child
+        th:last-child
+          background-color: $dark
+    td:last-child
+      background-color: $dark
+
+.sesame-table-td-highlight
+  color: $primary
+  font-weight: bold
+
+.outer-ne-resize
+  resize: vertical
+  overflow: auto
+
+.inner-ne-resize,
+.outer-ne-resize
+  transform: rotateX(180deg)
+  height: 100%
+  width: 100%
+
+.sesame.animated.infinite
+  animation-iteration-count: infinite !important
+  animation-duration: 3s !important

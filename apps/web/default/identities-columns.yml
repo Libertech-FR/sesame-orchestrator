@@ -1,0 +1,44 @@
+entries:
+  - name: inetOrgPerson.uid
+    label: ID
+    field:
+      type: function
+      value: row?.inetOrgPerson?.uid
+    align: left
+    sortable: true
+
+  - name: inetOrgPerson.employeeNumber
+    label: EmployeeNumber
+    field:
+      type: function
+      value: row?.inetOrgPerson?.employeeNumber
+    align: left
+    sortable: true
+
+  - name: additionalFields.attributes.supannPerson.supannTypeEntiteAffectation
+    label: Affectation
+    field:
+      type: function
+      value: row.additionalFields?.attributes?.supannPerson?.supannTypeEntiteAffectation
+    format:
+      type: function
+      value: "Array.isArray(value) ? value?.join(', ') : value"
+    align: left
+    sortable: true
+
+
+  - name: inetOrgPerson.sn
+    label: Nom
+    field:
+      type: function
+      value: row?.inetOrgPerson?.sn
+    align: left
+    sortable: true
+
+  - name: inetOrgPerson.givenName
+    label: Prénom
+    field:
+      type: function
+      value: row?.inetOrgPerson?.givenName
+    align: left
+    sortable: false

@@ -30,6 +30,21 @@ help:
 build: ## Build the container
 	@docker build --platform $(PLATFORM) -t $(IMG_NAME) .
 
+simulation: ## Start production environment in simulation mode
+	@docker run --rm -it \
+		-e NODE_ENV=production \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--platform $(PLATFORM) \
+		--network dev \
+		--name $(APP_NAME) \
+		-p $(APP_WEB_PORT):3000 \
+		-p $(APP_WEB_PORT_SECURE):3443 \
+		-p $(APP_API_PORT):4000 \
+		-p $(APP_API_PORT_SECURE):4443 \
+		-v $(CURDIR):/data \
+		$(IMG_NAME)
+
 prod: ## Start production environment
 	@docker run --rm -it \
 		-e NODE_ENV=production \

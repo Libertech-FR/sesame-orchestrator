@@ -24,7 +24,7 @@ ADD ecosystem.config.cjs .
 ADD package.json .
 ADD *.lock .
 ADD ./apps/api/package.json ./apps/api/package.json
-# ADD ./apps/web/package.json ./apps/web/package.json
+ADD ./apps/web/package.json ./apps/web/package.json
 
 RUN apk add --no-cache \
   openssl \
@@ -35,11 +35,11 @@ RUN apk add --no-cache \
 
 RUN ARCH=$(uname -m) && \
   if [ "$ARCH" = "x86_64" ]; then \
-    npm i -g @css-inline/css-inline-linux-x64-musl; \
+  npm i -g @css-inline/css-inline-linux-x64-musl; \
   elif [ "$ARCH" = "aarch64" ]; then \
-    npm i -g @css-inline/css-inline-linux-arm64-musl; \
+  npm i -g @css-inline/css-inline-linux-arm64-musl; \
   else \
-    echo "Unsupported architecture: $ARCH" && exit 1; \
+  echo "Unsupported architecture: $ARCH" && exit 1; \
   fi
 
 RUN yarn install \
@@ -52,12 +52,11 @@ RUN yarn global add pm2
 # RUN yarn cache clean --all
 
 COPY --from=builder /data/apps/api/dist ./apps/api/dist
-# COPY --from=builder /data/apps/web/.output ./apps/web/.output
-# COPY --from=builder /data/apps/web/nuxt.config.ts ./apps/web/nuxt.config.ts
-# COPY --from=builder /data/apps/web/src ./apps/web/src
-# COPY --from=builder /data/apps/web/start.mjs ./apps/web/start.mjs
+COPY --from=builder /data/apps/web/.output ./apps/web/.output
+COPY --from=builder /data/apps/web/nuxt.config.ts ./apps/web/nuxt.config.ts
+COPY --from=builder /data/apps/web/src ./apps/web/src
+COPY --from=builder /data/apps/web/start.mjs ./apps/web/start.mjs
 
 EXPOSE 4000 3000
 
-# CMD ["yarn", "workspace", "@libertech-fr/i2fc_espacepublic-api", "start:prod"]
 CMD ["pm2-runtime", "ecosystem.config.cjs"]

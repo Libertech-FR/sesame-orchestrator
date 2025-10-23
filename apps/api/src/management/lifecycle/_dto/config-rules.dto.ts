@@ -130,6 +130,9 @@ export class ConfigRulesObjectIdentitiesDTO {
     example: IdentityLifecycleDefault.OFFICIAL,
     required: true,
   })
+  @IsArray()
+  @IsNotEmpty()
+  @IsString({ each: true })
   public sources: IdentityLifecycleDefault[];
 
   @IsOptional()

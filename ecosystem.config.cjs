@@ -1,7 +1,6 @@
-// const isClusterMode = process.env.CLUSTER_MODE === 'true'
-const isClusterMode = false
+const isClusterMode = process.env.CLUSTER_MODE === 'true'
 
-console.log('isClusterMode', isClusterMode)
+console.log(`Starting in ${isClusterMode ? 'CLUSTER' : 'FORK'} mode`)
 
 module.exports = {
   apps: [
@@ -20,7 +19,7 @@ module.exports = {
       instances : isClusterMode ? '0' : '1',
       exec_mode : isClusterMode ? 'cluster' : 'fork',
       cwd: './apps/web',
-      script: './start.mjs',
+      script: './entrypoint.sh',
       env: { ...process.env },
     },
   ],

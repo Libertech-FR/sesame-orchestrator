@@ -1,6 +1,6 @@
 #!/bin/bash
 
-/data/scripts/checkinstall.sh
+./scripts/checkinstall.sh
 if [ "$DEV" = "1" ];then
   yarn dev
 else

@@ -17,6 +17,7 @@ FROM node:22-alpine AS production
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 ENV ALLOW_RUNTIME_BUILD=true
+ENV DO_NOT_TRACK=1
 
 WORKDIR /data
 

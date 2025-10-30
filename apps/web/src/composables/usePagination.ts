@@ -32,7 +32,7 @@ export default function usePagination() {
     if (!pagination.value) return
     for (const key in query) {
       if (key.startsWith('sort')) {
-        const sortKey = key.replace('sort[', '').replace(']', '')
+        const sortKey = key.replace('sort[', '').replace(/\]/g, '')
         const sortDirection = query[key] === 'desc' ? 'desc' : 'asc'
         pagination.value.sortBy = sortKey
         pagination.value.descending = sortDirection === 'desc'

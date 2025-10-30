@@ -1,16 +1,13 @@
 <template lang="pug">
 q-btn-group(rounded flat)
-  //- q-btn(flat icon="mdi-merge" color="primary" rounded @click="merge" size="md" :disable="true ||selected.length === 0 || selected.length === 1")
-  //-   q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Fusionner les identités sélectionnées
-  //- q-btn(flat icon="mdi-check" color="primary" rounded @click="openUpdateModale(IdentityState.TO_VALIDATE)" size="md" :disable="selected.length === 0")
-  //-   q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Valider les identités sélectionnées
-  q-btn(flat icon="mdi-sync" color="orange-8" rounded @click="openUpdateModale" size="md" :disable="selected.length === 0")
+  q-btn(flat icon="mdi-sync" color="orange-8" rounded @click="openUpdateModale" size="md" :disable="selected.length === 0" dense)
     q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Mettre à synchroniser les identités sélectionnées
-  q-btn(flat icon="mdi-email-arrow-right" color="primary" rounded @click="openInitModale" size="md" :disable="selected.length === 0")
+  q-btn(flat icon="mdi-email-arrow-right" color="primary" rounded @click="openInitModale" size="md" :disable="selected.length === 0" dense)
     q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Envoyer le mail d'invitation
-  q-btn(flat icon="mdi-delete" color="negative" rounded @click="openTrashModale" size="md" :disable="selected.length === 0")
+  q-btn(flat icon="mdi-delete" color="negative" rounded @click="openTrashModale" size="md" :disable="selected.length === 0" dense)
     q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer en masse
-  q-btn(flat icon="mdi-cancel" color="warning" rounded @click="clearSelection" size="md" v-show="selected.length !== 0")
+  q-separator(vertical v-if="selected.length !== 0")
+  q-btn(flat icon="mdi-cancel" color="warning" rounded @click="clearSelection" size="md" v-show="selected.length !== 0" dense)
     q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Nettoyer la selection
 </template>
 

@@ -68,7 +68,7 @@ const parseQueryFilters = (query) => {
   return Object.entries(query).reduce((acc: Options[], [key, value]) => {
     if (!key.startsWith('filters[@') || value === null) return acc;
 
-    const group = key.replace('filters[@', '').replace(']', '').replace('[]', '');
+    const group = key.replace('filters[@', '').replace(/\]/g, '').replace('[]', '');
     const values = Array.isArray(value) ? value : [value];
 
     values.forEach(val => {

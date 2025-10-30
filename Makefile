@@ -1,5 +1,13 @@
-APP_PORT = 4002
-APP_PORT_SECURE = 4443
+APP_WEB_PORT = 3002
+APP_WEB_PORT_SECURE = 3443
+
+APP_WEB_DEBUG_PORT = 24678
+
+APP_API_PORT = 4002
+APP_API_PORT_SECURE = 4443
+
+APP_API_DEBUG_PORT = 9229
+
 IMG_NAME = "ghcr.io/libertech-fr/sesame-orchestrator"
 BASE_NAME = "sesame"
 APP_NAME = "sesame-orchestrator"
@@ -22,17 +30,33 @@ help:
 build: ## Build the container
 	@docker build --platform $(PLATFORM) -t $(IMG_NAME) .
 
-prod: ## Start production environment
+simulation: ## Start production environment in simulation mode
 	@docker run --rm -it \
-		-e NODE_ENV=development \
+		-e NODE_ENV=production \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
 		--add-host host.docker.internal:host-gateway \
 		--platform $(PLATFORM) \
 		--network dev \
 		--name $(APP_NAME) \
-		-p $(APP_PORT):4000 \
-		-p $(APP_PORT_SECURE):4443 \
-		-p 9229:9229 \
+		-p $(APP_WEB_PORT):3000 \
+		-p $(APP_WEB_PORT_SECURE):3443 \
+		-p $(APP_API_PORT):4000 \
+		-p $(APP_API_PORT_SECURE):4443 \
+		-v $(CURDIR):/data \
+		$(IMG_NAME)
+
+prod: ## Start production environment
+	@docker run --rm -it \
+		-e NODE_ENV=production \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--platform $(PLATFORM) \
+		--network dev \
+		--name $(APP_NAME) \
+		-p $(APP_WEB_PORT):3000 \
+		-p $(APP_WEB_PORT_SECURE):3443 \
+		-p $(APP_API_PORT):4000 \
+		-p $(APP_API_PORT_SECURE):4443 \
 		-v $(CURDIR):/data \
 		$(IMG_NAME) yarn start:prod
 
@@ -44,9 +68,10 @@ dev: ## Start development environment
 		--platform $(PLATFORM) \
 		--network dev \
 		--name $(APP_NAME) \
-		-p $(APP_PORT):4000 \
-		-p $(APP_PORT_SECURE):4443 \
-		-p 9229:9229 \
+		-p $(APP_WEB_PORT):3000 \
+		-p $(APP_WEB_PORT_SECURE):3443 \
+		-p $(APP_API_PORT):4000 \
+		-p $(APP_API_PORT_SECURE):4443 \
 		-v $(CURDIR):/data \
 		$(IMG_NAME) yarn start:dev
 
@@ -58,9 +83,12 @@ debug: ## Start debug environment
 		--platform $(PLATFORM) \
 		--network dev \
 		--name $(APP_NAME) \
-		-p $(APP_PORT):4000 \
-		-p $(APP_PORT_SECURE):4443 \
-		-p 9229:9229 \
+		-p $(APP_WEB_PORT):3000 \
+		-p $(APP_WEB_PORT_SECURE):3443 \
+		-p $(APP_API_PORT):4000 \
+		-p $(APP_API_PORT_SECURE):4443 \
+		-p $(APP_API_DEBUG_PORT):9229 \
+		-p $(APP_WEB_DEBUG_PORT):24678 \
 		-v $(CURDIR):/data \
 		$(IMG_NAME) yarn start:debug
 
@@ -101,6 +129,7 @@ dbs: ## Start databases
 		--health-retries=3 \
 		--health-cmd="mongosh --eval \"db.stats().ok\" || exit 1" \
 		mongo:7.0 --replSet rs0 --wiredTigerCacheSizeGB 1.5 --bind_ip localhost,$(BASE_NAME)-mongodb || true
+
 	@docker volume create $(BASE_NAME)-redis
 	@docker run -d --rm \
 		--name $(BASE_NAME)-redis \
@@ -114,6 +143,7 @@ dbs: ## Start databases
 		--health-retries=3 \
 		--health-cmd="redis-cli ping || exit 1" \
 		redis || true
+
 	@docker run -d --rm \
 		--name $(BASE_NAME)-maildev \
 		--platform $(PLATFORM) \
@@ -121,6 +151,7 @@ dbs: ## Start databases
 		-p 1080:1080 \
 		-p 1025:1025 \
 		maildev/maildev || true
+
 	@docker exec -it $(BASE_NAME)-mongodb mongosh --eval "rs.initiate({_id: \"rs0\", members: [{_id: 0, host: \"$(BASE_NAME)-mongodb\"}]})" || true
 
 stop: ## Stop the container
@@ -134,12 +165,8 @@ stop-dbs: ## Stop databases
 	@docker stop $(BASE_NAME)-redis || true
 	@docker stop $(BASE_NAME)-maildev || true
 
-
 run-test: ## Run tests
 	act --container-architecture="linux/arm64" -j test
-
-gen-doc:
-	@npx @compodoc/compodoc -p tsconfig.json -s -d docs --includes ./markdowns -n "Sesame Orchestrator"
 
 ncu: ## Check latest versions of all project dependencies
 	@npx npm-check-updates

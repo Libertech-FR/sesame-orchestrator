@@ -1,5 +1,5 @@
 <template lang="pug">
-q-btn(flat icon="mdi-refresh" @click="refresh" color="info")
+q-btn(flat icon="mdi-refresh" @click="refresh" color="info" size="md" dense)
     q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Rafraichir
 </template>
 
@@ -7,6 +7,6 @@ q-btn(flat icon="mdi-refresh" @click="refresh" color="info")
 import type { PropType } from 'vue'
 const emit = defineEmits(['refresh'])
 function refresh() {
-    emit('refresh')
+  emit('refresh')
 }
 </script>

@@ -28,7 +28,7 @@ help:
 		| sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-15s\033[0m %s\n", $$1, $$2}'
 
 build: ## Build the container
-	@docker build --platform $(PLATFORM) -t $(IMG_NAME) .
+	@docker build --platform $(PLATFORM) -t $(IMG_NAME) --no-cache .
 
 simulation: ## Start production environment in simulation mode
 	@docker run --rm -it \

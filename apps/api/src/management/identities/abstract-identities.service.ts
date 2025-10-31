@@ -210,25 +210,66 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
   }
 
   /**
-   * Check if mail and uid are unique. If mail is empty  it is not checked
-   * @param data
-   * @private
+   * Vérifie l'unicité de l'email et de l'UID d'une identité
+   * Si l'email est vide, seul l'UID est vérifié
+   *
+   * @param data - Les données contenant l'ID, l'UID et optionnellement l'email à vérifier
+   * @returns true si l'email et l'UID sont uniques, false sinon
    */
-  protected async checkMailAndUid(data): Promise<boolean> {
-    let dataDup = [];
-    if (data.inetOrgPerson.hasOwnProperty('mail') && data.inetOrgPerson.mail !== '') {
-      const id = new Types.ObjectId(data['_id']);
-      const f: any = { '_id': { $ne: id }, 'deletedFlag': { $ne: true }, $or: [{ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, { 'inetOrgPerson.mail': data.inetOrgPerson.mail }] };
-      dataDup = await this._model.find(f).exec()
-    } else {
-      const id = new Types.ObjectId(data['_id']);
-      const f: any = { '_id': { $ne: id }, 'deletedFlag': { $ne: true }, 'inetOrgPerson.uid': data.inetOrgPerson.uid };
-      dataDup = await this._model.find(f).exec()
+  protected async checkMailAndUid(data: IdentitiesUpsertDto | any): Promise<boolean> {
+    // Validation des paramètres d'entrée
+    if (!data?._id) {
+      throw new BadRequestException('ID is required for mail and UID uniqueness check');
     }
-    if (dataDup.length > 0) {
-      return false
-    } else {
-      return true
+
+    if (!data?.inetOrgPerson?.uid) {
+      throw new BadRequestException('UID is required for mail and UID uniqueness check');
+    }
+
+    // Validation du format de l'ID
+    let objectId: Types.ObjectId;
+    try {
+      objectId = Types.ObjectId.createFromHexString(data._id);
+    } catch (error) {
+      throw new BadRequestException('Invalid ID format');
+    }
+
+    try {
+      let duplicates: Identities[] = [];
+
+      // Vérification avec email si celui-ci est fourni et non vide
+      if (data.inetOrgPerson.hasOwnProperty('mail') && data.inetOrgPerson.mail !== '') {
+        // Validation du format email
+        if (typeof data.inetOrgPerson.mail !== 'string') {
+          throw new BadRequestException('Invalid email format');
+        }
+
+        // Filtre pour vérifier UID ou email
+        const filterWithMail = {
+          '_id': { $ne: objectId },
+          'deletedFlag': { $ne: true },
+          $or: [
+            { 'inetOrgPerson.uid': data.inetOrgPerson.uid },
+            { 'inetOrgPerson.mail': data.inetOrgPerson.mail }
+          ]
+        };
+        duplicates = await this._model.find(filterWithMail).exec();
+      } else {
+        // Filtre pour vérifier seulement l'UID
+        const filterUidOnly = {
+          '_id': { $ne: objectId },
+          'deletedFlag': { $ne: true },
+          'inetOrgPerson.uid': data.inetOrgPerson.uid
+        };
+        duplicates = await this._model.find(filterUidOnly).exec();
+      }
+
+      // Retourne true si aucun doublon n'est trouvé
+      return duplicates.length === 0;
+
+    } catch (error) {
+      this.logger.error(`Error checking mail and UID uniqueness for ID "${data._id}": ${error.message}`);
+      throw new HttpException('Failed to check mail and UID uniqueness', 500);
     }
   }
 

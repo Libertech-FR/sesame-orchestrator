@@ -232,39 +232,110 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     }
   }
 
-  protected async checkMail(identity, data): Promise<boolean> {
-    let dataDup = 0;
-    if (data.inetOrgPerson.hasOwnProperty('mail') && data.inetOrgPerson.mail !== '') {
+  /**
+   * Vérifie l'unicité de l'email d'une identité
+   *
+   * @param identity - L'identité existante (optionnelle pour les nouvelles identités)
+   * @param data - Les données contenant l'email à vérifier
+   * @returns true si l'email est unique, false sinon
+   */
+  protected async checkMail(
+    identity: Identities | null,
+    data: IdentitiesUpsertDto | any,
+  ): Promise<boolean> {
+    // Validation des paramètres d'entrée
+    if (!data?.inetOrgPerson) {
+      throw new BadRequestException('inetOrgPerson data is required for mail check');
+    }
+
+    // Si l'email n'est pas fourni ou est vide, on considère qu'il est valide (pas de vérification d'unicité)
+    const emailToCheck = data.inetOrgPerson.mail;
+    if (!data.inetOrgPerson.hasOwnProperty('mail') || emailToCheck === '') {
+      return true;
+    }
+
+    // Validation du format email basique
+    if (typeof emailToCheck !== 'string') {
+      throw new BadRequestException('Invalid email format');
+    }
+
+    try {
+      let duplicateCount = 0;
+
       if (identity) {
-        const f: any = { '_id': { $ne: identity._id }, 'state': { $ne: IdentityState.DONT_SYNC }, 'deletedFlag': { $ne: true }, 'inetOrgPerson.mail': identity.inetOrgPerson.mail };
-        dataDup = await this._model.countDocuments(f).exec()
+        // Vérification pour une identité existante (mise à jour)
+        const updateFilter = {
+          '_id': { $ne: identity._id },
+          'state': { $ne: IdentityState.DONT_SYNC },
+          'deletedFlag': { $ne: true },
+          'inetOrgPerson.mail': identity.inetOrgPerson.mail,
+        };
+        duplicateCount = await this._model.countDocuments(updateFilter).exec();
       } else {
-        const f: any = { 'inetOrgPerson.mail': data.inetOrgPerson.mail };
-        dataDup = await this._model.countDocuments(f).exec()
+        // Vérification pour une nouvelle identité (création)
+        const createFilter = {
+          'inetOrgPerson.mail': data.inetOrgPerson.mail,
+        };
+        duplicateCount = await this._model.countDocuments(createFilter).exec();
       }
 
-    }
-    if (dataDup > 0) {
-      return false
-    } else {
-      return true
+      // Retourne true si l'email est unique (aucun doublon trouvé)
+      return duplicateCount === 0;
+
+    } catch (error) {
+      this.logger.error(`Error checking email uniqueness for email "${emailToCheck}": ${error.message}`);
+      throw new HttpException('Failed to check email uniqueness', 500);
     }
   }
 
-  protected async checkUid(identity, data): Promise<boolean> {
-    let dataDup = 0;
-    if (identity) {
-      const f: any = { '_id': { $ne: identity._id }, 'state': { $ne: IdentityState.DONT_SYNC }, 'deletedFlag': { $ne: true }, 'inetOrgPerson.uid': identity.inetOrgPerson.uid };
-      dataDup = await this._model.countDocuments(f).exec()
-    } else {
-      const f: any = { 'inetOrgPerson.uid': data.inetOrgPerson.uid };
-      dataDup = await this._model.countDocuments(f).exec()
+  /**
+   * Vérifie l'unicité de l'UID d'une identité
+   *
+   * @param identity - L'identité existante (optionnelle pour les nouvelles identités)
+   * @param data - Les données contenant l'UID à vérifier
+   * @returns true si l'UID est unique, false sinon
+   */
+  protected async checkUid(
+    identity: Identities | null,
+    data: IdentitiesUpsertDto | any,
+  ): Promise<boolean> {
+    // Validation des paramètres d'entrée
+    if (!data?.inetOrgPerson?.uid) {
+      throw new BadRequestException('UID is required for uniqueness check');
     }
 
-    if (dataDup > 0) {
-      return false
-    } else {
-      return true
+    const uidToCheck = identity?.inetOrgPerson?.uid || data.inetOrgPerson.uid;
+
+    if (!uidToCheck || typeof uidToCheck !== 'string') {
+      throw new BadRequestException('Invalid UID format');
+    }
+
+    try {
+      let duplicateCount = 0;
+
+      if (identity) {
+        // Vérification pour une identité existante (mise à jour)
+        const updateFilter = {
+          '_id': { $ne: identity._id },
+          'state': { $ne: IdentityState.DONT_SYNC },
+          'deletedFlag': { $ne: true },
+          'inetOrgPerson.uid': identity?.inetOrgPerson?.uid,
+        };
+        duplicateCount = await this._model.countDocuments(updateFilter).exec();
+      } else {
+        // Vérification pour une nouvelle identité (création)
+        const createFilter = {
+          'inetOrgPerson.uid': data.inetOrgPerson.uid,
+        };
+        duplicateCount = await this._model.countDocuments(createFilter).exec();
+      }
+
+      // Retourne true si l'UID est unique (aucun doublon trouvé)
+      return duplicateCount === 0;
+
+    } catch (error) {
+      this.logger.error(`Error checking UID uniqueness for UID "${uidToCheck}": ${error.message}`);
+      throw new HttpException('Failed to check UID uniqueness', 500);
     }
   }
 }

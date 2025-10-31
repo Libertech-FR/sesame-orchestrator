@@ -19,8 +19,23 @@ import { JobState } from "~/core/jobs/_enums/state.enum";
 import { inetOrgPersonDto } from './_dto/_parts/inetOrgPerson.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
+/**
+ * Service abstrait pour la gestion des identités
+ * Fournit les fonctionnalités de base pour la validation, vérification d'unicité,
+ * génération d'empreintes et gestion des états des identités
+ */
 @Injectable()
 export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
+  /**
+   * Constructeur du service abstrait des identités
+   *
+   * @param _model - Modèle Mongoose pour les identités
+   * @param _validation - Service de validation des identités
+   * @param storage - Service de stockage de fichiers
+   * @param passwdAdmService - Service d'administration des mots de passe
+   * @param eventEmitter - Émetteur d'événements
+   * @param backends - Service de gestion des backends
+   */
   public constructor(
     @InjectModel(Identities.name) protected _model: Model<Identities>,
     protected readonly _validation: IdentitiesValidationService,
@@ -35,6 +50,16 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     });
   }
 
+  /**
+   * Gère les erreurs de validation et détermine l'action appropriée
+   *
+   * @param error - L'erreur à traiter (ValidationConfigException, ValidationSchemaException ou autre)
+   * @param identity - L'identité concernée par l'erreur
+   * @param logPrefix - Préfixe pour les logs
+   * @returns L'identité modifiée en cas de ValidationSchemaException
+   * @throws ValidationConfigException pour les erreurs de configuration
+   * @throws Error pour les erreurs non gérées
+   */
   protected handleValidationError(
     error: Error | HttpException,
     identity: Identities | IdentitiesUpsertDto,
@@ -59,6 +84,13 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     }
   }
 
+  /**
+   * Transforme récursivement toutes les valeurs null d'un objet en chaînes vides
+   * Utile pour normaliser les données avant traitement
+   *
+   * @param obj - L'objet à transformer (peut être de n'importe quel type)
+   * @returns L'objet transformé avec les valeurs null remplacées par des chaînes vides
+   */
   public transformNullsToString(obj) {
     if (obj === null) {
       return '';
@@ -73,7 +105,6 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
         if (obj[key] === null) {
           obj[key] = '';
         } else if (typeof obj[key] === 'object') {
-          // console.log('key', key);
           obj[key] = this.transformNullsToString(obj[key]);
         }
       }
@@ -82,6 +113,12 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     return obj;
   }
 
+  /**
+   * Vérifie l'existence d'une photo JPEG dans le stockage
+   *
+   * @param data - Les données contenant potentiellement une référence à une photo
+   * @throws BadRequestException si la photo est référencée mais introuvable dans le stockage
+   */
   protected async checkInetOrgPersonJpegPhoto(data: any) {
     if (data?.inetOrgPerson?.jpegPhoto) {
       let reqStorage;
@@ -99,6 +136,14 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     }
   }
 
+  /**
+   * Génère et met à jour l'empreinte digitale d'une identité
+   * L'empreinte est mise à jour seulement si elle diffère de l'actuelle
+   *
+   * @param identity - L'identité pour laquelle générer l'empreinte
+   * @param fingerprint - Empreinte pré-calculée (optionnelle)
+   * @returns L'identité mise à jour avec la nouvelle empreinte
+   */
   public async generateFingerprint<T extends AbstractSchema | Document>(
     identity: Identities,
     fingerprint?: string,
@@ -124,6 +169,13 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     return updated as unknown as ModifyResult<Query<T, T, any, T>>;
   }
 
+  /**
+   * Sérialise un objet de manière stable et déterministe
+   * Les clés sont triées pour garantir une sérialisation cohérente
+   *
+   * @param obj - L'objet à sérialiser
+   * @returns La représentation string stable de l'objet
+   */
   private stableStringify(obj) {
     if (typeof obj !== "object" || obj === null) {
       return JSON.stringify(obj);
@@ -138,6 +190,13 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     ).join(',')}}`;
   }
 
+  /**
+   * Calcule l'empreinte digitale d'une identité sans la sauvegarder
+   * Utilise les données inetOrgPerson et additionalFields (sans validations)
+   *
+   * @param identity - Les données de l'identité pour calculer l'empreinte
+   * @returns L'empreinte digitale SHA-256 en hexadécimal
+   */
   public async previewFingerprint(identity: any): Promise<string> {
     const inetOrgPerson = inetOrgPersonDto.initForFingerprint(identity.inetOrgPerson);
 
@@ -160,6 +219,15 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     return hash.digest('hex').toString();
   }
 
+  /**
+   * Active ou désactive une identité en modifiant son statut de données
+   * Synchronise le changement avec les backends et met à jour l'identité
+   *
+   * @param id - L'identifiant de l'identité à modifier
+   * @param status - Le nouveau statut à appliquer
+   * @throws HttpException si l'identité n'est pas trouvée ou n'a jamais été synchronisée
+   * @throws BadRequestException si l'identité est supprimée ou si le backend échoue
+   */
   public async activation(id: string, status: DataStatusEnum) {
     //recherche de l'identité
     let identity: Identities = null;
@@ -178,9 +246,9 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     } else {
       throw new BadRequestException('Identity is in status deleted');
     }
-    //sauvegarde de l'identité
+    // sauvegarde de l'identité
     if (statusChanged) {
-      // le dataStaus à changé on envoye l info aux backend et on enregistre l identité
+      // le dataStatus à changé on envoye l info aux backend et on enregistre l identité
       // Envoi du status au backend
       let statusBackend = true
       if (status == DataStatusEnum.INACTIVE || status == DataStatusEnum.PASSWORDNEEDTOBECHANGED) {
@@ -195,17 +263,57 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     }
   }
 
-  public async askToChangePassword(id: string) {
+  /**
+   * Demande le changement de mot de passe pour une identité
+   * L'identité doit être dans un statut ACTIVE pour que la demande soit acceptée
+   *
+   * @param id - L'identifiant de l'identité
+   * @throws BadRequestException si l'identité n'est pas active
+   * @throws HttpException si l'identité n'est pas trouvée
+   */
+  public async askToChangePassword(id: string): Promise<void> {
+    // Validation du paramètre d'entrée
+    if (!id || typeof id !== 'string') {
+      throw new BadRequestException('Valid ID is required for password change request');
+    }
+
     try {
+      // Recherche de l'identité
       const identity = await this.findById<Identities>(id);
-      if (identity.dataStatus === DataStatusEnum.ACTIVE) {
-        identity.dataStatus = DataStatusEnum.PASSWORDNEEDTOBECHANGED
-        await super.update(identity._id, identity);
-      } else {
-        throw new BadRequestException('Identity not in active');
+
+      if (!identity) {
+        throw new HttpException('Identity not found', 404);
       }
+
+      // Vérification que l'identité est dans un statut actif
+      if (identity.dataStatus !== DataStatusEnum.ACTIVE) {
+        throw new BadRequestException(`Identity is not active. Current status: ${identity.dataStatus}`);
+      }
+
+      // Mise à jour du statut pour demander le changement de mot de passe
+      identity.dataStatus = DataStatusEnum.PASSWORDNEEDTOBECHANGED;
+
+      // Sauvegarde de l'identité
+      await super.update(identity._id, identity);
+
+      this.logger.log(`Password change requested for identity ${id}`);
+
     } catch (error) {
-      throw new HttpException('Id not found', 400);
+      // Gestion spécifique des erreurs déjà connues
+      if (error instanceof BadRequestException || error instanceof HttpException) {
+        throw error;
+      }
+
+      // Gestion des erreurs inattendues
+      this.logger.error(`Error requesting password change for identity ${id}: ${error.message}`);
+
+      // Si l'identité n'est pas trouvée, on retourne une erreur 404
+      if (error.message?.includes('not found') || error.name === 'CastError') {
+        throw new HttpException('Identity not found', 404);
+      }
+
+      // Pour toute autre erreur, on retourne une erreur 500
+      throw new HttpException('Failed to request password change', 500);
     }
   }
 

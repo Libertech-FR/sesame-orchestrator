@@ -16,13 +16,6 @@ import { useContainer } from 'class-validator';
 
 declare const module: any;
 (async (): Promise<void> => {
-  // console.log('process.env.NODE_ENV',
-  //   // filter startwith SESAME_
-  //   Object.keys(process.env).filter((key) => key.startsWith('SESAME_')).reduce((obj: any, key) => {
-  //     obj[key] = process.env[key];
-  //     return obj;
-  //   }, {})
-  // );
   const cfg = configInstance();
   const logger = new InternalLogger({
     logLevel: getLogLevel(cfg?.application?.logLevel),
@@ -45,6 +38,7 @@ declare const module: any;
 
   const server = express();
   const app = await NestFactory.create<NestExpressApplication>(AppModule, new ExpressAdapter(server), {
+    snapshot: true,
     bodyParser: false,
     rawBody: true,
     cors: true,

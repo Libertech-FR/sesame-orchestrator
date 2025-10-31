@@ -24,6 +24,10 @@
       "cache": false,
       "persistent": true
     },
+    "start:debug": {
+      "cache": false,
+      "persistent": true
+    },
     "lint": {}
   }
 }

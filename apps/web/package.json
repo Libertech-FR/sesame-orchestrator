@@ -6,6 +6,7 @@
   "scripts": {
     "build": "nuxt build",
     "start:dev": "nuxt dev",
+    "start:debug": "nuxt dev --inspect=0.0.0.0",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",

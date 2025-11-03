@@ -9,7 +9,7 @@ on:
       - "tsconfig.json"
       - "configs/**"
       - "defaults/**"
-      - "src/**"
+      - "aaps/**"
 
 env:
   REGISTRY: ghcr.io

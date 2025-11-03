@@ -50,7 +50,6 @@ RUN yarn install \
   --production=false
 
 RUN yarn global add pm2
-# RUN yarn cache clean --all
 
 COPY --from=builder /data/apps/api/dist ./apps/api/dist
 COPY --from=builder /data/apps/web/.output ./apps/web/.output

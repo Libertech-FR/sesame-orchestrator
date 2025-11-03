@@ -57,6 +57,7 @@ COPY --from=builder /data/apps/web/.output ./apps/web/.output
 COPY --from=builder /data/apps/web/nuxt.config.ts ./apps/web/nuxt.config.ts
 COPY --from=builder /data/apps/web/src ./apps/web/src
 COPY --from=builder /data/apps/web/start.mjs ./apps/web/start.mjs
+COPY --from=builder /data/apps/web/entrypoint.sh ./apps/web/entrypoint.sh
 
 EXPOSE 4000 3000
 

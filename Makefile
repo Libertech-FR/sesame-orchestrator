@@ -42,7 +42,6 @@ simulation: ## Start production environment in simulation mode
 		-p $(APP_WEB_PORT_SECURE):3443 \
 		-p $(APP_API_PORT):4000 \
 		-p $(APP_API_PORT_SECURE):4443 \
-		-v $(CURDIR):/data \
 		$(IMG_NAME)
 
 prod: ## Start production environment

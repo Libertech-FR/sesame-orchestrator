@@ -46,6 +46,9 @@ simulation: ## Start production environment in simulation mode
 		-v $(CURDIR)/.env:/data/.env \
 		-v $(CURDIR)/apps/api/.env:/data/apps/api/.env \
 		-v $(CURDIR)/apps/web/.env:/data/apps/web/.env \
+		-v $(CURDIR)/certificates:/data/certificates \
+		-v $(CURDIR)/apps/api/configs:/data/apps/api/configs \
+		-v $(CURDIR)/apps/web/config:/data/apps/web/config \
 		$(IMG_NAME)
 
 prod: ## Start production environment

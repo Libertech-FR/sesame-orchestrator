@@ -60,5 +60,5 @@ export class AgentsCommand extends CommandRunner {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async run(inputs: string[], options: any): Promise<void> {}
+  async run(inputs: string[], options: any): Promise<void> { }
 }

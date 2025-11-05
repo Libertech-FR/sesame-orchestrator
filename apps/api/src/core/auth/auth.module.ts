@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { IAuthModuleOptions, PassportModule } from '@nestjs/passport';
@@ -26,10 +26,10 @@ import { KeyringsModule } from '../keyrings/keyrings.module';
       }),
     }),
     AgentsModule,
-    KeyringsModule,
+    forwardRef(() => KeyringsModule),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, LocalStrategy],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule { }

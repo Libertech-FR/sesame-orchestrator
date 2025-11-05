@@ -16,12 +16,20 @@ import { AuthModule } from '~/core/auth/auth.module';
 import { FactorydriveModule } from '~/_common/factorydrive';
 import { IdentitiesCommand } from './identities.command';
 import { IdentitiesModule } from '~/management/identities/identities.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
+    }),
+    EventEmitterModule.forRoot({
+      wildcard: false,
+      delimiter: '.',
+      maxListeners: 25,
+      verboseMemoryLeak: true,
+      ignoreErrors: false,
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

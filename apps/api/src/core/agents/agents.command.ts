@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { Command, CommandRunner, InquirerService, Question, QuestionSet, SubCommand } from 'nest-commander';
 import { AgentsCreateDto } from '~/core/agents/_dto/agents.dto';
@@ -33,6 +34,8 @@ export class AgentCreateQuestions {
 
 @SubCommand({ name: 'create' })
 export class AgentsCreateCommand extends CommandRunner {
+  private readonly logger = new Logger(AgentsCreateCommand.name);
+
   public constructor(
     protected moduleRef: ModuleRef,
     private readonly inquirer: InquirerService,
@@ -43,6 +46,7 @@ export class AgentsCreateCommand extends CommandRunner {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async run(inputs: string[], options: any): Promise<void> {
+    this.logger.log('Starting agent creation process...');
     const agent = await this.inquirer.ask<AgentsCreateDto>('agent-create-questions', undefined);
     try {
       await this.agentsService.create(agent);

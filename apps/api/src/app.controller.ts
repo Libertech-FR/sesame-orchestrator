@@ -79,4 +79,9 @@ export class AppController extends AbstractController {
       },
     });
   }
+
+  @Get("/debug-sentry")
+  getError() {
+    throw new Error("My first Sentry error!");
+  }
 }

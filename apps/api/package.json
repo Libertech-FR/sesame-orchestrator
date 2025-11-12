@@ -30,6 +30,8 @@
     "@nestjs/platform-express": "^10.4.8",
     "@nestjs/schedule": "^6.0.0",
     "@nestjs/swagger": "^8.0.7",
+    "@nestjs/terminus": "^11.0.0",
+    "@sentry/nestjs": "^10.25.0",
     "ajv": "^8.16.0",
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^3.0.1",

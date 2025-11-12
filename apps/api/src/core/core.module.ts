@@ -11,6 +11,7 @@ import { LoggerModule } from './logger/logger.module';
 import { TasksModule } from './tasks/tasks.module';
 import { FilestorageModule } from './filestorage/filestorage.module';
 import { AuditsModule } from './audits/audits.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AuditsModule } from './audits/audits.module';
     TasksModule,
     FilestorageModule,
     AuditsModule,
+    HealthModule,
   ],
   providers: [CoreService],
   controllers: [CoreController],

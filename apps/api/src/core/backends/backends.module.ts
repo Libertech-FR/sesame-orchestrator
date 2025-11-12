@@ -6,10 +6,15 @@ import { IdentitiesModule } from '~/management/identities/identities.module';
 import { JobsModule } from '../jobs/jobs.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { AgentsModule } from '../agents/agents.module';
+import { BackendsCommand } from '~/core/backends/backends.command';
+import { useOnCli } from '~/_common/functions/is-cli';
 @Module({
   imports: [ConfigModule, IdentitiesModule, JobsModule, TasksModule, AgentsModule],
   controllers: [BackendsController],
-  providers: [BackendsService],
+  providers: [
+    BackendsService,
+    ...useOnCli(BackendsCommand.registerWithSubCommands()),
+  ],
   exports: [BackendsService],
 })
 export class BackendsModule { }

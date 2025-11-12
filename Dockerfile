@@ -18,21 +18,27 @@ ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 ENV ALLOW_RUNTIME_BUILD=true
 ENV DO_NOT_TRACK=1
+ENV PYTHONWARNINGS=ignore::UserWarning
 
 WORKDIR /data
 
-ADD ecosystem.config.cjs .
 ADD package.json .
 ADD *.lock .
 ADD ./apps/api/package.json ./apps/api/package.json
 ADD ./apps/web/package.json ./apps/web/package.json
 
+
+COPY ./etc /etc
+
 RUN apk add --no-cache \
+  supervisor \
   openssl \
   git \
   jq \
   bash \
   nano
+
+RUN mkdir -p /var/log/supervisor
 
 RUN ARCH=$(uname -m) && \
   if [ "$ARCH" = "x86_64" ]; then \
@@ -49,8 +55,6 @@ RUN yarn install \
   --non-interactive \
   --production=false
 
-RUN yarn global add pm2
-
 COPY --from=builder /data/apps/api/dist ./apps/api/dist
 COPY --from=builder /data/apps/web/.output ./apps/web/.output
 COPY --from=builder /data/apps/web/nuxt.config.ts ./apps/web/nuxt.config.ts
@@ -61,4 +65,4 @@ COPY --from=builder /data/apps/web/scripts/checkinstall.sh ./apps/web/scripts/ch
 
 EXPOSE 4000 3000
 
-CMD ["pm2-runtime", "ecosystem.config.cjs"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

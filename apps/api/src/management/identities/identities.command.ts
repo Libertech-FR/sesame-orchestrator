@@ -1,6 +1,7 @@
 import { Logger } from "@nestjs/common";
 import { ModuleRef } from "@nestjs/core";
 import { Command, CommandRunner, SubCommand } from "nest-commander";
+import { seedRequestContextId } from "~/contextId";
 import { Identities } from "~/management/identities/_schemas/identities.schema";
 import { IdentitiesUpsertService } from "~/management/identities/identities-upsert.service";
 
@@ -9,16 +10,26 @@ import { IdentitiesUpsertService } from "~/management/identities/identities-upse
 export class IdentitiesFingerprintCommand extends CommandRunner {
   private readonly logger = new Logger(IdentitiesFingerprintCommand.name);
 
+  identitiesUpsertService: IdentitiesUpsertService
+
   public constructor(
     protected moduleRef: ModuleRef,
-    private readonly identitiesUpsertService: IdentitiesUpsertService,
+    // private readonly identitiesUpsertService: IdentitiesUpsertService,
   ) {
     super();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async run(inputs: string[], options: any): Promise<void> {
+    const contextId = seedRequestContextId(this.moduleRef)
+    this.identitiesUpsertService = await this.moduleRef.resolve(
+      IdentitiesUpsertService,
+      contextId,
+    )
+
+    console.log('Starting identities fingerprint update process...');
     const total = await this.identitiesUpsertService.count();
+    console.log('Total identities to process:', total);
     this.logger.log(`Total identities: ${total}`);
 
     const identities = await this.identitiesUpsertService.find<Identities>() as unknown as Identities[];

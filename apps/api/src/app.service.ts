@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { PackageJson } from 'types-package-json';
 import { ModuleRef } from '@nestjs/core';
 import { readFileSync } from 'fs';
@@ -8,6 +8,9 @@ import { HttpService } from '@nestjs/axios';
 import { LRUCache } from 'lru-cache';
 import { catchError, firstValueFrom } from 'rxjs';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { getLogLevel } from './_common/functions/get-log-level';
+import { ConfigService } from '@nestjs/config';
+import { isConsoleEntrypoint } from './_common/functions/is-cli';
 
 export enum ProjectsList {
   SESAME_ORCHESTRATOR = 'sesame-orchestrator',
@@ -74,6 +77,7 @@ export class AppService extends AbstractService implements OnApplicationBootstra
   public constructor(
     protected moduleRef: ModuleRef,
     private readonly httpService: HttpService,
+    private readonly config: ConfigService<any>,
   ) {
     super({ moduleRef });
     this.package = JSON.parse(readFileSync('package.json', 'utf-8'));
@@ -100,6 +104,12 @@ export class AppService extends AbstractService implements OnApplicationBootstra
     }
 
     this.logger.log('Application service bootstrap completed.');
+
+    if (isConsoleEntrypoint) {
+      this.logger.localInstance.setLogLevels(
+        getLogLevel(this.config.get('application.logLevel', 'verbose'))
+      );
+    }
   }
 
   /**

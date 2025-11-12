@@ -1,3 +1,5 @@
+import "./instrument";
+
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';

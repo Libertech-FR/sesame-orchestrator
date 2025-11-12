@@ -1,18 +1,19 @@
 import { CommandFactory } from 'nest-commander';
 import configInstance from '~/config';
 import { getLogLevel } from './_common/functions/get-log-level';
-import { CliModule } from './cli/cli.module';
 import { InternalLogger } from './core/logger/internal.logger';
+import { AppModule } from './app.module';
 
 (async () => {
   try {
     const cfg = configInstance();
     const logger = new InternalLogger({
-      logLevel: getLogLevel(cfg?.application?.logLevel),
+      logLevel: ['error'],
+      // logLevel: getLogLevel(cfg?.application?.logLevel),
       mongoose: cfg?.mongoose,
     });
     logger.log(`Starting CLI with log level <${cfg?.application?.logLevel || 'info'}>`);
-    const app = await CommandFactory.runWithoutClosing(CliModule, {
+    const app = await CommandFactory.runWithoutClosing(AppModule, {
       logger,
       errorHandler: (err) => {
         console.error(err);

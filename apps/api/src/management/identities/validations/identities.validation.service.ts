@@ -18,7 +18,7 @@ import { ConfigService } from "@nestjs/config";
  */
 @Injectable()
 export class IdentitiesValidationService implements OnApplicationBootstrap {
-  private ajv: Ajv = new Ajv({ allErrors: true });
+  private ajv: Ajv = new Ajv({ allErrors: true, strictTypes: false });
   private validateSchema;
   private logger: Logger;
 

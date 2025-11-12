@@ -1,7 +1,10 @@
-import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
-import { Response } from 'express';
+import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common'
+import { SentryExceptionCaptured } from '@sentry/nestjs'
+import { Response } from 'express'
+
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
+  @SentryExceptionCaptured()
   catch(exception: unknown, host: ArgumentsHost) {
     Logger.debug(exception['message'], 'AllExceptionFilter');
 

@@ -26,9 +26,12 @@ import { ShutdownObserver } from './_common/observers/shutdown.observer';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
 import { ExtensionsModule } from './extensions/extensions.module';
+import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
+
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
@@ -36,7 +39,7 @@ import { ExtensionsModule } from './extensions/extensions.module';
     EventEmitterModule.forRoot({
       wildcard: false,
       delimiter: '.',
-      maxListeners: 25,
+      maxListeners: 99,
       verboseMemoryLeak: true,
       ignoreErrors: false,
     }),
@@ -150,6 +153,10 @@ import { ExtensionsModule } from './extensions/extensions.module';
     //   provide: APP_FILTER,
     //   useClass: AllExceptionFilter,
     // },
+    {
+      provide: APP_FILTER,
+      useClass: SentryGlobalFilter,
+    },
     {
       provide: APP_FILTER,
       useClass: MongooseValidationFilter,

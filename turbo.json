@@ -6,6 +6,9 @@
   "globalEnv": [
     "NODE_ENV"
   ],
+  "globalPassThroughEnv": [
+    "SESAME_*"
+  ],
   "tasks": {
     "build": {
       "dependsOn": [

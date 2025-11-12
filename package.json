@@ -35,7 +35,8 @@
     "start:prod": "turbo run start:prod",
     "start:debug": "turbo run start:debug",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "console": "yarn workspace @libertech-fr/sesame-orchestrator_api console"
   },
   "devDependencies": {
     "turbo": "^2.3.3"

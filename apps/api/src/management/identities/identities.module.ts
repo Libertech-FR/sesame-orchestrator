@@ -23,6 +23,8 @@ import { IdentitiesForcepasswordService } from "~/management/identities/identiti
 import { SettingsModule } from "~/settings/settings.module";
 import { EnsureIdentitiesIndexMiddleware } from './_middlewares/ensure-identities-index.middleware';
 import { AgentsModule } from '~/core/agents/agents.module';
+import { useOnCli } from '~/_common/functions/is-cli';
+import { IdentitiesCommand } from '~/management/identities/identities.command';
 
 
 @Module({
@@ -51,7 +53,8 @@ import { AgentsModule } from '~/core/agents/agents.module';
       useClass: IdentitiesValidationFilter,
     },
     IdentitiesJsonformsService,
-    IdentitiesForcepasswordService
+    IdentitiesForcepasswordService,
+    ...useOnCli(IdentitiesCommand.registerWithSubCommands()),
   ],
   controllers: [
     IdentitiesCrudController,

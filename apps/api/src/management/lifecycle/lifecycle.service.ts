@@ -18,6 +18,7 @@ import { IdentityLifecycleDefault, IdentityLifecycleDefaultList, IdentityLifecyc
 import { Lifecycle, LifecycleRefId } from './_schemas/lifecycle.schema';
 import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
+import { isConsoleEntrypoint } from '~/_common/functions/is-cli';
 
 interface LifecycleSource {
   [source: string]: Partial<ConfigRulesObjectIdentitiesDTO>[];
@@ -107,6 +108,11 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
    * It also logs the lifecycle sources for debugging purposes.
    */
   public async onApplicationBootstrap(): Promise<void> {
+    if (isConsoleEntrypoint) {
+      this.logger.debug('Skipping LifecycleService bootstrap in console mode.');
+      return;
+    }
+
     this.logger.verbose('Bootstrap LifecycleService application...');
 
     const lifecycleRules = await this.loadLifecycleRules();

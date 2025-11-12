@@ -12,11 +12,14 @@ IMG_NAME = "ghcr.io/libertech-fr/sesame-orchestrator"
 BASE_NAME = "sesame"
 APP_NAME = "sesame-orchestrator"
 PLATFORM = "linux/amd64"
+
 include .env
 
 CERT_DIR = ./certificates
 COMMON_NAME = localhost
 DAYS_VALID = 365
+
+SESAME_SENTRY_DSN ?= ""
 
 $(shell mkdir -p $(CERT_DIR))
 
@@ -38,18 +41,21 @@ simulation: ## Start production environment in simulation mode
 		--platform $(PLATFORM) \
 		--network dev \
 		--name $(APP_NAME) \
+		-e SESAME_SENTRY_DSN=$(SESAME_SENTRY_DSN) \
 		-p $(APP_WEB_PORT):3000 \
 		-p $(APP_WEB_PORT_SECURE):3443 \
 		-p $(APP_API_PORT):4000 \
 		-p $(APP_API_PORT_SECURE):4443 \
 		-v $(CURDIR)/apps/api/storage:/data/apps/api/storage \
 		-v $(CURDIR)/.env:/data/.env \
+		-v $(CURDIR)/etc/supervisor:/etc/supervisor \
 		-v $(CURDIR)/apps/api/.env:/data/apps/api/.env \
 		-v $(CURDIR)/apps/web/.env:/data/apps/web/.env \
 		-v $(CURDIR)/certificates:/data/certificates \
 		-v $(CURDIR)/apps/api/configs:/data/apps/api/configs \
+		-v $(CURDIR)/apps/api/defaults:/data/apps/api/defaults \
 		-v $(CURDIR)/apps/web/config:/data/apps/web/config \
-		$(IMG_NAME)
+		$(IMG_NAME) /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
 
 prod: ## Start production environment
 	@docker run --rm -it \
@@ -59,6 +65,7 @@ prod: ## Start production environment
 		--platform $(PLATFORM) \
 		--network dev \
 		--name $(APP_NAME) \
+		-e SESAME_SENTRY_DSN=$(SESAME_SENTRY_DSN) \
 		-p $(APP_WEB_PORT):3000 \
 		-p $(APP_WEB_PORT_SECURE):3443 \
 		-p $(APP_API_PORT):4000 \
@@ -74,11 +81,13 @@ dev: ## Start development environment
 		--platform $(PLATFORM) \
 		--network dev \
 		--name $(APP_NAME) \
+		-e SESAME_SENTRY_DSN=$(SESAME_SENTRY_DSN) \
 		-p $(APP_WEB_PORT):3000 \
 		-p $(APP_WEB_PORT_SECURE):3443 \
 		-p $(APP_API_PORT):4000 \
 		-p $(APP_API_PORT_SECURE):4443 \
 		-v $(CURDIR):/data \
+		-v $(CURDIR)/etc/supervisor:/etc/supervisor \
 		$(IMG_NAME) yarn start:dev
 
 debug: ## Start debug environment
@@ -89,6 +98,7 @@ debug: ## Start debug environment
 		--platform $(PLATFORM) \
 		--network dev \
 		--name $(APP_NAME) \
+		-e SESAME_SENTRY_DSN=$(SESAME_SENTRY_DSN) \
 		-p $(APP_WEB_PORT):3000 \
 		-p $(APP_WEB_PORT_SECURE):3443 \
 		-p $(APP_API_PORT):4000 \
@@ -115,6 +125,7 @@ exec: ## Run a shell in the container
 		--add-host host.docker.internal:host-gateway \
 		--platform $(PLATFORM) \
 		--network dev \
+		-e SESAME_SENTRY_DSN=$(SESAME_SENTRY_DSN) \
 		-v $(CURDIR):/data \
 		$(IMG_NAME) bash
 

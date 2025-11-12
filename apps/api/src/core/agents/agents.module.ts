@@ -3,7 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AgentsSchema, Agents } from '~/core/agents/_schemas/agents.schema';
 import { AgentsService } from './agents.service';
 import { AgentsController } from './agents.controller';
-// import { AgentsCommand } from '~/cli/agents.command';
+import { AgentCreateQuestions, AgentsCommand } from '~/core/agents/agents.command';
+import { useOnCli } from '~/_common/functions/is-cli';
 
 @Module({
   imports: [
@@ -14,8 +15,14 @@ import { AgentsController } from './agents.controller';
       },
     ]),
   ],
-  providers: [AgentsService /* ...AgentsCommand.registerWithSubCommands() */],
+  providers: [
+    AgentsService,
+    ...useOnCli([
+      ...AgentsCommand.registerWithSubCommands(),
+      AgentCreateQuestions,
+    ]),
+  ],
   controllers: [AgentsController],
   exports: [AgentsService],
 })
-export class AgentsModule {}
+export class AgentsModule { }

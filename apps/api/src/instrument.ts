@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common'
 import * as Sentry from '@sentry/nestjs'
+import { nodeProfilingIntegration } from '@sentry/profiling-node'
 
 if (!process.env.SESAME_SENTRY_DSN) {
   Logger.warn('SENTRY DSN not provided, Sentry is disabled', 'SentryInit')
@@ -10,9 +11,13 @@ if (!process.env.SESAME_SENTRY_DSN) {
 
     sendDefaultPii: true,
     tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
     includeLocalVariables: true,
 
     integrations: [
+      nodeProfilingIntegration(),
+
+
       Sentry.mongooseIntegration(),
       Sentry.consoleIntegration(),
       Sentry.httpIntegration(),

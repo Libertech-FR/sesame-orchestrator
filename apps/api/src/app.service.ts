@@ -107,7 +107,7 @@ export class AppService extends AbstractService implements OnApplicationBootstra
 
     if (isConsoleEntrypoint) {
       this.logger.localInstance.setLogLevels(
-        getLogLevel(this.config.get('application.logLevel', 'verbose'))
+        getLogLevel(this.config.get('application.logLevel', 'debug'))
       );
     }
   }

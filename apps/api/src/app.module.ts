@@ -27,6 +27,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
 import { ExtensionsModule } from './extensions/extensions.module';
 import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
+import { isConsoleEntrypoint } from './_common/functions/is-cli';
 
 @Module({
   imports: [
@@ -50,7 +51,7 @@ import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
         const params = await service.getParams();
         const regex = /^(smtps?|):\/\/([a-zA-Z0-9.-]+|\d{1,3}(?:\.\d{1,3}){3}|\[(?:[0-9a-fA-F:]+)\]):(\d+)$/;
         const [_, protocol, host, port] = `${params.host}`.match(regex);
-        const isDev = process.env.NODE_ENV === 'development';
+        const isDev = process.env.NODE_ENV === 'development' && !isConsoleEntrypoint();
 
         return {
           transport: {

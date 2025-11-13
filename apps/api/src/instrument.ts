@@ -13,11 +13,6 @@ if (!process.env.SESAME_SENTRY_DSN) {
     includeLocalVariables: true,
 
     integrations: [
-      Sentry.openAIIntegration({
-        recordInputs: true,
-        recordOutputs: true,
-      }),
-
       Sentry.mongooseIntegration(),
       Sentry.consoleIntegration(),
       Sentry.httpIntegration(),

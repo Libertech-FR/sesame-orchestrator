@@ -125,7 +125,7 @@ export class AppService extends AbstractService implements OnApplicationBootstra
   @Cron(CronExpression.EVERY_6_HOURS)
   public async handleCron(): Promise<void> {
     if (isConsoleEntrypoint()) {
-      this.logger.debug('Skipping LifecycleService cron job in console mode.');
+      this.logger.verbose('Skipping LifecycleService cron job in console mode.');
       return;
     }
 

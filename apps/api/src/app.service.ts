@@ -106,6 +106,7 @@ export class AppService extends AbstractService implements OnApplicationBootstra
     this.logger.log('Application service bootstrap completed.');
 
     if (isConsoleEntrypoint) {
+      // Reactive logger with appropriate log level in console mode !
       this.logger.localInstance.setLogLevels(
         getLogLevel(this.config.get('application.logLevel', 'debug'))
       );

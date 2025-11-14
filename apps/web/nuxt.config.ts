@@ -137,6 +137,15 @@ export default defineNuxtConfig({
         secure: false,
         changeOrigin: true,
         xfwd: true,
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            // Disable timeout for SSE endpoints
+            if (req.url?.includes('/backends/sse')) {
+              proxyReq.setTimeout(0);
+              res.setTimeout(0);
+            }
+          });
+        },
       }
     },
     cors: false,
@@ -196,6 +205,21 @@ export default defineNuxtConfig({
   future: {
     typescriptBundlerResolution: true,
   },
+  nitro: {
+    experimental: {
+      websocket: false,
+    },
+    routeRules: {
+      '/api/core/backends/sse': {
+        // Disable compression and caching for SSE
+        headers: {
+          'Cache-Control': 'no-cache, no-transform',
+          'Connection': 'keep-alive',
+          'X-Accel-Buffering': 'no', // Disable buffering in nginx
+        },
+      },
+    },
+  },
   experimental: {
     appManifest: false,
   },
@@ -227,7 +251,7 @@ export default defineNuxtConfig({
       console.log('[OpenapiTS] Generating .nuxt/types/service-api.d.ts...')
       try {
         const fileData = await openapiTS(`${SESAME_APP_API_URL}/swagger/json`)
-        writeFileSync('.nuxt/types/service-api.d.ts', fileData)
+        writeFileSync('.nuxt/types/service-api.d.ts', String(fileData))
         console.log('[OpenapiTS] Generated .nuxt/types/service-api.d.ts !')
       } catch (error) {
         console.debug('[OpenapiTS] Error while generating .nuxt/types/service-api.d.ts', error)

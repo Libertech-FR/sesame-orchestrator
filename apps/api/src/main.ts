@@ -64,11 +64,23 @@ declare const module: any;
 
   const shutdownObserver = app.get(ShutdownObserver);
   const httpServer = http.createServer(server).listen(4000);
+
+  // Set timeout to 0 for SSE connections
+  httpServer.timeout = 0;
+  httpServer.keepAliveTimeout = 0;
+  httpServer.headersTimeout = 0;
+
   shutdownObserver.addHttpServer(httpServer);
   logger.log(`Sesame - Orchestrator is READY on <http://127.0.0.1:4000> !`);
 
   if (cfg.application?.https?.enabled) {
     const httpsServer = https.createServer(extraOptions.httpsOptions!, server).listen(4443);
+
+    // Set timeout to 0 for SSE connections
+    httpsServer.timeout = 0;
+    httpsServer.keepAliveTimeout = 0;
+    httpsServer.headersTimeout = 0;
+
     shutdownObserver.addHttpServer(httpsServer);
     logger.log(`Sesame - Orchestrator is READY on <https://127.0.0.1:4443> !`);
   }

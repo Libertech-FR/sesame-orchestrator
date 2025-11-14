@@ -2,6 +2,7 @@ import { ConsoleLogger, Injectable, LogLevel } from '@nestjs/common';
 import { MongooseModuleOptions } from '@nestjs/mongoose';
 import { Request } from 'express';
 import { Connection, connect } from 'mongoose';
+import * as Sentry from '@sentry/nestjs';
 
 export interface InternalLoggerOptions {
   logLevel: LogLevel[];
@@ -32,11 +33,17 @@ export class InternalLogger extends ConsoleLogger {
   }
 
   public async initialize() {
+    Sentry.logger.info('Initializing logs database connection...', {
+      'module': this.constructor.name,
+    });
     super.log('Initializing logs database connection...', this.constructor.name);
     try {
       const mongoose = await connect(this._options.mongoose.uri, this._options.mongoose.options);
       this.connection = mongoose.connection;
     } catch (e) {
+      Sentry.logger.error('Failed to connect to the logs database', e, {
+        'module': this.constructor.name,
+      });
       super.error('Failed to connect to the logs database', e, this.constructor.name);
       setTimeout(() => this.initialize(), 5000);
     }
@@ -56,6 +63,9 @@ export class InternalLogger extends ConsoleLogger {
       if (!options.target.includes(InternalLogLevel.CONSOLE)) return;
     }
 
+    Sentry.logger.error(message, {
+      'module': typeof lastParam === 'string' ? lastParam : this.constructor.name,
+    });
     super.error(...[message, ...optionalParams]);
   }
 
@@ -72,6 +82,7 @@ export class InternalLogger extends ConsoleLogger {
       if (!options.target.includes(InternalLogLevel.CONSOLE)) return;
     }
 
+    Sentry.logger.warn(message);
     super.warn(...[message, ...optionalParams]);
   }
 
@@ -85,6 +96,7 @@ export class InternalLogger extends ConsoleLogger {
       if (!options.target.includes(InternalLogLevel.CONSOLE)) return;
     }
 
+    Sentry.logger.info(message);
     super.log(...[message, ...optionalParams]);
   }
 
@@ -101,6 +113,7 @@ export class InternalLogger extends ConsoleLogger {
       if (!options.target.includes(InternalLogLevel.CONSOLE)) return;
     }
 
+    Sentry.logger.debug(message);
     super.debug(...[message, ...optionalParams]);
   }
 
@@ -133,6 +146,7 @@ export class InternalLogger extends ConsoleLogger {
       if (!options.target.includes(InternalLogLevel.CONSOLE)) return;
     }
 
+    Sentry.logger.fatal(message);
     super.fatal(...[message, ...optionalParams]);
   }
 

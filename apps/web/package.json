@@ -10,7 +10,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "start": "node .output/server/index.mjs",
+    "start": "node --import ./.output/server/sentry.server.config.mjs .output/server/index.mjs",
     "start:prod": "node start.mjs",
     "lint": "eslint .",
     "lint:fix": "eslint --ext .ts,.js,.vue --ignore-path .gitignore . --fix"
@@ -25,6 +25,7 @@
     "@nyariv/sandboxjs": "^0.8.25",
     "@pinia/nuxt": "^0.11.2",
     "@quasar/extras": "^1.17.0",
+    "@sentry/nuxt": "^10.25.0",
     "@vueuse/router": "^13.9.0",
     "ajv": "^8.17.1",
     "ajv-errors": "^3.0.0",

@@ -47,6 +47,8 @@ export default defineNuxtConfig({
   pages: true,
   srcDir: 'src',
   debug: !!process.env.DEBUG,
+  // Generate client sourcemaps for clearer stack traces in Sentry
+  sourcemap: { client: 'hidden' },
   devServer: {
     port: 3000,
     ...sslCfg,
@@ -88,6 +90,9 @@ export default defineNuxtConfig({
     'nuxt-monaco-editor',
     ...setupApp(),
   ],
+  sentry: {
+    // autoInjectServerSentry: "top-level-import",
+  },
   auth: {
     globalMiddleware: true,
     rewriteRedirects: true,

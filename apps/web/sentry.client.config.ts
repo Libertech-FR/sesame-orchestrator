@@ -55,8 +55,12 @@ if (!runtimeConfig.public?.sentry?.dsn) {
 
     beforeSend(event, hint) {
       if (event.exception && event.event_id) {
-        const feedback = Sentry.getFeedback();
-        feedback?.createWidget();
+        const feedback = Sentry.getFeedback()
+        const widget = feedback?.createWidget()
+
+        setTimeout(() => {
+          widget?.removeFromDom()
+        }, 1 * 60 * 1000) // Remove the widget after 1 minute
         // Sentry.showReportDialog({ eventId: event.event_id })
       }
       return event

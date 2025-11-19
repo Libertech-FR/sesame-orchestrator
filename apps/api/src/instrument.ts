@@ -11,10 +11,10 @@ if (!process.env.SESAME_SENTRY_DSN) {
     debug: false,
 
     sendDefaultPii: true,
-    tracesSampleRate: 1.0,
-    profilesSampleRate: 1.0,
+    tracesSampleRate: 0.1,
+    profilesSampleRate: 0.1,
     includeLocalVariables: true,
-    profileSessionSampleRate: 1.0,
+    profileSessionSampleRate: 0.1,
     profileLifecycle: 'trace',
     normalizeDepth: 10,
     attachStacktrace: true,

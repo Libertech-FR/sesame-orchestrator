@@ -14,9 +14,9 @@ if (!runtimeConfig.public?.sentry?.dsn) {
 
     sendDefaultPii: true,
 
-    tracesSampleRate: 1.0,
-    profilesSampleRate: 1.0,
-    profileSessionSampleRate: 1.0,
+    tracesSampleRate: 0.1,
+    profilesSampleRate: 0.1,
+    profileSessionSampleRate: 0.1,
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
     includeLocalVariables: true,

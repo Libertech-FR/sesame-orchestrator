@@ -14,7 +14,10 @@ if (!process.env.SESAME_SENTRY_DSN) {
     tracesSampleRate: 1.0,
     profilesSampleRate: 1.0,
     includeLocalVariables: true,
+    profileSessionSampleRate: 1.0,
     profileLifecycle: 'trace',
+    normalizeDepth: 10,
+    attachStacktrace: true,
 
     enableLogs: true,
 
@@ -30,10 +33,5 @@ if (!process.env.SESAME_SENTRY_DSN) {
       Sentry.fsIntegration(),
     ],
   })
-  Sentry.startSpan({
-    name: "My Span",
-  }, () => {
-    // The code executed here will be profiled
-  });
   Logger.log(`Sentry initialized successfully`, 'SentryInit')
 }

@@ -72,6 +72,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
+      release: process.env.npm_package_name + '@' + process.env.npm_package_version,
       sentry: {
         dsn: process.env.SESAME_SENTRY_DSN,
       },
@@ -91,7 +92,7 @@ export default defineNuxtConfig({
     ...setupApp(),
   ],
   sentry: {
-    // autoInjectServerSentry: "top-level-import",
+    autoInjectServerSentry: "top-level-import",
   },
   auth: {
     globalMiddleware: true,

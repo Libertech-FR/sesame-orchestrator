@@ -68,7 +68,15 @@ export default defineNuxtConfig({
     appManagerVersion: process.env.npm_package_version,
     customSlots: {},
   },
+  runtimeConfig: {
+    public: {
+      sentry: {
+        dsn: process.env.SESAME_SENTRY_DSN,
+      },
+    },
+  },
   modules: [
+    '@sentry/nuxt/module',
     '@nuxt-alt/auth',
     '@nuxt-alt/proxy',
     '@nuxt-alt/http',

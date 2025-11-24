@@ -1,101 +1,100 @@
 <template lang="pug">
-div.flex
-  div
-    q-btn.sesame.infinite.animated.flash(color="negative" @click="validationsModal = true" v-if="!isNew && hasValidations()" outline)
-      q-tooltip.text-body2(slot="trigger") Afficher les erreurs
-      q-icon.text-negative(name='mdi-alert-box')
-    q-dialog(v-model="validationsModal")
-      q-card(style="min-width: 350px")
-        q-card-section.q-pa-sm.bg-negative.text-white.flex
-          q-icon(name='mdi-alert-box' size="2rem")
-          div.text-h6.q-ml-md Erreurs de validation
-        q-card-section.q-py-sm
-          q-list(separator)
-            q-item(v-for="field in Object.keys(validations)" :key="field")
-              q-item-section.text-negative
-                q-item-label {{ field }}
-                q-item-label(v-for='f in validations[field]' caption) - {{ f }}
-        q-card-actions(align="right")
-          q-btn(flat label="Fermer" color="primary" v-close-popup)
-    q-btn(color="positive" icon='mdi-content-save-plus' @click="create" v-show="isNew" v-if="crud.create")
-      q-tooltip.text-body2 Créer
-    q-toggle.q-px-md.q-gutter-y-lg(
-      v-if="props.identity?._id"
-      checked-icon="mdi-account-check"
-      unchecked-icon="mdi-account-cancel"
-      indeterminate-icon="mdi-lock-reset"
-      keep-color
-      size="xl"
-      @click="activate"
-      :color="setActivateColor()"
-      label="Activation"
-      v-model="props.identity.dataStatus"
-      :true-value="1"
-      :indeterminate-value="-2"
-      :false-value="-3"
-      )
-    q-btn-group(v-if="props.identity?._id" push flat)
-      q-btn(@click="forceChangePassword()" color="orange-8" icon="mdi-lock-reset" :disabled="props.identity.state != IdentityState.SYNCED" padding='5px 10px' dense)
-        q-tooltip.text-body2(slot="trigger") Obliger l'utilisateur à changer son mot de passe
-      q-btn(@click="resetPasswordModal = true" color="red-8" icon="mdi-account-key" :disabled="props.identity.state != IdentityState.SYNCED" padding='5px 10px' dense)
-        q-tooltip.text-body2(slot="trigger") Définir le mot de passe
-      q-btn(@click="sendInit" color="primary" icon="mdi-email-arrow-right"  :disabled="props.identity.state != IdentityState.SYNCED" padding='5px 10px' dense)
-        q-tooltip.text-body2(slot="trigger") Envoyer le mail d'invitation
+div
+  q-btn.sesame.infinite.animated.flash(color="negative" @click="validationsModal = true" v-if="!isNew && hasValidations()" outline)
+    q-tooltip.text-body2(slot="trigger") Afficher les erreurs
+    q-icon.text-negative(name='mdi-alert-box')
+  q-dialog(v-model="validationsModal")
+    q-card(style="min-width: 350px")
+      q-card-section.q-pa-sm.bg-negative.text-white.flex
+        q-icon(name='mdi-alert-box' size="2rem")
+        div.text-h6.q-ml-md Erreurs de validation
+      q-card-section.q-py-sm
+        q-list(separator)
+          q-item(v-for="field in Object.keys(validations)" :key="field")
+            q-item-section.text-negative
+              q-item-label {{ field }}
+              q-item-label(v-for='f in validations[field]' caption) - {{ f }}
+      q-card-actions(align="right")
+        q-btn(flat label="Fermer" color="primary" v-close-popup)
+  q-btn(color="positive" icon='mdi-content-save-plus' @click="create" v-show="isNew" v-if="crud.create")
+    q-tooltip.text-body2 Créer
+  q-toggle.q-px-md.q-gutter-y-lg.gt-sm(
+    v-if="props.identity?._id"
+    checked-icon="mdi-account-check"
+    unchecked-icon="mdi-account-cancel"
+    indeterminate-icon="mdi-lock-reset"
+    keep-color
+    szize="xl"
+    @click="activate"
+    :color="setActivateColor()"
+    label="Activation"
+    v-model="props.identity.dataStatus"
+    :true-value="1"
+    :indeterminate-value="-2"
+    :false-value="-3"
+    )
+  q-btn-group(v-if="props.identity?._id" push flat)
+    q-btn(@click="forceChangePassword()" color="orange-8" icon="mdi-lock-reset" :disabled="props.identity.state != IdentityState.SYNCED" padding='5px 10px' dense)
+      q-tooltip.text-body2(slot="trigger") Obliger l'utilisateur à changer son mot de passe
+    q-btn(@click="resetPasswordModal = true" color="red-8" icon="mdi-account-key" :disabled="props.identity.state != IdentityState.SYNCED" padding='5px 10px' dense)
+      q-tooltip.text-body2(slot="trigger") Définir le mot de passe
+    q-btn(@click="sendInit" color="primary" icon="mdi-email-arrow-right"  :disabled="props.identity.state != IdentityState.SYNCED" padding='5px 10px' dense)
+      q-tooltip.text-body2(slot="trigger") Envoyer le mail d'invitation
 
-      q-separator(size='3px' vertical)
+    q-separator(size='3px' vertical)
 
-      q-btn(@click="submit" color="positive" icon="mdi-check"  v-show="!isNew" v-if="crud.update")
-        q-tooltip.text-body2(slot="trigger") Enregistrer les modifications
-      q-btn(v-if="props.identity?._id" @click="sync" color="orange-8" :disabled="props.identity.state != IdentityState.TO_VALIDATE" icon="mdi-sync")
-        q-tooltip.text-body2(slot="trigger" v-if="props.identity.state == IdentityState.TO_VALIDATE") Synchroniser l'identité
-        q-tooltip.text-body2(slot="trigger" v-else) L'état de l'identité ne permet pas de la synchroniser
+    q-btn(@click="submit" color="positive" icon="mdi-check"  v-show="!isNew" v-if="crud.update")
+      q-tooltip.text-body2(slot="trigger") Enregistrer les modifications
+    q-btn(v-if="props.identity?._id" @click="sync" color="orange-8" :disabled="props.identity.state != IdentityState.TO_VALIDATE" icon="mdi-sync")
+      q-tooltip.text-body2(slot="trigger" v-if="props.identity.state == IdentityState.TO_VALIDATE") Synchroniser l'identité
+      q-tooltip.text-body2(slot="trigger" v-else) L'état de l'identité ne permet pas de la synchroniser
 
-      q-separator(v-if="props.identity?._id" size='3px' vertical)
+    q-separator(v-if="props.identity?._id" size='3px' vertical)
 
-      div(ref='targetEl' style='display: height: 36px;')
-        q-tooltip.text-body2(:target="targetEl" anchor="top middle" self="bottom middle") État du cycle de vie : {{ stateName }}
-        q-btn-dropdown.q-pl-sm.full-height(icon='mdi-clock' color='purple-8' square unelevated dense)
-          q-list
-            q-item(
-              v-for='stateItem in stateList' :key='stateItem.key'
-              @click="switchLifecycle(stateItem.key)"
-              :active='stateItem.key === props.identity.lifecycle'
-              active-class="bg-purple-8 text-white"
-              clickable v-close-popup
-            )
-              q-item-section(avatar)
-                q-icon(:name="stateItem.icon || 'mdi-help-rhombus-outline'" :color="stateItem.color")
-              q-item-section
-                q-item-label
-                  span(v-text='stateItem.label')
-                  | &nbsp;
-                  small(v-text='("(" + stateItem.key + ")")')
-      q-separator(size='3px' vertical)
-
-      q-btn-dropdown.text-white(v-if="props.identity?._id" dropdown-icon="mdi-dots-vertical" style='background-color: rgba(0, 0, 0, .6)' padding='5px 10px' dense no-caps)
+    div(ref='targetEl' style='display: height: 36px;')
+      q-tooltip.text-body2(:target="targetEl" anchor="top middle" self="bottom middle") État du cycle de vie : {{ stateName }}
+      q-btn-dropdown.q-pl-sm.full-height(icon='mdi-clock' color='purple-8' square unelevated dense)
         q-list
-          a(:href="'/jobs?filters[:concernedTo.id]=' + props.identity?._id" target="_blank" style='text-decoration: none; color: inherit' @click.prevent="dialogLog = true")
-            q-item(v-if="props.identity?._id" clickable v-close-popup)
-              q-item-section(avatar)
-                q-icon(name="mdi-file-document" color="grey-6")
-              q-item-section
-                q-item-label Voir les logs
-              q-item-section(side)
-                q-btn(icon="mdi-open-in-new" size='sm' flat dense @click.stop="open('/jobs?filters[:concernedTo.id]=' + props.identity?._id)")
-          a(:href="'/lifecycles/' + props.identity?._id" target="_blank" style='text-decoration: none; color: inherit' @click.prevent="dialogLifecycle = true")
-            q-item(v-if="props.identity?._id" clickable v-close-popup)
-              q-item-section(avatar)
-                q-icon(name="mdi-clock" color="purple-8")
-              q-item-section
-                q-item-label Voir le cycle de vie
-              q-item-section(side)
-                q-btn(icon="mdi-open-in-new" size='sm' flat dense @click.stop="open('/lifecycles/' + props.identity?._id)")
-          q-separator(size='3px')
-          q-item(v-if="props.identity?._id" clickable v-close-popup @click="deleteIdentity")
+          q-item(
+            v-for='stateItem in stateList' :key='stateItem.key'
+            @click="switchLifecycle(stateItem.key)"
+            :active='stateItem.key === props.identity.lifecycle'
+            active-class="bg-purple-8 text-white"
+            clickable v-close-popup
+          )
             q-item-section(avatar)
-              q-icon(name="mdi-delete" color="negative")
+              q-icon(:name="stateItem.icon || 'mdi-help-rhombus-outline'" :color="stateItem.color")
             q-item-section
-              q-item-label Supprimer l'identité
+              q-item-label
+                span(v-text='stateItem.label')
+                | &nbsp;
+                small(v-text='("(" + stateItem.key + ")")')
+    q-separator(size='3px' vertical)
+
+    q-btn-dropdown.text-white(v-if="props.identity?._id" dropdown-icon="mdi-dots-vertical" style='background-color: rgba(0, 0, 0, .6)' padding='5px 10px' dense no-caps)
+      q-list
+        a(:href="'/jobs?filters[:concernedTo.id]=' + props.identity?._id" target="_blank" style='text-decoration: none; color: inherit' @click.prevent="dialogLog = true")
+          q-item(v-if="props.identity?._id" clickable v-close-popup)
+            q-item-section(avatar)
+              q-icon(name="mdi-file-document" color="grey-6")
+            q-item-section
+              q-item-label Voir les logs
+            q-item-section(side)
+              q-btn(icon="mdi-open-in-new" size='sm' flat dense @click.stop="open('/jobs?filters[:concernedTo.id]=' + props.identity?._id)")
+        a(:href="'/lifecycles/' + props.identity?._id" target="_blank" style='text-decoration: none; color: inherit' @click.prevent="dialogLifecycle = true")
+          q-item(v-if="props.identity?._id" clickable v-close-popup)
+            q-item-section(avatar)
+              q-icon(name="mdi-clock" color="purple-8")
+            q-item-section
+              q-item-label Voir le cycle de vie
+            q-item-section(side)
+              q-btn(icon="mdi-open-in-new" size='sm' flat dense @click.stop="open('/lifecycles/' + props.identity?._id)")
+        q-separator(size='3px')
+        q-item(v-if="props.identity?._id" clickable v-close-popup @click="deleteIdentity")
+          q-item-section(avatar)
+            q-icon(name="mdi-delete" color="negative")
+          q-item-section
+            q-item-label Supprimer l'identité
 
   q-dialog(v-model="dialogLog" full-height full-width persistent)
     q-card

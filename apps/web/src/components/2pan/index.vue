@@ -4,7 +4,7 @@ q-splitter(
   separator-style="width: 8px"
   background-color="primary"
   class="full-height"
-  :limits="!isSimple ? [30,70] : [0,100]"
+  :limits="!isSimple ? [30,60] : [0,100]"
   :horizontal='isSimple'
   :style='{ "padding": isSimple ? "6px 0" : "0" }'
 )
@@ -74,7 +74,7 @@ q-splitter(
           p Selectionnez une entrée pour afficher son contenu...
           slot(name="right-panel-empty-content-after")
       div.full-height.q-pa-none.flex.justify-start(v-else style='flex-flow: column; overflow-y: auto;')
-        q-toolbar.q-py-none(style='height: 50px;')
+        q-toolbar.q-py-none
           q-btn(color="primary" icon="mdi-chevron-left" @click="cancel" tooltip="Retour" dense)
             q-tooltip.text-body2 Retour
           q-separator.q-mx-sm(vertical)
@@ -82,7 +82,6 @@ q-splitter(
             slot(name="right-panel-title-before" :target="target")
             q-toolbar-title(v-html=`isNew ? defaultTitle : getTitle` style='flex: 100 1 0%')
             slot(name="right-panel-title-after" :target="target")
-          q-space
           slot(name="right-panel-actions")
             slot(name="right-panel-actions-content-before" :target="target")
             slot(name="right-panel-actions-content" v-if="defaultRightPanelButton" :target="target" :isNew="isNew" :crud="crud")
@@ -93,6 +92,7 @@ q-splitter(
               q-btn(color="negative" icon='mdi-delete' @click="remove(target)" v-show="!isNew" v-if="crud.delete")
                 q-tooltip.text-body2 Supprimer
             slot(name="right-panel-actions-content-after" :target="target" :isNew="isNew" :crud="crud")
+        q-separator
         q-card-section.q-pa-none.fit.flex(style='flex-flow: column; overflow: hidden;')
           slot(name="right-panel-content" :payload="{ target }" :isNew="isNew")
             slot(name="right-panel-content-before")

@@ -2,7 +2,7 @@
 div
   //- pre(v-html="JSON.stringify(identity, null, 2)")
   q-tabs(v-model="tab" align="justify" outside-arrows mobile-arrows inline-label dense)
-    q-tab(name="inetOrgPerson" label="inetOrgPerson" :alert="getTabValidations('inetOrgPerson')" alert-icon="mdi-alert" :class="`q-mr-xs`")
+    q-tab.q-pt-sm(name="inetOrgPerson" label="inetOrgPerson" :alert="getTabValidations('inetOrgPerson')" alert-icon="mdi-alert" :class="`q-mr-xs`")
     q-tab.q-pr-none(v-for="tab in tabs" :key="tab" :name="tab" :alert="getTabValidations(tab)" alert-icon="mdi-alert" :class="`q-mr-xs`")
       div.flex.row.full-height.items-center(style='flex-wrap: nowrap;')
         .q-tab__label(v-text='tab')
@@ -14,7 +14,7 @@ div
           q-item-section
             q-item-label(v-text="schema.name")
   q-tab-panels(v-model="tab" keep-alive)
-    q-tab-panel(name="inetOrgPerson")
+    q-tab-panel.q-pa-none(name="inetOrgPerson")
       sesame-json-form-renderer-api(
         v-if='identity.inetOrgPerson'
         schemaName="inetOrgPerson"
@@ -22,7 +22,7 @@ div
         v-model:validations="validations"
         :isNew="isNew"
       )
-    q-tab-panel(v-for="t in tabs" :key="t" :name="t")
+    q-tab-panel.q-pa-none(v-for="t in tabs" :key="t" :name="t")
       //- pre(v-html="JSON.stringify(identity.additionalFields.attributes[t], null, 2)")
       sesame-json-form-renderer-api(
         v-if='identity.additionalFields.attributes[t]'

@@ -155,6 +155,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
               },
             });
             this.logger.log(`Found ${identities.length} identities to process for trigger in source <${idRule.sources}>`);
+            this.logger.verbose(`identities process triggered`, JSON.stringify(idRule, null, 2));
 
             for (const identity of identities) {
               const updated = await this.identitiesService.model.findOneAndUpdate(

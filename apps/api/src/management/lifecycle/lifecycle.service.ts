@@ -148,8 +148,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
     this.logger.log('LifecycleService bootstraped');
   }
 
-  public async listLifecycles(): Promise<any> {
-    const lifecycles = this.lifecycleSources ? Object.keys(this.lifecycleSources) : [];
+  public listLifecycleSources(): LifecycleSource {
     return this.lifecycleSources;
   }
 

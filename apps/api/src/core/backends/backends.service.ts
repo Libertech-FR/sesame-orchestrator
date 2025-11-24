@@ -6,21 +6,21 @@ import {
   RequestTimeoutException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import {ModuleRef} from '@nestjs/core';
-import {Document, ModifyResult, Query, Types} from 'mongoose';
-import {AbstractQueueProcessor} from '~/_common/abstracts/abstract.queue.processor';
-import {IdentityState} from '~/management/identities/_enums/states.enum';
-import {Identities} from '~/management/identities/_schemas/identities.schema';
-import {IdentitiesCrudService} from '~/management/identities/identities-crud.service';
-import {JobState} from '../jobs/_enums/state.enum';
-import {Jobs} from '../jobs/_schemas/jobs.schema';
-import {JobsService} from '../jobs/jobs.service';
-import {Tasks} from '../tasks/_schemas/tasks.schema';
-import {TasksService} from '../tasks/tasks.service';
-import {ActionType} from './_enum/action-type.enum';
-import {ExecuteJobOptions} from './_interfaces/execute-job-options.interface';
-import {WorkerResultInterface} from '~/core/backends/_interfaces/worker-result.interface';
-import {DataStatusEnum} from '~/management/identities/_enums/data-status';
+import { ModuleRef } from '@nestjs/core';
+import { Document, ModifyResult, Query, Types } from 'mongoose';
+import { AbstractQueueProcessor } from '~/_common/abstracts/abstract.queue.processor';
+import { IdentityState } from '~/management/identities/_enums/states.enum';
+import { Identities } from '~/management/identities/_schemas/identities.schema';
+import { IdentitiesCrudService } from '~/management/identities/identities-crud.service';
+import { JobState } from '../jobs/_enums/state.enum';
+import { Jobs } from '../jobs/_schemas/jobs.schema';
+import { JobsService } from '../jobs/jobs.service';
+import { Tasks } from '../tasks/_schemas/tasks.schema';
+import { TasksService } from '../tasks/tasks.service';
+import { ActionType } from './_enum/action-type.enum';
+import { ExecuteJobOptions } from './_interfaces/execute-job-options.interface';
+import { WorkerResultInterface } from '~/core/backends/_interfaces/worker-result.interface';
+import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
 
@@ -248,6 +248,45 @@ export class BackendsService extends AbstractQueueProcessor {
     return result;
   }
 
+  public async lifecycleChangedIdentities(payload: string[], options?: ExecuteJobOptions): Promise<any> {
+    const identities: {
+      action: ActionType;
+      identity: Identities;
+    }[] = [];
+
+    if (!payload.length) throw new BadRequestException('No identities to sync');
+
+    for (const key of payload) {
+      const identity = await this.identitiesService.findById<any>(key);
+      // cas des fusion l employeeNumber doit etre celui de l identite primaire
+      if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== '') {
+        identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
+      } else {
+        // on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
+        identity.inetOrgPerson.employeeNumber = identity.inetOrgPerson.employeeNumber[0];
+      }
+      identities.push({
+        action: ActionType.IDENTITY_LIFECYCLE_CHANGED,
+        identity,
+      });
+    }
+
+    const task: Tasks = await this.tasksService.create<Tasks>({
+      jobs: identities.map((identity) => identity.identity._id),
+    });
+
+    const result = {};
+    for (const identity of identities) {
+      const [executedJob] = await this.executeJob(identity.action, identity.identity._id, identity.identity, {
+        ...options,
+        updateStatus: true,
+        task: task._id,
+      });
+      result[identity.identity._id] = executedJob;
+    }
+    return result;
+  }
+
   public async deleteIdentities(payload: string[], options?: ExecuteJobOptions): Promise<any> {
     const identities: {
       action: ActionType;
@@ -295,7 +334,7 @@ export class BackendsService extends AbstractQueueProcessor {
         task: task._id,
       });
       result[identity.identity._id] = executedJob;
-      console.log(res);
+      // console.log(res);
     }
     return result;
   }
@@ -397,6 +436,7 @@ export class BackendsService extends AbstractQueueProcessor {
     }
     return result;
   }
+
   public async activationIdentity(payload: string, status: boolean, options?: ExecuteJobOptions) {
     let result = null;
     if (status === true) {
@@ -434,10 +474,10 @@ export class BackendsService extends AbstractQueueProcessor {
     }
     //anonymisation payload sur reset et changement de mdp
     if (actionType === ActionType.IDENTITY_PASSWORD_RESET || actionType === ActionType.IDENTITY_PASSWORD_CHANGE) {
-        payload['newPassword'] ='**********';
+      payload['newPassword'] = '**********';
     }
     if (actionType === ActionType.IDENTITY_PASSWORD_CHANGE) {
-      payload['oldPassword'] ='**********';
+      payload['oldPassword'] = '**********';
     }
     let jobStore: Document<Jobs> = null;
     if (!options?.disableLogs) {

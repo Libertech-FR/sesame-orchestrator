@@ -126,8 +126,6 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
 
     this.logger.debug('Lifecycle sources loaded:', JSON.stringify(this.lifecycleSources, null, 2));
 
-    console.log('lifecycleRules:', lifecycleRules);
-
     if (isConsoleEntrypoint) {
       this.logger.debug('Skipping LifecycleService bootstrap in console mode.');
       return;
@@ -159,7 +157,6 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
     this.logger.debug(`Running lifecycle trigger cron job...`);
 
     for (const lfr of lifecycleRules) {
-      console.log('Processing lifecycle rule:', JSON.stringify(lfr, null, 2));
       for (const idRule of lfr.identities) {
         if (idRule.trigger) {
           const dateKey = idRule.dateKey || 'lastLifecycleUpdate';
@@ -530,8 +527,6 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
       // If the lifecycle has changed, we need to process the new lifecycle
     }
 
-    console.log('AH', after.lifecycle, this.lifecycleSources);
-
     if (this.lifecycleSources[after.lifecycle]) {
       this.logger.debug(`Processing lifecycle sources for identity <${after._id}> with lifecycle <${after.lifecycle}>`);
 
@@ -542,13 +537,6 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
           this.logger.debug(`Skipping lifecycle source <${after.lifecycle}> with trigger: ${lcs.trigger}`);
           continue; // Skip processing if it's a trigger-based rule
         }
-
-        console.log('LCS',
-          {
-            ...lcs.rules,
-            _id: after._id,
-            ignoreLifecycle: { $ne: true },
-          },);
 
         const res = await this.identitiesService.model.findOneAndUpdate(
           {
@@ -567,7 +555,6 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
             upsert: false, // Do not create a new document if no match is found
           }
         );
-        console.log('RES', res);
 
         if (!res) {
           this.logger.debug(`No identity found matching rules for lifecycle <${after.lifecycle}>`);

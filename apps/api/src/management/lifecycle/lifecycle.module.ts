@@ -4,6 +4,8 @@ import { Lifecycle, LifecycleSchema } from './_schemas/lifecycle.schema';
 import { LifecycleController } from './lifecycle.controller';
 import { LifecycleService } from './lifecycle.service';
 import { IdentitiesModule } from '../identities/identities.module';
+import { useOnCli } from '~/_common/functions/is-cli';
+import { LifecycleCommand } from './lifecycle.command';
 
 @Module({
   imports: [
@@ -15,7 +17,12 @@ import { IdentitiesModule } from '../identities/identities.module';
     ]),
     IdentitiesModule,
   ],
-  providers: [LifecycleService],
+  providers: [
+    LifecycleService,
+    ...useOnCli([
+      ...LifecycleCommand.registerWithSubCommands(),
+    ]),
+  ],
   controllers: [LifecycleController],
   exports: [LifecycleService],
 })

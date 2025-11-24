@@ -546,6 +546,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
           },
           {
             $set: {
+              ...lcs.mutation,
               lifecycle: lcs.target,
               lastLifecycleUpdate: new Date(),
             },

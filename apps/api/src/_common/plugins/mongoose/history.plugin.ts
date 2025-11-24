@@ -119,6 +119,7 @@ export function historyPlugin(schema: Schema, options: HistoryPluginOptions) {
     logger.verbose(`Audit after state: ${JSON.stringify(after)}`)
 
     if (!hasChanged) {
+      console.log('change', after?._id ?? before?._id);
       logger.debug(`No significant changes detected for ${mergedOptions.collectionName} ${after?._id ?? before?._id}, skipping audit log.`)
       return
     }

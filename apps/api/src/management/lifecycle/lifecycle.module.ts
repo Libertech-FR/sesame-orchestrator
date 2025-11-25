@@ -6,6 +6,7 @@ import { LifecycleService } from './lifecycle.service';
 import { IdentitiesModule } from '../identities/identities.module';
 import { useOnCli } from '~/_common/functions/is-cli';
 import { LifecycleCommand } from './lifecycle.command';
+import { BackendsModule } from '~/core/backends/backends.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { LifecycleCommand } from './lifecycle.command';
         schema: LifecycleSchema,
       },
     ]),
+    BackendsModule,
     IdentitiesModule,
   ],
   providers: [

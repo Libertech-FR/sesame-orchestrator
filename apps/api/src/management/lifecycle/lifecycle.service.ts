@@ -19,6 +19,7 @@ import { Lifecycle, LifecycleRefId } from './_schemas/lifecycle.schema';
 import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
 import { isConsoleEntrypoint } from '~/_common/functions/is-cli';
+import { BackendsService } from '~/core/backends/backends.service';
 
 interface LifecycleSource {
   [source: string]: Partial<ConfigRulesObjectIdentitiesDTO>[];
@@ -35,6 +36,7 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
   public constructor(
     @InjectModel(Lifecycle.name) protected _model: Model<Lifecycle>,
     protected readonly identitiesService: IdentitiesCrudService,
+    private readonly backendsService: BackendsService,
     private schedulerRegistry: SchedulerRegistry,
     private configService: ConfigService,
   ) {
@@ -566,6 +568,9 @@ export class LifecycleService extends AbstractServiceSchema implements OnApplica
           lifecycle: lcs.target,
           date: new Date(),
         });
+
+        const identities = res._id ? [res._id] : [];
+        await this.backendsService.lifecycleChangedIdentities(identities)
 
         this.logger.log(`Identity <${res._id}> updated to lifecycle <${lcs.target}> based on rules from source <${after.lifecycle}>`);
         return;

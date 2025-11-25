@@ -101,23 +101,15 @@ export class AgentsService extends AbstractServiceSchema {
     update: UpdateQuery<T> & any,
     options?: QueryOptions<T>,
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
-    if (update.password) {
-      update.password = await hash(update.password)
+    // Hachage du mot de passe si présent
+    if (update.password) update.password = await hash(update.password)
+    if (update.$set?.password) update.$set.password = await hash(update.$set.password)
+
+    // Log si le mot de passe est mis à jour
+    if (update.password || update.$set?.password) {
+      this.logger.verbose(`Updating password for agent with ID: ${_id}`)
     }
 
-    if (update.$set?.password) {
-      update.$set.password = await hash(update.$set.password)
-    }
-
-    return await super.update(
-      _id,
-      {
-        ...update,
-        $set: {
-          ...(update?.$set || {}),
-        },
-      },
-      options,
-    )
+    return await super.update(_id, update, options)
   }
 }

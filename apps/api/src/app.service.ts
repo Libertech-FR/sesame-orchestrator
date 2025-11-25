@@ -12,12 +12,22 @@ import { getLogLevel } from './_common/functions/get-log-level';
 import { ConfigService } from '@nestjs/config';
 import { isConsoleEntrypoint } from './_common/functions/is-cli';
 
+/**
+ * Énumération des projets Sesame disponibles pour la vérification de mises à jour.
+ * @enum {string}
+ */
 export enum ProjectsList {
+  /** Orchestrateur Sesame */
   SESAME_ORCHESTRATOR = 'sesame-orchestrator',
+  /** Daemon Sesame */
   SESAME_DAEMON = 'sesame-daemon',
+  /** Gestionnaire d'applications Sesame */
   SESAME_APP_MANAGER = 'sesame-app-manager',
 }
 
+/**
+ * Interface représentant un auteur GitHub.
+ */
 export interface GithubAuthor {
   login: string;
   id: number;
@@ -40,10 +50,16 @@ export interface GithubAuthor {
   site_admin: boolean;
 }
 
+/**
+ * Interface représentant un asset GitHub d'une release.
+ */
 export interface GithubAsset {
   [key: string]: any;
 }
 
+/**
+ * Interface représentant une release GitHub.
+ */
 export interface GithubUpdate {
   url: string;
   assets_url: string;
@@ -65,15 +81,57 @@ export interface GithubUpdate {
   body: string;
 }
 
+/**
+ * Service principal de l'application.
+ *
+ * Ce service gère les fonctionnalités globales de l'application, notamment
+ * la récupération des informations de version et la vérification des mises à jour
+ * disponibles pour les différents projets Sesame via l'API GitHub.
+ *
+ * @class AppService
+ * @extends {AbstractService}
+ * @implements {OnApplicationBootstrap}
+ *
+ * @description
+ * Fonctionnalités principales :
+ * - Récupération des informations du package (nom, version)
+ * - Vérification périodique des mises à jour via l'API GitHub
+ * - Cache LRU des releases GitHub (TTL 6 heures)
+ * - Tâche planifiée toutes les 6 heures pour actualiser les informations
+ * - Configuration du niveau de log en mode console
+ *
+ * Le service utilise un cache pour limiter les appels à l'API GitHub et améliorer
+ * les performances. Les données sont automatiquement rafraîchies toutes les 6 heures.
+ */
 @Injectable()
 export class AppService extends AbstractService implements OnApplicationBootstrap {
+  /**
+   * Cache LRU pour stocker les informations de releases GitHub.
+   * TTL de 6 heures avec purge automatique.
+   *
+   * @protected
+   * @type {LRUCache}
+   */
   protected storage = new LRUCache({
-    ttl: 1_000 * 60 * 60 * 6, // 6 hours
+    ttl: 1_000 * 60 * 60 * 6, // 6 heures
     ttlAutopurge: true,
   });
 
+  /**
+   * Informations du package.json de l'application.
+   *
+   * @protected
+   * @type {Partial<PackageJson>}
+   */
   protected package: Partial<PackageJson>;
 
+  /**
+   * Constructeur du service AppService.
+   *
+   * @param {ModuleRef} moduleRef - Référence au module NestJS
+   * @param {HttpService} httpService - Service HTTP pour les appels à l'API GitHub
+   * @param {ConfigService} config - Service de configuration
+   */
   public constructor(
     protected moduleRef: ModuleRef,
     private readonly httpService: HttpService,
@@ -84,12 +142,13 @@ export class AppService extends AbstractService implements OnApplicationBootstra
   }
 
   /**
-   * On application bootstrap, this method is called to initialize the service.
-   * It logs the start of the bootstrap process and fetches the latest releases for each project
-   * in the ProjectsList enum.
-   * It uses the fetchGithubRelease method to get the latest releases from GitHub.
+   * Hook appelé au démarrage de l'application.
    *
-   * @returns {Promise<void>} A promise that resolves when the bootstrap process is complete.
+   * Initialise le service en récupérant les dernières releases pour chaque projet
+   * Sesame disponible. Configure également le niveau de log approprié en mode console.
+   *
+   * @async
+   * @returns {Promise<void>}
    */
   public async onApplicationBootstrap(): Promise<void> {
     this.logger.debug('Application service bootstrap starting...');
@@ -106,7 +165,7 @@ export class AppService extends AbstractService implements OnApplicationBootstra
     this.logger.log('Application service bootstrap completed.');
 
     if (isConsoleEntrypoint) {
-      // Reactive logger with appropriate log level in console mode !
+      // Réactive le logger avec le niveau de log approprié en mode console
       this.logger.localInstance.setLogLevels(
         getLogLevel(this.config.get('application.logLevel', 'debug'))
       );
@@ -114,14 +173,21 @@ export class AppService extends AbstractService implements OnApplicationBootstra
   }
 
   /**
-   * Cron job to fetch the latest releases of projects every 6 hours.
-   * This method logs the start and end of the job, and fetches updates for each project in the ProjectsList.
-   * It uses the fetchGithubRelease method to get the latest releases from GitHub.
-   * The job is scheduled using the CronExpression.EVERY_6_HOURS expression.
+   * Tâche planifiée pour rafraîchir les releases toutes les 6 heures.
    *
-   * @Cron(CronExpression.EVERY_6_HOURS)
+   * Récupère automatiquement les dernières versions disponibles pour chaque projet
+   * depuis GitHub. Ignorée en mode développement et en mode console.
+   *
+   * @async
    * @returns {Promise<void>}
-   * @memberof AppService
+   *
+   * @description
+   * Planification : Toutes les 6 heures via @Cron
+   *
+   * Comportement :
+   * - Mode console : Skip l'exécution
+   * - Mode développement : Skip la récupération des releases
+   * - Mode production : Récupère les releases pour tous les projets
    */
   @Cron(CronExpression.EVERY_6_HOURS)
   public async handleCron(): Promise<void> {
@@ -145,19 +211,35 @@ export class AppService extends AbstractService implements OnApplicationBootstra
   }
 
   /**
-   * Returns basic information about the application, such as name and version.
+   * Retourne les informations de base de l'application.
    *
-   * @returns {Partial<PackageJson>} Returns basic information about the application, such as name and version.
+   * Extrait le nom et la version depuis le package.json.
+   *
+   * @returns {Partial<PackageJson>} Informations de l'application (nom, version)
+   *
+   * @example
+   * ```typescript
+   * const info = appService.getInfo();
+   * // { name: "sesame-orchestrator", version: "1.2.3" }
+   * ```
    */
   public getInfo(): Partial<PackageJson> {
     return pick(this.package, ['name', 'version']);
   }
 
   /**
-   * Fetches the latest release information for a specified project from GitHub.
+   * Récupère les informations de mise à jour pour un projet depuis le cache.
    *
-   * @param project The project name to fetch updates for.
-   * @returns {Promise<GithubUpdate>} A promise that resolves to the latest release information for the specified project.
+   * Retourne les informations de la dernière release GitHub si elles sont
+   * présentes dans le cache, sinon retourne null.
+   *
+   * @param {ProjectsList} project - Nom du projet
+   * @returns {GithubUpdate | null} Informations de la dernière release ou null
+   * @throws {BadRequestException} Si le nom du projet est invalide
+   *
+   * @description
+   * Cette méthode ne fait pas d'appel à l'API GitHub, elle consulte uniquement
+   * le cache. Les données sont mises en cache par fetchGithubRelease().
    */
   public getProjectUpdate(project: ProjectsList): GithubUpdate {
     if (!Object.values(ProjectsList).includes(project)) {
@@ -170,14 +252,28 @@ export class AppService extends AbstractService implements OnApplicationBootstra
       return this.storage.get(project) as GithubUpdate;
     }
 
-    return null; // Return null if the project is not cached
+    return null; // Retourne null si le projet n'est pas en cache
   }
 
   /**
-   * Fetches the latest release information for a specified project from GitHub.
+   * Récupère les informations de la dernière release depuis l'API GitHub.
    *
-   * @param project The project name to fetch updates for.
-   * @returns {Promise<GithubUpdate>} A promise that resolves to the latest release information for the specified project.
+   * Interroge l'API GitHub pour obtenir la dernière release d'un projet,
+   * met en cache le résultat et implémente une logique de retry en cas d'erreur.
+   *
+   * @private
+   * @async
+   * @param {ProjectsList} project - Nom du projet
+   * @param {number} [retry=0] - Nombre de tentatives effectuées
+   * @returns {Promise<GithubUpdate | null>} Informations de la release ou null en cas d'échec
+   *
+   * @description
+   * Processus de récupération :
+   * 1. Vérifie si les données sont déjà en cache
+   * 2. Si non, interroge l'API GitHub
+   * 3. Met en cache le résultat (TTL 6 heures)
+   * 4. En cas d'erreur, retry jusqu'à 3 fois avec délai de 60 secondes
+   * 5. Après 3 échecs, log une erreur fatale et retourne null
    */
   private async fetchGithubRelease(project: ProjectsList, retry = 0): Promise<any> {
     if (this.storage.has(project)) {
@@ -203,13 +299,13 @@ export class AppService extends AbstractService implements OnApplicationBootstra
       if (retry >= 3) {
         this.logger.fatal(`Failed to fetch release for ${project} after multiple retries: ${error.message}`);
 
-        return null; // Return null or handle as needed
+        return null; // Retourne null après 3 tentatives échouées
       }
 
       setTimeout(() => {
         this.logger.verbose(`Retrying to fetch ${project} release after error: ${error.message}`);
         return this.fetchGithubRelease(project, retry + 1);
-      }, 1_000 * 60); // Retry after 60 seconds
+      }, 1_000 * 60); // Retry après 60 secondes
     }
   }
 }

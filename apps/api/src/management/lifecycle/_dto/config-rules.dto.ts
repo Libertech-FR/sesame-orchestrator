@@ -1,97 +1,116 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type, Transform } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsNumber, IsObject, IsOptional, ValidateNested, registerDecorator, ValidationOptions, ValidationArguments, isString, isNumber, IsString } from 'class-validator';
-import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecycle.enum';
+import { ApiProperty } from '@nestjs/swagger'
+import { Type, Transform } from 'class-transformer'
+import { IsArray, IsNotEmpty, IsNumber, IsObject, IsOptional, ValidateNested, registerDecorator, ValidationOptions, ValidationArguments, isString, isNumber, IsString } from 'class-validator'
+import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecycle.enum'
 
 /**
- * Transform trigger values to seconds.
- * - Numbers are interpreted as days and converted to seconds
- * - Strings with 'd' suffix are interpreted as days and converted to seconds
- * - Strings with 'm' suffix are interpreted as minutes and converted to seconds
- * - Strings with 's' suffix are already in seconds
+ * Convertit les valeurs de déclencheur temporel en secondes
  *
- * @param value The trigger value to transform
- * @returns The value converted to seconds
+ * @param {number | string} value - La valeur de déclencheur à transformer
+ * @returns {number | undefined} La valeur convertie en secondes, ou undefined si invalide
+ *
+ * @description Effectue les conversions suivantes :
+ * - Nombres : interprétés comme des jours et convertis en secondes
+ * - Chaînes avec suffixe 'd' : interprétés comme des jours et convertis en secondes
+ * - Chaînes avec suffixe 'm' : interprétés comme des minutes et convertis en secondes
+ * - Chaînes avec suffixe 's' : déjà en secondes, valeur numérique extraite
+ *
+ * @throws {Error} Si la valeur ne correspond pas aux formats attendus
+ *
+ * @example
+ * transformTriggerToSeconds(90)      // retourne 7776000 (90 jours en secondes)
+ * transformTriggerToSeconds('90d')   // retourne 7776000
+ * transformTriggerToSeconds('10m')   // retourne 600
+ * transformTriggerToSeconds('45s')   // retourne 45
  */
 function transformTriggerToSeconds(value: number | string): number | undefined {
-  let isValid = false;
+  let isValid = false
 
   if (value === undefined || value === null) {
-    return undefined;
+    return undefined
   }
 
   /**
-   * Check if the value is a number.
-   * If it's a number, we check if it's upper than 0.
-   * If it's a string, we check if it matches the regex for time strings.
+   * Validation de la valeur :
+   * - Pour les nombres : doit être supérieur ou égal à 0
+   * - Pour les chaînes : doit correspondre au format '\d+[dms]' (nombre suivi de d, m ou s)
    */
   if (isNumber(value)) {
-    isValid = value < 0;
+    isValid = value < 0
   } else if (isString(value)) {
-    const timeRegex = /^\d+[dms]$/;
+    const timeRegex = /^\d+[dms]$/
     if (timeRegex.test(value)) {
-      // Extract the number part and check if it's
-      const numberPart = value.replace(/[dms]$/, '');
-      const num = parseInt(numberPart, 10);
-      isValid = num > 0;
+      // Extraction de la partie numérique et vérification de sa validité
+      const numberPart = value.replace(/[dms]$/, '')
+      const num = parseInt(numberPart, 10)
+      isValid = num > 0
     }
   }
 
   if (!isValid) {
-    throw new Error('Trigger must be a number (days) or a time string with units (e.g., "90d", "10m", "45s")');
+    throw new Error('Le déclencheur doit être un nombre (jours) ou une chaîne temporelle avec unité (ex: "90d", "10m", "45s")')
   }
 
   /**
-   * If the value is a number, we assume it's in days and convert it to seconds.
-   * We multiply by 24 (hours) * 60 (minutes) * 60 (seconds) to get the total seconds.
-   * This conversion preserves the sign of the number,
-   * so if the input is negative, the output will also be negative.
+   * Conversion des nombres en secondes.
+   * Les nombres sont interprétés comme des jours : jours * 24h * 60min * 60s
+   * Le signe du nombre est préservé (négatif reste négatif)
    */
   if (isNumber(value)) {
-    return value * 24 * 60 * 60; // Convert days to seconds, preserving sign
+    return value * 24 * 60 * 60 // Conversion jours → secondes avec préservation du signe
   }
 
   /**
-   * If the value is a string, we check if it matches the regex for negative time strings.
-   * If it does, we extract the number and unit, then convert it to seconds.
-   * - 'd' is converted to seconds by multiplying by 24 * 60 * 60
-   * - 'm' is converted to seconds by multiplying by 60
-   * - 's' is already in seconds
-   * This conversion preserves the sign of the number,
-   * so if the input is negative, the output will also be negative.
+   * Conversion des chaînes temporelles en secondes selon l'unité :
+   * - 'd' (jours) : × 24 × 60 × 60
+   * - 'm' (minutes) : × 60
+   * - 's' (secondes) : valeur inchangée
    */
   if (isString(value)) {
-    const match = value.match(/^(\d+)([dms])$/);
+    const match = value.match(/^(\d+)([dms])$/)
     if (match) {
-      const numValue = parseInt(match[1], 10);
-      const unit = match[2];
+      const numValue = parseInt(match[1], 10)
+      const unit = match[2]
 
       switch (unit) {
-        case 'd': // days
-          return numValue * 24 * 60 * 60;
+        case 'd': // jours
+          return numValue * 24 * 60 * 60
 
         case 'm': // minutes
-          return numValue * 60;
+          return numValue * 60
 
-        case 's': // seconds
-          return numValue;
+        case 's': // secondes
+          return numValue
 
         default:
-          throw new Error(`Unsupported time unit: ${unit}`);
+          throw new Error(`Unité de temps non supportée : ${unit}`)
       }
     }
   }
 
-  // If we can't parse it, try to convert to number
-  return Number(value) || undefined;
+  // Tentative de conversion en nombre si aucun format ne correspond
+  return Number(value) || undefined
 }
 
 /**
- * Custom decorator to validate that at least one of the properties 'rules' or 'trigger' is defined and not empty.
- * This decorator can be applied to a class to enforce this validation rule.
+ * Décorateur de validation personnalisé pour s'assurer qu'au moins une propriété 'rules' ou 'trigger' est définie
  *
- * @param validationOptions
- * @returns
+ * @param {ValidationOptions} [validationOptions] - Options de validation class-validator
+ * @returns {Function} Décorateur de classe
+ *
+ * @description Ce décorateur de classe valide qu'au moins l'une des deux propriétés suivantes est présente :
+ * - `rules` : un objet contenant au moins une paire clé-valeur
+ * - `trigger` : un nombre défini et non nul
+ *
+ * Cette validation garantit qu'une règle de transition de cycle de vie possède soit
+ * des règles de filtrage, soit un déclencheur temporel, ou les deux.
+ *
+ * @example
+ * @ValidateRulesOrTrigger({ message: 'Au moins rules ou trigger doit être fourni' })
+ * class MaClasse {
+ *   rules?: object;
+ *   trigger?: number;
+ * }
  */
 function ValidateRulesOrTrigger(validationOptions?: ValidationOptions) {
   return function (constructor: Function) {
@@ -102,77 +121,189 @@ function ValidateRulesOrTrigger(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(_: any, args: ValidationArguments) {
-          const obj = args.object as ConfigRulesObjectIdentitiesDTO;
+          const obj = args.object as ConfigRulesObjectIdentitiesDTO
 
           /**
-           * Check if either 'rules' or 'trigger' is defined and not empty.
-           * 'rules' should be an object with at least one key-value pair,
-           * and 'trigger' should be a number that is not null.
+           * Vérification de la présence de 'rules' ou 'trigger' :
+           * - 'rules' doit être un objet avec au moins une clé
+           * - 'trigger' doit être un nombre défini et non nul
            */
-          const hasRules = obj.rules !== undefined && obj.rules !== null && (typeof obj.rules === 'object' && Object.keys(obj.rules).length > 0);
-          const hasTrigger = obj.trigger !== undefined && obj.trigger !== null;
-          return hasRules || hasTrigger;
+          const hasRules = obj.rules !== undefined && obj.rules !== null && (typeof obj.rules === 'object' && Object.keys(obj.rules).length > 0)
+          const hasTrigger = obj.trigger !== undefined && obj.trigger !== null
+          return hasRules || hasTrigger
         },
         defaultMessage(_: ValidationArguments) {
-          return 'Either rules or trigger must be provided';
+          return 'Au moins rules ou trigger doit être fourni'
         }
       }
-    });
-  };
+    })
+  }
 }
 
-@ValidateRulesOrTrigger({ message: 'Either rules or trigger must be provided' })
+/**
+ * DTO de configuration des règles de transition du cycle de vie des identités
+ *
+ * @class ConfigRulesObjectIdentitiesDTO
+ * @description Définit une règle de transition automatique entre états de cycle de vie.
+ * Une règle spécifie :
+ * - Les états source depuis lesquels la transition peut se faire
+ * - Les conditions de déclenchement (temporelles et/ou basées sur des règles)
+ * - L'état cible de la transition
+ * - Les mutations à appliquer lors de la transition
+ *
+ * @example
+ * {
+ *   sources: ['OFFICIAL'],
+ *   dateKey: 'lastLifecycleUpdate',
+ *   trigger: 90, // 90 jours
+ *   target: 'MANUAL',
+ *   mutation: { status: 'archived' }
+ * }
+ */
+@ValidateRulesOrTrigger({ message: 'Au moins rules ou trigger doit être fourni' })
 export class ConfigRulesObjectIdentitiesDTO {
+  /**
+   * États source du cycle de vie depuis lesquels cette règle peut s'appliquer
+   *
+   * @type {IdentityLifecycleDefault[]}
+   * @description Liste des états de cycle de vie qui déclenchent cette règle.
+   * Une identité doit être dans l'un de ces états pour que la règle soit évaluée.
+   *
+   * @example ['OFFICIAL', 'MANUAL']
+   */
   @ApiProperty({
     type: String,
     enum: IdentityLifecycleDefault,
-    description: 'Lifecycle state of the identity',
+    description: 'États source du cycle de vie de l\'identité',
     example: IdentityLifecycleDefault.OFFICIAL,
     required: true,
   })
   @IsArray()
   @IsNotEmpty()
   @IsString({ each: true })
-  public sources: IdentityLifecycleDefault[];
+  public sources: IdentityLifecycleDefault[]
 
+  /**
+   * Clé de date utilisée pour calculer le déclencheur temporel
+   *
+   * @type {string}
+   * @default 'lastLifecycleUpdate'
+   * @description Nom du champ de date dans le document d'identité à utiliser
+   * comme référence pour calculer le délai du trigger.
+   *
+   * @example 'lastLifecycleUpdate', 'createdAt', 'lastModified'
+   */
   @IsOptional()
   @IsString()
-  public dateKey: string = 'lastLifecycleUpdate';
+  public dateKey: string = 'lastLifecycleUpdate'
 
+  /**
+   * Règles de filtrage conditionnelles pour l'application de la transition
+   *
+   * @type {object}
+   * @description Objet de règles permettant de filtrer les identités éligibles.
+   * Fonctionne comme une requête MongoDB pour sélectionner les documents concernés.
+   *
+   * @example { department: 'IT', status: { $ne: 'disabled' } }
+   */
   @IsOptional()
   @IsObject()
-  public rules: object;
+  public rules: object
 
+  /**
+   * Mutations à appliquer lors de la transition d'état
+   *
+   * @type {object}
+   * @description Objet définissant les modifications à apporter aux champs de l'identité
+   * lors de l'exécution de la transition. Permet de mettre à jour des attributs en plus
+   * du changement d'état.
+   *
+   * @example { archived: true, archivedDate: new Date() }
+   */
   @IsOptional()
   @IsObject()
-  public mutation: object;
+  public mutation: object
 
+  /**
+   * Déclencheur temporel de la transition en secondes
+   *
+   * @type {number}
+   * @description Délai après lequel la transition doit s'exécuter, calculé depuis la date
+   * spécifiée dans `dateKey`. Peut être fourni comme nombre (jours) ou chaîne avec unité.
+   *
+   * @example 90 (90 jours), '90d' (90 jours), '10m' (10 minutes), '45s' (45 secondes)
+   */
   @IsOptional()
   @Transform(({ value }) => transformTriggerToSeconds(value))
   @IsNumber()
   @ApiProperty({
     oneOf: [
-      { type: 'number', description: 'Number representing days' },
-      { type: 'string', description: 'Time string with units (d=days, m=minutes, s=seconds)' }
+      { type: 'number', description: 'Nombre représentant des jours' },
+      { type: 'string', description: 'Chaîne temporelle avec unité (d=jours, m=minutes, s=secondes)' }
     ],
     required: false,
-    description: 'Trigger time as number (days) or time string with units',
+    description: 'Déclencheur temporel en nombre (jours) ou chaîne avec unité',
     examples: [90, '90d', '10m', '45s']
   })
-  public trigger: number;
+  public trigger: number
 
+  /**
+   * État cible du cycle de vie après la transition
+   *
+   * @type {IdentityLifecycleDefault}
+   * @description État de cycle de vie vers lequel l'identité sera transitionnée
+   * lorsque les conditions de la règle sont satisfaites.
+   *
+   * @example IdentityLifecycleDefault.MANUAL
+   */
   @IsNotEmpty()
   @ApiProperty({
     type: String,
     enum: IdentityLifecycleDefault,
-    description: 'Target lifecycle state for the identity',
+    description: 'État cible du cycle de vie pour l\'identité',
     example: IdentityLifecycleDefault.MANUAL,
     required: true,
   })
-  public target: IdentityLifecycleDefault;
+  public target: IdentityLifecycleDefault
 }
 
+/**
+ * DTO de schéma de configuration des règles de cycle de vie
+ *
+ * @class ConfigRulesObjectSchemaDTO
+ * @description Conteneur principal pour l'ensemble des règles de transition de cycle de vie.
+ * Structure la configuration globale en regroupant toutes les règles applicables aux identités.
+ *
+ * @example
+ * {
+ *   identities: [
+ *     {
+ *       sources: ['OFFICIAL'],
+ *       trigger: 90,
+ *       target: 'MANUAL'
+ *     },
+ *     {
+ *       sources: ['MANUAL'],
+ *       trigger: '30d',
+ *       target: 'ARCHIVED'
+ *     }
+ *   ]
+ * }
+ */
 export class ConfigRulesObjectSchemaDTO {
+  /**
+   * Collection des règles de transition de cycle de vie pour les identités
+   *
+   * @type {ConfigRulesObjectIdentitiesDTO[]}
+   * @description Tableau contenant l'ensemble des règles de transition automatique
+   * appliquées aux identités. Chaque règle définit une transition possible entre états.
+   *
+   * @example
+   * [
+   *   { sources: ['OFFICIAL'], trigger: 90, target: 'MANUAL' },
+   *   { sources: ['MANUAL'], trigger: 30, target: 'ARCHIVED' }
+   * ]
+   */
   @IsOptional()
   @IsArray()
   @ApiProperty({

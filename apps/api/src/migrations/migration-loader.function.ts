@@ -16,9 +16,9 @@ export function startLoader(message) {
   const spinnerFrames = ['-', '\\', '|', '/']
 
   const loaderInterval = setInterval(() => {
-    readline.cursorTo(process.stdout, 0);
-    process.stdout.write(`${spinnerFrames[currentFrame]} ${message} `);
-    currentFrame = (currentFrame + 1) % spinnerFrames.length;
+    readline.cursorTo(process.stdout, 0)
+    process.stdout.write(`${spinnerFrames[currentFrame]} ${message} `)
+    currentFrame = (currentFrame + 1) % spinnerFrames.length
   }, 100)
 
   return loaderInterval

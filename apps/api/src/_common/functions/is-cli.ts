@@ -1,5 +1,6 @@
 import path from 'node:path'
 import { Abstract, DynamicModule, ForwardReference, Provider, Type } from '@nestjs/common'
+import { isArray } from 'radash'
 
 /**
  * Vérifie si le point d'entrée actuel est le mode console.
@@ -69,7 +70,7 @@ export function useOnCli<
   | (string | symbol | Function | Provider | DynamicModule | Promise<DynamicModule> | ForwardReference<any> | Abstract<any>),
 >(items: T | T[]): T[] {
   if (isConsoleEntrypoint()) {
-    return items instanceof Array ? items : [items]
+    return isArray(items) ? items : [items]
   }
   return []
 }

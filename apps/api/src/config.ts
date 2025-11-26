@@ -1,14 +1,26 @@
-import { MongooseModuleOptions } from '@nestjs/mongoose';
-import { RedisOptions } from 'ioredis';
-import { HelmetOptions } from 'helmet';
-import { SwaggerCustomOptions } from '@nestjs/swagger';
-import Joi from 'joi';
-import { IAuthModuleOptions } from '@nestjs/passport';
-import { JwtModuleOptions } from '@nestjs/jwt';
-import { StorageManagerConfig } from '~/_common/factorydrive';
-import { AmazonWebServicesS3StorageConfig } from '~/_common/factorydrive';
-import { HttpModuleOptions } from '@nestjs/axios';
+import { MongooseModuleOptions } from '@nestjs/mongoose'
+import { RedisOptions } from 'ioredis'
+import { HelmetOptions } from 'helmet'
+import { SwaggerCustomOptions } from '@nestjs/swagger'
+import Joi from 'joi'
+import { IAuthModuleOptions } from '@nestjs/passport'
+import { JwtModuleOptions } from '@nestjs/jwt'
+import { StorageManagerConfig } from '~/_common/factorydrive'
+import { AmazonWebServicesS3StorageConfig } from '~/_common/factorydrive'
+import { HttpModuleOptions } from '@nestjs/axios'
 
+/**
+ * Schéma de validation Joi pour les variables d'environnement
+ *
+ * @description Définit et valide toutes les variables d'environnement requises et optionnelles
+ * pour l'application. Fournit des valeurs par défaut et des règles de validation strictes.
+ *
+ * @example
+ * // Utilisation avec ConfigModule
+ * ConfigModule.forRoot({
+ *   validationSchema: validationSchema,
+ * })
+ */
 export const validationSchema = Joi.object({
   LANG: Joi
     .string()
@@ -129,37 +141,53 @@ export const validationSchema = Joi.object({
     .default('FR'),
 });
 
+/**
+ * Configuration d'un plugin Mongoose
+ *
+ * @interface MongoosePlugin
+ * @property {string} package - Nom du package npm du plugin
+ * @property {boolean} [enabled] - Indique si le plugin est activé (optionnel)
+ * @property {Record<string, any>} [options] - Options de configuration du plugin (optionnel)
+ */
 export interface MongoosePlugin {
   package: string;
   enabled?: boolean;
   options?: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
+
+/**
+ * Interface principale de configuration de l'application
+ *
+ * @interface ConfigInstance
+ * @description Définit la structure complète de la configuration de l'application
+ * incluant tous les modules et services (MongoDB, Redis, JWT, Mailer, etc.)
+ */
 export interface ConfigInstance {
   application: {
     lang: string
-    logLevel: string;
-    nameQueue: string;
+    logLevel: string
+    nameQueue: string
     bodyParser: {
-      limit: string;
-    };
+      limit: string
+    }
     https: {
       enabled: boolean;
       key: string;
       cert: string;
     }
-  };
-  helmet: HelmetOptions;
+  }
+  helmet: HelmetOptions
   mongoose: {
     uri: string;
-    options: MongooseModuleOptions;
-    plugins: MongoosePlugin[];
+    options: MongooseModuleOptions
+    plugins: MongoosePlugin[]
   };
   ioredis: {
-    uri: string;
-    options: RedisOptions;
+    uri: string
+    options: RedisOptions
   };
   axios: {
-    options: HttpModuleOptions;
+    options: HttpModuleOptions
   };
   factorydrive: {
     options:
@@ -168,44 +196,61 @@ export interface ConfigInstance {
       disks: {
         [key: string]: {
           driver: 's3';
-          config: AmazonWebServicesS3StorageConfig;
-        };
-      };
-    };
-  };
+          config: AmazonWebServicesS3StorageConfig
+        }
+      }
+    }
+  }
   passport: {
-    options: IAuthModuleOptions;
-  };
+    options: IAuthModuleOptions
+  }
   jwt: {
-    options: JwtModuleOptions;
+    options: JwtModuleOptions
   };
   mailer: {
-    host: string;
-    port: number;
-    sender: string;
-  };
+    host: string
+    port: number
+    sender: string
+  }
   sms: {
-    host: string;
-    systemId: string;
-    password: string;
-    sourceAddr: string;
-    regionCode: string;
-  };
+    host: string
+    systemId: string
+    password: string
+    sourceAddr: string
+    regionCode: string
+  }
   frontPwd: {
-    url: string;
-    identityMailAttribute: string;
-    identityMobileAttribute: string;
-  };
+    url: string
+    identityMailAttribute: string
+    identityMobileAttribute: string
+  }
   lifecycle: {
-    triggerCronExpression: string;
-  };
+    triggerCronExpression: string
+  }
   swagger: {
-    path: string;
-    api: string;
-    options: SwaggerCustomOptions;
-  };
+    path: string
+    api: string
+    options: SwaggerCustomOptions
+  }
 }
 
+/**
+ * Factory de configuration de l'application
+ *
+ * @function
+ * @returns {ConfigInstance} Instance de configuration complète avec toutes les valeurs
+ * @description Fonction factory qui génère la configuration de l'application en lisant
+ * les variables d'environnement et en appliquant les valeurs par défaut.
+ * Cette fonction est utilisée par NestJS ConfigModule pour initialiser la configuration.
+ *
+ * @example
+ * // Dans app.module.ts
+ * ConfigModule.forRoot({
+ *   isGlobal: true,
+ *   load: [config],
+ *   validationSchema: validationSchema,
+ * })
+ */
 export default (): ConfigInstance => ({
   application: {
     lang: process.env['LANG'] || 'en',
@@ -318,4 +363,4 @@ export default (): ConfigInstance => ({
     sourceAddr: process.env['SESAME_SMPP_SOURCEADDR'] || '',
     regionCode: process.env['SESAME_SMPP_REGIONCODE'] || 'FR',
   },
-});
+})

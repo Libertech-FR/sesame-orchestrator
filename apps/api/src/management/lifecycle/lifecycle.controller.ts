@@ -15,7 +15,7 @@ import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Lifecycle } from './_schemas/lifecycle.schema'
 import { LifecycleCrudService } from './lifecycle-crud.service'
-import { LifecycleCacheInterceptor } from './interceptors/lifecycle-cache.interceptor'
+import { LifecycleCacheInterceptor } from './_interceptors/lifecycle-cache.interceptor'
 
 /**
  * Contrôleur de gestion du cycle de vie des identités

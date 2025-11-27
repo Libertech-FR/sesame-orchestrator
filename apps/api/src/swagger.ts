@@ -1,15 +1,13 @@
-// import { Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { DocumentBuilder, SwaggerCustomOptions, SwaggerModule } from '@nestjs/swagger';
-import { Response } from 'express';
-import { readFileSync } from 'fs';
-// import { RedocModule } from 'nestjs-redoc';
-import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
+import { ConfigService } from '@nestjs/config'
+import { NestExpressApplication } from '@nestjs/platform-express'
+import { DocumentBuilder, SwaggerCustomOptions, SwaggerModule } from '@nestjs/swagger'
+import { Response } from 'express'
+import { readFileSync } from 'fs'
+import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes'
 
 export default async function swagger(app: NestExpressApplication) {
-  const config = app.get<ConfigService>(ConfigService);
-  const pkg = JSON.parse(readFileSync('package.json', 'utf-8'));
+  const config = app.get<ConfigService>(ConfigService)
+  const pkg = JSON.parse(readFileSync('package.json', 'utf-8'))
 
   const build = new DocumentBuilder()
     .setTitle(pkg.name)
@@ -18,10 +16,10 @@ export default async function swagger(app: NestExpressApplication) {
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'jwt')
     .addSecurityRequirements('jwt')
 
-    .build();
+    .build()
 
-  const document = SwaggerModule.createDocument(app, build);
-  const theme = new SwaggerTheme();
+  const document = SwaggerModule.createDocument(app, build)
+  const theme = new SwaggerTheme()
 
   SwaggerModule.setup(config.get<string>('swagger.path'), app, document, {
     ...config.get<SwaggerCustomOptions>('swagger.options'),
@@ -31,7 +29,7 @@ export default async function swagger(app: NestExpressApplication) {
       persistAuthorization: true,
     },
     customCss: theme.getBuffer(SwaggerThemeNameEnum.ONE_DARK),
-  });
+  })
 
-  app.getHttpAdapter().get(config.get<string>('swagger.api'), (_, res: Response) => res.json(document));
+  app.getHttpAdapter().get(config.get<string>('swagger.api'), (_, res: Response) => res.json(document))
 }

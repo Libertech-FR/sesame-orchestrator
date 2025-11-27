@@ -16,7 +16,7 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node'
  * Si SESAME_SENTRY_DSN n'est pas défini, Sentry reste désactivé et un avertissement est émis.
  */
 if (!process.env.SESAME_SENTRY_DSN) {
-  Logger.warn('SENTRY DSN not provided, Sentry is disabled', 'SentryInit')
+  Logger.warn('SENTRY DSN not provided, Sentry is disabled', Sentry.constructor.name)
 } else {
   Sentry.init({
     /** DSN de connexion à Sentry */
@@ -70,5 +70,5 @@ if (!process.env.SESAME_SENTRY_DSN) {
       Sentry.fsIntegration(),
     ],
   })
-  Logger.log(`Sentry initialized successfully`, 'SentryInit')
+  Logger.log(`Sentry initialized successfully`, Sentry.constructor.name)
 }

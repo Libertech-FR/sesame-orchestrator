@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
 import { Command, CommandRunner, InquirerService, SubCommand } from 'nest-commander'
-import { LifecycleService } from './lifecycle.service'
+import { LifecycleCrudService } from './lifecycle-crud.service'
 
 /**
  * Commande CLI pour lister les sources de cycle de vie
@@ -25,12 +25,12 @@ export class LifecycleListCommand extends CommandRunner {
    *
    * @param {ModuleRef} moduleRef - Référence au module NestJS pour la résolution de dépendances
    * @param {InquirerService} inquirer - Service pour les interactions utilisateur en ligne de commande
-   * @param {LifecycleService} lifecycleService - Service de gestion du cycle de vie
+   * @param {LifecycleCrudService} lifecycleService - Service de gestion du cycle de vie
    */
   public constructor(
     protected moduleRef: ModuleRef,
     private readonly inquirer: InquirerService,
-    private readonly lifecycleService: LifecycleService,
+    private readonly lifecycleService: LifecycleCrudService,
   ) {
     super()
   }

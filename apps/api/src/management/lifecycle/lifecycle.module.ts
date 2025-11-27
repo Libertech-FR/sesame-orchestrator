@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
 import { Lifecycle, LifecycleSchema } from './_schemas/lifecycle.schema'
 import { LifecycleController } from './lifecycle.controller'
-import { LifecycleService } from './lifecycle.service'
+import { LifecycleCrudService } from './lifecycle-crud.service'
+import { LifecycleHooksService } from './lifecycle-hooks.service'
 import { IdentitiesModule } from '../identities/identities.module'
 import { useOnCli } from '~/_common/functions/is-cli'
 import { LifecycleCommand } from './lifecycle.command'
@@ -18,6 +19,7 @@ import { BackendsModule } from '~/core/backends/backends.module'
  * - Gestion de l'historique des événements de cycle de vie
  * - Configuration et récupération des états disponibles
  * - Statistiques et rapports sur les transitions d'état
+ * - Automatisations et règles de transition (LifecycleHooksService)
  * - Commandes CLI pour l'administration
  * - API REST pour l'intégration frontend
  */
@@ -36,8 +38,10 @@ import { BackendsModule } from '~/core/backends/backends.module'
     IdentitiesModule,
   ],
   providers: [
-    // Service principal de gestion du cycle de vie
-    LifecycleService,
+    // Service CRUD de gestion du cycle de vie
+    LifecycleCrudService,
+    // Service de gestion des automatisations et événements
+    LifecycleHooksService,
     // Commandes CLI enregistrées uniquement en mode console
     ...useOnCli([
       ...LifecycleCommand.registerWithSubCommands(),
@@ -45,7 +49,7 @@ import { BackendsModule } from '~/core/backends/backends.module'
   ],
   // Contrôleur REST exposant les endpoints API
   controllers: [LifecycleController],
-  // Service exporté pour utilisation dans d'autres modules
-  exports: [LifecycleService],
+  // Services exportés pour utilisation dans d'autres modules
+  exports: [LifecycleCrudService, LifecycleHooksService],
 })
 export class LifecycleModule { }

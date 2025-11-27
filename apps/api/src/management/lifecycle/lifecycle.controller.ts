@@ -4,7 +4,8 @@ import {
   HttpStatus,
   Param,
   Req,
-  Res
+  Res,
+  UseInterceptors,
 } from '@nestjs/common'
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 import { FilterOptions, SearchFilterOptions } from '~/_common/restools'
@@ -13,7 +14,8 @@ import { Types } from 'mongoose'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Lifecycle } from './_schemas/lifecycle.schema'
-import { LifecycleService } from './lifecycle.service'
+import { LifecycleCrudService } from './lifecycle-crud.service'
+import { LifecycleCacheInterceptor } from './interceptors/lifecycle-cache.interceptor'
 
 /**
  * Contrôleur de gestion du cycle de vie des identités
@@ -42,14 +44,15 @@ import { LifecycleService } from './lifecycle.service'
  */
 @ApiTags('management/lifecycle')
 @Controller('lifecycle')
+@UseInterceptors(LifecycleCacheInterceptor)
 export class LifecycleController extends AbstractController {
   /**
    * Constructeur du contrôleur lifecycle
    *
-   * @param {LifecycleService} _service - Service de gestion du cycle de vie injecté
+   * @param {LifecycleCrudService} _service - Service de gestion du cycle de vie injecté
    */
   public constructor(
-    protected readonly _service: LifecycleService,
+    protected readonly _service: LifecycleCrudService,
   ) {
     super()
   }

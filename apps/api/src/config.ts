@@ -8,6 +8,14 @@ import { JwtModuleOptions } from '@nestjs/jwt'
 import { StorageManagerConfig } from '~/_common/factorydrive'
 import { AmazonWebServicesS3StorageConfig } from '~/_common/factorydrive'
 import { HttpModuleOptions } from '@nestjs/axios'
+import { join } from 'path'
+
+/**
+ * Répertoire de base de l'application API
+ * En environnement Docker: /data/apps/api
+ * En développement local: le répertoire du projet
+ */
+const API_ROOT_DIR = process.env['SESAME_API_ROOT_DIR'] || join(process.cwd(), 'apps', 'api')
 
 /**
  * Schéma de validation Joi pour les variables d'environnement
@@ -306,13 +314,13 @@ export default (): ConfigInstance => ({
         local: {
           driver: 'local',
           config: {
-            root: process.cwd() + '/storage',
+            root: join(API_ROOT_DIR, 'storage'),
           },
         },
         identities: {
           driver: 'local',
           config: {
-            root: process.cwd() + '/storage/identities',
+            root: join(API_ROOT_DIR, 'storage', 'identities'),
           },
         },
       },

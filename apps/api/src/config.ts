@@ -15,7 +15,7 @@ import { join } from 'path'
  * En environnement Docker: /data/apps/api
  * En développement local: le répertoire du projet
  */
-const API_ROOT_DIR = process.env['SESAME_API_ROOT_DIR'] || join(process.cwd(), 'apps', 'api')
+const API_ROOT_DIR = process.env['SESAME_API_ROOT_DIR'] || process.cwd()
 
 /**
  * Schéma de validation Joi pour les variables d'environnement

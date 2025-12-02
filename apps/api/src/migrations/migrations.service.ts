@@ -43,6 +43,9 @@ export class MigrationsService implements OnModuleInit {
   ) {
     const storageRoot = this.config.get<string>('factorydrive.options.disks.local.config.root', '/tmp')
     this.lockLocation = posix.join(storageRoot, 'migrations.lock')
+    this.logger.debug(`Migration lock file location: ${this.lockLocation}`)
+    this.logger.debug(`Storage root: ${storageRoot}`)
+    this.logger.debug(`Process CWD: ${process.cwd()}`)
   }
 
   /**
@@ -239,8 +242,10 @@ export class MigrationsService implements OnModuleInit {
     try {
       // Ensure the directory exists before writing the file
       const lockDir = dirname(this.lockLocation)
+      this.logger.debug(`Creating directory: ${lockDir}`)
       await mkdir(lockDir, { recursive: true })
 
+      this.logger.debug(`Writing migration lock file to: ${this.lockLocation}`)
       await writeFile(this.lockLocation, migrationTimestamp)
       await this.mongo.collection('migrations').insertOne({
         timestamp: parseInt(migrationTimestamp),
@@ -249,6 +254,8 @@ export class MigrationsService implements OnModuleInit {
       this.logger.log(chalk.blue(`Migration ${chalk.bold('<' + migrationKey + '>')} done.`))
     } catch (e) {
       this.logger.error(chalk.red(`Error while updating migration lock file !`))
+      this.logger.error(`Lock file path: ${this.lockLocation}`)
+      this.logger.error(`Lock file directory: ${dirname(this.lockLocation)}`)
       this.logger.error(e)
 
       throw new Error('Error while updating migration lock file !')

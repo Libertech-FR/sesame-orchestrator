@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxt build",
-    "start:dev": "nuxt dev",
-    "start:debug": "nuxt dev --inspect=0.0.0.0",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' nuxt build",
+    "start:dev": "NODE_OPTIONS='--max-old-space-size=4096' nuxt dev",
+    "start:debug": "NODE_OPTIONS='--max-old-space-size=4096' nuxt dev --inspect=0.0.0.0",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",

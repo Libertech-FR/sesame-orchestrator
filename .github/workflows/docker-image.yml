@@ -7,7 +7,6 @@ on:
       - "Dockerfile"
       - ".github/workflows/docker-image.yml"
       - "package.json"
-      - "Dockerfile"
       - "tsconfig.json"
       - "configs/**"
       - "defaults/**"

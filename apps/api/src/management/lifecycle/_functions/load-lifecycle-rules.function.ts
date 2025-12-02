@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs'
 import { plainToInstance } from 'class-transformer'
 import { parse } from 'yaml'
 import { validateOrReject } from 'class-validator'
@@ -49,14 +49,21 @@ export async function loadLifecycleRules(): Promise<ConfigRulesObjectSchemaDTO[]
   logger.verbose('Loading lifecycle rules from configuration files...')
   logger.verbose('Initializing LifecycleService...')
 
+  const rulesDir = `${process.cwd()}/configs/lifecycle/rules`
+
+  if (!existsSync(rulesDir)) {
+    logger.warn(`Rules directory does not exist: ${rulesDir}. Returning empty rules array.`)
+    return []
+  }
+
   try {
-    files = readdirSync(`${process.cwd()}/configs/lifecycle/rules`)
+    files = readdirSync(rulesDir)
   } catch (error) {
     logger.error('Error reading lifecycle files', error.message, error.stack)
+    return []
   }
 
   // Construire une signature du set de fichiers (nom + mtimeMs) pour le cache
-  const rulesDir = `${process.cwd()}/configs/lifecycle/rules`
   const yamlFiles = files.filter((f) => f.endsWith('.yml') || f.endsWith('.yaml'))
   const signatureParts: string[] = []
   for (const file of yamlFiles) {
@@ -84,7 +91,7 @@ export async function loadLifecycleRules(): Promise<ConfigRulesObjectSchemaDTO[]
     }
 
     try {
-  const data = readFileSync(`${process.cwd()}/configs/lifecycle/rules/${file}`, 'utf-8')
+      const data = readFileSync(`${rulesDir}/${file}`, 'utf-8')
       logger.debug(`Loaded lifecycle config: ${file}`)
       const yml = parse(data)
       schema = plainToInstance(ConfigRulesObjectSchemaDTO, yml)

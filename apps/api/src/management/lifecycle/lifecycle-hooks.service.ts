@@ -9,7 +9,7 @@ import { SchedulerRegistry } from '@nestjs/schedule'
 import { ConfigService } from '@nestjs/config'
 import { LifecycleStateDTO } from './_dto/config-states.dto'
 import { ConfigRulesObjectIdentitiesDTO, ConfigRulesObjectSchemaDTO } from './_dto/config-rules.dto'
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { isConsoleEntrypoint } from '~/_common/functions/is-cli'
 import { CronJob } from 'cron'
 import dayjs from 'dayjs'
@@ -22,7 +22,7 @@ import { AbstractLifecycleService } from './_abstracts/abstract.lifecycle.servic
 @Injectable()
 export class LifecycleHooksService extends AbstractLifecycleService {
   private _lastLifecycleCacheRefresh?: number
-  
+
   /**
    * Initialise le service lors du chargement du module
    *
@@ -50,6 +50,20 @@ export class LifecycleHooksService extends AbstractLifecycleService {
     let defaultFilesRules = []
 
     this.logger.verbose('Initializing LifecycleService...')
+
+    // Ensure config directories exist
+    const configDir = `${process.cwd()}/configs/lifecycle`
+    const configRulesDir = `${process.cwd()}/configs/lifecycle/rules`
+
+    if (!existsSync(configDir)) {
+      this.logger.warn(`Creating missing directory: ${configDir}`)
+      mkdirSync(configDir, { recursive: true })
+    }
+
+    if (!existsSync(configRulesDir)) {
+      this.logger.warn(`Creating missing directory: ${configRulesDir}`)
+      mkdirSync(configRulesDir, { recursive: true })
+    }
 
     try {
       files = readdirSync(`${process.cwd()}/configs/lifecycle`)

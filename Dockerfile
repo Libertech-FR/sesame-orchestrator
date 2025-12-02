@@ -56,7 +56,11 @@ RUN yarn install \
   --production=false
 
 COPY --from=builder /data/apps/api/dist ./apps/api/dist
+COPY --from=builder /data/apps/api/configs ./apps/api/configs
+COPY --from=builder /data/apps/api/defaults ./apps/api/defaults
 COPY --from=builder /data/apps/web/.output ./apps/web/.output
+COPY --from=builder /data/apps/web/config ./apps/web/config
+COPY --from=builder /data/apps/web/default ./apps/web/default
 COPY --from=builder /data/apps/web/nuxt.config.ts ./apps/web/nuxt.config.ts
 COPY --from=builder /data/apps/web/src ./apps/web/src
 COPY --from=builder /data/apps/web/start.mjs ./apps/web/start.mjs

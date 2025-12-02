@@ -66,5 +66,6 @@ if (!runtimeConfig.public?.sentry?.dsn) {
       return event
     },
   })
+
   consola.debug(`Sentry initialized successfully`)
 }

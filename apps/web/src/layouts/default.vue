@@ -35,10 +35,10 @@ q-layout(view="hHh LpR lff" style="margin-top: -1px;")
           q-btn(flat round icon="mdi-close" v-close-popup)
   q-footer(:class="$q.dark.isActive ? 'bg-dark' : 'bg-white'" bordered)
     q-bar(:class="$q.dark.isActive ? 'bg-dark' : 'bg-white text-black'")
-      span
-        small AppManager&nbsp;
-        small(v-text="'v' + (appManagerVersion?.currentVersion || '0.0.0')")
-      small.bold &nbsp;/&nbsp;
+      //- span
+      //-   small AppManager&nbsp;
+      //-   small(v-text="'v' + (appManagerVersion?.currentVersion || '0.0.0')")
+      //- small.bold &nbsp;/&nbsp;
       span
         small Orchestrator&nbsp;
         small(v-text="'v' + (orchestratorVersion?.currentVersion || '0.0.0')")
@@ -47,15 +47,15 @@ q-layout(view="hHh LpR lff" style="margin-top: -1px;")
         small Daemon&nbsp;
         small(v-text="'v' + (daemonVersion?.currentVersion || '0.0.0')")
       div.q-pr-xs
-      q-btn.q-px-xs(
-        v-show="appManagerVersion?.updateAvailable"
-        flat stretch icon="mdi-alert-box" color="amber-9"
-        href="https://github.com/Libertech-FR/sesame-app-manager/releases" target="_blank"
-      ) App Manager
-        q-tooltip.text-body2.bg-amber-9
-          | MAJ disponible (
-          span(v-text="appManagerVersion?.lastVersion || '0.0.0'")
-          | )
+      //- q-btn.q-px-xs(
+      //-   v-show="appManagerVersion?.updateAvailable"
+      //-   flat stretch icon="mdi-alert-box" color="amber-9"
+      //-   href="https://github.com/Libertech-FR/sesame-app-manager/releases" target="_blank"
+      //- ) App Manager
+      //-   q-tooltip.text-body2.bg-amber-9
+      //-     | MAJ disponible (
+      //-     span(v-text="appManagerVersion?.lastVersion || '0.0.0'")
+      //-     | )
       q-btn.q-px-xs(
         v-show="orchestratorVersion?.updateAvailable"
         flat stretch icon="mdi-alert-box" color="amber-9"
@@ -91,13 +91,13 @@ const auth = useAuth()
 const config = useAppConfig()
 
 let orchestratorVersion = ref<object | null>(null)
-let appManagerVersion = ref<object | null>(null)
+// let appManagerVersion = ref<object | null>(null)
 let daemonVersion = ref<object | null>(null)
 
 onMounted(async () => {
   if (process.env.NODE_ENV === 'development') {
     orchestratorVersion.value = { currentVersion: '0.0.0-dev', lastVersion: '0.0.0-dev', updateAvailable: false }
-    appManagerVersion.value = { currentVersion: '0.0.0-dev', lastVersion: '0.0.0-dev', updateAvailable: false }
+    // appManagerVersion.value = { currentVersion: '0.0.0-dev', lastVersion: '0.0.0-dev', updateAvailable: false }
     daemonVersion.value = { currentVersion: '0.0.0-dev', lastVersion: '0.0.0-dev', updateAvailable: false }
     return
   }
@@ -105,12 +105,12 @@ onMounted(async () => {
   const { data: orchestratorVersionRes } = await useHttp<any>('/get-update/sesame-orchestrator', {
     signal: AbortSignal.timeout(2000),
   })
-  const { data: appManagerVersionRes } = await useHttp<any>('/get-update/sesame-app-manager', {
-    signal: AbortSignal.timeout(2000),
-    query: {
-      current: config.appManagerVersion || '0.0.0',
-    },
-  })
+  // const { data: appManagerVersionRes } = await useHttp<any>('/get-update/sesame-app-manager', {
+  //   signal: AbortSignal.timeout(2000),
+  //   query: {
+  //     current: config.appManagerVersion || '0.0.0',
+  //   },
+  // })
   const { data: daemonVersionDump } = await useHttp<any>('/core/backends/execute', {
     signal: AbortSignal.timeout(2000),
     method: 'POST',
@@ -131,7 +131,7 @@ onMounted(async () => {
     },
   })
   orchestratorVersion.value = orchestratorVersionRes.value?.data
-  appManagerVersion.value = appManagerVersionRes.value?.data
+  // appManagerVersion.value = appManagerVersionRes.value?.data
   daemonVersion.value = daemonVersionRes.value?.data
 })
 

@@ -102,7 +102,7 @@ export class AppController extends AbstractController {
    * ```
    */
   @ApiQuery({ name: 'current', required: false })
-  @Get('/get-update/:project(sesame-orchestrator|sesame-daemon|sesame-app-manager)')
+  @Get('/get-update/:project(sesame-orchestrator|sesame-daemon)')
   public async update(
     @Res() res: Response,
     @Param('project') project?: ProjectsList,
@@ -110,12 +110,11 @@ export class AppController extends AbstractController {
   ): Promise<Response> {
     const pkgInfo = this.appService.getInfo();
     const currentVersion = current || pkgInfo.version;
-    const [lastMajor, lastMinor, lastPatch] = currentVersion.split('.').map(Number);
+    const [currentMajor, currentMinor, currentPatch] = currentVersion.split('.').map(Number);
 
-    // Validation du format de version si le projet est différent ou si une version est fournie
-    if (project !== pkgInfo.name || current) {
-      if (!/[0-9]+\.[0-9]+\.[0-9]+/.test(current)) {
-        throw new BadRequestException('Invalid version for current parameter');
+    if (project !== pkgInfo.name) {
+      if (!/[0-9]+\.[0-9]+\.[0-9]+/.test(currentVersion)) {
+        throw new BadRequestException('Invalid version for current parameter or project info');
       }
     }
 
@@ -125,8 +124,8 @@ export class AppController extends AbstractController {
 
     if (data) {
       lastVersion = data.tag_name.replace(/^v/, '');
-      const [currentMajor, currentMinor, currentPatch] = lastVersion.split('.').map(Number);
-      updateAvailable = currentMajor > lastMajor || currentMinor > lastMinor || currentPatch > lastPatch;
+      const [lastMajor, lastMinor, lastPatch] = lastVersion.split('.').map(Number);
+      updateAvailable = lastMajor > currentMajor || (lastMajor === currentMajor && lastMinor > currentMinor) || (lastMajor === currentMajor && lastMinor === currentMinor && lastPatch > currentPatch);
     }
 
     return res.json({

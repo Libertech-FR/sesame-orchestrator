@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, Logger, OnApplicationBootstrap } from 
 import { PackageJson } from 'types-package-json';
 import { ModuleRef } from '@nestjs/core';
 import { readFileSync } from 'fs';
+import { join } from 'path';
 import { AbstractService } from '~/_common/abstracts/abstract.service';
 import { pick } from 'radash';
 import { HttpService } from '@nestjs/axios';
@@ -138,7 +139,7 @@ export class AppService extends AbstractService implements OnApplicationBootstra
     private readonly config: ConfigService<any>,
   ) {
     super({ moduleRef });
-    this.package = JSON.parse(readFileSync('package.json', 'utf-8'));
+    this.package = JSON.parse(readFileSync(join(__dirname, '../../../package.json'), 'utf-8'));
   }
 
   /**
@@ -241,9 +242,17 @@ export class AppService extends AbstractService implements OnApplicationBootstra
    * Cette méthode ne fait pas d'appel à l'API GitHub, elle consulte uniquement
    * le cache. Les données sont mises en cache par fetchGithubRelease().
    */
-  public getProjectUpdate(project: ProjectsList): GithubUpdate {
+  public async getProjectUpdate(project: ProjectsList): Promise<GithubUpdate | null> {
     if (!Object.values(ProjectsList).includes(project)) {
       throw new BadRequestException(`Invalid project: ${project}`);
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      this.logger.warn('GitHub release fetch in development mode.');
+      for (const project of Object.values(ProjectsList)) {
+        this.logger.verbose(`Checking for updates for project: ${project}`);
+        await this.fetchGithubRelease(project);
+      }
     }
 
     if (this.storage.has(project)) {

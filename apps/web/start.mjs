@@ -8,11 +8,11 @@ dotenv.config()
 
 function hashEnv() {
   const sum = createHash('sha256')
-  // Ne hasher que les variables SESAME et npm_ qui impactent le build
+  // Ne hasher que les variables SESAME et npm_ qui impactent le build + BUILD_VERSION
   const env = Object.fromEntries(Object.entries(process.env).filter(
-    ([key]) => key.startsWith('SESAME_') || key.startsWith('npm_')
+    ([key]) => key.startsWith('SESAME_') || key.startsWith('npm_') || key === 'BUILD_VERSION'
   ))
-  // console.log('env', env)
+  console.log('env', env)
   sum.update(JSON.stringify(env))
   return sum.digest('hex')
 }
@@ -62,7 +62,7 @@ function buildNuxt() {
     }
   }
 
-  if (hashEnv() !== readHash()) {
+  if (process.env.ALLOW_RUNTIME_BUILD === 'true' && hashEnv() !== readHash()) {
     consola.warn('Hash changed, rebuilding...')
     consola.info(`Hash: ${hashEnv()}, Previous: ${readHash()}`)
     await buildNuxt()

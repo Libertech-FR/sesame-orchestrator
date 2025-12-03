@@ -40,6 +40,12 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
+      - name: Extract version and commit info
+        id: version
+        run: |
+          echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+          echo "build_id=${{ github.sha }}" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
@@ -48,3 +54,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64
+          build-args: |
+            BUILD_VERSION=${{ steps.version.outputs.version }}-${{ steps.version.outputs.build_id }}

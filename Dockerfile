@@ -15,7 +15,9 @@ RUN yarn run build
 FROM node:22-alpine AS production
 
 ARG NODE_ENV=production
+ARG BUILD_VERSION=dev
 ENV NODE_ENV=${NODE_ENV}
+ENV BUILD_VERSION=${BUILD_VERSION}
 ENV ALLOW_RUNTIME_BUILD=true
 ENV DO_NOT_TRACK=1
 ENV PYTHONWARNINGS=ignore::UserWarning
@@ -36,9 +38,8 @@ RUN apk add --no-cache \
   git \
   jq \
   bash \
-  nano
-
-RUN mkdir -p /var/log/supervisor
+  nano && \
+  mkdir -p /var/log/supervisor
 
 RUN ARCH=$(uname -m) && \
   if [ "$ARCH" = "x86_64" ]; then \
@@ -53,7 +54,16 @@ RUN yarn install \
   --prefer-offline \
   --pure-lockfile \
   --non-interactive \
-  --production=false
+  --production=true && \
+  yarn cache clean && \
+  find /data/node_modules -name "*.md" -delete && \
+  find /data/node_modules -name "*.map" -delete && \
+  find /data/node_modules -name "*.ts" -not -path "*/node_modules/@types/*" -delete && \
+  find /data/node_modules -type d -name "__tests__" -exec rm -rf {} + 2>/dev/null || true && \
+  find /data/node_modules -type d -name "test" -exec rm -rf {} + 2>/dev/null || true && \
+  find /data/node_modules -type d -name "tests" -exec rm -rf {} + 2>/dev/null || true && \
+  find /data/node_modules -type d -name "docs" -exec rm -rf {} + 2>/dev/null || true && \
+  rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.node-gyp
 
 COPY --from=builder /data/apps/api/dist ./apps/api/dist
 COPY --from=builder /data/apps/api/configs ./apps/api/configs

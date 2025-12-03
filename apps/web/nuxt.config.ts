@@ -262,14 +262,14 @@ export default defineNuxtConfig({
         console.debug('[Nuxt] Error while reading identities-columns.yml', error)
       }
 
-      console.log('[OpenapiTS] Generating .nuxt/types/service-api.d.ts...')
-      try {
-        const fileData = await openapiTS(`${SESAME_APP_API_URL}/swagger/json`)
-        writeFileSync('.nuxt/types/service-api.d.ts', String(fileData))
-        console.log('[OpenapiTS] Generated .nuxt/types/service-api.d.ts !')
-      } catch (error) {
-        console.debug('[OpenapiTS] Error while generating .nuxt/types/service-api.d.ts', error)
-      }
+      // console.log('[OpenapiTS] Generating .nuxt/types/service-api.d.ts...')
+      // try {
+      //   const fileData = await openapiTS(`${SESAME_APP_API_URL}/swagger/json`)
+      //   writeFileSync('.nuxt/types/service-api.d.ts', String(fileData))
+      //   console.log('[OpenapiTS] Generated .nuxt/types/service-api.d.ts !')
+      // } catch (error) {
+      //   console.debug('[OpenapiTS] Error while generating .nuxt/types/service-api.d.ts', error)
+      // }
     },
   },
 })

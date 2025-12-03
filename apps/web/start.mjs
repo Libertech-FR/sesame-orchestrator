@@ -8,10 +8,11 @@ dotenv.config()
 
 function hashEnv() {
   const sum = createHash('sha256')
+  // Ne hasher que les variables SESAME et npm_ qui impactent le build
   const env = Object.fromEntries(Object.entries(process.env).filter(
-    ([key]) => !['HOSTNAME', 'PATH'].includes(key)
+    ([key]) => key.startsWith('SESAME_') || key.startsWith('npm_')
   ))
-  console.log('env', env)
+  // console.log('env', env)
   sum.update(JSON.stringify(env))
   return sum.digest('hex')
 }

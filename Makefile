@@ -51,6 +51,7 @@ simulation: ## Start production environment in simulation mode
 		-v $(CURDIR)/etc/supervisor:/etc/supervisor \
 		-v $(CURDIR)/apps/api/.env:/data/apps/api/.env \
 		-v $(CURDIR)/apps/web/.env:/data/apps/web/.env \
+		-v $(CURDIR)/apps/web/.env.hash:/data/apps/web/.env.hash \
 		-v $(CURDIR)/certificates:/data/certificates \
 		-v $(CURDIR)/apps/api/configs:/data/apps/api/configs \
 		-v $(CURDIR)/apps/api/defaults:/data/apps/api/defaults \

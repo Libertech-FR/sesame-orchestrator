@@ -325,21 +325,18 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
    * @returns true si l'email et l'UID sont uniques, false sinon
    */
   protected async checkMailAndUid(data: IdentitiesUpsertDto | any): Promise<boolean> {
-    // Validation des paramètres d'entrée
-    if (!data?._id) {
-      throw new BadRequestException('ID is required for mail and UID uniqueness check');
-    }
-
     if (!data?.inetOrgPerson?.uid) {
       throw new BadRequestException('UID is required for mail and UID uniqueness check');
     }
 
     // Validation du format de l'ID
     let objectId: Types.ObjectId;
-    try {
-      objectId = Types.ObjectId.createFromHexString(data._id);
-    } catch (error) {
-      throw new BadRequestException('Invalid ID format');
+    if (data._id !== undefined && data._id !== null) {
+      try {
+        objectId = Types.ObjectId.createFromHexString(data._id);
+      } catch (error) {
+        throw new BadRequestException('Invalid ID format');
+      }
     }
 
     try {
@@ -347,6 +344,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
 
       // Vérification avec email si celui-ci est fourni et non vide
       if (data.inetOrgPerson.hasOwnProperty('mail') && data.inetOrgPerson.mail !== '') {
+
         // Validation du format email
         if (typeof data.inetOrgPerson.mail !== 'string') {
           throw new BadRequestException('Invalid email format');

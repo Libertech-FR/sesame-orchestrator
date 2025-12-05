@@ -3,38 +3,62 @@ import type { IFetchError } from "ofetch";
 import { Notify } from "quasar";
 
 type useErrorHandlingReturnType = {
-    handleError: (payload: handleErrorPayload) => void;
+  handleError: (payload: handleErrorPayload) => void;
+  handleErrorReq: (payload: handleErrorPayload) => void;
 };
 
 type handleErrorPayload = {
-    error: any;
-    redirect?: boolean;
-    notify?: boolean;
-    message?: string;
+  error: any;
+  redirect?: boolean;
+  notify?: boolean;
+  message?: string;
 };
 
 //const $q = useQuasar();
 
 export function useErrorHandling(): useErrorHandlingReturnType {
   function handleError(payload: handleErrorPayload) {
-  const { error, redirect = false, notify = true, message = 'Une erreur est survenue' } = payload;
-  const msg = error.cause.response._data.message || error.cause.response._data.message || message;
-  console.error('handleError', error);
-  if (notify) {
-    Notify.create({
-      message: msg,
-      color: 'negative',
-      position: 'top-right',
-      icon: 'mdi-alert-circle-outline',
-    });
+    const { error, redirect = false, notify = true, message = 'Une erreur est survenue' } = payload;
+    const msg = error.cause.response._data.message || error.cause.response._data.message || message;
+    console.error('handleError', error);
+    if (notify) {
+      Notify.create({
+        message: msg,
+        color: 'negative',
+        position: 'top-right',
+        icon: 'mdi-alert-circle-outline',
+      });
+    }
+    if (redirect) {
+      throw createError({
+        fatal: true,
+        message: msg,
+        statusCode: error.cause.response._data.statusCode || error.cause.response._data.statusCode || 500,
+      });
+    }
   }
-  if (redirect) {
-    throw createError({
-      fatal: true,
-      message: msg,
-      statusCode: error.cause.response._data.statusCode || error.cause.response._data.statusCode || 500,
-    });
+
+  function handleErrorReq(payload: handleErrorPayload) {
+    const { error, redirect = false, notify = true, message = 'Une erreur est survenue' } = payload;
+    console.log('handleErrorReq error', error);
+    const msg = error.response?._data?.message || error.data?.message || message;
+    console.error('handleErrorReq', error);
+    if (notify) {
+      Notify.create({
+        message: msg,
+        color: 'negative',
+        position: 'top-right',
+        icon: 'mdi-alert-circle-outline',
+      });
+    }
+    if (redirect) {
+      throw createError({
+        fatal: true,
+        message: msg,
+        statusCode: error.response?._data?.statusCode || error.data?.statusCode || 500,
+      });
+    }
   }
-}
-    return { handleError };
+
+  return { handleError, handleErrorReq };
 }

@@ -67,7 +67,7 @@ const emits = defineEmits(['refreshTarget'])
 const $q = useQuasar()
 const router = useRouter()
 const { getStateColor, getStateName } = useIdentityStates()
-const { handleError } = useErrorHandling()
+const { handleError, handleErrorReq } = useErrorHandling()
 
 const identity = ref<Identity>(props.identity)
 const tabs = ref(props.identity?.additionalFields?.objectClasses ?? [])
@@ -106,37 +106,60 @@ async function addSchema(schema) {
 }
 
 async function submit() {
-  const sanitizedIdentity = { ...props.identity }
+  const sanitizedIdentity = { ...identity.value }
   delete sanitizedIdentity.metadata
   if (sanitizedIdentity?.additionalFields?.validations) delete sanitizedIdentity.additionalFields.validations
 
-  const { data: result, pending, error, refresh } = await useHttp<any>(`/management/identities/${props.identity._id}`, { method: 'PATCH', body: sanitizedIdentity })
-  if (error.value) {
-    console.log('error', error.value.data.validations)
-    validations.value = { ...error.value.data.validations }
-    // error.value = error.value.cause.response._data
-    handleError({ error: error.value, message: 'Erreur lors de la sauvegarde' })
-  } else {
-    validations.value = null
+  const requestOptions = { method: 'PATCH', body: JSON.stringify(sanitizedIdentity) }
+  try {
+    const result = await $http.patch(`/management/identities/${identity.value._id}`, requestOptions)
     $q.notify({ message: 'Sauvegarde effectuée', color: 'positive', position: 'top-right', icon: 'mdi-check-circle-outline' })
-    emits('refreshTarget', { ...result.value.data })
+    validations.value = null
+  } catch (error) {
+    handleErrorReq({ error: error, message: 'Erreur lors de la sauvegarde' })
+    console.log('error', error.data.validations)
+    validations.value = { ...error.data.validations }
   }
+
+  // const { data: result, pending, error, refresh } = await useHttp<any>(`/management/identities/${identity.value._id}`, { method: 'PATCH', body: sanitizedIdentity })
+  // if (error.value) {
+  //   console.log('error', error.value.data.validations)
+  //   validations.value = { ...error.value.data.validations }
+  //   // error.value = error.value.cause.response._data
+  //   handleError({ error: error.value, message: 'Erreur lors de la sauvegarde' })
+  // } else {
+  //   validations.value = null
+  //   $q.notify({ message: 'Sauvegarde effectuée', color: 'positive', position: 'top-right', icon: 'mdi-check-circle-outline' })
+  //   emits('refreshTarget', { ...result.value.data })
+  // }
 }
 
 async function create() {
-  console.log('create from form')
-  const sanitizedIdentity = { ...props.identity }
+  const sanitizedIdentity = { ...identity.value }
   delete sanitizedIdentity.metadata
+  console.log('create from form', sanitizedIdentity)
 
-  const { data: result, pending, error, refresh } = await useHttp(`/management/identities`, { method: 'POST', body: { ...sanitizedIdentity } })
-  if (error.value) {
-    handleError({ error: error.value, message: 'Erreur lors de la création' })
-    console.log('error', error.value.data.validations)
-    validations.value = { ...error.value.data.validations }
-  } else {
+  const requestOptions = { method: 'POST', body: JSON.stringify(sanitizedIdentity) }
+  try {
+    const data = await $http.post(`/management/identities`, requestOptions)
     $q.notify({ message: 'Création effectuée', color: 'positive', position: 'top-right', icon: 'mdi-check-circle-outline' })
     emits('refreshTarget', {})
+    validations.value = null
+  } catch (error) {
+    handleErrorReq({ error: error, message: 'Erreur lors de la création' })
+    console.log('error', error.data.validations)
+    validations.value = { ...error.data.validations }
   }
+
+  // const { data: result, pending, error, refresh } = await useHttp(`/management/identities`, { method: 'POST', body: { ...sanitizedIdentity } })
+  // if (error.value) {
+  //   handleError({ error: error.value, message: 'Erreur lors de la création' })
+  //   console.log('error', error.value.data.validations)
+  //   validations.value = { ...error.value.data.validations }
+  // } else {
+  //   $q.notify({ message: 'Création effectuée', color: 'positive', position: 'top-right', icon: 'mdi-check-circle-outline' })
+  //   emits('refreshTarget', {})
+  // }
 }
 
 const stateName = computed(() => {

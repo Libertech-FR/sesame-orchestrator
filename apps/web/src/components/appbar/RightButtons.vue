@@ -18,14 +18,14 @@ div
           flat
           dense
         )
-  q-dialog( v-model="settings" full-width persistent)
-     sesame-settings
+  //- q-dialog( v-model="settings" full-width persistent)
+  //-    sesame-settings
 </template>
 
 <script lang="ts" setup>
 import { useIdentityStateStore } from '~/stores/identityState'
 import { ref } from 'vue'
-let settings = ref(false)
+// let settings = ref(false)
 
 const identityStateStore = useIdentityStateStore()
 const stateValue = ref(0)
@@ -62,9 +62,9 @@ const buttons = [
 ]
 
 const emits = defineEmits(['syncing'])
-function displaySettings() {
-  settings.value = true
-}
+// function displaySettings() {
+//   settings.value = true
+// }
 async function syncAll() {
   emits('syncing', { count: badgesValues.value.TO_SYNC })
   await useHttp('/core/backends/syncall', {

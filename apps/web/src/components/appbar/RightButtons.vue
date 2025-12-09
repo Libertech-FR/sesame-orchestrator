@@ -4,7 +4,7 @@ div
     q-tooltip.text-body2(transition-show="scale" transition-hide="scale") {{ button.name }}
 
   q-btn(v-if="badgesValues.TO_SYNC > 0" icon="mdi-sync" square color="amber-9" size="md" :label="badgesValues.TO_SYNC +' items à Synchroniser'" @click="syncAll")
-  q-btn( icon="mdi-cog" size="md" flat @click="displaySettings")
+  q-btn( icon="mdi-cog" size="md" flat @click="$router.push('/settings/agents')" )
   q-btn( @click="toogleDark" flat size="md" icon="mdi-theme-light-dark")
   q-btn-dropdown(icon="mdi-account-circle-outline" :label="auth?.user?.displayName" round flat size="md")
     q-list

@@ -538,6 +538,7 @@ export class BackendsService extends AbstractQueueProcessor {
           await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
             $set: {
               state: options?.targetState || IdentityState.SYNCED,
+              deletedFlag: options?.dataState === DataStatusEnum.DELETED,
               lastBackendSync: new Date(),
             },
           });

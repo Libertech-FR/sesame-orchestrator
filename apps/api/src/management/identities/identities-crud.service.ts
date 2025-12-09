@@ -157,7 +157,8 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
   }): Promise<ModifyResult<Query<T, T, any, T>>[]> {
     const identities = await this._model.find({ _id: { $in: body.ids } }).exec();
     if (identities.some((identity) => identity.state !== body.originState)) {
-      throw new HttpException("Toutes les identités ne sont pas dans l'état attendu.", 400);
+      // throw new HttpException("Toutes les identités ne sont pas dans l'état attendu.", 400);
+      this.logger.warn("Toutes les identités ne sont pas dans l'état attendu." + JSON.stringify(identities.map(i => ({ id: i._id, state: i.state }))));
     }
 
     if (identities.length === 0) {

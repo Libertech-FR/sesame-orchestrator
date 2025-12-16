@@ -89,6 +89,8 @@ const identityStateStore = useIdentityStateStore()
 
 const auth = useAuth()
 const config = useAppConfig()
+const { initDebug } = useDebug()
+initDebug()
 
 let orchestratorVersion = ref<object | null>(null)
 // let appManagerVersion = ref<object | null>(null)

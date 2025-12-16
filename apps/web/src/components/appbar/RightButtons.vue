@@ -18,8 +18,6 @@ div
           flat
           dense
         )
-  //- q-dialog( v-model="settings" full-width persistent)
-  //-    sesame-settings
 </template>
 
 <script lang="ts" setup>
@@ -62,9 +60,6 @@ const buttons = [
 ]
 
 const emits = defineEmits(['syncing'])
-// function displaySettings() {
-//   settings.value = true
-// }
 async function syncAll() {
   emits('syncing', { count: badgesValues.value.TO_SYNC })
   await useHttp('/core/backends/syncall', {
@@ -77,20 +72,23 @@ async function syncAll() {
 }
 
 async function toggleDebug() {
-  const route = useRoute()
-  const router = useRouter()
+  const { debug } = useDebug()
 
-  const query = { ...route.query }
+  debug.value = !debug.value
+  // const route = useRoute()
+  // const router = useRouter()
 
-  if (/true|on|yes|1/i.test(query.debug as string)) {
-    delete query.debug
-  } else {
-    query.debug = '1'
-  }
+  // const query = { ...route.query }
 
-  await router.replace({
-    query,
-  })
+  // if (/true|on|yes|1/i.test(query.debug as string)) {
+  //   delete query.debug
+  // } else {
+  //   query.debug = '1'
+  // }
+
+  // await router.replace({
+  //   query,
+  // })
 }
 const $q = useQuasar()
 

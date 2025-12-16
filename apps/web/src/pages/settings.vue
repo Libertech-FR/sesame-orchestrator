@@ -12,35 +12,11 @@
         <q-drawer v-model="drawer" show-if-above :width="200" :breakpoint="500" bordered :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
           <q-scroll-area class="fit">
             <q-list>
-              <q-item clickable @click="$router.push('/settings/agents')">
+              <q-item v-for="item in navItems" :key="item.route" clickable @click="$router.push(item.route)" :active="$route.path === item.route">
                 <q-item-section avatar>
-                  <q-icon name="mdi-account" />
+                  <q-icon :name="item.icon" />
                 </q-item-section>
-                <q-item-section> Utilisateurs </q-item-section>
-              </q-item>
-            </q-list>
-            <q-list>
-              <q-item clickable @click="$router.push('/settings/password-policy')">
-                <q-item-section avatar>
-                  <q-icon name="mdi-form-textbox-password" />
-                </q-item-section>
-                <q-item-section> Politique de mot de passe </q-item-section>
-              </q-item>
-            </q-list>
-            <q-list>
-              <q-item clickable @click="$router.push('/settings/smtp')">
-                <q-item-section avatar>
-                  <q-icon name="mdi-mail" />
-                </q-item-section>
-                <q-item-section> Serveur SMTP </q-item-section>
-              </q-item>
-            </q-list>
-            <q-list>
-              <q-item clickable @click="$router.push('/settings/sms')">
-                <q-item-section avatar>
-                  <q-icon name="mdi-message-processing" />
-                </q-item-section>
-                <q-item-section> Serveur SMS </q-item-section>
+                <q-item-section> {{ item.label }} </q-item-section>
               </q-item>
             </q-list>
           </q-scroll-area>
@@ -59,4 +35,12 @@
 <script setup>
 import { ref } from 'vue'
 const drawer = ref(false)
+
+const navItems = [
+  { route: '/settings/agents', icon: 'mdi-account', label: 'Utilisateurs' },
+  { route: '/settings/password-policy', icon: 'mdi-form-textbox-password', label: 'Politique de mot de passe' },
+  { route: '/settings/smtp', icon: 'mdi-mail', label: 'Serveur SMTP' },
+  { route: '/settings/sms', icon: 'mdi-message-processing', label: 'Serveur SMS' },
+  { route: '/settings/cron', icon: 'mdi-clipboard-list', label: 'Tâches planifiés' },
+]
 </script>

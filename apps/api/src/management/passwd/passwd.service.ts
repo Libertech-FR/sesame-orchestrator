@@ -479,18 +479,19 @@ export class PasswdService extends AbstractService {
     return code;
   }
 
-  private async setInitState(identity: Identities, state: InitStatesEnum): Promise<any> {
+  private async setInitState(identity: Identities, state: InitStatesEnum): Promise<Identities> {
+  // on met actif l'identité
     identity.initState = state;
-    // on met actif l'identité
     identity.dataStatus = DataStatusEnum.ACTIVE;
+
     if (state === InitStatesEnum.SENT) {
       identity.initInfo.initDate = new Date();
       identity.initInfo.sentDate = null;
     } else if (state === InitStatesEnum.INITIALIZED) {
       identity.initInfo.sentDate = new Date();
     }
-    const ok = await identity.save();
-    return ok;
+
+    return await identity.save();
   }
 
   // sort les identites qui n ont pas repondu dans le delai à l init de leurs comptes

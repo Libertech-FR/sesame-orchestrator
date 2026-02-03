@@ -1,23 +1,14 @@
 import { Injectable } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema'
-import { Lifecycle } from './_schemas/lifecycle.schema'
-import { Model } from 'mongoose'
-import { IdentitiesCrudService } from '../identities/identities-crud.service'
-import { BackendsService } from '~/core/backends/backends.service'
-import { SchedulerRegistry } from '@nestjs/schedule'
-import { ConfigService } from '@nestjs/config'
-import { LifecycleStateDTO } from './_dto/config-states.dto'
-import { ConfigRulesObjectIdentitiesDTO, ConfigRulesObjectSchemaDTO } from './_dto/config-rules.dto'
-import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
-import { isConsoleEntrypoint } from '~/_common/functions/is-cli'
+import { OnEvent } from '@nestjs/event-emitter'
 import { CronJob } from 'cron'
 import dayjs from 'dayjs'
-import { loadLifecycleRules } from './_functions/load-lifecycle-rules.function'
-import { loadCustomStates } from './_functions/load-custom-states.function'
-import { OnEvent } from '@nestjs/event-emitter'
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { isConsoleEntrypoint } from '~/_common/functions/is-cli'
 import { Identities } from '../identities/_schemas/identities.schema'
 import { AbstractLifecycleService } from './_abstracts/abstract.lifecycle.service'
+import { ConfigRulesObjectSchemaDTO } from './_dto/config-rules.dto'
+import { loadCustomStates } from './_functions/load-custom-states.function'
+import { loadLifecycleRules } from './_functions/load-lifecycle-rules.function'
 
 @Injectable()
 export class LifecycleHooksService extends AbstractLifecycleService {
@@ -211,6 +202,49 @@ export class LifecycleHooksService extends AbstractLifecycleService {
     return await loadLifecycleRules() // return current rules from files without rebuilding sources
   }
 
+  public executeCronNow(): void {
+    const job = this.schedulerRegistry.getCronJob(`lifecycle-trigger`)
+    if (job) {
+      this.logger.log('Executing lifecycle trigger cron job immediately...')
+      job.fireOnTick()
+    } else {
+      this.logger.warn('No lifecycle trigger cron job found to execute.')
+    }
+  }
+
+  public async executeCronForSource(source: string): Promise<void> {
+    this.logger.log(`Executing lifecycle rules for source <${source}>...`)
+
+    const lifecycleRules = await this.ensureLifecycleCacheFresh()
+
+    for (const lfr of lifecycleRules) {
+      for (const idRule of lfr.identities) {
+        console.log('Checking identity rule sources:', idRule)
+        if (idRule.sources.includes(source as any) && idRule.trigger === -1) {
+          await this.handleCron({ lifecycleRules: [lfr], ignoreTrigger: true })
+        }
+      }
+    }
+
+    this.logger.log(`Execution of lifecycle rules for source <${source}> completed.`)
+  }
+
+  public async executeCronForAllSources(): Promise<void> {
+    this.logger.log(`Executing lifecycle rules for all sources...`)
+
+    const lifecycleRules = await this.ensureLifecycleCacheFresh()
+
+    for (const lfr of lifecycleRules) {
+      for (const idRule of lfr.identities) {
+        if (idRule.trigger === -1) {
+          await this.handleCron({ lifecycleRules: [lfr], ignoreTrigger: true })
+        }
+      }
+    }
+
+    this.logger.log(`Execution of lifecycle rules for all sources completed.`)
+  }
+
   /**
    * Gestionnaire de la tâche cron pour les transitions temporelles
    *
@@ -235,24 +269,31 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * // Trouve les identités OFFICIAL depuis > 90 jours
    * // Les transition vers MANUAL
    */
-  private async handleCron({ lifecycleRules }: { lifecycleRules: ConfigRulesObjectSchemaDTO[] }): Promise<void> {
+  private async handleCron(
+    { lifecycleRules, ignoreTrigger = false }: { lifecycleRules: ConfigRulesObjectSchemaDTO[], ignoreTrigger: boolean },
+  ): Promise<void> {
     this.logger.debug(`Running lifecycle trigger cron job...`)
 
     for (const lfr of lifecycleRules) {
       for (const idRule of lfr.identities) {
-        if (idRule.trigger) {
+        if (typeof idRule.trigger === 'number' && (idRule.trigger > 0 || ignoreTrigger)) {
           const dateKey = idRule.dateKey || 'lastLifecycleUpdate'
 
           try {
+            const checkDate = new Date(Date.now() - (idRule.trigger * 1000))
+            const filterDate = {}
+            filterDate[dateKey] = { $lte: checkDate }
+
             const identities = await this.identitiesService.model.find({
               ...idRule.rules,
               lifecycle: {
                 $in: idRule.sources,
               },
               ignoreLifecycle: { $ne: true },
-              [dateKey]: {
-                $lte: new Date(Date.now() - (idRule.trigger * 1000)),
-              },
+              ...(ignoreTrigger ? {} : filterDate),
+              // [dateKey]: {
+              //   $lte: new Date(Date.now() - (idRule.trigger * 1000)),
+              // },
             })
             this.logger.log(`Found ${identities.length} identities to process for trigger in source <${idRule.sources}>`)
             this.logger.verbose(`identities process triggered`, JSON.stringify(idRule, null, 2))

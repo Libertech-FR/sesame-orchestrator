@@ -3,7 +3,7 @@ import { plainToInstance } from 'class-transformer'
 import { parse } from 'yaml'
 import { validateOrReject } from 'class-validator'
 import { ConfigStatesDTO, LifecycleStateDTO } from '../_dto/config-states.dto'
-import { formatValidationErrors } from './format-validation-errors.function'
+import { formatValidationErrors } from '../../../_common/functions/format-validation-errors.function'
 import { IdentityLifecycleDefault } from '../../identities/_enums/lifecycle.enum'
 import { Logger } from '@nestjs/common'
 

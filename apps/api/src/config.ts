@@ -8,7 +8,8 @@ import { JwtModuleOptions } from '@nestjs/jwt'
 import { StorageManagerConfig } from '~/_common/factorydrive'
 import { AmazonWebServicesS3StorageConfig } from '~/_common/factorydrive'
 import { HttpModuleOptions } from '@nestjs/axios'
-import { join } from 'path'
+import path, { join } from 'path'
+import { CronExpression } from '@nestjs/schedule'
 
 /**
  * Répertoire de base de l'application API
@@ -147,6 +148,15 @@ export const validationSchema = Joi.object({
   SESAME_SMPP_REGIONCODE: Joi
     .string()
     .default('FR'),
+
+  SESAME_CRON_HANDLER_EXPRESSION: Joi
+    .string()
+    .pattern(/^(\*|([0-5]?\d))(\/\d+)? (\*|([01]?\d|2[0-3]))(\/\d+)? (\*|([01]?\d|2[0-9]|3[01]))(\/\d+)? (\*|(1[0-2]|0?[1-9]))(\/\d+)? (\*|([0-6]))(\/\d+)?$/)
+    .default(CronExpression.EVERY_HOUR),
+
+  SESAME_CRON_LOG_DIRECTORY: Joi
+    .string()
+    .default(path.join(process.cwd(), 'logs', 'handlers')),
 });
 
 /**
@@ -189,14 +199,18 @@ export interface ConfigInstance {
     uri: string;
     options: MongooseModuleOptions
     plugins: MongoosePlugin[]
-  };
+  }
   ioredis: {
     uri: string
     options: RedisOptions
-  };
+  }
   axios: {
     options: HttpModuleOptions
-  };
+  }
+  cron: {
+    handlerExpression: string
+    logDirectory: string
+  }
   factorydrive: {
     options:
     | StorageManagerConfig
@@ -306,6 +320,10 @@ export default (): ConfigInstance => ({
       timeout: parseInt(process.env['SESAME_AXIOS_TIMEOUT'], 10) || 5_000,
       maxRedirects: parseInt(process.env['SESAME_AXIOS_MAX_REDIRECTS'], 10) || 5,
     },
+  },
+  cron: {
+    handlerExpression: process.env['SESAME_CRON_HANDLER_EXPRESSION'] || CronExpression.EVERY_HOUR,
+    logDirectory: process.env['SESAME_CRON_LOG_DIRECTORY'] || path.join(process.cwd(), 'logs', 'handlers'),
   },
   factorydrive: {
     options: {

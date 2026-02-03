@@ -3,6 +3,7 @@ import { ModuleRef } from '@nestjs/core'
 import { Command, CommandRunner, InquirerService, Question, QuestionSet, SubCommand } from 'nest-commander'
 import { AgentsCreateDto } from '~/core/agents/_dto/agents.dto'
 import { AgentsService } from '~/core/agents/agents.service'
+import { Agents } from './_schemas/agents.schema'
 
 /**
  * Ensemble de questions interactives pour la création d'un agent.
@@ -116,6 +117,33 @@ export class AgentsCreateCommand extends CommandRunner {
   }
 }
 
+@SubCommand({ name: 'list' })
+export class AgentsListCommand extends CommandRunner {
+  private readonly logger = new Logger(AgentsListCommand.name)
+
+  public constructor(
+    protected moduleRef: ModuleRef,
+    private readonly agentsService: AgentsService,
+  ) {
+    super()
+  }
+
+  async run(_inputs: string[], _options: any): Promise<void> {
+    this.logger.log('Listing agents...')
+    try {
+      const agents = await this.agentsService.find<Agents>({})
+      console.table(agents.map((agent: any) => ({
+        username: agent.username,
+        email: agent.email,
+        displayName: agent.displayName,
+        currentState: agent.state.current,
+      })), ['username', 'email', 'displayName', 'currentState'])
+    } catch (error) {
+      console.error('Error listing agents', error)
+    }
+  }
+}
+
 /**
  * Commande principale pour la gestion des agents.
  *
@@ -127,9 +155,10 @@ export class AgentsCreateCommand extends CommandRunner {
  * @example
  * ```bash
  * yarn run console agents create
+ * yarn run console agents list
  * ```
  */
-@Command({ name: 'agents', arguments: '<task>', subCommands: [AgentsCreateCommand] })
+@Command({ name: 'agents', arguments: '<task>', subCommands: [AgentsCreateCommand, AgentsListCommand] })
 export class AgentsCommand extends CommandRunner {
   /**
    * Constructeur de la commande agents

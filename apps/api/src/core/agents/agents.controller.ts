@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Query, Res } from '@nestjs/common'
 import { ApiParam, ApiTags } from '@nestjs/swagger'
 import {
   FilterOptions,
@@ -52,6 +52,12 @@ export class AgentsController extends AbstractController {
     hidden: 1,
   }
 
+  protected static readonly searchFields: PartialProjectionType<any> = {
+    username: 1,
+    displayName: 1,
+    email: 1,
+  };
+
   /**
    * Constructeur du contrôleur agents
    *
@@ -99,12 +105,26 @@ export class AgentsController extends AbstractController {
   @ApiPaginatedDecorator(PickProjectionHelper(AgentsDto, AgentsController.projection))
   public async search(
     @Res() res: Response,
+    @Query('search') search: string,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
   ): Promise<Response> {
-    //TODO: search tree by parentId
+
+    const searchFilter = {}
+
+    if (search && search.trim().length > 0) {
+      const searchRequest = {}
+      searchRequest['$or'] = Object.keys(AgentsController.searchFields).map((key) => {
+        return { [key]: { $regex: `^${search}`, $options: 'i' } }
+      }).filter(item => item !== undefined)
+      searchFilter['$and'] = [searchRequest]
+      searchFilter['$and'].push(searchFilterSchema)
+    } else {
+      Object.assign(searchFilter, searchFilterSchema)
+    }
+
     const [data, total] = await this._service.findAndCount(
-      searchFilterSchema,
+      searchFilter,
       AgentsController.projection,
       searchFilterOptions,
     )

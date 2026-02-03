@@ -1,0 +1,24 @@
+# Fichier MDC pour génération de message de release
+
+# Ce fichier permet de générer un message de release en français basé sur le changelog GitHub complet entre la version précédente et la version cible.
+# Utilisation typique : automatisation de la génération de notes de version lors d'une release.
+
+[release]
+lang = "fr"
+source = "github-fullchangelog"
+template = "release-fr"
+
+# Variables disponibles :
+# - previous_version : la version précédente
+# - target_version : la version cible
+# - changelog : le changelog complet entre les deux versions
+
+message = """
+## Notes de version pour la version {target_version}
+
+Voici les changements apportés depuis la version {previous_version} :
+
+{changelog}
+
+Merci à tous les contributeurs !
+"""

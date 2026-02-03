@@ -2,6 +2,7 @@ import { Logger } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
 import { Command, CommandRunner, InquirerService, SubCommand } from 'nest-commander'
 import { LifecycleCrudService } from './lifecycle-crud.service'
+import { LifecycleHooksService } from './lifecycle-hooks.service'
 
 /**
  * Commande CLI pour lister les sources de cycle de vie
@@ -73,6 +74,44 @@ export class LifecycleListCommand extends CommandRunner {
   }
 }
 
+@SubCommand({ name: 'execute' })
+export class LifecycleExecuteCommand extends CommandRunner {
+  private readonly logger = new Logger(LifecycleExecuteCommand.name)
+
+  public constructor(
+    protected moduleRef: ModuleRef,
+    private readonly inquirer: InquirerService,
+    private readonly lifecycleService: LifecycleCrudService,
+    private readonly lifecycleHooksService: LifecycleHooksService,
+  ) {
+    super()
+  }
+
+  async run(inputs: string[], options: any): Promise<void> {
+    this.logger.log('Démarrage de la commande d\'exécution du cycle de vie...')
+
+    const source = inputs[0]
+    if (!source) {
+      this.logger.log('Aucune source de cycle de vie spécifiée. Exécution pour toutes les sources...')
+
+      try {
+        await this.lifecycleHooksService.executeCronForAllSources()
+        this.logger.log(`Exécution du cycle de vie pour toutes les sources terminée avec succès.`)
+      } catch (error) {
+        this.logger.error(`Erreur lors de l'exécution du cycle de vie pour toutes les sources: ${error.message}`)
+      }
+      return
+    }
+
+    try {
+      await this.lifecycleHooksService.executeCronForSource(source)
+      this.logger.log(`Exécution du cycle de vie pour la source '${source}' terminée avec succès.`)
+    } catch (error) {
+      this.logger.error(`Erreur lors de l'exécution du cycle de vie pour la source '${source}': ${error.message}`)
+    }
+  }
+}
+
 /**
  * Commande CLI principale pour la gestion du cycle de vie
  *
@@ -85,14 +124,14 @@ export class LifecycleListCommand extends CommandRunner {
  * Configuration :
  * - name: 'lifecycle' - Nom de la commande
  * - arguments: '<task>' - Argument requis spécifiant la tâche à exécuter
- * - subCommands: [LifecycleListCommand] - Liste des sous-commandes disponibles
+ * - subCommands: [LifecycleListCommand, LifecycleExecuteCommand] - Liste des sous-commandes disponibles
  *
  * @example
  * // Utilisation en ligne de commande
  * yarn run console lifecycle list
  * yarn run console lifecycle <autre-sous-commande>
  */
-@Command({ name: 'lifecycle', arguments: '<task>', subCommands: [LifecycleListCommand] })
+@Command({ name: 'lifecycle', arguments: '<task>', subCommands: [LifecycleListCommand, LifecycleExecuteCommand] })
 export class LifecycleCommand extends CommandRunner {
   /**
    * Constructeur de la commande lifecycle

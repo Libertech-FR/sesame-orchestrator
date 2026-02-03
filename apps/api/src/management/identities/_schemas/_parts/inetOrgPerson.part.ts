@@ -1,7 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { AutoIncrementPluginOptions } from '~/_common/plugins/mongoose/auto-increment.interface';
-import { AutoIncrementPlugin } from '~/_common/plugins/mongoose/auto-increment.plugin';
 
 @Schema({ _id: false })
 export class inetOrgPerson extends Document {

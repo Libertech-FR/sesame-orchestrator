@@ -75,6 +75,7 @@ prod: ## Start production environment
 		$(IMG_NAME) yarn start:prod
 
 dev: ## Start development environment
+	@mkdir -p $(CURDIR)/apps/api/logs/handlers
 	@docker run --rm -it \
 		-e NODE_ENV=development \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \

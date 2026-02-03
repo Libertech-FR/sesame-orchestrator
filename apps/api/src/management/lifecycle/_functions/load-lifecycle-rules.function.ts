@@ -3,7 +3,7 @@ import { plainToInstance } from 'class-transformer'
 import { parse } from 'yaml'
 import { validateOrReject } from 'class-validator'
 import { ConfigRulesObjectSchemaDTO } from '../_dto/config-rules.dto'
-import { formatValidationErrors } from './format-validation-errors.function'
+import { formatValidationErrors } from '../../../_common/functions/format-validation-errors.function'
 import { Logger } from '@nestjs/common'
 
 // Cache en mémoire pour les règles de cycle de vie

@@ -1,0 +1,7 @@
+tasks:
+  - name: "lifecycle-execute-check-identities"
+    description: "Execute lifecycle trigger for check identities"
+    enabled: false
+    schedule: "0 2 15 6 *"  # Le 15 juin de chaque année à 02:00
+    handler: "lifecycle-execute"
+    options:

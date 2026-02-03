@@ -12,6 +12,7 @@ import { TasksModule } from './tasks/tasks.module'
 import { FilestorageModule } from './filestorage/filestorage.module'
 import { AuditsModule } from './audits/audits.module'
 import { HealthModule } from './health/health.module'
+import { CronModule } from './cron/cron.module'
 
 /**
  * Module Core - Fonctionnalités essentielles du système.
@@ -34,6 +35,7 @@ import { HealthModule } from './health/health.module'
  * - **TasksModule** : Gestion des tâches planifiées
  * - **FilestorageModule** : Stockage et gestion de fichiers
  * - **HealthModule** : Vérification de l'état de santé du système
+ * - **CronModule** : Gestion des tâches planifiées (cron)
  *
  * Architecture :
  * - Tous les sous-modules sont automatiquement préfixés avec '/core' dans les routes
@@ -52,6 +54,7 @@ import { HealthModule } from './health/health.module'
     FilestorageModule,
     AuditsModule,
     HealthModule,
+    CronModule,
   ],
   providers: [CoreService],
   controllers: [CoreController],

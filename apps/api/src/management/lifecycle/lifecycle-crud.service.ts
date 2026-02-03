@@ -24,7 +24,7 @@ import { AbstractLifecycleService } from './_abstracts/abstract.lifecycle.servic
 @Injectable()
 export class LifecycleCrudService extends AbstractLifecycleService {
   private _lastStatesCacheRefresh?: number
-  
+
   /**
    * Initialise le service en chargeant les états personnalisés
    *
@@ -43,6 +43,20 @@ export class LifecycleCrudService extends AbstractLifecycleService {
     this._lastStatesCacheRefresh = Date.now()
 
     this.logger.log('LifecycleService (CRUD) initialized')
+  }
+
+  /**
+   * Hook appelé après le bootstrap de l'application
+   *
+   * @async
+   * @method onApplicationBootstrap
+   * @returns {Promise<void>}
+   *
+   * @description Méthode vide implémentée pour respecter l'interface OnApplicationBootstrap.
+   * Peut être utilisée à l'avenir pour des initialisations post-bootstrap si nécessaire.
+   */
+  public async onApplicationBootstrap(): Promise<void> {
+    // Méthode vide pour l'instant
   }
 
   /**

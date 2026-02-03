@@ -30,6 +30,11 @@ function transformTriggerToSeconds(value: number | string): number | undefined {
     return undefined
   }
 
+  if (value === -1) {
+    isValid = true
+    return -1
+  }
+
   /**
    * Validation de la valeur :
    * - Pour les nombres : doit être supérieur ou égal à 0
@@ -238,12 +243,12 @@ export class ConfigRulesObjectIdentitiesDTO {
   @IsNumber()
   @ApiProperty({
     oneOf: [
-      { type: 'number', description: 'Nombre représentant des jours' },
+      { type: 'number', description: 'Nombre représentant des jours ou -1 pour le trigger depuis une tâche' },
       { type: 'string', description: 'Chaîne temporelle avec unité (d=jours, m=minutes, s=secondes)' }
     ],
     required: false,
-    description: 'Déclencheur temporel en nombre (jours) ou chaîne avec unité',
-    examples: [90, '90d', '10m', '45s']
+    description: 'Déclencheur temporel en nombre (jours) ou chaîne avec unité, ou -1 pour le trigger depuis une tâche',
+    examples: [90, '90d', '10m', '45s', -1]
   })
   public trigger: number
 

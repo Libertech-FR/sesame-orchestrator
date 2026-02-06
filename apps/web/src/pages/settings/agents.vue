@@ -1,312 +1,195 @@
 <template lang="pug">
-q-page.container
-  //- .q-px-md
-  //-   sesame-searchfilters(:fields="fieldsList")
-  //-     template(#rightSelect)
-  //-       div
-
-  sesame-2pan(
-    :simple="true"
-    :data="agents?.data"
-    :total="agents?.total"
-    :columns="columns"
-    :visibleColumns="visibleColumns"
-    :fieldsList="fieldsList"
-    :selected="selected"
-    :pending="pending"
-    :pagination="pagination"
-    :refresh="refreshEvent"
-    :error="error"
-    :titleKey=["username"]
-    :crud="crud"
-    :actions="actions"
-    :defaultRightPanelButton="true"
-  )
-    //- template(#top-left)
-    //- sesame-table-top-left(:selected="selected" @updateLifestep="updateLifestep($event)" @clear="selected = []")
-    //- template(#body-cell-states="props")
-    //-   sesame-table-state-col(:identity="props.row")
-    //- template(#right-panel-actions-content-after="{target}")
-    //-   sesame-identity-form-actions(:identity="target" @submit="submit($event)" @sync="sync" @logs="logs")
-    template(#right-panel-content="{ payload }")
-      //- sesame-generic-form(
-      //-   :payload="payload" ref="form"
-      //-   :schema="schema"
-      //-   :uischema="uischema"
-      //-   v-model:validations="validations"
-      //- )
-      sesame-json-form-renderer(
-        v-model:data="payload.target"
-        v-model:validations="validations"
-        :schema="schema"
-        :uischema="uischema"
-      )
+.sesame-page
+  .sesame-page-content
+    sesame-core-twopan.col(
+      ref='twoPan'
+      :simple='false'
+      :loading='pending'
+      :rows='agents?.data || []'
+      :total='agents?.total || 0'
+      :columns='columns'
+      :visible-columns='visibleColumns'
+      :refresh='refresh'
+      :targetId='targetId'
+      row-key='_id'
+    )
+      template(#before-top-right-before="{ selected, clearSelection }")
+        q-btn(
+          :to='toPathWithQueries(`/settings/agents/${NewTargetId}`)'
+          icon='mdi-plus'
+          flat
+          dense
+        )
+        q-separator.q-mx-sm(vertical)
+      template(#top-table)
+        q-toolbar(dense flat)
+          .column.fit
+            .flex.q-mt-sm
+              q-input.col(
+                v-model='search'
+                label='Recherche'
+                placeholder='Rechercher par username, email, ...'
+                clear-icon='mdi-close'
+                :debounce='300'
+                dense
+                outlined
+                clearable
+                autofocus
+                stacked-label
+              )
+      template(v-slot:row-actions='{ row }')
+        q-btn(:to='toPathWithQueries(`/settings/agents/${row._id}`)' color='primary' icon='mdi-eye' size='sm' flat round dense)
+        q-btn-dropdown(:class="[$q.dark.isActive ? 'text-white' : 'text-black']" dropdown-icon="mdi-dots-horizontal" size='sm' flat round dense)
+          q-list(dense)
+            q-item(clickable v-close-popup @click="deleteAgent(row)")
+              q-item-section(avatar)
+                q-icon(name="mdi-delete" color="negative")
+              q-item-section
+                q-item-label Supprimer l'agent
+      template(#after-content)
+        nuxt-page(ref='page' @refresh='refresh')
 </template>
 
-<script lang="ts" setup>
-// import usePagination from '~/composables/usePagination'
-import useAgentsSchema from '~/composables/useAgentsSchema'
-import { ref, provide, watch, computed } from 'vue'
-import { useFetch, useRoute, useRouter } from 'nuxt/app'
-import { useQuasar } from 'quasar'
-import type { QTableProps } from 'quasar'
+<script lang="ts">
+import type { LocationQueryValue } from 'vue-router'
 import type { components, operations } from '#build/types/service-api'
-import { useErrorHandling } from '#imports'
+import { NewTargetId } from '~/constants/variables'
+
 type Agent = components['schemas']['AgentsDto']
 type Response = operations['AgentsController_search']['responses']['200']['content']['application/json']
 
-defineOptions({
-  name: 'Agents',
-})
-
-const agentsSchema = useAgentsSchema()
-const schema = agentsSchema.schema
-const uischema = agentsSchema.uischema
-const validations = ref([])
-
-const daysjs = useDayjs()
-const route = useRoute()
-const router = useRouter()
-const $q = useQuasar()
-const { handleError } = useErrorHandling()
-const form = ref<any>(null)
-
-onMounted(() => {
-  initializePagination(agents.value?.total)
-})
-
-const { pagination, onRequest, initializePagination } = usePagination()
-
-const queryWithoutRead = computed(() => {
-  const { read, ...rest } = route.query
-  return rest
-})
-
-const {
-  data: agents,
-  pending,
-  refresh,
-  error,
-} = await useHttp<Response>('/core/agents', {
-  method: 'get',
-  query: queryWithoutRead,
-  // query: {
-  //   limit: 99999,
-  // },
-})
-
-if (error.value) {
-  $q.notify({
-    message: 'Impossible de récupérer les agents',
-    type: 'negative',
-  })
-}
-
-const columns = ref<QTableProps['columns']>([
-  {
-    name: 'username',
-    label: "Nom d'utilisateur",
-    field: (row: Agent) => row.username,
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'email',
-    label: 'Email',
-    field: (row: Agent) => row.email,
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'actions',
-    label: 'Actions',
-    field: 'actions',
-    align: 'left',
-  },
-])
-const visibleColumns = ref<QTableProps['visibleColumns']>(['username', 'email', 'actions'])
-const columnsType = ref([
-  { name: 'username', type: 'text' },
-  { name: 'email', type: 'text' },
-  { name: 'actions', type: 'text' },
-  { name: 'actions', type: 'text' },
-  { name: 'actions', type: 'text' },
-])
-
-const selected = ref([])
-
-function refreshEvent() {
-  refresh()
-  selected.value = []
-}
-
-const crud = {
-  create: true,
-  read: true,
-  update: true,
-  delete: true,
-}
-
-async function submit(agent: Agent) {
-  console.log('submit from index')
-  form.value.submit()
-}
-
-async function sync(agent: Agent) {
-  console.log('sync')
-  form.value.sync()
-}
-
-function logs(agent: Agent) {
-  console.log('logs')
-}
-
-const actions = {
-  cancel: async (row: Agent) => {
-    console.log('cancel')
-    validations.value = {}
-  },
-  create: async (row: Agent) => {
-    // console.log('row', row)
-
-    const sanitizedAgent = { ...row }
-    delete sanitizedAgent.metadata
-
-    const {
-      data: result,
-      pending,
-      error,
-      refresh,
-    } = await useHttp(`/core/agents`, {
-      method: 'POST',
-      body: { ...sanitizedAgent },
-    })
-    if (error.value) {
-      handleError({
-        error: error.value,
-        message: 'Erreur lors de la création',
-      })
-      validations.value = error.value.data.validations
-    } else {
-      $q.notify({
-        message: 'Création effectuée',
-        color: 'positive',
-        position: 'top-right',
-        icon: 'mdi-check-circle-outline',
-      })
-      return row
+export default defineNuxtComponent({
+  name: 'SettingsAgentsPage',
+  data() {
+    return {
+      NewTargetId,
+      visibleColumns: ['username', 'email', 'actions'],
+      columns: [
+        {
+          name: 'username',
+          label: "Nom d'utilisateur",
+          field: (row: Agent) => row.username,
+          align: 'left',
+          sortable: true,
+        },
+        {
+          name: 'email',
+          label: 'Email',
+          field: (row: Agent) => row.email,
+          align: 'left',
+          sortable: true,
+        },
+      ],
     }
   },
-  update: async (row: Agent) => {
-    const sanitizedAgent = { ...row }
-    delete sanitizedAgent.metadata
-
-    const {
-      data: result,
-      pending,
-      error,
-      refresh,
-    } = await useHttp(`/core/agents/${row._id}`, {
-      method: 'PATCH',
-      body: sanitizedAgent,
-    })
-    if (error.value) {
-      handleError({
-        error: error.value,
-        message: 'Erreur lors de la sauvegarde',
-      })
-      validations.value = error.value.data.validations
-    } else {
-      $q.notify({
-        message: 'Sauvegarde effectuée',
-        color: 'positive',
-        position: 'top-right',
-        icon: 'mdi-check-circle-outline',
-      })
+  provide() {
+    return {
+      refresh: this.refresh,
+      deleteAgent: this.deleteAgent,
     }
-    return row
   },
-  delete: async (row: Agent) => {
-    $q.dialog({
-      dark: true,
-      title: "Suppresion d'un l'agent",
-      message: `Vous êtes sur le point de supprimer l\'agent <b>${row.username}</b>. Êtes-vous sûr ?`,
-      persistent: true,
-      html: true,
-      ok: {
-        push: true,
-        color: 'negative',
-        label: 'Supprimer',
-      },
-      cancel: {
-        push: true,
-        color: 'grey-8',
-        label: 'Annuler',
-      },
-    }).onOk(async () => {
-      const {
-        data: result,
-        pending,
-        error,
-        refresh,
-      } = await useHttp(`/core/agents/${row._id}`, {
-        method: 'DELETE',
-      })
-      if (error.value) {
-        handleError({
-          error: error.value,
-          message: 'Erreur lors de la suppression',
-        })
-        validations.value = error.value.data.validations
-      } else {
-        $q.notify({
-          message: 'Suppression effectuée',
-          color: 'positive',
-          position: 'top-right',
-          icon: 'mdi-check-circle-outline',
-        })
+  async setup() {
+    const $route = useRoute()
+    const { getDefaults } = usePagination()
+    const { toPathWithQueries, navigateToTab } = useRouteQueries()
+
+    const computedQuery = computed(() => {
+      return {
+        ...getDefaults(),
+        ...$route.query,
       }
     })
-    return row
-  },
-  read: async (row, onMounted = false) => {
-    if (!onMounted) pushQuery({ key: 'read', value: row._id })
-    const { data } = await useHttp<Agent>(`/core/agents/${row._id}`, {
+    const queryDebounced = refDebounced(computedQuery, 700)
+
+    const {
+      data: agents,
+      error,
+      pending,
+      refresh,
+    } = await useHttp<Response>('/core/agents', {
       method: 'get',
+      query: queryDebounced,
     })
-    validations.value = {}
-    return data.value?.data
-  },
-  onMounted: async () => {
-    if (route.query.read) {
-      const id = route.query.read as string
-
-      const { data } = await useHttp<Agent>(`/core/agents/${id}`, {
-        method: 'get',
-      })
-      return data.value?.data
-      // const row = agents.value?.data.find((row) => row._id === id)
-      // if (row) {
-      //   return row
-      // }
-    }
-    return null
-  },
-}
-
-const fieldsList = computed(() => {
-  return columns.value!.reduce((acc: { name: string; label: string; type?: string }[], column) => {
-    if (visibleColumns.value!.includes(column.name) && column.name !== 'actions' && column.name !== 'states') {
-      const type = columnsType.value.find((type) => type.name === column.name)?.type
-      acc.push({
-        name: column.name,
-        label: column.label,
-        type,
+    if (error.value) {
+      console.error(error.value)
+      throw showError({
+        statusCode: 500,
+        statusMessage: 'Internal Server Error',
       })
     }
-    return acc
-  }, [])
+
+    return {
+      agents,
+      pending,
+      refresh,
+      toPathWithQueries,
+      navigateToTab,
+    }
+  },
+  computed: {
+    targetId(): LocationQueryValue[] | string {
+      return `${this.$route.params._id || ''}`
+    },
+    search: {
+      get(): LocationQueryValue[] | string {
+        const v = this.$route.query['search'] || ''
+
+        return `${v}`.replace(/^\*|\*$/g, '')
+      },
+      set(v: string): void {
+        this.$router.replace({
+          query: {
+            ...this.$route.query,
+            search: v ? `${v}` : undefined,
+          },
+        })
+      },
+    },
+  },
+  methods: {
+    async deleteAgent(agent: Record<string, any>) {
+      this.$q
+        .dialog({
+          title: 'Confirmation',
+          message: 'Voulez-vous vraiment supprimer cet agent ?',
+          persistent: true,
+          ok: {
+            push: true,
+            color: 'positive',
+            label: 'Supprimer',
+          },
+          cancel: {
+            push: true,
+            color: 'negative',
+            label: 'Annuler',
+          },
+        })
+        .onOk(() => {
+          this.$http
+            .delete(`/core/agents/${agent._id}`)
+            .then(() => {
+              this.$q.notify({
+                message: "L'agent a été supprimé.",
+                color: 'positive',
+                position: 'top-right',
+                icon: 'mdi-check-circle-outline',
+              })
+              this.refresh()
+              ;(this.$refs.twoPan as any).clearSelection()
+              if (this.targetId === agent._id) {
+                this.navigateToTab('/settings/agents')
+              }
+            })
+            .catch((error: any) => {
+              this.$q.notify({
+                message: "Impossible de supprimer l'agent : " + error.response._data.message,
+                color: 'negative',
+                position: 'top-right',
+                icon: 'mdi-alert-circle-outline',
+              })
+            })
+        })
+    },
+  },
 })
-
-provide('fieldsList', fieldsList.value)
 </script>

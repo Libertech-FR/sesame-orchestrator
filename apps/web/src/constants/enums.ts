@@ -7,20 +7,19 @@ export enum IdentityState {
   TO_CREATE = -1,
   TO_COMPLETE = -2,
   ON_ERROR = -3,
+  NO_SYNC = -99,
 }
 
 export enum IdentityLifecycle {
-  WAIT = "W",
-  OFFICIAL = "O",
-  ACTIVE = "A",
-  PROVISIONAL = "P",
-  INACTIVE = "I",
-  DELETED = "D",
+  ACTIVE = 'A',
+  INACTIVE = 'I',
+  DELETED = 'D',
+}
 
-  // IMPORTED = 3,
-  // OFFICIAL = 2,
-  // ACTIVE = 1,
-  // PROVISIONAL = 0,
-  // INACTIVE = -1,
-  // DELETED = -2,
+export enum DataStatus {
+  ACTIVE = 1,
+  NOTINITIALIZED = 0,
+  DELETED = -1,
+  PASSWORDNEEDTOBECHANGED = -2,
+  INACTIVE = -3,
 }

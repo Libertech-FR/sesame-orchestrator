@@ -1,7 +1,7 @@
 import { resolve } from 'path'
 import { readFileSync, writeFileSync } from 'fs'
 import pugPlugin from 'vite-plugin-pug'
-import openapiTS from 'openapi-typescript'
+import openapiTS, { astToString, COMMENT_HEADER } from 'openapi-typescript'
 import { defineNuxtConfig } from 'nuxt/config'
 import { parse } from 'yaml'
 import * as consola from 'consola'
@@ -180,6 +180,17 @@ export default defineNuxtConfig({
     plugins: ['Notify', 'Dialog'],
     config: {
       dark: SESAME_APP_DARK_MODE,
+      brand: {
+        primary: '#1976d2',
+        secondary: '#3FC6B5',
+        accent: '#9C27B0',
+        dark: '#1E1E1E',
+        'dark-page': '#121417',
+        positive: '#4CAF7A',
+        negative: '#E5533D',
+        info: '#6B8BA4',
+        warning: '#F6C453',
+      },
       notify: {
         timeout: 2500,
         position: 'top-right',
@@ -262,14 +273,14 @@ export default defineNuxtConfig({
         console.debug('[Nuxt] Error while reading identities-columns.yml', error)
       }
 
-      // console.log('[OpenapiTS] Generating .nuxt/types/service-api.d.ts...')
-      // try {
-      //   const fileData = await openapiTS(`${SESAME_APP_API_URL}/swagger/json`)
-      //   writeFileSync('.nuxt/types/service-api.d.ts', String(fileData))
-      //   console.log('[OpenapiTS] Generated .nuxt/types/service-api.d.ts !')
-      // } catch (error) {
-      //   console.debug('[OpenapiTS] Error while generating .nuxt/types/service-api.d.ts', error)
-      // }
+      console.log('[OpenapiTS] Generating .nuxt/types/service-api.d.ts...')
+      try {
+        const fileData = await openapiTS(`${SESAME_APP_API_URL}/swagger/json`)
+        writeFileSync('.nuxt/types/service-api.d.ts', `${COMMENT_HEADER}${astToString(fileData)}`)
+        console.log('[OpenapiTS] Generated .nuxt/types/service-api.d.ts !')
+      } catch (error) {
+        console.debug('[OpenapiTS] Error while generating .nuxt/types/service-api.d.ts', error)
+      }
     },
   },
 })

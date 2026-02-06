@@ -32,6 +32,9 @@ export class Identities extends AbstractSchema {
   @Prop({ type: Boolean, default: false })
   public ignoreLifecycle: boolean;
 
+  @Prop({ type: [Types.ObjectId], default: [] })
+  public ignoreFusion: Types.ObjectId[];
+
   @Prop({ type: inetOrgPersonSchema, required: true })
   public inetOrgPerson: inetOrgPerson;
 
@@ -93,4 +96,4 @@ export const IdentitiesSchema = SchemaFactory.createForClass(Identities)
   .index(
     { 'inetOrgPerson.employeeNumber': 1, 'inetOrgPerson.employeeType': 1 },
     { unique: true },
-  );
+  )

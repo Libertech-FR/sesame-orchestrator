@@ -1,6 +1,40 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsArray, IsBoolean, IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator'
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Validate,
+  ValidateNested,
+  ValidationArguments,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+} from 'class-validator'
+
+@ValidatorConstraint({ name: 'isStringArrayOrObject', async: false })
+class IsStringArrayOrObject implements ValidatorConstraintInterface {
+  public validate(value: any, args: ValidationArguments) {
+    if (!value) return true // Optional field
+
+    // Vérifie si c'est un tableau de strings
+    if (Array.isArray(value)) {
+      return value.every((item) => typeof item === 'string')
+    }
+
+    // Vérifie si c'est un objet (mais pas un tableau ou null)
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      return true
+    }
+
+    return false
+  }
+
+  defaultMessage(args: ValidationArguments) {
+    return 'options doit être soit un tableau de strings, soit un objet clé-valeur'
+  }
+}
 
 /**
  * DTO représentant la configuration d'une tâche cron
@@ -58,15 +92,28 @@ export class CronTaskDTO {
   })
   handler: string
 
-  @IsObject()
+  /**
+   * Options de la tâche : soit un tableau de strings (args), soit un objet clé-valeur
+   *
+   * @type {string[] | Record<string, any>}
+   * @description Permet de spécifier des options supplémentaires pour la tâche cron.
+   * Peut être un tableau de chaînes de caractères représentant des arguments,
+   * ou un objet avec des paires clé-valeur pour des configurations plus complexes.
+   */
   @IsOptional()
+  @Validate(IsStringArrayOrObject)
   @ApiProperty({
-    type: 'object',
-    description: 'Options spécifiques de la tâche (clé/valeur)',
-    example: { retentionPeriodDays: 30 },
-    additionalProperties: true,
+    oneOf: [
+      { type: 'array', items: { type: 'string' } },
+      { type: 'object', additionalProperties: true },
+    ],
+    description: 'Options spécifiques de la tâche : tableau de strings ou objet clé/valeur',
+    examples: [
+      ['arg1', 'arg2'],
+      { key1: 'value1', key2: 'value2', retentionPeriodDays: 30 },
+    ],
   })
-  options?: Record<string, any>
+  options?: string[] | Record<string, any>
 }
 
 export class ConfigTaskDTO {

@@ -1,177 +1,257 @@
-<template>
-  <q-page class="container">
-    <!-- <pre v-html="JSON.stringify(expanded)"></pre> -->
-    <div class="col-12">
-      <q-btn @click="push('/jobs/table')" color="positive" glossy label=" Afficher les 1000 dernieres entrées" />
-      <q-btn @click="push('/jobs/table?filters[:state]=-1')" color="negative" glossy label=" Afficher que les erreurs" />
-    </div>
-    <q-table flat bordered title="Journal" v-model:expanded="expanded" dense :rows="rows" :columns="columns" row-key="jobId" :rows-per-page-options="[20, 50, 0]">
-      <template v-slot:header="props">
-        <q-tr :props="props">
-          <q-th v-for="col in props.cols" :key="col.name" :props="props" class="text-bold">
-            {{ col.label }}
-          </q-th>
-          <q-th> </q-th>
-        </q-tr>
-      </template>
-      <template v-slot:body="props">
-        <q-tr :props="props" :class="{ 'bg-primary': props.expand, 'text-white': props.expand }">
-          <q-td v-for="col in props.cols" :key="col.name" :props="props">
-            <template v-if="col.name === 'identity'">
-              <q-chip
-                v-if="props.row?.concernedTo?.name"
-                @click="
-                  open(
-                    `/identities?read=${props.row?.concernedTo?.id}&filters[^inetOrgPerson.cn]=/${props.row?.concernedTo?.name}/i&skip=0&limit=16&sort[metadata.lastUpdatedAt]=desc`,
-                  )
-                "
-                icon="mdi-account"
-                clickable
-                dense
-              >
-                {{ props.row.concernedTo?.name }}
-              </q-chip>
-              <span v-else>Inconnu</span>
-            </template>
-            <template v-else-if="col.name === 'state'">
-              <span>{{ col.name === 'state' ? getStatusText(col.value) : col.value }}</span>
-            </template>
-            <template v-else>
-              <span>{{ col.value || col.field(props.row) || '' }}</span>
-            </template>
-          </q-td>
-          <q-td class="text-center" auto-width>
-            <q-btn size="sm" :disable="!props.row?.result" :color="getColorState(props.row.state)" round dense @click="expandRow(props)" :icon="getIconState(props.row.state)" />
-          </q-td>
-        </q-tr>
-        <q-tr v-if="props.expand" :props="props">
-          <q-td colspan="100%" style="padding: 0">
-            <MonacoEditor style="height: 35vh; width: 100%" :model-value="JSON.stringify(props.row?.result, null, 2)" :options="monacoOptions" lang="json" />
-            <q-separator class="q-my-none" size="8px" color="primary" />
-          </q-td>
-        </q-tr>
-      </template>
-    </q-table>
-  </q-page>
+<template lang="pug">
+q-page.container
+  q-table(
+    title="Journal des jobs"
+    v-model:expanded="expanded"
+    :rows="rows || []"
+    :columns="columns"
+    :rows-per-page-options="[18, 100, 0]"
+    row-key="jobId"
+    bordered
+    dense
+    flat
+  )
+    template(v-slot:top-right)
+      q-select(
+        v-model="stateFilter"
+        :options="foptions"
+        dense
+        outlined
+        hide-dropdown-icon
+        label="Filtrer par état"
+        @update:model-value="updateStateFilter"
+        style="width: 150px"
+        map-options
+      )
+        template(v-slot:append)
+          q-icon(name="mdi-filter")
+    template(v-slot:no-data)
+      div.text-center.q-pa-md
+        span Aucune donnée à afficher.
+    template(v-slot:header="props")
+      q-tr(:props="props")
+        q-th(
+          v-for="col in props.cols"
+          :key="col.name"
+          :props="props"
+          class="text-bold"
+          v-text="col.label"
+        )
+        q-th Action
+    template(v-slot:body="props")
+      q-tr(:props="props" :class="{ 'bg-primary': props.expand, 'text-white': props.expand }")
+        q-td(
+          v-for="col in props.cols"
+          :key="col.name"
+          :props="props"
+        )
+          template(v-if="col.name === 'identity'")
+            q-chip.bg-positive.text-white.q-pa-sm(
+              v-if="props.row?.concernedTo?.name"
+              @click="open(`/identities?read=${props.row?.concernedTo?.id}&filters[^inetOrgPerson.cn]=/${props.row?.concernedTo?.name}/i&skip=0&limit=16&sort[metadata.lastUpdatedAt]=desc`)"
+              icon="mdi-account"
+              clickable
+              dense
+            )
+              span {{ props.row?.concernedTo?.name }}
+              q-tooltip.text-body2(anchor='top middle' self="bottom middle")
+                span Voir&nbsp;l'identité&nbsp;
+                span(v-text="'(' + props.row?.concernedTo?.id + ')'" class="text-caption")
+            q-chip.bg-warning.q-pa-sm(
+              v-else
+              icon="mdi-account-question"
+              label="Inconnu"
+              dense
+            )
+          template(v-else-if="col.name === 'state'")
+            span {{ col.name === 'state' ? getStatusText(col.value) : col.value }}
+          template(v-else)
+            span {{ col.value || col.field(props.row) || '' }}
+        q-td.text-center(auto-width)
+          q-btn(
+            size="sm"
+            :disable="!props.row?.result"
+            :color="getColorState(props.row.state)"
+            round
+            dense
+            @click="expandRow(props)"
+            :icon="getIconState(props.row.state)"
+          )
+            q-tooltip.text-body2(
+              v-if='props.row?.result'
+              :class='["bg-" + (!this.expanded.includes(props.row.jobId) ? "positive" : "grey-8"), "text-white"]'
+              anchor='top middle'
+              self="bottom middle"
+            )
+              span(v-text="!this.expanded.includes(props.row.jobId) ? 'Voir' : 'Cacher'")
+              span &nbsp;le&nbsp;résultat&nbsp;du&nbsp;job&nbsp;
+              span(v-text="'(' + props.row?.jobId + ')'" class="text-caption")
+      q-tr(v-if="props.expand" :props="props")
+        q-td(colspan="100%" style="padding: 0")
+          MonacoEditor(
+            style="height: 45vh; width: 100%"
+            :model-value="JSON.stringify(props.row?.result, null, 2)"
+            :options="monacoOptions"
+            lang="json"
+          )
+          q-separator.q-my-none(size="8px" color="primary")
 </template>
-<script lang="ts" setup>
+
+<script lang="ts">
 import * as Monaco from 'monaco-editor'
 
-const $dayjs = useDayjs()
-const $route = useRoute()
-const router = useRouter()
-
-const expanded = ref([])
-const foptions = ['En erreur', 'Ok']
-const columns = [
-  { name: 'state', title: 'Statut', field: 'state', label: 'Statut' },
-  { name: 'jobId', title: 'Job Id', field: 'jobId', align: 'right', label: 'N° Job' },
-  {
-    name: 'identity',
-    title: 'Identité',
-    field: (row) => row?.concernedTo || {},
-    align: 'left',
-    label: 'Identité',
+export default defineComponent({
+  name: 'JobsIndexPage',
+  data() {
+    return {
+      expanded: [] as string[],
+      foptions: [
+        { label: 'Ok', value: '9' },
+        { label: 'En erreur', value: '-1' },
+      ],
+    }
   },
-  {
-    name: 'action',
-    title: 'Action',
-    field: 'action',
-    align: 'left',
-    label: 'Action',
-  },
-  {
-    name: 'date',
-    title: 'Date',
-    field: (row) => $dayjs(row.metadata?.lastUpdatedAt).format('DD/MM/YYYY HH:mm:ss').toString(),
-    align: 'left',
-    label: 'Date',
-  },
-]
-const query = computed(() => {
-  return {
-    limit: 2000,
-    skip: 0,
-    'sort[metadata.lastUpdatedAt]': 'desc',
-    ...$route.query,
-  }
-})
-const {
-  data: rows,
-  pending,
-  error,
-  refresh,
-} = await useHttp('/core/jobs/', {
-  method: 'GET',
-  transform: (result) => {
-    const data = result.data.map((enr) => {
-      return enr
+  async setup() {
+    const $route = useRoute()
+    const query = computed(() => {
+      return {
+        limit: 2000,
+        skip: 0,
+        'sort[metadata.lastUpdatedAt]': 'desc',
+        ...$route.query,
+      }
     })
-    return data
+
+    const {
+      data: rows,
+      pending,
+      error,
+      refresh,
+    } = await useHttp<any>('/core/jobs', {
+      method: 'GET',
+      transform: (result) => {
+        const data = result?.data?.map((enr) => {
+          return enr
+        })
+
+        return data || []
+      },
+      query,
+    })
+
+    return {
+      rows,
+      pending,
+      error,
+      refresh,
+    }
   },
-  query,
-})
-
-function getColorState(state) {
-  switch (state) {
-    case -1:
-      return 'negative'
-    case 9:
-      return 'positive'
-    case 0:
-      return 'warning'
-  }
-  return 'primary'
-}
-function getStatusText(state) {
-  switch (state) {
-    case -1:
-      return 'ERR'
-    case 9:
-      return 'OK'
-  }
-  return ' '
-}
-function getIconState(state) {
-  switch (state) {
-    case -1:
-      return 'mdi-account-remove'
-    case 9:
-      return 'mdi-account-check'
-    case 0:
-      return 'mdi-account-sync'
-  }
-}
-function push(path) {
-  router.push(path)
-}
-
-function open(path) {
-  window.open(path, '_blank')
-}
-
-function expandRow(props) {
-  expanded.value = expanded.value.includes(props.row.jobId) ? [] : [props.row.jobId]
-  // props.expand = !props.expand
-}
-
-const $q = useQuasar()
-
-const isDark = computed(() => {
-  return $q.dark.isActive
-})
-
-const monacoOptions = computed(() => {
-  return <Monaco.editor.IStandaloneEditorConstructionOptions>{
-    theme: isDark.value ? 'vs-dark' : 'vs-light',
-    readOnly: true,
-    minimap: {
-      enabled: true,
+  computed: {
+    columns(): any[] {
+      return [
+        { name: 'state', title: 'Statut', field: 'state', label: 'Statut' },
+        { name: 'jobId', title: 'Job Id', field: 'jobId', align: 'right', label: 'N° Job' },
+        {
+          name: 'identity',
+          title: 'Identité',
+          field: (row) => row?.concernedTo || {},
+          align: 'left',
+          label: 'Identité',
+        },
+        {
+          name: 'action',
+          title: 'Action',
+          field: 'action',
+          align: 'left',
+          label: 'Action',
+        },
+        {
+          name: 'date',
+          title: 'Date',
+          field: (row) => this.$dayjs(row.metadata?.lastUpdatedAt).format('DD/MM/YYYY HH:mm:ss').toString(),
+          align: 'left',
+          label: 'Date',
+        },
+      ]
     },
-    scrollBeyondLastColumn: 0,
-    scrollBeyondLastLine: false,
-  }
+    stateFilter(): string {
+      return (this.$route.query['filters[:state]'] as string) || '9'
+    },
+    monacoOptions(): Monaco.editor.IStandaloneEditorConstructionOptions {
+      return <Monaco.editor.IStandaloneEditorConstructionOptions>{
+        theme: this.$q.dark.isActive ? 'vs-dark' : 'vs-light',
+        readOnly: true,
+        minimap: {
+          enabled: true,
+        },
+        scrollBeyondLastColumn: 0,
+        scrollBeyondLastLine: false,
+      }
+    },
+  },
+  methods: {
+    updateStateFilter(selection: { value: string | null }): void {
+      const query = {
+        ...this.$route.query,
+      }
+
+      if (!selection.value) {
+        delete query['filters[:state]']
+      } else {
+        query['filters[:state]'] = selection.value
+      }
+
+      this.$router.replace({
+        query,
+      })
+    },
+    getColorState(state: number): string {
+      switch (state) {
+        case -1:
+          return 'negative'
+
+        case 9:
+          return 'positive'
+
+        case 0:
+          return 'warning'
+
+        default:
+          return 'primary'
+      }
+    },
+    getStatusText(state: number): string {
+      switch (state) {
+        case -1:
+          return 'ERR'
+
+        case 9:
+          return 'OK'
+      }
+
+      return '?'
+    },
+    getIconState(state: number): string {
+      switch (state) {
+        case -1:
+          return 'mdi-account-remove'
+
+        case 9:
+          return 'mdi-account-check'
+
+        case 0:
+          return 'mdi-account-sync'
+
+        default:
+          return 'mdi-account-question'
+      }
+    },
+    open(path): void {
+      window.open(path, '_blank')
+    },
+    expandRow(props): void {
+      this.expanded = this.expanded.includes(props.row.jobId) ? [] : [props.row.jobId]
+    },
+  },
 })
 </script>
-
-<style scoped></style>

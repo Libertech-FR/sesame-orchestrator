@@ -1,0 +1,187 @@
+<template lang="pug">
+q-card(style='min-width: 500px;')
+  q-toolbar.bg-primary.text-white(dense flat style='height: 32px;')
+    q-toolbar-title(v-text='title')
+    q-btn(
+      icon='mdi-close'
+      v-close-popup
+      dense
+      flat
+      round
+    )
+  q-card-section.q-pb-sm
+    .flex.q-col-gutter-md
+      q-select.col(
+        v-model='filter.key'
+        :readonly='!!initialFilter?.field'
+        :options='columns'
+        label='Champ à filtrer'
+        option-value='name'
+        option-label='label'
+        dense
+        outlined
+        autofocus
+        map-options
+        emit-value
+      )
+      q-select.col(
+        v-model='filter.operator'
+        label='Opérateur'
+        :options='comparatorTypes'
+        option-value='value'
+        option-label='label'
+        dense
+        outlined
+        map-options
+        emit-value
+        options-dense
+      )
+        template(v-slot:selected-item="scope")
+          q-icon(:name="scope.opt.icon" size="xs")
+        template(v-slot:option="scope")
+          q-item(v-bind="scope.itemProps")
+            q-item-section(avatar)
+              q-icon(:name="scope.opt.icon")
+            q-item-section
+              q-item-label
+                span {{ scope.opt.label }}
+      q-input.col(
+        v-show="!comparator?.multiplefields"
+        v-model='filter.value'
+        label='Valeur'
+        :prefix="comparator?.prefix"
+        :suffix="comparator?.suffix"
+        @keydown.enter.prevent="writeFilter(filter)"
+        dense
+        outlined
+      )
+  q-card-actions
+    q-space
+    q-btn(
+      @click='writeFilter(filter)'
+      :disabled='!filter.key || !filter.operator || !filter.value'
+      label='Valider'
+      color='positive'
+      icon-right='mdi-check'
+      v-close-popup
+      dense
+    )
+</template>
+
+<script lang="ts">
+import type { QTableProps } from 'quasar'
+
+type Filter = {
+  key: string
+  operator: string
+  value: string
+}
+
+type InitialFilter = {
+  comparator: string
+  field: string
+  label: string
+  querySign: string
+  search: string
+  value: string
+}
+
+export default defineNuxtComponent({
+  name: 'PagesIdentitiesFiltersComponent',
+  props: {
+    title: {
+      type: String,
+      default: 'Ajouter/Modifier un filtre',
+    },
+    columns: {
+      type: Array as () => QTableProps['columns'] & { type: string }[],
+      default: () => [],
+    },
+    initialFilter: {
+      type: Object as () => InitialFilter,
+      default: () => ({}),
+    },
+  },
+  watch: {
+    'filter.operator': {
+      handler() {
+        this.filter.value = ''
+      },
+    },
+  },
+  setup({ columns, initialFilter }) {
+    const { comparatorTypes, writeFilter } = useFiltersQuery(ref(columns))
+
+    const detectInitialOperator = () => {
+      if (!initialFilter || !initialFilter.querySign) return ''
+      const candidates = comparatorTypes.value.filter((c) => c.querySign === initialFilter.querySign)
+      if (!candidates || candidates.length === 0) return ''
+      const raw = initialFilter.value || initialFilter.search || ''
+      if (!raw) return candidates[0].value
+
+      // If a comparator label is provided (from getFilters), prefer that exact label
+      if (initialFilter.comparator) {
+        const byLabel = candidates.find((c) => c.label.toLowerCase() === initialFilter.comparator.toLowerCase())
+        if (byLabel) return byLabel.value
+      }
+
+      const found = candidates.find((c) => {
+        const hasPrefix = c.prefix !== '' && raw.startsWith(c.prefix)
+        const hasSuffix = c.suffix !== '' && raw.endsWith(c.suffix)
+        if (c.prefix !== '' && c.suffix !== '') return hasPrefix && hasSuffix
+        if (c.prefix !== '') return hasPrefix
+        if (c.suffix !== '') return hasSuffix
+        return false
+      })
+
+      return found ? found.value : candidates[0].value
+    }
+
+    const stripPrefixSuffix = (raw?: string) => {
+      if (!raw) return ''
+
+      let best: { prefix: string; suffix: string } | null = null
+      let bestScore = 0
+
+      for (const c of comparatorTypes.value) {
+        const p = c.prefix || ''
+        const s = c.suffix || ''
+        const hasP = p !== '' && raw.startsWith(p)
+        const hasS = s !== '' && raw.endsWith(s)
+        const score = (hasP ? p.length : 0) + (hasS ? s.length : 0)
+
+        if (score > bestScore) {
+          if ((p !== '' && s !== '' && hasP && hasS) || (p !== '' && s === '' && hasP) || (s !== '' && p === '' && hasS)) {
+            bestScore = score
+            best = { prefix: p, suffix: s }
+          }
+        }
+      }
+
+      if (!best) return raw
+
+      let val = raw
+      if (best.prefix) val = val.slice(best.prefix.length)
+      if (best.suffix) val = val.slice(0, -best.suffix.length)
+      return val
+    }
+
+    const filter = ref<Filter>({
+      key: initialFilter?.field || '',
+      operator: detectInitialOperator(),
+      value: stripPrefixSuffix(initialFilter?.value) || '',
+    })
+
+    return {
+      filter,
+      comparatorTypes,
+      writeFilter,
+    }
+  },
+  computed: {
+    comparator() {
+      return this.comparatorTypes.find((comp) => comp.value === this.filter.operator)
+    },
+  },
+})
+</script>

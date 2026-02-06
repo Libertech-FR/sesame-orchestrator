@@ -3,7 +3,8 @@
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
     "moduleResolution": "node",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "typeRoots": ["./types", "./node_modules/@types"]
     // "esModuleInterop": true
     //"types": ["./types/auth.d.ts"]
   },

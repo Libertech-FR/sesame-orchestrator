@@ -5,18 +5,36 @@ blockquote
   margin: 0 0 20px
   border-left: 4px solid $primary
 
+.sesame-bordered-table
+  table
+    border: 1px solid $separator-color
+    border-left: none
+    border-right: none
+
+.sesame-sticky-thead
+  thead
+    tr
+      position: sticky
+      top: 0
+      z-index: 2
+      background-color: $tooltip-color
+      th
+        border-bottom-width: 3px
+
 .sesame-sticky-last-column-table
   thead
     tr:last-child
       th:last-child
+        border-left: 2px solid $separator-color
         background-color: $tooltip-color
   td:last-child
     background-color: $tooltip-color
   th:last-child,
   td:last-child
     position: sticky
-    right: -1px
+    right: 0
     z-index: 1
+    border-left: 2px solid $separator-color
 
 body
   background-color: #fff
@@ -25,17 +43,35 @@ body.body--dark
   .q-editor__content
     color: $dark
     background-color: $tooltip-color
+  .sesame-bordered-table
+    table
+      border-color: $separator-dark-color
+  .sesame-sticky-thead
+    thead
+      th
+        background-color: $dark
   .sesame-sticky-last-column-table
     thead
       tr:last-child
         th:last-child
+          border-left-color: $separator-dark-color
           background-color: $dark
     td:last-child
       background-color: $dark
+      border-left-color: $separator-dark-color
 
 .sesame-table-td-highlight
   color: $primary
   font-weight: bold
+
+tr:has(.sesame-table-td-highlight)
+  box-shadow: inset 0 0 0 2px rgba($primary, 0.7) !important
+
+tr:has(.sesame-table-td-highlight) td:last-child
+  box-shadow: inset -2px 0 0 2px rgba($primary, 0.7) !important
+
+tr:has(.sesame-table-td-highlight) td:last-child
+  border-bottom-width: 0 !important
 
 .outer-ne-resize
   resize: vertical
@@ -50,3 +86,80 @@ body.body--dark
 .sesame.animated.infinite
   animation-iteration-count: infinite !important
   animation-duration: 3s !important
+
+.sesame-sticky-bar
+  position: sticky
+  top: 0
+  z-index: 1
+  min-height: 36px
+  background-color: #fff !important
+
+body.body--dark
+  .sesame-sticky-bar
+    background-color: $dark !important
+
+.mdi-spinner-parent .q-icon.mdi
+  display: inline-block
+  vertical-align: middle
+  transform-origin: center center
+  animation: mdi-spin 1s linear infinite
+
+@keyframes mdi-spin
+  from
+    transform: rotate(0deg)
+  to
+    transform: rotate(360deg)
+
+.border-top
+  border-top: 1px solid $separator-color !important
+.border-bottom
+  border-bottom: 1px solid $separator-color !important
+.border-left
+  border-left: 1px solid $separator-color !important
+.border-right
+  border-right: 1px solid $separator-color !important
+
+body.body--dark
+  .border-top
+    border-top: 1px solid $separator-dark-color !important
+  .border-bottom
+    border-bottom: 1px solid $separator-dark-color !important
+  .border-left
+    border-left: 1px solid $separator-dark-color !important
+  .border-right
+    border-right: 1px solid $separator-dark-color !important
+
+.sticky-footer
+  margin-top: auto
+  position: sticky
+  bottom: 0
+  z-index: 12
+  background: inherit
+
+.sesame-page
+  display: flex
+  flex-direction: column
+  height: 100%
+  min-height: 100%
+
+  &-content
+    flex: 1 1 auto
+    overflow: auto
+
+.q-card.sesame-sticky-dialog
+  display: flex
+  flex-direction: column
+  height: 100%
+  max-height: 100%
+  overflow: hidden
+
+  & > .q-toolbar
+    position: sticky
+    top: 0
+    z-index: 10
+
+  & > .flex
+    overflow: auto
+
+  & > .q-toolbar.bg-primary
+    background-color: var(--q-color-primary, #1976d2)

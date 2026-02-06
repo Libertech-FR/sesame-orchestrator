@@ -44,30 +44,11 @@ export class IdentitiesActivationController extends AbstractController {
     @Body() body: ActivationDto,
   ): Promise<Response> {
     try {
-      // Validation des paramètres d'entrée
-      if (!body?.id || typeof body.id !== 'string') {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Valid identity ID is required',
-        });
-      }
-
-      if (typeof body.status !== 'boolean') {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Status must be a boolean value',
-        });
-      }
-
-      // Détermination du statut cible selon le paramètre booléen
-      const targetStatus = body.status ? DataStatusEnum.ACTIVE : DataStatusEnum.INACTIVE;
-
-      // Appel du service d'activation
-      const result = await this._service.activation(body.id, targetStatus);
+      const result = await this._service.activation(body.id, body.status)
 
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
-        message: `Identity ${body.status ? 'activated' : 'deactivated'} successfully`,
+        message: `Identity ${body.status === DataStatusEnum.ACTIVE ? 'activated' : 'deactivated'} successfully`,
         data: result,
       });
 

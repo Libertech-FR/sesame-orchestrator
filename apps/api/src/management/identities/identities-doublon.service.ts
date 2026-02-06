@@ -2,25 +2,99 @@ import { AbstractIdentitiesService } from '~/management/identities/abstract-iden
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { BadRequestException } from '@nestjs/common';
-import { sort } from 'radash'
+import { Types } from 'mongoose';
+
 export class IdentitiesDoublonService extends AbstractIdentitiesService {
-  public async searchDoubles() {
+  public async ignoreFusionForIdentities(ids: Types.ObjectId[]) {
+    if (ids.length !== 2) {
+      throw new BadRequestException('Deux IDs doivent être fournis pour ignorer la fusion.');
+    }
+
+    if (!ids.every(id => Types.ObjectId.isValid(id))) {
+      throw new BadRequestException('Tous les IDs doivent être des ObjectId valides.');
+    }
+
+    const identities = await this.find<Identities>({ _id: { $in: ids } });
+    const identitiesList = identities as unknown as Identities[];
+
+    const updatedIds = [];
+    for (const identity of identitiesList) {
+      if (!identity.ignoreFusion) {
+        identity.ignoreFusion = [];
+      }
+      const otherId = ids.find(id => id.toString() !== identity._id.toString());
+      if (!identity.ignoreFusion.some(id => id.toString() === otherId.toString())) {
+        identity.ignoreFusion.push(otherId);
+      }
+
+      await this.update(identity._id, identity);
+      updatedIds.push(identity._id);
+    }
+
+    return updatedIds;
+  }
+
+  public async unignoreFusionForIdentities(ids: Types.ObjectId[]) {
+    if (ids.length !== 2) {
+      throw new BadRequestException('Deux IDs doivent être fournis pour réactiver la fusion.');
+    }
+
+    if (!ids.every(id => Types.ObjectId.isValid(id))) {
+      throw new BadRequestException('Tous les IDs doivent être des ObjectId valides.');
+    }
+
+    const identities = await this.find<Identities>({ _id: { $in: ids } });
+    const identitiesList = identities as unknown as Identities[];
+
+    const updatedIds = [];
+    for (const identity of identitiesList) {
+      if (identity.ignoreFusion) {
+        const otherId = ids.find(id => id.toString() !== identity._id.toString());
+        identity.ignoreFusion = identity.ignoreFusion.filter(id => id.toString() !== otherId.toString());
+
+        await this.update(identity._id, identity);
+        updatedIds.push(identity._id);
+      }
+    }
+
+    return updatedIds;
+  }
+
+  public async searchDoubles(includeIgnored: boolean = false) {
+    const searchAttributes = { $exists: true, $nin: [null, ''] }
+    const additionnalFlags = this.config.get<string[]>('identities.doublonSearchAttributes', [
+      'additionalFields.attributes.supannPerson.supannOIDCDatedeNaissance',
+      'inetOrgPerson.givenName',
+    ])
+
     const agg1 = [
       {
         $match: {
-          deletedFlag: { $eq: false},
+          deletedFlag: { $eq: false },
           state: { $ne: IdentityState.DONT_SYNC },
           destFusionId: { $eq: null },
-          'inetOrgPerson.employeeType': {$ne: 'LOCAL'},
+          'inetOrgPerson.employeeType': { $ne: 'LOCAL' },
+
+          /**
+           * @example {
+           *    'additionalFields.attributes.supannPerson.supannOIDCDatedeNaissance': { '$exists': true, '$nin': [ null, '' ] },
+           *    'inetOrgPerson.givenName': { '$exists': true, '$nin': [ null, '' ] },
+           * }
+           */
+          ...Object.fromEntries(additionnalFlags.map((attr) => [attr, searchAttributes])),
         },
       },
       {
         $addFields: {
           test: {
-            $concat: [
-              '$additionalFields.attributes.supannPerson.supannOIDCDatedeNaissance',
-              '$inetOrgPerson.givenName',
-            ],
+            /**
+             * @example {
+             *   $concat: [
+             *      '$additionalFields.attributes.supannPerson.supannOIDCDatedeNaissance',
+             *      '$inetOrgPerson.givenName',
+             *   ]
+             */
+            $concat: additionnalFlags.map(attr => `$${attr}`),
           },
         },
       },
@@ -39,6 +113,7 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
               departmentNumber: '$inetOrgPerson.departmentNumber',
               state: '$state',
               lastSync: '$lastSync',
+              ignoreFusion: '$ignoreFusion',
             },
           },
         },
@@ -51,14 +126,14 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
         },
       }
     ];
+
     const agg2 = [
       {
         $match: {
-          deletedFlag: { $eq: false},
+          deletedFlag: { $eq: false },
           state: { $ne: IdentityState.DONT_SYNC },
           destFusionId: { $eq: null },
-          'inetOrgPerson.employeeType': {$ne: 'LOCAL'},
-
+          'inetOrgPerson.employeeType': { $ne: 'LOCAL' },
         },
       },
       {
@@ -76,6 +151,7 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
               departmentNumber: '$inetOrgPerson.departmentNumber',
               state: '$state',
               lastSync: '$lastSync',
+              ignoreFusion: '$ignoreFusion',
             },
           },
         },
@@ -90,15 +166,20 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
     ];
     const result1 = await this._model.aggregate(agg1);
     const result2 = await this._model.aggregate(agg2);
+
+    // Trier les listes de manière déterministe par _id
     const result3 = result1.map((x) => {
-      const k = x.list[0]._id + '/' + x.list[1]._id;
-      const k1 = x.list[1]._id + '/' + x.list[0]._id;
-      return { k1: k1, k: k, key1: x.list[0]._id, key2: x.list[1]._id, data: x.list };
+      const sortedList = x.list.sort((a, b) => a._id.toString().localeCompare(b._id.toString()));
+      const k = sortedList[0]._id + '/' + sortedList[1]._id;
+      const k1 = sortedList[1]._id + '/' + sortedList[0]._id;
+      return { k1: k1, k: k, key1: sortedList[0]._id, key2: sortedList[1]._id, data: sortedList };
     });
+
     const result4 = result2.map((x) => {
-      const k = x.list[0]._id + '/' + x.list[1]._id;
-      const k1 = x.list[1]._id + '/' + x.list[0]._id;
-      return { k1: k1, k: k, key1: x.list[0]._id, key2: x.list[1]._id, data: x.list };
+      const sortedList = x.list.sort((a, b) => a._id.toString().localeCompare(b._id.toString()));
+      const k = sortedList[0]._id + '/' + sortedList[1]._id;
+      const k1 = sortedList[1]._id + '/' + sortedList[0]._id;
+      return { k1: k1, k: k, key1: sortedList[0]._id, key2: sortedList[1]._id, data: sortedList };
     });
     result4.forEach((x) => {
       const r = result3.find((o) => o.k === x.k);
@@ -107,13 +188,42 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
         result3.push(x);
       }
     });
-    result3.sort((a, b) => {
+
+    // Filtrer selon le paramètre includeIgnored
+    let filteredResult;
+    if (includeIgnored) {
+      // includeIgnored = true : montrer TOUS les doublons (y compris ceux qui s'ignorent)
+      filteredResult = result3;
+    } else {
+      // includeIgnored = false : exclure les doublons qui s'ignorent mutuellement
+      filteredResult = result3.filter((group) => {
+        for (let i = 0; i < group.data.length; i++) {
+          for (let j = i + 1; j < group.data.length; j++) {
+            const id1 = group.data[i]._id;
+            const id2 = group.data[j]._id;
+            const ignoreFusion1 = group.data[i].ignoreFusion || [];
+            const ignoreFusion2 = group.data[j].ignoreFusion || [];
+
+            const id1IgnoresId2 = ignoreFusion1.some(ignoreId => ignoreId.toString() === id2.toString());
+            const id2IgnoresId1 = ignoreFusion2.some(ignoreId => ignoreId.toString() === id1.toString());
+
+            if (id1IgnoresId2 || id2IgnoresId1) {
+              return false; // On exclut ce groupe car il contient des identités qui s'ignorent
+            }
+          }
+        }
+        return true; // On garde ce groupe car aucune paire ne s'ignore
+      });
+    }
+
+    filteredResult.sort((a, b) => {
       const cnA = a.data[0].cn?.toLowerCase() ?? '';
       const cnB = b.data[0].cn?.toLowerCase() ?? '';
       return cnA.localeCompare(cnB);
     });
-    return result3;
+    return filteredResult;
   }
+
   //fusionne les deux identités id2 > id1 les champs presents dans id2 et non present dans id1 seront ajoutés
   // retourne l'id de na nouvelle identité créée
   public async fusion(id1, id2) {
@@ -152,13 +262,13 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
       identity1.additionalFields.objectClasses.includes('supannPerson') &&
       identity2.additionalFields.objectClasses.includes('supannPerson')
     ) {
-      if (identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation ) {
+      if (identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation) {
         identity2.additionalFields.attributes.supannPerson.supannTypeEntiteAffectation.forEach((depN) => {
           (identity1.additionalFields.attributes.supannPerson as any).supannTypeEntiteAffectation.push(depN);
         });
       }
       // supannRefId
-      if (identity2.additionalFields.attributes.supannPerson.supannRefId ){
+      if (identity2.additionalFields.attributes.supannPerson.supannRefId) {
         identity2.additionalFields.attributes.supannPerson.supannRefId.forEach((depN) => {
           (identity1.additionalFields.attributes.supannPerson as any).supannRefId.push(depN);
         });

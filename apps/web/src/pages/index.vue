@@ -1,37 +1,49 @@
 <template lang="pug">
-q-page.q-px-md(style="margin: auto; max-width: 1366px;")
+q-page.container(padding)
   .column.no-wrap
     div(v-for="(part, i) in menuParts", :key="part")
-      q-bar.q-pa-lg.q-mb-sm.transparent(dense)
+      q-bar.q-pa-lg.q-mb-sm.transparent(v-show='getMenuByPart(part).length' dense)
         .text-h5 {{ part }}
 
       .row.q-col-gutter-md
-        div.col(
-          v-for="item in getMenuByPart(part)" :key="item.label"
-          class="col-12 col-sm-6 col-md-6 col-lg-4"
-        )
+        .col.col-12.col-sm-6.col-md-4.col-lg-3(v-for="item in getMenuByPart(part)" :key="item.label")
           q-btn.q-py-md.fit(
+            :class='["text-" + item.textColor || "text-white"]'
             :color="item.color"
             :label="item.label"
-            @click="push(item.path)"
+            @click="$router.push(item.path)"
             :icon="item.icon"
-            style="font-size: 18px;"
-            tile
+            size="lg"
+            stretch
           )
-            q-badge(v-if="item.badge" :color="item.badge.color" floating v-text="item?.badge?.value")
-      q-separator.q-mt-md.q-mb-sm(v-if="i < menuParts.length - 1")
+            q-badge.text-bold(
+              v-if="item.badge"
+              :class='["text-" + item.badge.textColor || "text-white"]'
+              :color="item.badge.color"
+              v-text="item?.badge?.value"
+              floating
+            )
+      q-separator.q-mt-md.q-mb-sm(v-if="i < menuParts.length - 1" v-show='getMenuByPart(part).length')
 </template>
 
-<script lang="ts" setup>
+<script lang="ts">
 import { useIdentityStateStore } from '~/stores/identityState'
-import { useMenu } from '~/composables'
 
-const router = useRouter()
-const identityStateStore = useIdentityStateStore()
+export default defineNuxtComponent({
+  name: 'IndexPage',
+  data() {
+    return {
+      menuParts: [],
+    }
+  },
+  setup() {
+    const identityStateStore = useIdentityStateStore()
+    const { menuParts, getMenuByPart } = useMenu(identityStateStore)
 
-const { getMenu, menuParts, getMenuByPart } = useMenu(identityStateStore)
-
-function push(path: string) {
-  router.push(path)
-}
+    return {
+      menuParts,
+      getMenuByPart,
+    }
+  },
+})
 </script>

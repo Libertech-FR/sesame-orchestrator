@@ -1,20 +1,69 @@
-import { IdentityState, IdentityLifecycle } from '../constants';
+import { IdentityState } from './enums'
 
 export const IdentityStateList = [
-    { value: IdentityState.SYNCED, text: 'Synchronized' },
-    { value: IdentityState.TO_SYNC, text: 'To sync' },
-    { value: IdentityState.TO_VALIDATE, text: 'To validate' },
-    { value: IdentityState.UNKNOWN, text: 'Unknown' },
-    { value: IdentityState.TO_CREATE, text: 'To create' },
-    { value: IdentityState.TO_COMPLETE, text: 'To complete' },
-    { value: IdentityState.ON_ERROR, text: 'On error' },
-];
-
-export const IdentityLifecycleList = [
-    { value: IdentityLifecycle.IMPORTED, text: 'Imported' },
-    { value: IdentityLifecycle.OFFICIAL, text: 'Official' },
-    { value: IdentityLifecycle.ACTIVE, text: 'Active' },
-    { value: IdentityLifecycle.PROVISIONAL, text: 'Provisional' },
-    { value: IdentityLifecycle.INACTIVE, text: 'Inactive' },
-    { value: IdentityLifecycle.DELETED, text: 'Deleted' },
-];
+  {
+    value: IdentityState.SYNCED,
+    text: 'Synchronisée',
+    color: 'positive',
+    icon: 'mdi-circle',
+    display: true,
+  },
+  {
+    value: IdentityState.TO_SYNC,
+    text: 'A Synchroniser',
+    color: 'orange-8',
+    icon: 'mdi-circle',
+    display: true,
+  },
+  {
+    value: IdentityState.TO_VALIDATE,
+    text: 'A Valider',
+    color: 'warning',
+    textColor: 'black',
+    icon: 'mdi-circle',
+    display: true,
+  },
+  {
+    value: IdentityState.UNKNOWN,
+    text: 'Inconnu',
+    color: 'grey',
+    icon: 'mdi-circle',
+    display: false,
+  },
+  {
+    value: IdentityState.TO_CREATE,
+    text: 'A créer',
+    color: 'grey',
+    icon: 'mdi-circle',
+    display: true,
+  },
+  {
+    value: IdentityState.TO_COMPLETE,
+    text: 'A compléter',
+    color: 'secondary',
+    textColor: 'black',
+    icon: 'mdi-circle',
+    display: true,
+  },
+  {
+    value: IdentityState.ON_ERROR,
+    text: 'En erreur',
+    color: 'negative',
+    icon: 'mdi-circle',
+    display: true,
+  },
+  {
+    value: IdentityState.PROCESSING,
+    text: 'En cours de synchronisation',
+    color: 'grey-8',
+    icon: 'mdi-loading',
+    display: true,
+  },
+  {
+    value: IdentityState.NO_SYNC,
+    text: 'A ne pas synchroniser',
+    color: 'black',
+    icon: 'mdi-publish-off',
+    display: true,
+  },
+]

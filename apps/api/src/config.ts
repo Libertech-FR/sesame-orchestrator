@@ -157,6 +157,10 @@ export const validationSchema = Joi.object({
   SESAME_CRON_LOG_DIRECTORY: Joi
     .string()
     .default(path.join(process.cwd(), 'logs', 'handlers')),
+
+  SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES: Joi
+    .string()
+    .default(''),
 });
 
 /**
@@ -248,6 +252,9 @@ export interface ConfigInstance {
   }
   lifecycle: {
     triggerCronExpression: string
+  }
+  identities: {
+    doublonSearchAttributes: string[]
   }
   swagger: {
     path: string
@@ -381,6 +388,14 @@ export default (): ConfigInstance => ({
   },
   lifecycle: {
     triggerCronExpression: process.env['SESAME_LIFECYCLE_TRIGGER_CRON'] || '*/5 * * * *',
+  },
+  identities: {
+    doublonSearchAttributes: process.env['SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES']
+      ? process.env['SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES'].split(',').map(attr => attr.trim())
+      : [
+        'additionalFields.attributes.supannPerson.supannOIDCDatedeNaissance',
+        'inetOrgPerson.givenName',
+      ],
   },
   sms: {
     host: process.env['SESAME_SMPP_SERVER'] || '',

@@ -15,7 +15,6 @@ q-card.col-4.shadow-24.row(style="max-width: 1200px;")
       q-card-actions.column.justify-between
         .col.q-my-sm.flex.items-center
           q-btn(@click.prevent='submit' type='submit' color='primary' size="lg" ) Se connecter
-
 </template>
 
 <script lang="ts" setup>

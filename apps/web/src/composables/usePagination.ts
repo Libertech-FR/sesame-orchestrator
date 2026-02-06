@@ -1,35 +1,50 @@
-import type { QTableProps } from 'quasar'
-import { useRoute, useRouter } from 'nuxt/app'
-import type { LocationQueryValue } from 'vue-router'
+import { isEqual } from 'radash'
+import type { MultiWatchSources } from 'vue'
+import type { LocationQueryRaw, LocationQueryValue } from 'vue-router'
 
-export default function usePagination() {
-  const route = useRoute()
-  const router = useRouter()
-  const defaultSortBy = 'metadata.lastUpdatedAt'
-  const defaultDescending = true
-  const pagination = ref<QTableProps['pagination']>({
-    rowsNumber: 0,
-    page: 1,
-    rowsPerPage: 16,
-    sortBy: 'metadata.lastUpdatedAt',
-    descending: true,
-  }) as Ref<QTableProps['pagination']>
+interface Pagination {
+  sortBy?: string | null
+  descending?: boolean
+  page?: number
+  rowsPerPage?: number
+  rowsNumber?: number
+}
 
-  async function initializePagination(total: number = 0) {
-    if (!pagination.value) return
-    const query = { ...route.query }
-    const limit = query.limit ?? 16
-    const skip = query.skip ?? 0
-    pagination.value.rowsPerPage = parseInt(limit as string)
-    pagination.value.page = parseInt(skip as string) / parseInt(limit as string) + 1
-    pagination.value.rowsNumber = total
+export function usePagination(options?: { name?: string }) {
+  options = {
+    name: 'global',
+    ...options,
+  }
 
-    setSortOptions(query)
+  const DEFAULT_PAGE = 1
+  const DEFAULT_ROW_PIXEL_HEIGHT = 33
+
+  const $route = useRoute()
+  const $router = useRouter()
+
+  const defLimit = useState(`pagination_default_limit_${options.name!}`, () => -1)
+  const pagination = useState(`pagination_settings_${options.name!}`, () => <Pagination>{})
+
+  const initializePagination = async (options?: { internalInnerHeight?: number, rowPixelHeight?: number, globalOffset?: number }) => {
+    options = {
+      internalInnerHeight: window.innerHeight,
+      globalOffset: 44,
+      ...options,
+    }
+
+    const rowPixelHeight = options.rowPixelHeight || DEFAULT_ROW_PIXEL_HEIGHT
+    defLimit.value = Math.floor((options.internalInnerHeight! - options.globalOffset!) / rowPixelHeight)
+
+    pagination.value.page = parseInt($route.query.page as string) || DEFAULT_PAGE
+    pagination.value.rowsPerPage = parseInt($route.query.limit as string) || defLimit.value
+
+    setSortOptions($route.query)
     await paginationQuery()
   }
 
-  function setSortOptions(query: { [x: string]: LocationQueryValue | LocationQueryValue[] }) {
+  const setSortOptions = (query: { [x: string]: LocationQueryValue | LocationQueryValue[] }) => {
     if (!pagination.value) return
+
     for (const key in query) {
       if (key.startsWith('sort')) {
         const sortKey = key.replace('sort[', '').replace(/\]/g, '')
@@ -40,49 +55,106 @@ export default function usePagination() {
     }
   }
 
-  async function onRequest(props: QTableProps, total: number) {
-    if (!pagination.value) return
-    if (!props.pagination) return
-    const { page, rowsPerPage, sortBy, descending } = props.pagination
-    pagination.value.rowsNumber = total
+  const onRequest = async (props: { pagination: Pagination, filter: any, getCellValue: any }) => {
+    const { page, rowsPerPage } = props.pagination
+
     pagination.value.page = page
     pagination.value.rowsPerPage = rowsPerPage
-    pagination.value.sortBy = sortBy
-    pagination.value.descending = descending
+
     await paginationQuery()
   }
 
-  async function paginationQuery() {
-    if (!pagination.value) return
-    if (!pagination.value.page || !pagination.value.rowsPerPage) return
-    const query = removeSortKey()
-    const skip = `${(pagination.value.page - 1) * pagination.value.rowsPerPage}`
-    const limit = `${pagination.value.rowsPerPage}`
-    let sortKey = `sort[${defaultSortBy}]`
-    let sortDirection = defaultDescending ? 'desc' : 'asc'
-    if (pagination.value.sortBy) {
-      sortKey = `sort[${pagination.value.sortBy}]`
-      sortDirection = pagination.value.descending ? 'desc' : 'asc'
+  const useHttpPaginationOptions = (): { query: Ref<{ [key: string]: any }>, immediate?: boolean, watch: MultiWatchSources | false } => {
+    const query = ref({
+      ...getDefaults(),
+      ...$route.query,
+    })
+
+    return {
+      query,
+      immediate: false,
+      watch: false,
+    }
+  }
+
+  const useHttpPaginationReactive = async ({ query }, execute = () => { }) => {
+    let pendingController: AbortController | null = null
+
+    watchDebounced(
+      () => ({ ...getDefaults(), ...$route.query }),
+      async (newQuery) => {
+        if (JSON.stringify(newQuery) !== JSON.stringify(query.value)) {
+          query.value = newQuery
+
+          // Annuler la requête précédente si elle existe
+          if (pendingController) {
+            pendingController.abort()
+          }
+
+          // Créer un nouveau controller pour cette requête
+          pendingController = new AbortController()
+
+          try {
+            await execute()
+          } catch (error: any) {
+            // Ignorer les erreurs d'annulation
+            if (error.name !== 'AbortError') {
+              throw error
+            }
+          } finally {
+            pendingController = null
+          }
+        }
+      },
+      { debounce: 300, deep: true },
+    )
+
+    if (parseInt(`${query.value.limit}`) !== -1) {
+      await execute()
+    }
+  }
+
+  const paginationQuery = async () => {
+    const newQuery = <LocationQueryRaw>{
+      ...$route.query,
+      page: `${pagination.value.page}`,
+      limit: `${pagination.value.rowsPerPage}`,
     }
 
-    query[sortKey] = sortDirection
-    query['skip'] = skip
-    query['limit'] = limit
+    if (isEqual($route.query, newQuery)) {
+      return
+    }
 
-    await router.push({
-      query,
+    $router.replace({
+      query: newQuery,
     })
   }
 
-  function removeSortKey() {
-    const query = { ...route.query }
-    for (const key in query) {
-      if (key.startsWith('sort[')) {
-        delete query[key]
-      }
-    }
-    return query
+  const updatePaginationData = (data: { total?: number }) => {
+    if (data?.total) pagination.value.rowsNumber = data.total
   }
 
-  return { pagination, onRequest, paginationQuery, initializePagination }
+  const onUpdatePagination = (data) => {
+    return {}
+  }
+
+  const getDefaults = () => {
+    return {
+      page: '' + (parseInt($route.query.page as string) || DEFAULT_PAGE),
+      limit: '' + (parseInt($route.query.limit as string) || defLimit.value),
+    }
+  }
+
+  return {
+    pagination,
+
+    useHttpPaginationOptions,
+    useHttpPaginationReactive,
+    initializePagination,
+    onRequest,
+    paginationQuery,
+    onUpdatePagination,
+    updatePaginationData,
+    getDefaults,
+  }
 }

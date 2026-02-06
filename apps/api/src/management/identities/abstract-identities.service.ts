@@ -18,6 +18,7 @@ import { DataStatusEnum } from "~/management/identities/_enums/data-status";
 import { JobState } from "~/core/jobs/_enums/state.enum";
 import { inetOrgPersonDto } from './_dto/_parts/inetOrgPerson.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ConfigService } from '@nestjs/config';
 
 /**
  * Service abstrait pour la gestion des identités
@@ -31,6 +32,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
    *
    * @param _model - Modèle Mongoose pour les identités
    * @param _validation - Service de validation des identités
+   * @param config - Service de configuration
    * @param storage - Service de stockage de fichiers
    * @param passwdAdmService - Service d'administration des mots de passe
    * @param eventEmitter - Émetteur d'événements
@@ -40,6 +42,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
     @InjectModel(Identities.name) protected _model: Model<Identities>,
     protected readonly _validation: IdentitiesValidationService,
     protected readonly storage: FactorydriveService,
+    protected readonly config: ConfigService,
     protected readonly passwdAdmService: PasswdadmService,
     protected readonly eventEmitter: EventEmitter2,
     @Inject(forwardRef(() => BackendsService)) protected readonly backends: BackendsService,

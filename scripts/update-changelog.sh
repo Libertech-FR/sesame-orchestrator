@@ -23,7 +23,7 @@ if ! gh auth status &> /dev/null; then
 fi
 
 # Récupérer la dernière release
-LATEST_RELEASE=$(gh release list --limit 1 | head -1 | awk '{print $3}')
+LATEST_RELEASE=$(gh release list --limit 1 | head -1 | awk '{print $4}')
 echo "📦 Dernière release: $LATEST_RELEASE"
 
 # Récupérer les commits depuis la dernière release

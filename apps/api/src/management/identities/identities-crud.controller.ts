@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
@@ -36,6 +37,8 @@ import { IdentitiesValidationService } from './validations/identities.validation
 import { FilestorageService } from '~/core/filestorage/filestorage.service';
 import { TransformersFilestorageService } from '~/core/filestorage/_services/transformers-filestorage.service';
 import { IdentitiesCrudService } from '~/management/identities/identities-crud.service';
+import { Public } from '~/_common/decorators/public.decorator';
+import { isEmpty } from 'radash';
 
 @ApiTags('management/identities')
 @Controller('identities')
@@ -56,6 +59,14 @@ export class IdentitiesCrudController extends AbstractController {
     metadata: 1,
     dataStatus: 1,
     lifecycle: 1,
+  };
+
+  protected static readonly searchFields: PartialProjectionType<any> = {
+    'inetOrgPerson.cn': 1,
+    'inetOrgPerson.givenName': 1,
+    'inetOrgPerson.sn': 1,
+    'inetOrgPerson.mail': 1,
+    'inetOrgPerson.employeeType': 1,
   };
 
   @Post()
@@ -109,6 +120,7 @@ export class IdentitiesCrudController extends AbstractController {
   @ApiPaginatedDecorator(PickProjectionHelper(IdentitiesDto, IdentitiesCrudController.projection))
   public async getdeleted(
     @Res() res: Response,
+    @Query('search') search: string,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
   ): Promise<
     Response<
@@ -134,30 +146,40 @@ export class IdentitiesCrudController extends AbstractController {
   @ApiPaginatedDecorator(PickProjectionHelper(IdentitiesDto, IdentitiesCrudController.projection))
   public async search(
     @Res() res: Response,
+    @Query('search') search: string,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
-    @SearchFilterOptions() searchFilterOptions: FilterOptions,
-  ): Promise<
-    Response<
-      {
-        statusCode: number;
-        data?: Document<Identities, any, Identities>;
-        total?: number;
-        message?: string;
-        validations?: MixedValue;
-      },
-      any
-    >
-  > {
+    @SearchFilterOptions({ allowUnlimited: true }) searchFilterOptions: FilterOptions,
+  ): Promise<Response<{
+    statusCode: number;
+    data?: Document<Identities, any, Identities>;
+    total?: number;
+    message?: string;
+    validations?: MixedValue;
+  }>> {
+    const searchFilter = {}
+
+    if (search && search.trim().length > 0) {
+      const searchRequest = {}
+      searchRequest['$or'] = Object.keys(IdentitiesCrudController.searchFields).map((key) => {
+        return { [key]: { $regex: `^${search}`, $options: 'i' } }
+      }).filter(item => item !== undefined)
+      searchFilter['$and'] = [searchRequest]
+      searchFilter['$and'].push(searchFilterSchema)
+    } else {
+      Object.assign(searchFilter, searchFilterSchema)
+    }
+
     const [data, total] = await this._service.findAndCount(
-      searchFilterSchema,
+      searchFilter,
       IdentitiesCrudController.projection,
       searchFilterOptions,
-    );
+    )
+
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,
       data,
-    });
+    })
   }
 
   @Get(':_id([0-9a-fA-F]{24})')

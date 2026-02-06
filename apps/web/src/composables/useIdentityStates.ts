@@ -1,70 +1,57 @@
-import { omit } from "radash";
+import { omit } from 'radash'
+import { IdentityStateList } from '~/constants/lists'
 
 type useIdentityStateReturnType = {
-  getStateColor: (state: number) => string;
-  getStateName: (state: number) => string;
-  getStateInfos: (state: number) => { color: string, name: string, value: number };
-  getStateBadge: (state: number) => { color: string, name: string };
-  getStateIcon: (state: number) => string;
-};
-
-export enum IdentityState {
-  SYNCED = 99,
-  PROCESSING = 50,
-  TO_SYNC = 2,
-  TO_VALIDATE = 1,
-  UNKNOWN = 0,
-  TO_CREATE = -1,
-  TO_COMPLETE = -2,
-  ON_ERROR = -3,
-  NO_SYNC = -99
+  getStateColor: (state: number) => string
+  getStateName: (state: number) => string
+  getStateInfos: (state: number) => { color: string, name: string, value: number }
+  getStateBadge: (state: number) => { color: string, name: string }
+  getStateIcon: (state: number) => string
 }
 
-export const IdentityStateList = [
-  { value: IdentityState.SYNCED, text: 'Synchronisée', color: 'positive', icon: 'mdi-circle', display: true },
-  { value: IdentityState.TO_SYNC, text: 'A Synchroniser', color: 'orange-8', icon: 'mdi-circle', display: true },
-  { value: IdentityState.TO_VALIDATE, text: 'A valider', color: 'info', icon: 'mdi-circle', display: true },
-  { value: IdentityState.UNKNOWN, text: 'Inconnu', color: 'grey', icon: 'mdi-circle', display: true },
-  { value: IdentityState.TO_CREATE, text: 'A créer', color: 'grey', icon: 'mdi-circle', display: true },
-  { value: IdentityState.TO_COMPLETE, text: 'A compléter', color: 'warning', icon: 'mdi-circle', display: true },
-  { value: IdentityState.ON_ERROR, text: 'En erreur', color: 'negative', icon: 'mdi-circle', display: true },
-  { value: IdentityState.PROCESSING, text: 'En cours de synchronisation', color: 'warning', icon: 'mdi-loading', display: true },
-  { value: IdentityState.NO_SYNC, text: 'A ne pas synchroniser', color: 'black', icon: 'mdi-publish-off', display: true },
-];
+const DEFAULT_COLOR = 'grey'
+const DEFAULT_NAME = 'Inconnu'
+const DEFAULT_ICON = 'mdi-circle'
+const DEFAULT_TEXT_COLOR = 'white'
 
 export function useIdentityStates(): useIdentityStateReturnType {
   function getStateColor(state: number): string {
-    const found = IdentityStateList.find(item => item.value === state);
-    if (found && found?.display) return found.color;
-    return 'grey';
+    const found = IdentityStateList.find(item => item.value === state)
+    if (found && found?.display) return found.color
+
+    return DEFAULT_COLOR
   }
 
   function getStateName(state: number): string {
-    const found = IdentityStateList.find(item => item.value === state);
-    if (found && found?.display) return found.text;
-    return 'Inconnu';
+    const found = IdentityStateList.find(item => item.value === state)
+    if (found && found?.display) return found.text
+
+    return DEFAULT_NAME
   }
 
   function getStateIcon(state: number): string {
-    const found = IdentityStateList.find(item => item.value === state);
-    if (found && found?.display) return found.icon;
-    return 'mdi-circle';
+    const found = IdentityStateList.find(item => item.value === state)
+    if (found && found?.display) return found.icon
+
+    return DEFAULT_ICON
   }
 
-  function getStateInfos(state: number): { color: string, name: string, icon: string, value: number } {
-    const found = IdentityStateList.find(item => item.value === state);
+  function getStateInfos(value: number): { color: string, name: string, icon: string, value: number, textColor?: string } {
+    const found = IdentityStateList.find(item => item.value === value)
+
     return {
-      color: found ? found.color : 'grey',
-      name: found ? found.text : 'Unknown',
-      icon: found ? found.icon : 'mdi-circle',
-      value: state
-    };
+      color: found ? found.color : DEFAULT_COLOR,
+      name: found ? found.text : DEFAULT_NAME,
+      icon: found ? found.icon : DEFAULT_ICON,
+      textColor: found ? found.textColor : DEFAULT_TEXT_COLOR,
+      value,
+    }
   }
 
-  function getStateBadge(state: number): { color: string, name: string, icon: string } {
-    return omit(getStateInfos(state), ['value']);
+  function getStateBadge(state: number): { color: string, name: string, icon: string, textColor?: string } {
+    return omit(getStateInfos(state), ['value'])
   }
 
-  return { getStateColor, getStateName, getStateInfos, getStateBadge, getStateIcon };
+  return { getStateColor, getStateName, getStateInfos, getStateBadge, getStateIcon }
 }
 

@@ -1,12 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsString } from 'class-validator';
+import { IsIn, IsMongoId } from 'class-validator';
+import { DataStatusEnum } from '../../_enums/data-status';
 
 export class ActivationDto {
-  @IsString()
+  @IsMongoId()
   @ApiProperty({ example: '66d80ab41821baca9bf965b2', description: 'Id of identity', type: String })
-  public id: string;
+  public id: string
 
-  @IsBoolean()
-  @ApiProperty({ example: 'true', description: 'true or false to enable or disable the identity', type: String })
-  public status: boolean;
+  @IsIn([DataStatusEnum.ACTIVE, DataStatusEnum.INACTIVE], {
+    message: 'Le statut doit être ACTIVE ou INACTIVE.'
+  })
+  @ApiProperty({
+    example: DataStatusEnum.ACTIVE,
+    description: 'Desired status of the identity: ACTIVE or INACTIVE',
+    enum: [DataStatusEnum.ACTIVE, DataStatusEnum.INACTIVE],
+    type: Number,
+  })
+  public status: DataStatusEnum
 }

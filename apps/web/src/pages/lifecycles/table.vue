@@ -1,10 +1,9 @@
 <template lang="pug">
   q-page.container
-    //- pre(v-html="JSON.stringify(expanded)")
     q-table(
       flat bordered dense
       title="Derniers cycles déclenchés"
-      :rows="rows"
+      :rows="rows || []"
       :columns="columns"
       row-key="_id"
       v-model:pagination="pagination"
@@ -62,27 +61,14 @@
 </template>
 
 <script lang="ts">
-import dayjs from 'dayjs'
+import * as Monaco from 'monaco-editor'
 
-export default {
+export default defineComponent({
   name: 'LifecyclesTablePage',
   data() {
     return {
       filter: ref(''),
       expanded: ref<any[]>([]),
-      columns: [
-        { name: 'identity', align: 'left', label: 'Identité(e)', field: (row) => row?.refId || {}, sortable: true },
-        {
-          name: 'lifecycle',
-          required: true,
-          label: 'Cycle déclanché',
-          align: 'left',
-          field: (row) => row.lifecycle,
-          // format: (lifecycle) => getLifecycleName(lifecycle),
-          sortable: false,
-        },
-        { name: 'date', required: true, label: 'Date', align: 'left', field: (row) => row.date, format: (date) => `${dayjs(date).format('DD/MM/YYYY HH:mm:ss')}`, sortable: true },
-      ],
     }
   },
   async setup() {
@@ -113,9 +99,7 @@ export default {
       query,
       onRequest() {
         pagination.value.page = parseInt(route.query.page as string, 10) || 1
-        pagination.value.rowsPerPage = parseInt(route.query.limit as string, 10) || 16
-        // pagination.value.sortBy = sortBy
-        // pagination.value.descending = descending
+        pagination.value.rowsPerPage = parseInt(route.query.limit as string, 10) || 18
       },
       onResponse({ response }) {
         pagination.value.rowsNumber = response._data.total || 0
@@ -139,11 +123,44 @@ export default {
     }
   },
   computed: {
-    isDark(): boolean {
-      return this.$q.dark.isActive
+    columns() {
+      return [
+        {
+          name: 'identity',
+          align: 'left',
+          label: 'Identité(e)',
+          field: (row) => row?.refId || {},
+          sortable: true,
+        },
+        {
+          name: 'lifecycle',
+          required: true,
+          label: 'Cycle déclanché',
+          align: 'left',
+          field: (row) => row.lifecycle,
+          sortable: false,
+        },
+        {
+          name: 'date',
+          required: true,
+          label: 'Date',
+          align: 'left',
+          field: (row) => row.date,
+          format: (date) => `${this.$dayjs(date).format('DD/MM/YYYY HH:mm:ss')}`,
+          sortable: true,
+        },
+      ]
     },
-    monacoOptions() {
-      return { theme: this.isDark ? 'vs-dark' : 'vs-light', readOnly: true, minimap: { enabled: true }, scrollBeyondLastColumn: 0, scrollBeyondLastLine: false }
+    monacoOptions(): Monaco.editor.IStandaloneEditorConstructionOptions {
+      return <Monaco.editor.IStandaloneEditorConstructionOptions>{
+        theme: this.$q.dark.isActive ? 'vs-dark' : 'vs-light',
+        readOnly: true,
+        minimap: {
+          enabled: true,
+        },
+        scrollBeyondLastColumn: 0,
+        scrollBeyondLastLine: false,
+      }
     },
   },
   methods: {
@@ -158,18 +175,15 @@ export default {
           ...this.router.currentRoute.value.query,
           page,
           limit,
-          // 'sort[date]': descending ? `-${sortBy}` : sortBy,
-          // filter,
         },
       })
     },
     expandRow(props) {
       this.expanded = this.expanded.includes(props.row._id) ? [] : [props.row._id]
-      // props.expand = !props.expand
     },
     open(path) {
       window.open(path, '_blank')
     },
   },
-}
+})
 </script>

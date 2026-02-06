@@ -9,6 +9,10 @@
 const $q = useQuasar()
 const $route = useRoute()
 
+const { initDebug } = useDebug()
+
+initDebug()
+
 if (/1|yes|on|true/.test($route.query.embedded as string)) {
   setPageLayout('empty')
 }

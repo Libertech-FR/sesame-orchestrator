@@ -1,40 +1,47 @@
-<template>
-  <q-dialog :model-value="true" full-width persistent>
-    <div class="q-pa-md">
-      <q-layout view="hHh Lpr lff" container style="height: 800px" class="shadow-2 rounded-borders">
-        <q-header elevated class="bg-primary">
-          <q-toolbar>
-            <q-btn flat @click="drawer = !drawer" round dense icon="mdi-menu" />
-            <q-toolbar-title>Paramètres</q-toolbar-title>
-            <q-btn icon="mdi-close" flat round dense @click="$router.push('/')" />
-          </q-toolbar>
-        </q-header>
-        <q-drawer v-model="drawer" show-if-above :width="200" :breakpoint="500" bordered :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
-          <q-scroll-area class="fit">
-            <q-list>
-              <q-item v-for="item in navItems" :key="item.route" clickable @click="$router.push(item.route)" :active="$route.path === item.route">
-                <q-item-section avatar>
-                  <q-icon :name="item.icon" />
-                </q-item-section>
-                <q-item-section> {{ item.label }} </q-item-section>
-              </q-item>
-            </q-list>
-          </q-scroll-area>
-        </q-drawer>
-
-        <q-page-container>
-          <q-page padding :class="$q.dark.isActive ? 'bg-black' : 'bg-white'">
-            <nuxt-page></nuxt-page>
-          </q-page>
-        </q-page-container>
-      </q-layout>
-    </div>
-  </q-dialog>
+<template lang="pug">
+q-dialog(:model-value="true" transition-show='none' transition-hide='none' full-width full-height persistent)
+  q-card.sesame-sticky-dialog
+    q-toolbar.bg-primary(flat)
+      q-btn(flat @click="drawer = !drawer" round dense icon="mdi-menu")
+      q-toolbar-title Paramètres
+      q-btn(icon="mdi-close" flat round dense @click="router.push('/')")
+    .flex.fit(:style='{ flexDirection: $q.screen.gt.sm ? "row" : "column" }')
+      .col-0
+        q-tabs.full-height.border-right(
+          v-if='drawer'
+          v-model="tab"
+          :vertical='$q.screen.gt.sm'
+          mobile-arrows
+          outside-arrows
+        )
+          q-tab(
+            v-for="item in navItems"
+            :key="item.route"
+            :name="item.route"
+            :label="item.label"
+            :icon="item.icon"
+          )
+      .col
+        q-tab-panels.fit(v-model="tab")
+          q-tab-panel.q-pa-none(
+            :name="router.currentRoute.value.path"
+          )
+            nuxt-page
 </template>
 
-<script setup>
-import { ref } from 'vue'
-const drawer = ref(false)
+<script lang="ts" setup>
+import { ref, computed } from 'vue'
+
+const router = useRouter()
+const $q = useQuasar()
+const tab = computed({
+  get: () => router.currentRoute.value.path,
+  set: (val: string) => {
+    router.replace(val)
+  },
+})
+const drawer = ref($q.screen.gt.sm)
+const splitterModel = ref(20)
 
 const navItems = [
   { route: '/settings/agents', icon: 'mdi-account', label: 'Utilisateurs' },
@@ -44,3 +51,24 @@ const navItems = [
   { route: '/settings/cron', icon: 'mdi-clipboard-list', label: 'Tâches planifiés' },
 ]
 </script>
+<!--
+<style scoped>
+.q-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+.q-card > .q-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.q-card > .flex {
+  overflow: auto;
+}
+.q-card > .q-toolbar.bg-primary {
+  background-color: var(--q-color-primary, #1976d2);
+}
+</style> -->

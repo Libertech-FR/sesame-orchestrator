@@ -149,8 +149,8 @@ export default defineNuxtComponent({
       },
     },
   },
-  setup({ columns, initialFilter }) {
-    const { fieldTypes, comparatorTypes, writeFilter } = useFiltersQuery(ref(columns))
+  setup({ columns, initialFilter, columnsType }) {
+    const { fieldTypes, comparatorTypes, writeFilter } = useFiltersQuery(ref(columns), ref(columnsType))
 
     const detectInitialOperator = () => {
       if (!initialFilter || !initialFilter.querySign) return ''

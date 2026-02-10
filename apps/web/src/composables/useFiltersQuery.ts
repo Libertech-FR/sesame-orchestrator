@@ -1,5 +1,6 @@
 import type { QTableProps } from "quasar"
 import type { LocationQueryValue } from "vue-router"
+import dayjs from "dayjs"
 
 const fieldTypes = ref<
   {
@@ -25,6 +26,11 @@ export type ComparatorType = {
   multiplefields: boolean
   prefix: string
   suffix: string
+}
+
+export type ColumnType = {
+  name: string
+  type: string
 }
 
 const comparatorTypes = ref<ComparatorType[]>([
@@ -220,10 +226,15 @@ const sanitizeSearchString = (search: string) => {
   return search
 }
 
-const getSearchString = (columns: Ref<QTableProps['columns'] & { type: string }[]>, search: LocationQueryValue | LocationQueryValue[], fieldLabel: string) => {
+const getSearchString = (
+  columns: Ref<QTableProps['columns'] & { type: string }[]>,
+  search: LocationQueryValue | LocationQueryValue[],
+  fieldLabel: string,
+  columnTypes?: Ref<ColumnType[]>
+) => {
   const field = columns.value?.find((f) => f.name === fieldLabel.replace('[]', ''))
-  console.log('field', fieldLabel, field)
   if (!field) return ''
+  const fieldType = columnTypes?.value.find((col) => col.name === fieldLabel.replace('[]', ''))?.type || 'text'
   // if (field.type === 'multiple') {
   //   const searchArray = Array.isArray(search) ? search : [search]
   //   return searchArray
@@ -237,9 +248,10 @@ const getSearchString = (columns: Ref<QTableProps['columns'] & { type: string }[
   // if (Array.isArray(search)) {
   //   return search.join(' ou ')
   // }
-  // if (field?.type === 'date') {
-  //   return dayjs(search).format('DD/MM/YYYY')
-  // }
+  console.log('fieldType', fieldType, fieldLabel, search, columnTypes)
+  if (fieldType === 'date') {
+    return dayjs(search!.toString()).format('DD/MM/YYYY')
+  }
   return sanitizeSearchString(search!.toString())
 }
 
@@ -279,7 +291,7 @@ const getComparatorObject = (comparatorSign: string, search?: string) => {
   return candidates[0]
 }
 
-export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: string }[]>) {
+export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: string }[]>, columnTypes?: Ref<ColumnType[]>) {
   const $route = useRoute()
 
   const countFilters = computed(() => {
@@ -304,7 +316,7 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
 
         const label = getLabelByName(columns, extract.field) || extract.field
         const rawValue = `${$route.query[key]}`
-        const search = getSearchString(columns, $route.query[key], extract.field)
+        const search = getSearchString(columns, $route.query[key], extract.field, columnTypes)
 
         if (!search || search === '') {
           console.warn(`Invalid search for filter key: ${key} ${filteredKey}`, {

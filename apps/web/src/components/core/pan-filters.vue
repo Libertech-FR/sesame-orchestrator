@@ -98,8 +98,8 @@ export default defineComponent({
       default: () => [],
     },
   },
-  setup({ columns }) {
-    const { countFilters, hasFilters, getFilters, removeFilter } = useFiltersQuery(ref(columns))
+  setup({ columns, columnsType }) {
+    const { countFilters, hasFilters, getFilters, removeFilter } = useFiltersQuery(ref(columns), ref(columnsType))
 
     return {
       countFilters,

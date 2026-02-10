@@ -56,7 +56,7 @@ export function useColumnsIdentites(): useColumnsIdentitesReturnType {
   const dayjs = useDayjs()
   const config = useAppConfig()
 
-  const columns = ref<QTableProps['columns']>([
+  const columns = ref<QTableProps['columns'] & { type: string }[]>([
     {
       name: 'states',
       label: 'États',

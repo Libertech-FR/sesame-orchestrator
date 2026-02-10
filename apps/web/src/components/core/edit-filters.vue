@@ -1,5 +1,5 @@
 <template lang="pug">
-q-card(style='min-width: 500px;')
+q-card(style='min-width: 40vw;')
   q-toolbar.bg-primary.text-white(dense flat style='height: 32px;')
     q-toolbar-title(v-text='title')
     q-btn(
@@ -12,6 +12,7 @@ q-card(style='min-width: 500px;')
   q-card-section.q-pb-sm
     .flex.q-col-gutter-md
       q-select.col(
+        style='min-width: 180px; max-width: 220px'
         v-model='filter.key'
         :readonly='!!initialFilter?.field'
         :options='columns'
@@ -24,10 +25,11 @@ q-card(style='min-width: 500px;')
         map-options
         emit-value
       )
-      q-select.col(
+      q-select.col-1(
+        style='min-width: 130px'
         v-model='filter.operator'
         label='Opérateur'
-        :options='comparatorTypes'
+        :options='availableComparators'
         option-value='value'
         option-label='label'
         dense
@@ -46,12 +48,34 @@ q-card(style='min-width: 500px;')
               q-item-label
                 span {{ scope.opt.label }}
       q-input.col(
+        style='min-width: 300px'
         v-show="!comparator?.multiplefields"
         v-model='filter.value'
         label='Valeur'
         :prefix="comparator?.prefix"
         :suffix="comparator?.suffix"
+        :type='searchInputType'
         @keydown.enter.prevent="writeFilter(filter)"
+        dense
+        outlined
+      )
+      q-input.col(
+        style='min-width: 200px'
+        v-show="comparator?.multiplefields"
+        v-model="filter.min"
+        :type='searchInputType'
+        label="Minimum"
+        clearable
+        dense
+        outlined
+      )
+      q-input.col(
+        style='min-width: 200px'
+        v-show="comparator?.multiplefields"
+        v-model="filter.max"
+        :type='searchInputType'
+        label="Maximum"
+        clearable
         dense
         outlined
       )
@@ -75,6 +99,9 @@ type Filter = {
   key: string
   operator: string
   value: string
+
+  min: string
+  max: string
 }
 
 type InitialFilter = {
@@ -87,7 +114,7 @@ type InitialFilter = {
 }
 
 export default defineNuxtComponent({
-  name: 'PagesIdentitiesFiltersComponent',
+  name: 'CoreEditFiltersComponent',
   props: {
     title: {
       type: String,
@@ -97,20 +124,33 @@ export default defineNuxtComponent({
       type: Array as () => QTableProps['columns'] & { type: string }[],
       default: () => [],
     },
+    columnsType: {
+      type: Array as PropType<{ name: string; type: string }[]>,
+      required: false,
+      default: () => [],
+    },
     initialFilter: {
       type: Object as () => InitialFilter,
       default: () => ({}),
     },
   },
   watch: {
+    'filter.key': {
+      handler() {
+        this.fieldType = this.columnsType.find((col) => col.name === this.filter.key)?.type || 'text'
+        this.filter.operator = ''
+      },
+    },
     'filter.operator': {
       handler() {
         this.filter.value = ''
+        this.filter.min = ''
+        this.filter.max = ''
       },
     },
   },
   setup({ columns, initialFilter }) {
-    const { comparatorTypes, writeFilter } = useFiltersQuery(ref(columns))
+    const { fieldTypes, comparatorTypes, writeFilter } = useFiltersQuery(ref(columns))
 
     const detectInitialOperator = () => {
       if (!initialFilter || !initialFilter.querySign) return ''
@@ -166,22 +206,41 @@ export default defineNuxtComponent({
       return val
     }
 
+    const fieldType = ref<string>()
     const filter = ref<Filter>({
       key: initialFilter?.field || '',
       operator: detectInitialOperator(),
       value: stripPrefixSuffix(initialFilter?.value) || '',
+
+      min: '',
+      max: '',
     })
 
     return {
       filter,
+      fieldType,
+      fieldTypes,
       comparatorTypes,
       writeFilter,
     }
   },
   computed: {
-    comparator() {
+    comparator(): { label: string; value: string; prefix?: string; suffix?: string; multiplefields?: boolean } | undefined {
       return this.comparatorTypes.find((comp) => comp.value === this.filter.operator)
     },
+    searchInputType(): string {
+      if (this.fieldType === undefined || this.fieldType === null) return 'text'
+      return this.fieldType
+    },
+    availableComparators(): { label: string; value: string; prefix?: string; suffix?: string; multiplefields?: boolean }[] {
+      if (this.fieldType === undefined || this.fieldType === null) return []
+      return this.comparatorTypes.filter((comparator) => {
+        return comparator.type.includes(this.fieldType!)
+      })
+    },
+  },
+  mounted() {
+    this.fieldType = this.columnsType.find((col) => col.name === this.filter.key)?.type || 'text'
   },
 })
 </script>

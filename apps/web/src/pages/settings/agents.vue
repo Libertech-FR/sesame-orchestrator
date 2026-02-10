@@ -22,21 +22,7 @@
         )
         q-separator.q-mx-sm(vertical)
       template(#top-table)
-        q-toolbar(dense flat)
-          .column.fit
-            .flex.q-mt-sm
-              q-input.col(
-                v-model='search'
-                label='Recherche'
-                placeholder='Rechercher par username, email, ...'
-                clear-icon='mdi-close'
-                :debounce='300'
-                dense
-                outlined
-                clearable
-                autofocus
-                stacked-label
-              )
+        sesame-core-pan-filters(:columns='columns' mode='simple' placeholder='Rechercher par username, email, ...')
       template(v-slot:row-actions='{ row }')
         q-btn(:to='toPathWithQueries(`/settings/agents/${row._id}`)' color='primary' icon='mdi-eye' size='sm' flat round dense)
         q-btn-dropdown(:class="[$q.dark.isActive ? 'text-white' : 'text-black']" dropdown-icon="mdi-dots-horizontal" size='sm' flat round dense)

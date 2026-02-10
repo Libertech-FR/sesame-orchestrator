@@ -1,17 +1,16 @@
-import dayjs from "dayjs"
 import type { QTableProps } from "quasar"
 import type { LocationQueryValue } from "vue-router"
 
-// const fieldTypes = ref<
-//   {
-//     label: string
-//     value: string
-//   }[]
-// >([
-//   { label: 'Texte', value: 'text' },
-//   { label: 'Nombre', value: 'number' },
-//   { label: 'Date', value: 'date' },
-// ])
+const fieldTypes = ref<
+  {
+    label: string
+    value: string
+  }[]
+>([
+  { label: 'Texte', value: 'text' },
+  { label: 'Nombre', value: 'number' },
+  { label: 'Date', value: 'date' },
+])
 
 export const FILTER_BRACES = ['[', ']']
 export const FILTER_PREFIX = 'filters['
@@ -99,16 +98,16 @@ const comparatorTypes = ref<ComparatorType[]>([
     prefix: '',
     suffix: '',
   },
-  {
-    label: 'entre',
-    querySign: '<<',
-    value: 'between',
-    icon: 'mdi-arrow-expand-horizontal',
-    type: ['number', 'date'],
-    multiplefields: true,
-    prefix: '',
-    suffix: '',
-  },
+  // {
+  //   label: 'entre',
+  //   querySign: '<<',
+  //   value: 'between',
+  //   icon: 'mdi-arrow-expand-horizontal',
+  //   type: ['number', 'date'],
+  //   multiplefields: true,
+  //   prefix: '',
+  //   suffix: '',
+  // },
   {
     label: 'Contient',
     querySign: '^',
@@ -343,7 +342,7 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
     })
   }
 
-  const writeFilter = (filter: { key: string; operator: string; value: string }) => {
+  const writeFilter = (filter: { key: string; operator: string; value: string, min?: string, max?: string }) => {
     const router = useRouter()
     const query = { ...$route.query }
     const comparator = comparatorTypes.value.find((comp) => comp.value === filter.operator)
@@ -376,5 +375,6 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
     removeFilter,
     writeFilter,
     comparatorTypes,
+    fieldTypes,
   }
 }

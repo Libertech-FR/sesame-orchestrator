@@ -20,69 +20,7 @@ q-page.container.q-pa-sm
         dense
         outlined
       )
-    q-toolbar.q-mb-sm(dense flat)
-      .column.fit
-        .flex.q-mt-sm
-          q-input.col(
-            v-model='search'
-            label='Recherche'
-            placeholder='Rechercher par nom, prénom, email, ...'
-            clear-icon='mdi-close'
-            :debounce='300'
-            dense
-            outlined
-            clearable
-            autofocus
-            stacked-label
-          )
-          q-btn.q-ml-sm(
-            color='primary'
-            icon='mdi-filter-variant'
-            flat
-            dense
-          )
-            q-badge(
-              v-if='countFilters > 0'
-              color='warning'
-              floating
-            ) {{ countFilters }}
-            q-popup-proxy(
-              anchor='bottom left'
-              self='top middle'
-              transition-show='scale'
-              transition-hide='scale'
-            )
-              sesame-pages-identities-filters(
-                title='Ajouter un filtre'
-                :columns='columns'
-              )
-        .flex.q-mt-sm(v-show='hasFilters')
-          template(v-for='(filter, i) in getFilters' :key='filter.field')
-            //- pre(v-html='JSON.stringify(filter)')
-            q-chip(
-              @remove="removeFilter(filter)"
-              :color="$q.dark.isActive ? 'grey-9' : 'grey-3'"
-              removable
-              clickable
-              dense
-            )
-              | {{ filter.label }}
-              q-separator.q-mx-xs(vertical)
-              | {{ filter.comparator }}
-              q-separator.q-mx-xs(vertical)
-              | "{{ filter.search }}"
-              q-popup-proxy(
-                anchor='bottom left'
-                self='top middle'
-                transition-show='scale'
-                transition-hide='scale'
-              )
-                sesame-pages-identities-filters(
-                  :title='"Modifier le filtre (" + (filter.label || filter.field || "") + ")"'
-                  :initial-filter='filter'
-                  :columns='columns'
-                )
-            span.content-center(v-if='i < countFilters - 1') &amp;gt;
+    sesame-core-pan-filters(:columns='columns' mode='complex' :placeholder='"Rechercher par nom, prénom, email, ..."')
     q-table(
         :rows-per-page-options="[20,50,0]"
         :columns="fieldsName"

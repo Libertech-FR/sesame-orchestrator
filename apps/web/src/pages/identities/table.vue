@@ -16,69 +16,7 @@ q-page.grid
     row-key='_id'
   )
     template(#top-table)
-      q-toolbar(dense flat)
-        .column.fit
-          .flex.q-mt-sm
-            q-input.col(
-              v-model='search'
-              label='Recherche'
-              placeholder='Rechercher par nom, prénom, email, ...'
-              clear-icon='mdi-close'
-              :debounce='300'
-              dense
-              outlined
-              clearable
-              autofocus
-              stacked-label
-            )
-            q-btn.q-ml-sm(
-              color='primary'
-              icon='mdi-filter-variant'
-              flat
-              dense
-            )
-              q-badge.text-black(
-                v-if='countFilters > 0'
-                color='warning'
-                floating
-              ) {{ countFilters }}
-              q-popup-proxy(
-                anchor='bottom left'
-                self='top middle'
-                transition-show='scale'
-                transition-hide='scale'
-              )
-                sesame-pages-identities-filters(
-                  title='Ajouter un filtre'
-                  :columns='columns'
-                )
-          .flex.q-mt-sm(v-show='hasFilters')
-            template(v-for='(filter, i) in getFilters' :key='filter.field')
-              //- pre(v-html='JSON.stringify(filter)')
-              q-chip(
-                @remove="removeFilter(filter)"
-                :color="$q.dark.isActive ? 'grey-9' : 'grey-3'"
-                removable
-                clickable
-                dense
-              )
-                | {{ filter.label }}
-                q-separator.q-mx-xs(vertical)
-                | {{ filter.comparator }}
-                q-separator.q-mx-xs(vertical)
-                | "{{ filter.search }}"
-                q-popup-proxy(
-                  anchor='bottom left'
-                  self='top middle'
-                  transition-show='scale'
-                  transition-hide='scale'
-                )
-                  sesame-pages-identities-filters(
-                    :title='"Modifier le filtre (" + (filter.label || filter.field || "") + ")"'
-                    :initial-filter='filter'
-                    :columns='columns'
-                  )
-              span.content-center(v-if='i < countFilters - 1') &amp;gt;
+      sesame-core-pan-filters(:columns='columns' :columnsType='columnsType' mode='complex' :placeholder='"Rechercher par nom, prénom, email, ..."')
     template(#before-top-right-before="{ selected, clearSelection }")
       q-btn.q-ml-md(
         :to='toPathWithQueries(`/identities/table/${NewTargetId}`, {}, "schema=inetOrgPerson")'
@@ -267,21 +205,6 @@ export default defineNuxtComponent({
   computed: {
     targetId(): LocationQueryValue[] | string {
       return `${this.$route.params._id || ''}`
-    },
-    search: {
-      get(): LocationQueryValue[] | string {
-        const v = this.$route.query['search'] || ''
-
-        return `${v}`.replace(/^\*|\*$/g, '')
-      },
-      set(v: string): void {
-        this.$router.replace({
-          query: {
-            ...this.$route.query,
-            search: v ? `${v}` : undefined,
-          },
-        })
-      },
     },
   },
   methods: {

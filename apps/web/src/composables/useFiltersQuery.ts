@@ -29,18 +29,126 @@ export type ComparatorType = {
 }
 
 const comparatorTypes = ref<ComparatorType[]>([
-  { label: 'Egal à', querySign: ':', value: ':', icon: 'mdi-equal', type: ['text'], multiplefields: false, prefix: '', suffix: '' },
-  { label: 'Entier à', querySign: '#', value: '#', icon: 'mdi-pound', type: ['number'], multiplefields: false, prefix: '', suffix: '' },
-  { label: 'Différent', querySign: '!:', value: '!:', icon: 'mdi-exclamation', type: ['number'], multiplefields: false, prefix: '', suffix: '' },
-  { label: 'Supérieur à', querySign: '>', value: '>', icon: 'mdi-greater-than', type: ['number', 'date'], multiplefields: false, prefix: '', suffix: '' },
-  { label: 'Supérieur ou égal à', querySign: '>=', value: '>=', icon: 'mdi-greater-than-or-equal', type: ['number', 'date'], multiplefields: false, prefix: '', suffix: '' },
-  { label: 'Inférieur à', querySign: '<', value: '<', icon: 'mdi-less-than', type: ['number', 'date'], multiplefields: false, prefix: '', suffix: '' },
-  { label: 'Inférieur ou égal à', querySign: '<=', value: '<=', icon: 'mdi-less-than-or-equal', type: ['number', 'date'], multiplefields: false, prefix: '', suffix: '' },
-  { label: 'entre', querySign: '<<', value: 'between', icon: 'mdi-arrow-expand-horizontal', type: ['number', 'date'], multiplefields: true, prefix: '', suffix: '' },
-  { label: 'Contient', querySign: '^', value: '^', icon: 'mdi-apple-keyboard-control', type: ['text'], multiplefields: false, prefix: '/', suffix: '/i' },
-  { label: 'Commence par', querySign: '^', value: '/^', icon: 'mdi-contain-start', type: ['text'], multiplefields: false, prefix: '/^', suffix: '/i' },
-  { label: 'Fini par', querySign: '^', value: '$/', icon: 'mdi-contain-end', type: ['text'], multiplefields: false, prefix: '/', suffix: '$/i' },
-  { label: 'Inclus', querySign: '@', value: '@', icon: 'mdi-format-letter-matches', type: [], multiplefields: true, prefix: '', suffix: '' },
+  {
+    label: 'Égal à',
+    querySign: ':',
+    value: ':',
+    icon: 'mdi-equal',
+    type: ['text'],
+    multiplefields: false,
+    prefix: '',
+    suffix: '',
+  },
+  {
+    label: 'Entier à',
+    querySign: '#',
+    value: '#',
+    icon: 'mdi-pound',
+    type: ['number'],
+    multiplefields: false,
+    prefix: '',
+    suffix: '',
+  },
+  {
+    label: 'Différent',
+    querySign: '!:',
+    value: '!:',
+    icon: 'mdi-exclamation',
+    type: ['number'],
+    multiplefields: false,
+    prefix: '',
+    suffix: '',
+  },
+  {
+    label: 'Supérieur à',
+    querySign: '>',
+    value: '>',
+    icon: 'mdi-greater-than',
+    type: ['number', 'date'],
+    multiplefields: false,
+    prefix: '',
+    suffix: '',
+  },
+  {
+    label: 'Supérieur ou égal à',
+    querySign: '>=',
+    value: '>=',
+    icon: 'mdi-greater-than-or-equal',
+    type: ['number', 'date'],
+    multiplefields: false,
+    prefix: '',
+    suffix: '',
+  },
+  {
+    label: 'Inférieur à',
+    querySign: '<',
+    value: '<',
+    icon: 'mdi-less-than',
+    type: ['number', 'date'],
+    multiplefields: false,
+    prefix: '',
+    suffix: '',
+  },
+  {
+    label: 'Inférieur ou égal à',
+    querySign: '<=',
+    value: '<=',
+    icon: 'mdi-less-than-or-equal',
+    type: ['number', 'date'],
+    multiplefields: false,
+    prefix: '',
+    suffix: '',
+  },
+  {
+    label: 'entre',
+    querySign: '<<',
+    value: 'between',
+    icon: 'mdi-arrow-expand-horizontal',
+    type: ['number', 'date'],
+    multiplefields: true,
+    prefix: '',
+    suffix: '',
+  },
+  {
+    label: 'Contient',
+    querySign: '^',
+    value: '^',
+    icon: 'mdi-apple-keyboard-control',
+    type: ['text'],
+    multiplefields: false,
+    prefix: '/',
+    suffix: '/i',
+  },
+  {
+    label: 'Commence par',
+    querySign: '^',
+    value: '/^',
+    icon: 'mdi-contain-start',
+    type: ['text'],
+    multiplefields: false,
+    prefix: '/^',
+    suffix: '/i',
+  },
+  {
+    label: 'Fini par',
+    querySign: '^',
+    value: '$/',
+    icon: 'mdi-contain-end',
+    type: ['text'],
+    multiplefields: false,
+    prefix: '/',
+    suffix: '$/i',
+  },
+  {
+    label: 'Inclus',
+    querySign: '@',
+    value: '@',
+    icon: 'mdi-format-letter-matches',
+    type: ['array'],
+    multiplefields: true,
+    prefix: '',
+    suffix: '',
+  },
 ])
 
 const getAllPrefixAndSuffixPattern = computed(() => {
@@ -62,7 +170,9 @@ const getLabelByName = (columns: Ref<QTableProps['columns'] & { type: string }[]
 
   if (!field) return name.replace(FILTER_BRACES.join(''), '')
 
-  if (field.type !== 'multiple') return (field.label as string).replace(FILTER_BRACES.join(''), '')
+  if (typeof (field as any).type === 'undefined' || (field as any).type !== 'multiple') {
+    return (field.label as string).replace(FILTER_BRACES.join(''), '')
+  }
 
   return field.name.replace(FILTER_BRACES.join(''), '')
 }

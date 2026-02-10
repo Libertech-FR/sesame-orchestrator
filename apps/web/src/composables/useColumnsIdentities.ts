@@ -59,7 +59,7 @@ export function useColumnsIdentites(): useColumnsIdentitesReturnType {
   const columns = ref<QTableProps['columns']>([
     {
       name: 'states',
-      label: 'Etats',
+      label: 'États',
       field: 'states',
       align: 'left',
     },

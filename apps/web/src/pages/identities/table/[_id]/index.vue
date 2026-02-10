@@ -58,7 +58,7 @@
           q-tooltip.text-body2(slot="trigger") Définir le mot de passe
         q-btn.q-px-sm(
           v-if="identity?._id"
-          @click="sendInit"
+          @click="sendInit()"
           :color="identity.state != IdentityState.SYNCED ? 'grey-7' : 'primary'"
           :disabled="identity.state != IdentityState.SYNCED"
           icon="mdi-email-arrow-right"
@@ -66,15 +66,12 @@
         )
           q-tooltip.text-body2(slot="trigger") Envoyer le mail d'invitation
         q-separator(v-if="identity?._id" v-for='_ in 2' :key='_' vertical)
-          //- :disabled='!savable'
         q-btn.q-px-sm.text-positive(
           @click='save()'
           icon='mdi-content-save'
           dense
         )
-          //- q-tooltip.text-body2(slot='trigger' :class='savable ? "bg-positive" : ""')
-          //-   span(v-if="savable") Enregistrer les modifications
-          //-   span(v-else) Aucune modification à enregistrer
+          q-tooltip.text-body2.bg-positive(slot='trigger') Enregistrer les modifications
         q-btn.q-px-sm.text-orange-8(
           @click='sync()'
           v-if="identity?._id"

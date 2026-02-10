@@ -38,7 +38,7 @@ div
       q-tooltip.text-body2(slot="trigger") Obliger l'utilisateur à changer son mot de passe
     q-btn(@click="resetPasswordModal = true" color="red-8" icon="mdi-account-key" :disabled="props.identity.state != IdentityState.SYNCED" padding='5px 10px' dense)
       q-tooltip.text-body2(slot="trigger") Définir le mot de passe
-    q-btn(@click="sendInit" color="primary" icon="mdi-email-arrow-right"  :disabled="props.identity.state != IdentityState.SYNCED" padding='5px 10px' dense)
+    q-btn(@click="sendInit()" color="primary" icon="mdi-email-arrow-right"  :disabled="props.identity.state != IdentityState.SYNCED" padding='5px 10px' dense)
       q-tooltip.text-body2(slot="trigger") Envoyer le mail d'invitation
 
     q-separator(size='3px' vertical)
@@ -413,30 +413,67 @@ async function sync() {
 }
 
 async function sendInit() {
-  //envoi le mail
-
-  const {
-    data: result,
-    pending,
-    error,
-    refresh,
-  } = await useHttp(`/management/passwd/init`, {
-    method: 'POST',
-    body: { uid: props.identity.inetOrgPerson.uid },
-  })
-  if (error.value) {
-    handleError({
-      error: error.value,
-      message: "Erreur lors de l'envoi du mail",
-    })
-  } else {
-    $q.notify({
-      message: 'Le mail a été envoyé',
+  $q.dialog({
+    title: 'Confirmation',
+    message: `Voulez-vous envoyer le mail d'invitation à <${props.identity.inetOrgPerson.uid}> ?`,
+    persistent: true,
+    ok: {
+      push: true,
       color: 'positive',
-      position: 'top-right',
-      icon: 'mdi-check-circle-outline',
-    })
-  }
+      label: 'Envoyer',
+    },
+    cancel: {
+      push: true,
+      color: 'negative',
+      label: 'Annuler',
+    },
+  }).onOk(async () => {
+    const requestOptions = { method: 'POST', body: JSON.stringify({ uid: props.identity.inetOrgPerson.uid }) }
+    try {
+      const data = await $http.post('/management/passwd/init', requestOptions)
+      $q.notify({
+        message: `Le mail d'invitation a été envoyé à <${props.identity.inetOrgPerson.uid}> : `,
+        color: 'positive',
+        position: 'top-right',
+        icon: 'mdi-check-circle-outline',
+      })
+      props?.refreshTarget(props.identity)
+    } catch (error) {
+      $q.notify({
+        message: "Impossible d'envoyer le mail d'invitation : " + error.response._data.message,
+        color: 'negative',
+        position: 'top-right',
+        icon: 'mdi-alert-circle-outline',
+      })
+    }
+  })
+  //envoi le mail
+  // console.log('send init', props.identity.inetOrgPerson.uid)
+  // const requestOptions = { method: 'POST', body: JSON.stringify({ uid: props.identity.inetOrgPerson.uid }) }
+  // const {
+  //   data: result,
+  //   pending,
+  //   error,
+  //   refresh,
+  // } = await useHttp(`/management/passwd/init`, {
+  //   method: 'POST',
+  //   cache: 'no-cache',
+  //   body: JSON.stringify({ uid: props.identity.inetOrgPerson.uid }),
+  // })
+  // props?.refreshTarget(props.identity)
+  // if (error.value) {
+  //   handleError({
+  //     error: error.value,
+  //     message: "Erreur lors de l'envoi du mail",
+  //   })
+  // } else {
+  //   $q.notify({
+  //     message: 'Le mail a été envoyé',
+  //     color: 'positive',
+  //     position: 'top-right',
+  //     icon: 'mdi-check-circle-outline',
+  //   })
+  // }
 }
 
 function back() {

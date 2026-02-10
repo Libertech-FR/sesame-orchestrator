@@ -100,8 +100,6 @@ q-page.container
 </template>
 
 <script lang="ts">
-import { c } from 'openapi-typescript'
-
 export default defineNuxtComponent({
   name: 'IdentitiesFusionPage',
   data() {

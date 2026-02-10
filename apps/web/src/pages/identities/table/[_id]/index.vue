@@ -241,11 +241,12 @@ export default defineNuxtComponent({
         })
 
         this.$q.notify({
-          message: 'Le mot de passe a été changé : ',
+          message: `Le mot de passe de <${this.identity.inetOrgPerson.uid}> a été changé !`,
           color: 'positive',
           position: 'top-right',
           icon: 'mdi-check-circle-outline',
         })
+        this.refresh()
       } catch (error: any) {
         this.$q.notify({
           message: 'Impossible de modifier le mot de passe : ' + error.response._data.message,
@@ -275,7 +276,7 @@ export default defineNuxtComponent({
         })
         .onOk(async () => {
           try {
-            const data = await this.$http.post('/management/identities/needtochangepassword', {
+            await this.$http.post('/management/identities/needtochangepassword', {
               body: JSON.stringify({ id: this.identity._id }),
             })
             this.$q.notify({
@@ -296,28 +297,44 @@ export default defineNuxtComponent({
         })
     },
     async sendInit() {
-      const {
-        data: result,
-        pending,
-        error,
-        refresh,
-      } = await useHttp(`/management/passwd/init`, {
-        method: 'POST',
-        body: { uid: this.identity.inetOrgPerson.uid },
-      })
-      if (error.value) {
-        handleError({
-          error: error.value,
-          message: "Erreur lors de l'envoi du mail",
+      this.$q
+        .dialog({
+          title: 'Confirmation',
+          message: `Voulez vous envoyer le mail d'invitation <${this.identity.inetOrgPerson.uid}> ?`,
+          persistent: true,
+          ok: {
+            push: true,
+            color: 'positive',
+            label: 'Envoyer',
+          },
+          cancel: {
+            push: true,
+            color: 'negative',
+            label: 'Annuler',
+          },
         })
-      } else {
-        this.$q.notify({
-          message: 'Le mail a été envoyé',
-          color: 'positive',
-          position: 'top-right',
-          icon: 'mdi-check-circle-outline',
+        .onOk(async () => {
+          try {
+            await this.$http.post('/management/passwd/init', {
+              method: 'POST',
+              body: JSON.stringify({ uid: this.identity.inetOrgPerson.uid }),
+            })
+            this.$q.notify({
+              message: 'Le mail a été envoyé',
+              color: 'positive',
+              position: 'top-right',
+              icon: 'mdi-check-circle-outline',
+            })
+            this.refresh()
+          } catch (e: any) {
+            this.$q.notify({
+              message: "Erreur lors de l'envoi du mail : " + e.response._data.message,
+              color: 'negative',
+              position: 'top-right',
+              icon: 'mdi-alert-circle-outline',
+            })
+          }
         })
-      }
     },
     async switchAccountStatus() {
       let bouton = ''

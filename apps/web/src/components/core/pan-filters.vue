@@ -17,36 +17,60 @@ q-toolbar(dense flat)
         stacked-label
       )
       q-space(v-if='mode === "advanced"')
-      q-btn.q-ml-sm(
-        v-if='mode === "complex" || mode === "advanced"'
-        color='primary'
-        icon='mdi-filter-variant'
-        flat
-        dense
-      )
-        span(v-text='mode === "advanced" ? "Ajouter un nouveau filtre" : ""')
+      q-btn-group(flat)
+        q-btn.q-ml-sm(
+          v-if='mode === "complex" || mode === "advanced"'
+          color='secondary'
+          icon='mdi-filter-variant-plus'
+          flat
+          dense
+        )
+          q-tooltip.text-body2.bg-secondary(
+            anchor='top middle'
+            self='bottom middle'
+          )
+            span Il y a {{ countFilters }} filtre(s) actif(s)
+            br
+            small Cliquer pour ajouter des filtres
+          span(v-text='mode === "advanced" ? "Ajouter un nouveau filtre" : ""')
+          q-popup-proxy(
+            anchor='bottom left'
+            self='top middle'
+            transition-show='scale'
+            transition-hide='scale'
+          )
+            sesame-core-edit-filters(
+              title='Ajouter un filtre'
+              :columns='columns'
+              :columns-type='columnsType'
+            )
+        q-separator(vertical)
+        q-btn-dropdown.text-secondary(
+          flat dense
+        )
+          q-list(dense)
+            q-item(@click='removeAllFilters' clickable v-close-popup)
+              q-item-section(avatar)
+                q-icon(
+                  name='mdi-delete'
+                  color='negative'
+                )
+              q-item-section
+                q-item-label Retirer tous les filtres
         q-badge.text-black(
+          style='margin-right: 8px; margin-top: 4px;'
           v-if='countFilters > 0'
           color='warning'
+          align='middle'
           floating
         ) {{ countFilters }}
-        q-popup-proxy(
-          anchor='bottom left'
-          self='top middle'
-          transition-show='scale'
-          transition-hide='scale'
-        )
-          sesame-core-edit-filters(
-            title='Ajouter un filtre'
-            :columns='columns'
-            :columns-type='columnsType'
-          )
     .flex.q-mt-sm(v-show='hasFilters')
       template(v-for='(filter, i) in getFilters' :key='filter.field')
         //- pre(v-html='JSON.stringify(filter)')
         q-chip(
+          :class="[!columnExists(filter.field) ? 'text-black' : '']"
           @remove="removeFilter(filter)"
-          :color="$q.dark.isActive ? 'grey-9' : 'grey-3'"
+          :color="getFilterColor(filter)"
           removable
           clickable
           dense
@@ -63,11 +87,20 @@ q-toolbar(dense flat)
             transition-hide='scale'
           )
             sesame-core-edit-filters(
-              :title='"Modifier le filtre (" + (filter.label || filter.field || "") + ")"'
+              title='Modifier le filtre'
               :initial-filter='filter'
               :columns='columns'
               :columns-type='columnsType'
             )
+          q-tooltip.text-body2(
+            :class="getTooltipColor(filter)"
+            anchor='top middle'
+            self='bottom middle'
+          )
+            span(v-if='!columnExists(filter.field)')
+              | Cliquer pour modifier le filtre&nbsp;
+              small (Le champ "{{ filter.field }}" n'existe pas ou n'est pas reconnu)
+            span(v-else) Cliquer pour modifier le filtre
         span.content-center(v-if='i < countFilters - 1') &amp;gt;
 </template>
 
@@ -99,13 +132,14 @@ export default defineComponent({
     },
   },
   setup({ columns, columnsType }) {
-    const { countFilters, hasFilters, getFilters, removeFilter } = useFiltersQuery(ref(columns), ref(columnsType))
+    const { countFilters, hasFilters, getFilters, removeFilter, removeAllFilters } = useFiltersQuery(ref(columns), ref(columnsType))
 
     return {
       countFilters,
       hasFilters,
       getFilters,
       removeFilter,
+      removeAllFilters,
     }
   },
   computed: {
@@ -123,6 +157,27 @@ export default defineComponent({
           },
         })
       },
+    },
+  },
+  methods: {
+    columnExists(field: string) {
+      return this.columns.find((col) => col.name === field)
+    },
+    getFilterColor(filter: { comparator: string; label: string; field: string; search?: string; value?: unknown }) {
+      if (this.columnExists(filter.field)) {
+        return this.$q.dark.isActive ? 'grey-9' : 'grey-3'
+      }
+
+      return this.$q.dark.isActive ? 'amber-9' : 'amber-3'
+    },
+    getTooltipColor(filter: { comparator: string; label: string; field: string; search?: string; value?: unknown }) {
+      const colors = [] as string[]
+      if (!this.columnExists(filter.field)) {
+        colors.push(this.$q.dark.isActive ? 'bg-amber-9' : 'bg-amber-3')
+        colors.push('text-black')
+      }
+
+      return colors.join(' ')
     },
   },
 })

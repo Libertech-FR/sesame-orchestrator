@@ -250,13 +250,13 @@ const sanitizeSearchString = (search: string) => {
 }
 
 const getSearchString = (
-  columns: Ref<QTableProps['columns'] & { type: string }[]>,
   search: LocationQueryValue | LocationQueryValue[],
   fieldLabel: string,
-  columnTypes?: Ref<ColumnType[]>
+  columnTypes?: Ref<ColumnType[]>,
+  _columns?: Ref<QTableProps['columns'] & { type: string }[]>,
 ) => {
-  const field = columns.value?.find((f) => f.name === fieldLabel.replace('[]', ''))
-  if (!field) return ''
+  // const field = columns.value?.find((f) => f.name === fieldLabel.replace('[]', ''))
+  // if (!field) return ''
   const fieldType = columnTypes?.value.find((col) => col.name === fieldLabel.replace('[]', ''))?.type || 'text'
   const columnType = columnTypes?.value.find((col) => col.name === fieldLabel.replace('[]', ''))
   // if (field.type === 'multiple') {
@@ -290,6 +290,8 @@ const getSearchString = (
     }
     return columnType.valueMapping[search!.toString()] || sanitizeSearchString(search!.toString())
   }
+
+  console.log('No value mapping for field', fieldLabel, 'with search', search)
 
   return sanitizeSearchString(search!.toString())
 }
@@ -355,7 +357,7 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
 
         const label = getLabelByName(columns, extract.field) || extract.field
         const rawValue = `${$route.query[key]}`
-        const search = getSearchString(columns, $route.query[key], extract.field, columnTypes)
+        const search = getSearchString($route.query[key], extract.field, columnTypes, columns)
 
         if (!search || search === '') {
           console.warn(`Invalid search for filter key: ${key} ${filteredKey}`, {
@@ -363,10 +365,12 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
             search,
             extract,
           })
-          continue
+          // continue
         }
 
         const comparatorObj = getComparatorObject(extract.comparator, rawValue)
+
+        console.log('comparatorObj', comparatorObj, 'for key', key, 'with rawValue', rawValue)
 
         filters[key] = {
           label,
@@ -459,6 +463,22 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
     return `${base}?${encodedQuery}`
   }
 
+  const removeAllFilters = () => {
+    const router = useRouter()
+    const query = { ...$route.query }
+
+    for (const key in query) {
+      if (key.startsWith(FILTER_PREFIX) && key.endsWith(FILTER_SUFFIX)) {
+        delete query[key]
+        delete query[key + '[]'] // In case of multiple values
+      }
+    }
+
+    router.replace({
+      query,
+    })
+  }
+
   return {
     countFilters,
     hasFilters,
@@ -468,5 +488,6 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
     comparatorTypes,
     fieldTypes,
     encodePath,
+    removeAllFilters,
   }
 }

@@ -1,7 +1,20 @@
 <template lang="pug">
 q-card.transparent(style='min-width: 40vw; max-width: 80vw')
-  q-toolbar.bg-primary.text-white(dense flat style='height: 32px;')
-    q-toolbar-title(v-text='title')
+  q-toolbar.bg-secondary.text-white(dense flat style='height: 32px;')
+    q-toolbar-title
+      span {{ title }}&nbsp;
+      small
+        i(v-if='initialFilter.label') <{{ initialFilter.label }}>
+      q-chip(
+        @click='copy(initialFilter.field || "")'
+        v-if='initialFilter && initialFilter.field'
+        :color='$q.dark.isActive ? "amber-9" : "amber-3"'
+        text-color='black'
+        size='xs'
+        class='q-ml-sm'
+        clickable
+      ) {{ initialFilter.field }}
+        q-tooltip(anchor='top middle' self='bottom middle') Copier le champ
     q-btn(
       icon='mdi-close'
       v-close-popup
@@ -12,19 +25,40 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
   q-card-section.q-pb-sm
     .flex.q-col-gutter-md
       q-select.col(
+        ref='field'
         style='min-width: 180px; max-width: 220px'
         v-model='filter.key'
         :readonly='!!initialFilter?.field'
-        :options='columns'
+        :use-input='!initialFilter?.field'
+        :options='filterOptions'
         label='Champ à filtrer'
         option-value='name'
         option-label='label'
+        input-debounce="100"
+        @new-value="createValue"
+        @filter="filterFn"
         dense
         outlined
+        use-chips
         autofocus
         map-options
         emit-value
       )
+        template(v-slot:selected-item="scope")
+          //- pre(v-html='JSON.stringify(scope)')
+          q-chip(
+            :class="[!columnExists(scope.opt.name || scope.opt) ? 'text-black' : '']"
+            :color="!columnExists(scope.opt.name || scope.opt) ? ($q.dark.isActive ? 'amber-9' : 'amber-3') : ''"
+            dense
+          )
+            | {{ scope.opt.label || scope.opt.name || scope.opt }}
+        template(#no-option="{ inputValue }")
+          q-item(clickable @click="triggerEnter")
+            q-item-section
+              q-item-label
+                | Ajouter le filtre personnalisé
+                | &nbsp;
+                code <{{ inputValue }}>
       q-select.col-1(
         style='min-width: 130px'
         v-model='filter.operator'
@@ -135,12 +169,13 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
 </template>
 
 <script lang="ts">
+import { copyToClipboard } from 'quasar'
 import type { QTableProps } from 'quasar'
 import dayjs from 'dayjs'
 
 type Filter = {
-  key: string
   operator: string
+  key: string | undefined
   value: string | number | undefined
 
   min?: string
@@ -198,6 +233,11 @@ export default defineNuxtComponent({
         }
       },
     },
+  },
+  data() {
+    return {
+      filterOptions: [] as { name: string; label: string }[],
+    }
   },
   setup({ columns, initialFilter, columnsType }) {
     console.log('initialFilter', initialFilter)
@@ -286,7 +326,7 @@ export default defineNuxtComponent({
     const fieldType = ref<string>()
     const filter = ref<Filter>({
       operator,
-      key: initialFilter?.field?.replace('[]', '') || '',
+      key: initialFilter?.field?.replace('[]', '') || undefined,
       value: initialValue.value,
 
       min: '',
@@ -312,7 +352,12 @@ export default defineNuxtComponent({
       return this.fieldType
     },
     availableComparators(): { label: string; value: string; prefix?: string; suffix?: string; multiplefields?: boolean }[] {
+      if (!this.columnExists(this.filter.key || '')) {
+        return this.comparatorTypes
+      }
+
       if (this.fieldType === undefined || this.fieldType === null) return []
+
       return this.comparatorTypes.filter((comparator) => {
         return comparator.type.includes(this.fieldType!)
       })
@@ -331,11 +376,75 @@ export default defineNuxtComponent({
       return mapping
     },
   },
+  methods: {
+    columnExists(field: string) {
+      return this.columns.find((col) => col.name === field)
+    },
+    mapAssign(col: { name: string; label?: string }) {
+      return { name: col.name, label: col.label || col.name }
+    },
+    createValue(val: string, done: (newVal: string, mode: 'toggle' | 'add-unique' | 'add') => void) {
+      if (val.length > 0) {
+        if (this.filterOptions.find((opt) => opt.label === val)) {
+          // If the value already exists in options, select it
+          const existing = this.filterOptions.find((opt) => opt.label === val)!
+          done(existing.name, 'toggle')
+        } else {
+          // Otherwise, add it to options and select it
+          const newOption = { name: val, label: val }
+          this.filterOptions.push(newOption)
+          done(val, 'add-unique')
+        }
+      }
+    },
+    filterFn(val, update) {
+      update(() => {
+        if (val === '') {
+          this.filterOptions = this.columns.map(this.mapAssign)
+        } else {
+          const needle = val.toLowerCase()
+          this.filterOptions = this.columns.map(this.mapAssign).filter((v) => v.label.toLowerCase().indexOf(needle) > -1)
+        }
+      })
+    },
+    triggerEnter() {
+      ;(this.$refs.field as { focus: () => void }).focus()
+      this.$nextTick(() => {
+        const input = (this.$refs.field as { $el: HTMLElement }).$el.querySelector('input')
+        if (input) {
+          input.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'Enter',
+              code: 'Enter',
+              keyCode: 13,
+              which: 13,
+              bubbles: true,
+            }),
+          )
+        }
+      })
+    },
+    async copy(text: string) {
+      try {
+        await copyToClipboard(text)
+        this.$q.notify({
+          message: 'Champ copié dans le presse-papier',
+          color: 'positive',
+          icon: 'mdi-clipboard-check',
+        })
+      } catch (e) {
+        console.warn('copyToClipboard failed', e)
+        this.$q.notify({
+          message: 'Échec de la copie dans le presse-papier',
+          color: 'negative',
+          icon: 'mdi-close-circle',
+        })
+      }
+    },
+  },
   mounted() {
-    // console.log('comparator', this.comparator)
-    // console.log('optionsMapping', this.optionsMapping)
-    // console.log('this.columnsType', this.columnsType)
-    this.fieldType = this.columnsType.find((col) => col.name === this.filter.key)?.type || 'text'
+    this.filterOptions = this.columns.map(this.mapAssign)
+    this.fieldType = this.columnsType.find((col) => col.name === this.filter.key)?.type
   },
 })
 </script>

@@ -11,9 +11,9 @@ q-drawer.flex(v-model="drawer" side="left" :mini="true" :breakpoint="0" bordered
         div(v-for="menu in getMenuByPart(part)")
           q-item(v-if="menu.hideInMenuBar !== true"
             :key="part" clickable v-ripple
-            :href="menu.path" :active="menu.path === $route.fullPath" active-class="q-item--active"
+            :href="encodePath(menu.path)" :active="encodePath(menu.path) === $route.fullPath" active-class="q-item--active"
           )
-            q-separator(v-if='menu.path === $route.fullPath' vertical color='primary' size="5px" style='position: absolute; left: 0; height: 100%; margin-top: -8px;')
+            q-separator(v-if='encodePath(menu.path) === $route.fullPath' vertical color='primary' size="5px" style='position: absolute; left: 0; height: 100%; margin-top: -8px;')
             q-item-section(avatar)
               q-icon(:name="menu.icon" :color="menu.color")
             q-badge(
@@ -46,12 +46,14 @@ export default defineNuxtComponent({
   async setup() {
     const identityStateStore = useIdentityStateStore()
     const { menuParts, getMenuByPart, initialize } = useMenu(identityStateStore)
+    const { encodePath } = useFiltersQuery(ref([]))
 
     await initialize()
 
     return {
       menuParts,
       getMenuByPart,
+      encodePath,
     }
   },
 })

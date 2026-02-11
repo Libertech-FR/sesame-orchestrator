@@ -30,6 +30,7 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
         v-model='filter.operator'
         label='Opérateur'
         :options='availableComparators'
+        :readonly='!filter.key'
         option-value='value'
         option-label='label'
         dense
@@ -54,7 +55,8 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
         label='Valeur'
         :prefix="comparator?.prefix"
         :suffix="comparator?.suffix"
-        :type='searchInputType'
+        :readonly='!filter.operator'
+        :type='searchInputType === "date" ? "datetime-local" : searchInputType'
         @keydown.enter.prevent="writeFilter(filter)"
         dense
         outlined
@@ -67,9 +69,11 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
         :prefix="comparator?.prefix"
         :suffix="comparator?.suffix"
         :type='searchInputType'
+        :readonly='!filter.operator'
         @keydown.enter.prevent="writeFilter(filter)"
         :options="optionsMapping"
         emit-value
+        use-chips
         map-options
         dense
         outlined
@@ -79,6 +83,7 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
         v-show="comparator?.multiplefields && comparator?.querySign === '<<'"
         v-model="filter.min"
         :type='searchInputType'
+        :readonly='!filter.operator'
         label="Minimum"
         clearable
         dense
@@ -89,6 +94,7 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
         v-show="comparator?.multiplefields && comparator?.querySign === '<<'"
         v-model="filter.max"
         :type='searchInputType'
+        :readonly='!filter.operator'
         label="Maximum"
         clearable
         dense
@@ -103,6 +109,7 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
         :suffix="comparator?.suffix"
         :type='searchInputType'
         :options="optionsMapping"
+        :readonly='!filter.operator'
         input-debounce="100"
         new-value-mode="add-unique"
         emit-value
@@ -129,11 +136,12 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
 
 <script lang="ts">
 import type { QTableProps } from 'quasar'
+import dayjs from 'dayjs'
 
 type Filter = {
   key: string
   operator: string
-  value: string
+  value: string | number | undefined
 
   min?: string
   max?: string
@@ -180,10 +188,14 @@ export default defineNuxtComponent({
     },
     'filter.operator': {
       handler() {
-        this.filter.value = ''
-        this.filter.min = ''
-        this.filter.max = ''
-        this.filter.items = []
+        if (this.comparator?.multiplefields) {
+          this.filter.value = undefined
+        } else if (this.filter.items && this.filter.items.length > 0) {
+          this.filter.items = []
+        } else {
+          this.filter.min = ''
+          this.filter.max = ''
+        }
       },
     },
   },
@@ -260,11 +272,22 @@ export default defineNuxtComponent({
       }
     }
 
+    let initialValue = ref<string | number | undefined>(undefined)
+    const operator = detectInitialOperator()
+    const comp = comparatorTypes.value.find((comp) => comp.value === operator)
+
+    if (comp?.type.includes('date') && initialFilter.value) {
+      const dateValue = dayjs(initialFilter.value).format('YYYY-MM-DDTHH:mm')
+      initialValue.value = dateValue
+    } else {
+      initialValue.value = stripPrefixSuffix(initialFilter?.value) || undefined
+    }
+
     const fieldType = ref<string>()
     const filter = ref<Filter>({
+      operator,
       key: initialFilter?.field?.replace('[]', '') || '',
-      operator: detectInitialOperator(),
-      value: stripPrefixSuffix(initialFilter?.value) || '',
+      value: initialValue.value,
 
       min: '',
       max: '',
@@ -300,7 +323,7 @@ export default defineNuxtComponent({
       this.columnsType.forEach((col) => {
         if (col.name === this.filter.key && col.valueMapping) {
           Object.entries(col.valueMapping).forEach(([key, val]) => {
-            mapping.push({ label: val, value: key })
+            mapping.push({ label: val + ' (' + key + ')', value: key })
           })
         }
       })
@@ -309,9 +332,9 @@ export default defineNuxtComponent({
     },
   },
   mounted() {
-    console.log('comparator', this.comparator)
-    console.log('optionsMapping', this.optionsMapping)
-    console.log('this.columnsType', this.columnsType)
+    // console.log('comparator', this.comparator)
+    // console.log('optionsMapping', this.optionsMapping)
+    // console.log('this.columnsType', this.columnsType)
     this.fieldType = this.columnsType.find((col) => col.name === this.filter.key)?.type || 'text'
   },
 })

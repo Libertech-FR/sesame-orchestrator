@@ -3,6 +3,7 @@ import { useIdentityStates } from './useIdentityStates'
 import { DefaultMenuParts, MaxMenuBadgeCount, MenuPart } from '~/constants/variables'
 import { IdentityState } from '~/constants/enums'
 import qs from 'qs'
+import path from 'path'
 
 const { getStateBadge } = useIdentityStates()
 const config = useAppConfig()
@@ -20,7 +21,7 @@ function useMenu(identityStateStore): useMenuReturnType {
     {
       icon: 'mdi-account',
       label: 'Liste des identités',
-      path: '/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0&filters',
+      path: '/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0',
       color: 'primary',
       badge: { color: 'primary' },
       part: MenuPart.DONNEES,
@@ -67,7 +68,7 @@ function useMenu(identityStateStore): useMenuReturnType {
     {
       icon: 'mdi-account-check',
       label: 'A valider',
-      path: `/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0&filters[@state][]=${IdentityState.TO_VALIDATE}`,
+      path: `/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0&filters[#state]=${IdentityState.TO_VALIDATE}`,
       color: 'warning',
       textColor: 'black',
       badge: getStateBadge(IdentityState.TO_VALIDATE),
@@ -77,7 +78,7 @@ function useMenu(identityStateStore): useMenuReturnType {
     {
       icon: 'mdi-account-alert',
       label: 'A compléter',
-      path: `/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0&filters[@state][]=${IdentityState.TO_COMPLETE}`,
+      path: `/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0&filters[%23state]=${IdentityState.TO_COMPLETE}`,
       color: 'secondary',
       textColor: 'black',
       badge: getStateBadge(IdentityState.TO_COMPLETE),
@@ -87,7 +88,7 @@ function useMenu(identityStateStore): useMenuReturnType {
     {
       icon: 'mdi-sync',
       label: 'A synchroniser',
-      path: `/identities/table?readonly=1&sort[metadata.lastUpdatedAt]=desc&skip=0&filters[@state][]=${IdentityState.TO_SYNC}`,
+      path: `/identities/table?readonly=1&sort[metadata.lastUpdatedAt]=desc&skip=0&filters[%23state]=${IdentityState.TO_SYNC}`,
       color: 'orange-8',
       badge: getStateBadge(IdentityState.TO_SYNC),
       part: MenuPart.ETATS,
@@ -96,7 +97,7 @@ function useMenu(identityStateStore): useMenuReturnType {
     {
       icon: 'mdi-loading',
       label: 'En cours de synchro.',
-      path: `/identities/table?readonly=1&sort[metadata.lastUpdatedAt]=desc&skip=0&filters[@state][]=${IdentityState.PROCESSING}`,
+      path: `/identities/table?readonly=1&sort[metadata.lastUpdatedAt]=desc&skip=0&filters[%23state]=${IdentityState.PROCESSING}`,
       color: 'grey-8',
       badge: getStateBadge(IdentityState.PROCESSING),
       part: MenuPart.ETATS,
@@ -105,7 +106,7 @@ function useMenu(identityStateStore): useMenuReturnType {
     {
       icon: 'mdi-check',
       label: 'Synchronisées',
-      path: `/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0&filters[@state][]=${IdentityState.SYNCED}`,
+      path: `/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0&filters[%23state]=${IdentityState.SYNCED}`,
       badge: getStateBadge(IdentityState.SYNCED),
       color: 'positive',
       part: MenuPart.ETATS,
@@ -124,7 +125,7 @@ function useMenu(identityStateStore): useMenuReturnType {
     {
       icon: 'mdi-account-remove',
       label: 'En erreur',
-      path: `/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0&filters[@state][]=${IdentityState.ON_ERROR}`,
+      path: `/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0&filters[%23state]=${IdentityState.ON_ERROR}`,
       color: 'negative',
       badge: getStateBadge(IdentityState.ON_ERROR),
       part: MenuPart.ETATS,
@@ -133,7 +134,7 @@ function useMenu(identityStateStore): useMenuReturnType {
     {
       icon: 'mdi-email-alert',
       label: 'Invitations non envoyées',
-      path: '/identities/table?limit=10&skip=0&filters[&filters[%23initState]=0&sort[metadata.lastUpdatedAt]=desc',
+      path: '/identities/table?limit=10&skip=0&filters[%23initState]=0&sort[metadata.lastUpdatedAt]=desc',
       color: 'negative',
       part: MenuPart.ACTIVATION,
       badge: { color: 'negative' },
@@ -142,7 +143,7 @@ function useMenu(identityStateStore): useMenuReturnType {
     {
       icon: 'mdi-email-fast',
       label: 'Invitations envoyées',
-      path: '/identities/table?limit=10&skip=0&filters[&filters[%23initState]=1&sort[metadata.lastUpdatedAt]=desc',
+      path: '/identities/table?limit=10&skip=0&filters[%23initState]=1&sort[metadata.lastUpdatedAt]=desc',
       color: 'warning',
       textColor: 'black',
       part: MenuPart.ACTIVATION,
@@ -152,7 +153,7 @@ function useMenu(identityStateStore): useMenuReturnType {
     {
       icon: 'mdi-email-open',
       label: 'Comptes activés',
-      path: '/identities/table?limit=10&skip=0&filters[&filters[%23initState]=2&sort[metadata.lastUpdatedAt]=desc',
+      path: '/identities/table?limit=10&skip=0&filters[%23initState]=2&sort[metadata.lastUpdatedAt]=desc',
       color: 'positive',
       textColor: 'white',
       part: MenuPart.ACTIVATION,
@@ -177,7 +178,10 @@ function useMenu(identityStateStore): useMenuReturnType {
     const menuList: MenuItem[] = menus.value.reduce((acc: MenuItem[], menu) => {
       const label = normalizeLabel(menu.label)
       const stateValue = identityStateStore.getStateValue(label)
+      // console.log(`Processing menu ${label} with state value ${stateValue}`)
       const value = stateValue > MaxMenuBadgeCount ? MaxMenuBadgeCount + '+' : stateValue?.toString() || '0'
+
+      // console.log(`Menu ${menu.label} has state value ${stateValue} and badge value ${value}`)
 
       acc.push({
         ...menu,
@@ -198,14 +202,24 @@ function useMenu(identityStateStore): useMenuReturnType {
   }
 
   async function initialize(): Promise<void> {
+    const { encodePath } = useFiltersQuery(ref([]))
+
     const filters = {}
     for (const menu of menus.value) {
       if (menu.path && menu.badge) {
         const label = normalizeLabel(menu.label)
-        const params = new URL(window.location.origin + menu.path).searchParams
+        const params = new URL(window.location.origin + encodePath(menu.path)).searchParams
         const queryString = qs.parse(params.toString())
+        const qsFilters = {}
 
-        filters[label] = queryString['filters']
+        // console.log('lab', label, 'qs', queryString)
+
+        for (const [key, value] of Object.entries(queryString['filters'] || {})) {
+          // console.log('Processing filter ' + label, { key, value })
+          qsFilters[decodeURIComponent(key)] = decodeURIComponent(value as string)
+        }
+
+        filters[label] = qsFilters
       }
     }
 

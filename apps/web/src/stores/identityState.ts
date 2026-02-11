@@ -16,6 +16,7 @@ export const useIdentityStateStore = defineStore('identityStates', {
       if (this.initialized) return
 
       this.filters = filters
+      // console.log('Initializing identity state store with filters', filters)
       this.initialized = true
       await this.fetchAllStateCount()
     },

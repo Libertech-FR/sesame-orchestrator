@@ -78,10 +78,20 @@ const comparatorTypes = ref<ComparatorType[]>([
   },
   {
     label: 'Supérieur ou égal à',
-    querySign: '>=',
-    value: '>=',
+    querySign: '>|#',
+    value: '>|#',
     icon: 'mdi-greater-than-or-equal',
-    type: ['number', 'date'],
+    type: ['number'],
+    multiplefields: false,
+    prefix: '',
+    suffix: '',
+  },
+  {
+    label: 'Supérieur ou égal à',
+    querySign: '>|',
+    value: '>|',
+    icon: 'mdi-greater-than-or-equal',
+    type: ['date'],
     multiplefields: false,
     prefix: '',
     suffix: '',
@@ -98,10 +108,20 @@ const comparatorTypes = ref<ComparatorType[]>([
   },
   {
     label: 'Inférieur ou égal à',
-    querySign: '<=',
-    value: '<=',
+    querySign: '<|#',
+    value: '<|#',
     icon: 'mdi-less-than-or-equal',
-    type: ['number', 'date'],
+    type: ['number'],
+    multiplefields: false,
+    prefix: '',
+    suffix: '',
+  },
+  {
+    label: 'Inférieur ou égal à',
+    querySign: '<|',
+    value: '<|',
+    icon: 'mdi-less-than-or-equal',
+    type: ['date'],
     multiplefields: false,
     prefix: '',
     suffix: '',
@@ -195,10 +215,11 @@ const getLabelByName = (columns: Ref<QTableProps['columns'] & { type: string }[]
  * @returns comparator and field extracted from the key
  */
 const extractComparator = (key: string): { comparator: string, field: string } | null => {
-  const match = key.match(/^(\:|\?|\#|\!|\>|\<|\^|\@)+/)
+  const match = key.match(/^(\:|\?|\||\#|\!|\>|\<|\^|\@)+/m)
 
   if (!match) return null
 
+  // console.log('Extracted comparator', match, 'from key', key)
   const comparator = match[0]
   const field = key.replace(comparator, '')
 
@@ -253,7 +274,7 @@ const getSearchString = (
   // }
 
   if (fieldType === 'date') {
-    return dayjs(search!.toString()).format('DD/MM/YYYY')
+    return dayjs(search!.toString()).format('DD/MM/YYYY HH:mm')
   }
 
   if (['number', 'array', 'text'].includes(fieldType) && columnType?.valueMapping) {
@@ -340,6 +361,7 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
           console.warn(`Invalid search for filter key: ${key} ${filteredKey}`, {
             label,
             search,
+            extract,
           })
           continue
         }
@@ -403,13 +425,38 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
         break
 
       default:
-        query[filterKey] = `${comparator?.prefix || ''}${value}${comparator?.suffix || ''}`
+        if (comparator?.type.includes('date') && value) {
+          const dateValue = dayjs(value as string).toISOString()
+          query[filterKey] = `${comparator?.prefix || ''}${dateValue}${comparator?.suffix || ''}`
+        } else if (value) {
+          query[filterKey] = `${comparator?.prefix || ''}${value}${comparator?.suffix || ''}`
+        }
         break
     }
 
     router.replace({
       query,
     })
+  }
+
+  const encodePath = (path: string) => {
+    const [base, query] = path.split('?')
+    if (!query) return path
+    const encodedQuery = query
+      .split('&')
+      .map((param) => {
+        const [key, value] = param.split('=')
+        if (key.includes('filters')) {
+          const finalKey = encodeURIComponent(key)
+            .replace(/%5B/g, '[')
+            .replace(/%5D/g, ']')
+            .replace(/%25/g, '%')
+          return `${finalKey}=${encodeURIComponent(value)}`
+        }
+        return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+      })
+      .join('&')
+    return `${base}?${encodedQuery}`
   }
 
   return {
@@ -420,5 +467,6 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
     writeFilter,
     comparatorTypes,
     fieldTypes,
+    encodePath,
   }
 }

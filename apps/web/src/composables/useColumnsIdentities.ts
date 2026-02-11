@@ -118,7 +118,14 @@ export function useColumnsIdentites(): useColumnsIdentitesReturnType {
   ])
 
   const columnsType = ref<ColumnType[]>([
-    ...config?.identitiesColumns?.entries.map((col: any) => ({ name: col.name, type: col.type || 'text' })) || [],
+    ...config?.identitiesColumns?.entries.map((col: any) => {
+      // console.log('Processing column config', col)
+      return {
+        name: col.name,
+        type: col.type || 'text',
+        valueMapping: col.valueMapping || [],
+      }
+    }) || [],
     { name: 'state', type: 'number', valueMapping: IdentityStateLabels },
     { name: 'metadata.lastUpdatedAt', type: 'date' },
     { name: 'metadata.createdAt', type: 'date' },

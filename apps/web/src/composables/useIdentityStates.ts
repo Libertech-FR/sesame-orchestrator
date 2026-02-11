@@ -49,6 +49,7 @@ export function useIdentityStates(): useIdentityStateReturnType {
   }
 
   function getStateBadge(state: number): { color: string, name: string, icon: string, textColor?: string } {
+    // console.log('Getting badge for state', state, getStateInfos(state))
     return omit(getStateInfos(state), ['value'])
   }
 

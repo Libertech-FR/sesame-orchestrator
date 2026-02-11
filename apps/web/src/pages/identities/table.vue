@@ -36,7 +36,7 @@ q-page.grid
         q-separator(vertical v-if="selected.length !== 0")
         q-btn(flat icon="mdi-cancel" color="warning" rounded @click="clearSelection" size="md" v-show="selected.length !== 0" dense)
           q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Nettoyer la selection
-    template(#body-cell-states="props")
+    template(#body-cell-state="props")
       q-td
         sesame-pages-identities-states-info(:identity='props.row')
     template(v-slot:row-actions='{ row }')

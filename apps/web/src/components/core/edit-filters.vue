@@ -1,5 +1,5 @@
 <template lang="pug">
-q-card(style='min-width: 40vw;')
+q-card.transparent(style='min-width: 40vw; max-width: 80vw')
   q-toolbar.bg-primary.text-white(dense flat style='height: 32px;')
     q-toolbar-title(v-text='title')
     q-btn(
@@ -49,7 +49,7 @@ q-card(style='min-width: 40vw;')
                 span {{ scope.opt.label }}
       q-input.col(
         style='min-width: 300px'
-        v-show="!comparator?.multiplefields"
+        v-show="!comparator?.multiplefields && optionsMapping.length === 0"
         v-model='filter.value'
         label='Valeur'
         :prefix="comparator?.prefix"
@@ -59,9 +59,24 @@ q-card(style='min-width: 40vw;')
         dense
         outlined
       )
+      q-select.col(
+        style='min-width: 300px'
+        v-show="!comparator?.multiplefields && optionsMapping.length > 0"
+        v-model='filter.value'
+        label='Valeur'
+        :prefix="comparator?.prefix"
+        :suffix="comparator?.suffix"
+        :type='searchInputType'
+        @keydown.enter.prevent="writeFilter(filter)"
+        :options="optionsMapping"
+        emit-value
+        map-options
+        dense
+        outlined
+      )
       q-input.col(
         style='min-width: 200px'
-        v-show="comparator?.multiplefields"
+        v-show="comparator?.multiplefields && comparator?.querySign === '<<'"
         v-model="filter.min"
         :type='searchInputType'
         label="Minimum"
@@ -71,7 +86,7 @@ q-card(style='min-width: 40vw;')
       )
       q-input.col(
         style='min-width: 200px'
-        v-show="comparator?.multiplefields"
+        v-show="comparator?.multiplefields && comparator?.querySign === '<<'"
         v-model="filter.max"
         :type='searchInputType'
         label="Maximum"
@@ -79,11 +94,31 @@ q-card(style='min-width: 40vw;')
         dense
         outlined
       )
+      q-select.col(
+        style='min-width: 300px'
+        v-show="comparator?.multiplefields && comparator?.querySign === '@'"
+        v-model="filter.items"
+        label="Valeur"
+        :prefix="comparator?.prefix"
+        :suffix="comparator?.suffix"
+        :type='searchInputType'
+        :options="optionsMapping"
+        input-debounce="100"
+        new-value-mode="add-unique"
+        emit-value
+        map-options
+        fill-input
+        use-input
+        use-chips
+        multiple
+        dense
+        outlined
+      )
   q-card-actions
     q-space
     q-btn(
       @click='writeFilter(filter)'
-      :disabled='!filter.key || !filter.operator || !filter.value'
+      :disabled='!filter.key || !filter.operator || (!filter.value && !filter.items?.length)'
       label='Valider'
       color='positive'
       icon-right='mdi-check'
@@ -100,8 +135,10 @@ type Filter = {
   operator: string
   value: string
 
-  min: string
-  max: string
+  min?: string
+  max?: string
+
+  items?: (string | number)[]
 }
 
 type InitialFilter = {
@@ -125,7 +162,7 @@ export default defineNuxtComponent({
       default: () => [],
     },
     columnsType: {
-      type: Array as PropType<{ name: string; type: string }[]>,
+      type: Array as PropType<{ name: string; type: string; valueMapping?: Record<string, string> }[]>,
       required: false,
       default: () => [],
     },
@@ -146,10 +183,12 @@ export default defineNuxtComponent({
         this.filter.value = ''
         this.filter.min = ''
         this.filter.max = ''
+        this.filter.items = []
       },
     },
   },
   setup({ columns, initialFilter, columnsType }) {
+    console.log('initialFilter', initialFilter)
     const { fieldTypes, comparatorTypes, writeFilter } = useFiltersQuery(ref(columns), ref(columnsType))
 
     const detectInitialOperator = () => {
@@ -206,14 +245,31 @@ export default defineNuxtComponent({
       return val
     }
 
+    const items = ref<(string | number)[]>([])
+
+    if (initialFilter && initialFilter.querySign === '@' && initialFilter.value) {
+      if (Array.isArray(initialFilter.value) || initialFilter.value.includes(',')) {
+        items.value = Array.isArray(initialFilter.value)
+          ? initialFilter.value
+          : initialFilter.value
+              .split(',')
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0)
+      } else {
+        items.value = [initialFilter.value]
+      }
+    }
+
     const fieldType = ref<string>()
     const filter = ref<Filter>({
-      key: initialFilter?.field || '',
+      key: initialFilter?.field?.replace('[]', '') || '',
       operator: detectInitialOperator(),
       value: stripPrefixSuffix(initialFilter?.value) || '',
 
       min: '',
       max: '',
+
+      items: items.value,
     })
 
     return {
@@ -238,8 +294,24 @@ export default defineNuxtComponent({
         return comparator.type.includes(this.fieldType!)
       })
     },
+    optionsMapping(): { label: string; value: string }[] {
+      const mapping: { label: string; value: string }[] = []
+
+      this.columnsType.forEach((col) => {
+        if (col.name === this.filter.key && col.valueMapping) {
+          Object.entries(col.valueMapping).forEach(([key, val]) => {
+            mapping.push({ label: val, value: key })
+          })
+        }
+      })
+
+      return mapping
+    },
   },
   mounted() {
+    console.log('comparator', this.comparator)
+    console.log('optionsMapping', this.optionsMapping)
+    console.log('this.columnsType', this.columnsType)
     this.fieldType = this.columnsType.find((col) => col.name === this.filter.key)?.type || 'text'
   },
 })

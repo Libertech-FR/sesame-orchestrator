@@ -4,6 +4,30 @@ import Sandbox from '@nyariv/sandboxjs'
 type ColumnType = {
   name: string
   type: string
+
+  valueMapping?: Record<string | number | symbol, string>
+}
+
+enum IdentityState {
+  SYNCED = 99,
+  PROCESSING = 50,
+  TO_SYNC = 2,
+  TO_VALIDATE = 1,
+  TO_CREATE = -1,
+  TO_COMPLETE = -2,
+  ON_ERROR = -3,
+  DONT_SYNC = -99,
+}
+
+const IdentityStateLabels: Record<IdentityState, string> = {
+  [IdentityState.SYNCED]: 'Synchronisé',
+  [IdentityState.PROCESSING]: 'En cours de traitement',
+  [IdentityState.TO_SYNC]: 'À synchroniser',
+  [IdentityState.TO_VALIDATE]: 'À valider',
+  [IdentityState.TO_CREATE]: 'À créer',
+  [IdentityState.TO_COMPLETE]: 'À compléter',
+  [IdentityState.ON_ERROR]: 'En erreur',
+  [IdentityState.DONT_SYNC]: 'Ne pas synchroniser',
 }
 
 interface ColumnConfig {
@@ -58,27 +82,12 @@ export function useColumnsIdentites(): useColumnsIdentitesReturnType {
 
   const columns = ref<QTableProps['columns'] & { type: string }[]>([
     {
-      name: 'states',
+      name: 'state',
       label: 'États',
-      field: 'states',
+      field: 'state',
       align: 'left',
     },
     ...config?.identitiesColumns?.entries || [],
-    // {
-    //   name: 'state',
-    //   label: 'Status',
-    //   hidden: true,
-    // },
-    // {
-    //   name: 'initState',
-    //   label: 'Etat initial',
-    //   hidden: true,
-    // },
-    // {
-    //   name: 'lifecycle',
-    //   label: 'Cycle de vie',
-    //   hidden: true,
-    // },
     {
       name: 'metadata.lastUpdatedAt',
       label: 'Date de modification',
@@ -105,11 +114,12 @@ export function useColumnsIdentites(): useColumnsIdentitesReturnType {
     ...config?.identitiesColumns?.entries.map((col: any) => col.name) || [],
     'metadata.lastUpdatedAt',
     'metadata.createdAt',
-    'states',
+    'state',
   ])
 
   const columnsType = ref<ColumnType[]>([
     ...config?.identitiesColumns?.entries.map((col: any) => ({ name: col.name, type: col.type || 'text' })) || [],
+    { name: 'state', type: 'number', valueMapping: IdentityStateLabels },
     { name: 'metadata.lastUpdatedAt', type: 'date' },
     { name: 'metadata.createdAt', type: 'date' },
   ])

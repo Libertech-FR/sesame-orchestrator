@@ -31,6 +31,8 @@ export type ComparatorType = {
 export type ColumnType = {
   name: string
   type: string
+
+  valueMapping?: Record<string | number | symbol, string>
 }
 
 const comparatorTypes = ref<ComparatorType[]>([
@@ -149,7 +151,7 @@ const comparatorTypes = ref<ComparatorType[]>([
     querySign: '@',
     value: '@',
     icon: 'mdi-format-letter-matches',
-    type: ['array'],
+    type: ['array', 'number', 'text'],
     multiplefields: true,
     prefix: '',
     suffix: '',
@@ -235,6 +237,7 @@ const getSearchString = (
   const field = columns.value?.find((f) => f.name === fieldLabel.replace('[]', ''))
   if (!field) return ''
   const fieldType = columnTypes?.value.find((col) => col.name === fieldLabel.replace('[]', ''))?.type || 'text'
+  const columnType = columnTypes?.value.find((col) => col.name === fieldLabel.replace('[]', ''))
   // if (field.type === 'multiple') {
   //   const searchArray = Array.isArray(search) ? search : [search]
   //   return searchArray
@@ -248,10 +251,25 @@ const getSearchString = (
   // if (Array.isArray(search)) {
   //   return search.join(' ou ')
   // }
-  console.log('fieldType', fieldType, fieldLabel, search, columnTypes)
+
   if (fieldType === 'date') {
     return dayjs(search!.toString()).format('DD/MM/YYYY')
   }
+
+  if (['number', 'array', 'text'].includes(fieldType) && columnType?.valueMapping) {
+    if (Array.isArray(search)) {
+      return search
+        .map((s) => {
+          if (columnType.valueMapping) {
+            return columnType.valueMapping[s!.toString()] || sanitizeSearchString(s!.toString())
+          }
+          return sanitizeSearchString(s!.toString())
+        })
+        .join(', ')
+    }
+    return columnType.valueMapping[search!.toString()] || sanitizeSearchString(search!.toString())
+  }
+
   return sanitizeSearchString(search!.toString())
 }
 
@@ -348,13 +366,14 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
     const filterKey = `${FILTER_PREFIX}${filter.querySign}${filter.field}${FILTER_SUFFIX}`
 
     delete query[filterKey]
+    delete query[filterKey + '[]'] // In case of multiple values
 
     router.replace({
       query,
     })
   }
 
-  const writeFilter = (filter: { key: string; operator: string; value: string, min?: string, max?: string }) => {
+  const writeFilter = (filter: { key: string; operator: string; value: string, min?: string, max?: string, items?: (string | number)[] }) => {
     const router = useRouter()
     const query = { ...$route.query }
     const comparator = comparatorTypes.value.find((comp) => comp.value === filter.operator)
@@ -367,13 +386,26 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
         const filteredKey = key.replace(FILTER_PREFIX, '').replace(FILTER_SUFFIX, '')
         const extract = extractComparator(filteredKey)
 
-        if (extract && extract.field === filter.key) {
+        // console.log('query key', query)
+        if (extract && extract.field.replace('[]', '') === filter.key) {
           delete query[`${FILTER_PREFIX}${extract.comparator}${extract.field}${FILTER_SUFFIX}`]
+          delete query[`${FILTER_PREFIX}${extract.comparator}${extract.field.replace('[]', '')}${FILTER_SUFFIX}[]`] // In case of multiple values
+          // console.log('deleted key', `${FILTER_PREFIX}${extract.comparator}${extract.field}${FILTER_SUFFIX}`)
         }
       }
     }
 
-    query[filterKey] = `${comparator?.prefix || ''}${value}${comparator?.suffix || ''}`
+    switch (filter.operator) {
+      case '@':
+        if (filter.items && filter.items.length > 0) {
+          query[filterKey] = filter.items.map((item) => `${comparator?.prefix || ''}${item}${comparator?.suffix || ''}`)
+        }
+        break
+
+      default:
+        query[filterKey] = `${comparator?.prefix || ''}${value}${comparator?.suffix || ''}`
+        break
+    }
 
     router.replace({
       query,

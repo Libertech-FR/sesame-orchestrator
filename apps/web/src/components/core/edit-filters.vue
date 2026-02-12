@@ -467,6 +467,10 @@ export default defineNuxtComponent({
   mounted() {
     this.filterOptions = this.columns.map(this.mapAssign)
     this.fieldType = this.columnsType.find((col) => col.name === this.filter.key)?.type
+
+    if (!this.fieldType && !this.columnExists(this.filter.key || '') && this.filter.key) {
+      this.fieldType = this.comparator?.type ? this.comparator.type[0] : 'text'
+    }
   },
 })
 </script>

@@ -37,6 +37,16 @@ export type ColumnType = {
 
 const comparatorTypes = ref<ComparatorType[]>([
   {
+    label: 'Est un booléen',
+    querySign: '?',
+    value: '?',
+    icon: 'mdi-help',
+    type: ['boolean'],
+    multiplefields: false,
+    prefix: '',
+    suffix: '',
+  },
+  {
     label: 'Égal à',
     querySign: ':',
     value: ':',
@@ -343,7 +353,7 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
   const hasFilters = computed(() => countFilters.value > 0)
 
   const getFilters = computed(() => {
-    const filters: Record<string, { label: string; field: string; comparator: string; value: string; querySign: string; search: string }> = {}
+    const filters: Record<string, { label: string; field: string; comparator: string; value: unknown; querySign: string; search: string }> = {}
 
     for (const key in $route.query) {
       if (key.includes(FILTER_PREFIX)) {
@@ -370,7 +380,7 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
 
         const comparatorObj = getComparatorObject(extract.comparator, rawValue)
 
-        console.log('comparatorObj', comparatorObj, 'for key', key, 'with rawValue', rawValue)
+        // console.log('comparatorObj', comparatorObj, 'for key', key, 'with rawValue', rawValue)
 
         filters[key] = {
           label,
@@ -399,7 +409,7 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
     })
   }
 
-  const writeFilter = (filter: { key: string; operator: string; value: string, min?: string, max?: string, items?: (string | number)[] }) => {
+  const writeFilter = (filter: { key: string; operator: string; value: any, min?: string, max?: string, items?: (string | number)[] }) => {
     const router = useRouter()
     const query = { ...$route.query }
     const comparator = comparatorTypes.value.find((comp) => comp.value === filter.operator)

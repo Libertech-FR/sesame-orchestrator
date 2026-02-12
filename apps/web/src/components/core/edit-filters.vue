@@ -1,5 +1,5 @@
 <template lang="pug">
-q-card.transparent(style='min-width: 40vw; max-width: 80vw')
+q-card.transparent(style='min-width: 45vw; max-width: 90vw')
   q-toolbar.bg-secondary.text-white(dense flat style='height: 32px;')
     q-toolbar-title
       span {{ title }}&nbsp;
@@ -26,7 +26,7 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
     .flex.q-col-gutter-md
       q-select.col(
         ref='field'
-        style='min-width: 180px; max-width: 220px'
+        style='min-width: 150px; max-width: 220px'
         v-model='filter.key'
         :readonly='!!initialFilter?.field'
         :use-input='!initialFilter?.field'
@@ -60,6 +60,16 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
                 | &nbsp;
                 code <{{ inputValue }}>
       q-select.col-1(
+        style='min-width: 120px'
+        v-model='fieldType'
+        label='Type'
+        :options='["text", "number", "date", "boolean", "array"]'
+        :readonly='!filter.key || !!columnExists(filter.key || "")'
+        dense
+        outlined
+        options-dense
+      )
+      q-select.col-1(
         style='min-width: 130px'
         v-model='filter.operator'
         label='Opérateur'
@@ -84,7 +94,7 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
                 span {{ scope.opt.label }}
       q-input.col(
         style='min-width: 300px'
-        v-show="!comparator?.multiplefields && optionsMapping.length === 0"
+        v-if="!comparator?.multiplefields && optionsMapping.length === 0 && comparator?.querySign !== '?'"
         v-model='filter.value'
         label='Valeur'
         :prefix="comparator?.prefix"
@@ -95,9 +105,20 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
         dense
         outlined
       )
+      q-toggle(
+        style='min-width: 140px'
+        v-if="!comparator?.multiplefields && comparator?.querySign === '?'"
+        v-model="filter.value"
+        :readonly='!filter.operator'
+        :label="filter.value ? 'Positif' : 'Négatif'"
+        true-value="true"
+        false-value="false"
+        color="gray"
+        dense
+      )
       q-select.col(
         style='min-width: 300px'
-        v-show="!comparator?.multiplefields && optionsMapping.length > 0"
+        v-if="!comparator?.multiplefields && optionsMapping.length > 0"
         v-model='filter.value'
         label='Valeur'
         :prefix="comparator?.prefix"
@@ -114,7 +135,7 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
       )
       q-input.col(
         style='min-width: 200px'
-        v-show="comparator?.multiplefields && comparator?.querySign === '<<'"
+        v-if="comparator?.multiplefields && comparator?.querySign === '<<'"
         v-model="filter.min"
         :type='searchInputType'
         :readonly='!filter.operator'
@@ -125,7 +146,7 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
       )
       q-input.col(
         style='min-width: 200px'
-        v-show="comparator?.multiplefields && comparator?.querySign === '<<'"
+        v-if="comparator?.multiplefields && comparator?.querySign === '<<'"
         v-model="filter.max"
         :type='searchInputType'
         :readonly='!filter.operator'
@@ -136,7 +157,7 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
       )
       q-select.col(
         style='min-width: 300px'
-        v-show="comparator?.multiplefields && comparator?.querySign === '@'"
+        v-if="comparator?.multiplefields && comparator?.querySign === '@'"
         v-model="filter.items"
         label="Valeur"
         :prefix="comparator?.prefix"
@@ -159,7 +180,7 @@ q-card.transparent(style='min-width: 40vw; max-width: 80vw')
     q-space
     q-btn(
       @click='writeFilter(filter)'
-      :disabled='!filter.key || !filter.operator || (!filter.value && !filter.items?.length)'
+      :disabled='!filter.key || !filter.operator || (typeof filter.value === "undefined" && !filter.items?.length)'
       label='Valider'
       color='positive'
       icon-right='mdi-check'
@@ -176,7 +197,7 @@ import dayjs from 'dayjs'
 type Filter = {
   operator: string
   key: string | undefined
-  value: string | number | undefined
+  value: string | number | boolean | undefined
 
   min?: string
   max?: string
@@ -344,19 +365,20 @@ export default defineNuxtComponent({
     }
   },
   computed: {
-    comparator(): { label: string; value: string; prefix?: string; suffix?: string; multiplefields?: boolean } | undefined {
+    comparator(): { label: string; value: string; prefix?: string; suffix?: string; multiplefields?: boolean; type?: string[] } | undefined {
       return this.comparatorTypes.find((comp) => comp.value === this.filter.operator)
     },
     searchInputType(): string {
-      if (this.fieldType === undefined || this.fieldType === null) return 'text'
-      return this.fieldType
-    },
-    availableComparators(): { label: string; value: string; prefix?: string; suffix?: string; multiplefields?: boolean }[] {
-      if (!this.columnExists(this.filter.key || '')) {
-        return this.comparatorTypes
+      if (!this.fieldType) {
+        return this.comparator?.type ? this.comparator.type[0] : 'text'
       }
 
-      if (this.fieldType === undefined || this.fieldType === null) return []
+      return this.fieldType || 'text'
+    },
+    availableComparators(): { label: string; value: string; prefix?: string; suffix?: string; multiplefields?: boolean }[] {
+      if (!this.columnExists(this.filter.key || '') && !this.fieldType) {
+        return this.comparatorTypes || []
+      }
 
       return this.comparatorTypes.filter((comparator) => {
         return comparator.type.includes(this.fieldType!)

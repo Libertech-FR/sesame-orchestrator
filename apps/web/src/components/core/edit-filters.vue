@@ -3,7 +3,7 @@ q-card.transparent(style='min-width: 45vw; max-width: 90vw')
   q-toolbar.bg-secondary.text-white(dense flat style='height: 32px;')
     q-toolbar-title
       span {{ title }}&nbsp;
-      small
+      small(v-if='columnExists(initialFilter.field || "")')
         i(v-if='initialFilter.label') <{{ initialFilter.label }}>
       q-chip(
         @click='copy(initialFilter.field || "")'
@@ -47,6 +47,7 @@ q-card.transparent(style='min-width: 45vw; max-width: 90vw')
         template(v-slot:selected-item="scope")
           //- pre(v-html='JSON.stringify(scope)')
           q-chip(
+            style='overflow-x: hidden;'
             :class="[!columnExists(scope.opt.name || scope.opt) ? 'text-black' : '']"
             :color="!columnExists(scope.opt.name || scope.opt) ? ($q.dark.isActive ? 'amber-9' : 'amber-3') : ''"
             dense

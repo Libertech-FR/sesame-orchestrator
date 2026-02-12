@@ -12,7 +12,7 @@ q-card.col.q-ma-xl(flat bordered style="min-width: 300px; max-width: 600px;")
       )
     q-separator.q-mx-md.q-my-md(v-if='$q.screen.gt.xs' vertical)
     q-card.col(flat)
-      form.fit(@submit.prevent='submit')
+      form.login.fit(@submit.prevent='submit')
         q-card-section.column.full-height
           .col.column.items-center.justify-center.q-gutter-md.q-pl-md
             q-input.full-width(
@@ -87,48 +87,9 @@ export default defineNuxtComponent({
 })
 </script>
 
-<!-- <script lang="ts" setup>
-import { ref } from 'vue'
-import { useQuasar } from 'quasar'
-definePageMeta({
-  layout: 'simple-centered',
-  auth: {
-    unauthenticatedOnly: true,
-    navigateAuthenticatedTo: '/',
-  },
-})
-
-const $q = useQuasar()
-const pending = ref(false)
-const formData = ref({
-  username: '',
-  password: '',
-})
-
-const submit = async () => {
-  pending.value = true
-  try {
-    await useAuth()
-      .loginWith('local', {
-        body: formData.value,
-      })
-      .catch(() => {
-        throw new Error('Invalid credentials')
-      })
-  } catch (error) {
-    $q.notify({
-      type: 'negative',
-      message: 'Erreur de connexion',
-    })
-  } finally {
-    pending.value = false
-  }
-}
-</script> -->
-
-<style lang="sass" scoped>
-::v-deep body.body--dark input:-webkit-autofill
-  -webkit-box-shadow: 0 0 0px 1000px var(--q-dark) inset
+<style lang="sass">
+body.body--dark form.login input:-webkit-autofill
+  -webkit-box-shadow: 0 0 0px 1000px var(--q-dark) inset !important
   -webkit-text-fill-color: #fff !important
   caret-color: #fff !important
 </style>

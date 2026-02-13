@@ -12,6 +12,7 @@ export type MenuItem = {
   part: string
   color: string
   textColor?: string
+  drawerColor?: string
   badge?: BadgeItem
   hideInMenuBar?: boolean
 }

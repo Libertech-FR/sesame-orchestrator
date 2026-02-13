@@ -46,6 +46,7 @@ q-toolbar(dense flat)
             )
         q-separator(vertical)
         q-btn-dropdown.text-secondary(
+          dropdown-icon="mdi-dots-vertical"
           flat dense
         )
           q-list(dense)

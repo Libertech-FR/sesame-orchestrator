@@ -3,7 +3,8 @@ import { useIdentityStates } from './useIdentityStates'
 import { DefaultMenuParts, MaxMenuBadgeCount, MenuPart } from '~/constants/variables'
 import { IdentityState } from '~/constants/enums'
 import qs from 'qs'
-import path from 'path'
+import type { useIdentityStateStore } from '~/stores/identityState'
+import { sort } from 'radash'
 
 const { getStateBadge } = useIdentityStates()
 const config = useAppConfig()
@@ -15,8 +16,16 @@ type useMenuReturnType = {
   initialize: () => Promise<void>
 }
 
-function useMenu(identityStateStore): useMenuReturnType {
+function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): useMenuReturnType {
   const menuParts = ref(DefaultMenuParts)
+
+  if (config?.menus?.parts) {
+    menuParts.value = sort([...menuParts.value, ...(config.menus?.parts as any) || []], (part) => {
+      const pos = part.position || 9_999
+      return pos
+    })
+  }
+
   const menus = ref<MenuItem[]>([
     {
       icon: 'mdi-account',
@@ -116,8 +125,9 @@ function useMenu(identityStateStore): useMenuReturnType {
       icon: 'mdi-account-switch-outline',
       label: 'Fusionnées',
       path: '/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0&filters[!:primaryEmployeeNumber]=null',
-      color: 'grey-3',
-      textColor: 'black',
+      color: 'linear-gradient(135deg, #7C3AED 0%, #EC4899 50%, #F97316 100%)',
+      textColor: 'white',
+      badge: { color: 'linear-gradient(135deg, #7C3AED 0%, #EC4899 50%, #F97316 100%)', textColor: 'white' },
       part: MenuPart.ETATS,
       hideInMenuBar: false,
     },
@@ -178,10 +188,7 @@ function useMenu(identityStateStore): useMenuReturnType {
     const menuList: MenuItem[] = menus.value.reduce((acc: MenuItem[], menu) => {
       const label = normalizeLabel(menu.label)
       const stateValue = identityStateStore.getStateValue(label)
-      // console.log(`Processing menu ${label} with state value ${stateValue}`)
       const value = stateValue > MaxMenuBadgeCount ? MaxMenuBadgeCount + '+' : stateValue?.toString() || '0'
-
-      // console.log(`Menu ${menu.label} has state value ${stateValue} and badge value ${value}`)
 
       acc.push({
         ...menu,
@@ -212,10 +219,7 @@ function useMenu(identityStateStore): useMenuReturnType {
         const queryString = qs.parse(params.toString())
         const qsFilters = {}
 
-        // console.log('lab', label, 'qs', queryString)
-
         for (const [key, value] of Object.entries(queryString['filters'] || {})) {
-          // console.log('Processing filter ' + label, { key, value })
           qsFilters[decodeURIComponent(key)] = decodeURIComponent(value as string)
         }
 

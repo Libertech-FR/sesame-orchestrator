@@ -39,12 +39,15 @@ q-page.container
 <script lang="ts">
 import { get } from 'radash'
 import updateInitModale from '~/components/pages/identities/modals/update-init.vue'
+import type { components } from '#build/types/service-api'
+
+type Identities = components['schemas']['IdentitiesDto']
 
 export default defineNuxtComponent({
   name: 'IdentitiesOutdatedPage',
   data() {
     return {
-      selected: [] as Array<string>,
+      selected: [] as Array<Identities>,
       columns: [] as Array<any>,
       visibleColumns: [] as Array<string>,
     }
@@ -55,7 +58,7 @@ export default defineNuxtComponent({
       pending,
       error,
       refresh,
-    } = await useHttp('/management/passwd/ioutdated', {
+    } = await useHttp<{ total: number; data: Identities[] }>('/management/passwd/ioutdated', {
       method: 'GET',
     })
 
@@ -74,16 +77,15 @@ export default defineNuxtComponent({
           componentProps: {
             selectedIdentities: this.selected,
             identityTypesName: name,
-            allIdentitiesCount: this.outdateds.total,
+            allIdentitiesCount: this.outdateds?.total || 0,
           },
         })
         .onOk(async (data) => {
-          // console.log('initIdentities', data)
           data.initAllIdentities ? await this.sendInitToAllIdentities() : await this.sendInitToIdentity(this.selected)
         })
     },
-    async sendInitToIdentity(identities) {
-      const ids = identities.map((identity) => identity._id)
+    async sendInitToIdentity(identities: Identities[]) {
+      const ids = identities.map((identity) => (identity as any)._id)
       const { data, error } = await useHttp(`/management/passwd/initmany`, {
         method: 'post',
         body: {
@@ -108,7 +110,7 @@ export default defineNuxtComponent({
     },
 
     async sendInitToAllIdentities() {
-      const { data: identities } = await useHttp('/management/passwd/ioutdated', {
+      const { data: identities } = await useHttp<{ total: number; data: Identities[] }>('/management/passwd/ioutdated', {
         method: 'get',
       })
 
@@ -119,7 +121,7 @@ export default defineNuxtComponent({
         })
         return
       }
-      this.sendInitToIdentity(identities.data)
+      this.sendInitToIdentity(identities.value?.data || [])
     },
   },
   async mounted() {
@@ -127,10 +129,6 @@ export default defineNuxtComponent({
       const res = await this.$http.get('/management/identities/validation', {
         method: 'GET',
       })
-
-      // Réinitialiser les colonnes pour éviter la boucle
-      // this.visibleColumns.splice(0, this.visibleColumns.length)
-      // this.columns.splice(0, this.columns.length)
 
       for (const scheme in res._data.data) {
         const enr = res._data.data[scheme]
@@ -149,11 +147,8 @@ export default defineNuxtComponent({
 
         if (enr.name === 'inetOrgPerson') {
           this.columns.push(...fields)
-          //   console.log('fields inetOrgPerson', JSON.stringify(fields))
         }
       }
-
-      console.log('columns', this.columns)
     } catch (error) {
       console.error('There was an error!', error)
     }

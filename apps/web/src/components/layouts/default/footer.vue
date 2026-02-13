@@ -2,11 +2,11 @@
   q-footer(:class="$q.dark.isActive ? 'bg-dark' : 'bg-white'" bordered)
     q-bar(:class="$q.dark.isActive ? 'bg-dark' : 'bg-white text-black'")
       span
-        small Orchestrator&nbsp;
+        small.gt-xs Orchestrator&nbsp;
         small(v-text="'v' + (orchestratorVersion?.currentVersion || '0.0.0')")
       small.bold &nbsp;/&nbsp;
       span
-        small Daemon&nbsp;
+        small.gt-xs Daemon&nbsp;
         small(v-text="'v' + (daemonVersion?.currentVersion || '0.0.0')")
       div.q-pr-xs
       q-btn.q-px-xs(

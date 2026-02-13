@@ -61,6 +61,7 @@ q-card.transparent(style='min-width: 45vw; max-width: 90vw')
                 | &nbsp;
                 code <{{ inputValue }}>
       q-select.col-1(
+        v-if='filter.key && !columnExists(filter.key || "")'
         style='min-width: 120px'
         v-model='fieldType'
         label='Type'

@@ -46,6 +46,7 @@ q-toolbar(dense flat)
             )
         q-separator(vertical)
         q-btn-dropdown.text-secondary(
+          v-if='mode === "complex" || mode === "advanced"'
           dropdown-icon="mdi-dots-vertical"
           flat dense
         )

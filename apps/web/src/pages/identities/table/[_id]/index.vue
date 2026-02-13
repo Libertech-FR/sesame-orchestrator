@@ -17,7 +17,7 @@
                   q-item-label(v-for='f in validations[field]' caption) - {{ f }}
           q-card-actions(align="right")
             q-btn(flat label="Fermer" color="primary" v-close-popup)
-      q-toolbar-title Fiche identité
+      q-toolbar-title.gt-xs Fiche identité
       q-separator(v-for='_ in 2' :key='_' vertical)
       q-toggle.q-pr-md.q-pl-xs(
         v-if="identity?._id"

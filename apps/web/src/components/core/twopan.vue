@@ -61,7 +61,12 @@ q-splitter.fit.q-custom-splitter.absolute.q-pa-sm(
   template(#separator)
     q-avatar(v-if='!isSimple' size="sm" color="primary" icon="mdi-unfold-more-vertical" class="text-white")
   template(#after)
-    q-card.fit(flat bordered style='border-left: none;')
+    q-card.fit.lr-sm(flat bordered v-if='!$q.screen.gt.xs')
+      .flex.items-center.fit.justify-center
+        div.text-center
+          q-icon(name="mdi-alert-outline" color='negative' size="64px")
+          div L'ecran est trop petit pour afficher les détails, tournez votre appareil en mode paysage ou changez la résolution de votre écran/la fenêtre.
+    q-card.fit.gt-xs(flat bordered :style='{ borderLeft: !isSimple ? "none" : "" }')
       .flex.items-center.fit.justify-center(v-if='!targetId')
         div Selectionnez un élément pour voir ses détails ici.
       slot(name="after-content")

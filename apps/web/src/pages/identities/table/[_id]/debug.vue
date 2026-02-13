@@ -30,8 +30,9 @@ export default defineNuxtComponent({
   },
   setup() {
     const { toPlainAndCrush } = useIdentityUtils()
+    const { monacoOptions } = useDebug()
 
-    return { toPlainAndCrush }
+    return { toPlainAndCrush, monacoOptions }
   },
   computed: {
     crushedIdentity(): Record<string, any> {
@@ -39,15 +40,6 @@ export default defineNuxtComponent({
         return this.toPlainAndCrush(this.identity as Record<string, any>)
       }
       return this.identity as Record<string, any>
-    },
-    monacoOptions() {
-      return {
-        theme: this.$q.dark.isActive ? 'vs-dark' : 'vs-light',
-        readOnly: true,
-        minimap: {
-          enabled: true,
-        },
-      }
     },
   },
 })

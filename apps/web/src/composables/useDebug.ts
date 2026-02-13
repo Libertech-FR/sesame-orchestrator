@@ -1,4 +1,7 @@
+import * as Monaco from 'monaco-editor'
+
 export function useDebug() {
+  const $q = useQuasar()
   const route = useRoute()
   const cachedDebug = ref<boolean | null>(null)
 
@@ -47,5 +50,17 @@ export function useDebug() {
     }
   }
 
-  return { debug, initDebug }
+  const monacoOptions = computed<Monaco.editor.IStandaloneEditorConstructionOptions>(() => {
+    return {
+      theme: $q.dark.isActive ? 'vs-dark' : 'vs-light',
+      readOnly: true,
+      minimap: {
+        enabled: true,
+      },
+      scrollBeyondLastColumn: 0,
+      scrollBeyondLastLine: false,
+    }
+  })
+
+  return { debug, initDebug, monacoOptions }
 }

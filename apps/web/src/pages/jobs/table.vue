@@ -112,6 +112,7 @@ export default defineComponent({
     }
   },
   async setup() {
+    const { monacoOptions } = useDebug()
     const $route = useRoute()
     const query = computed(() => {
       return {
@@ -140,6 +141,7 @@ export default defineComponent({
     })
 
     return {
+      monacoOptions,
       rows,
       pending,
       error,
@@ -176,17 +178,6 @@ export default defineComponent({
     },
     stateFilter(): string {
       return (this.$route.query['filters[:state]'] as string) || '9'
-    },
-    monacoOptions(): Monaco.editor.IStandaloneEditorConstructionOptions {
-      return <Monaco.editor.IStandaloneEditorConstructionOptions>{
-        theme: this.$q.dark.isActive ? 'vs-dark' : 'vs-light',
-        readOnly: true,
-        minimap: {
-          enabled: true,
-        },
-        scrollBeyondLastColumn: 0,
-        scrollBeyondLastLine: false,
-      }
     },
   },
   methods: {

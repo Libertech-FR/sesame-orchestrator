@@ -85,24 +85,15 @@ export default defineNuxtComponent({
   setup() {
     const empty = ref(false)
     const jobs = ref<any>([])
+    const { monacoOptions } = useDebug()
 
     return {
       empty,
       jobs,
+      monacoOptions,
     }
   },
   computed: {
-    monacoOptions() {
-      return <Monaco.editor.IStandaloneEditorConstructionOptions>{
-        theme: this.$q.dark.isActive ? 'vs-dark' : 'vs-light',
-        readOnly: true,
-        minimap: {
-          enabled: true,
-        },
-        scrollBeyondLastColumn: 0,
-        scrollBeyondLastLine: false,
-      }
-    },
     jobsBy: {
       get() {
         return this.$route.query.jobsBy ? `${this.$route.query.jobsBy}` : 'DD/MM/YYYY'

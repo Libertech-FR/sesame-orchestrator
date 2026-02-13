@@ -24,16 +24,11 @@ export default defineNuxtComponent({
       required: true,
     },
   },
-  computed: {
-    monacoOptions() {
-      return {
-        theme: this.$q.dark.isActive ? 'vs-dark' : 'vs-light',
-        readOnly: true,
-        minimap: {
-          enabled: true,
-        },
-      }
-    },
+  setup() {
+    const { monacoOptions } = useDebug()
+    return {
+      monacoOptions,
+    }
   },
 })
 </script>

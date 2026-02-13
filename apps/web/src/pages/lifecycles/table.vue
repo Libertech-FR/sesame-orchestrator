@@ -72,6 +72,7 @@ export default defineComponent({
     }
   },
   async setup() {
+    const { monacoOptions } = useDebug()
     const route = useRoute()
     const router = useRouter()
 
@@ -108,6 +109,7 @@ export default defineComponent({
     })
 
     return {
+      monacoOptions,
       pagination,
 
       getLifecycleName,
@@ -150,17 +152,6 @@ export default defineComponent({
           sortable: true,
         },
       ]
-    },
-    monacoOptions(): Monaco.editor.IStandaloneEditorConstructionOptions {
-      return <Monaco.editor.IStandaloneEditorConstructionOptions>{
-        theme: this.$q.dark.isActive ? 'vs-dark' : 'vs-light',
-        readOnly: true,
-        minimap: {
-          enabled: true,
-        },
-        scrollBeyondLastColumn: 0,
-        scrollBeyondLastLine: false,
-      }
     },
   },
   methods: {

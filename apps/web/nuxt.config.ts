@@ -1,6 +1,5 @@
 import { resolve } from 'path'
 import { readFileSync, writeFileSync } from 'fs'
-import pugPlugin from 'vite-plugin-pug'
 import openapiTS, { astToString, COMMENT_HEADER } from 'openapi-typescript'
 import { defineNuxtConfig } from 'nuxt/config'
 import { parse } from 'yaml'
@@ -216,13 +215,15 @@ export default defineNuxtConfig({
     define: {
       'process.env.DEBUG': process.env.NODE_ENV === 'development',
     },
-    plugins: [
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      pugPlugin(<any>{
-        pretty: true,
-        compilerOptions: {},
-      }),
-    ],
+    vue: {
+      template: {
+        preprocessOptions: {
+          pug: {
+            pretty: true,
+          },
+        },
+      },
+    },
   },
   alias: {
     cookie: resolve(__dirname, '../node_modules/cookie'),

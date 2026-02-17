@@ -53,7 +53,7 @@ if (!process.env.SESAME_SENTRY_DSN) {
      */
     integrations: [
       /** Profiling Node.js pour analyse des performances */
-      nodeProfilingIntegration(),
+      nodeProfilingIntegration() as any,
       /** Intégration Mongoose pour les erreurs de base de données */
       Sentry.mongooseIntegration(),
       /** Intégration Console pour capturer console.error/warn */

@@ -9,7 +9,7 @@
       :renderers="renderers"
       :additionalErrors="getSchemaValidations"
       :readonly="readonlyRenderer"
-      :ajv="customAjv.value"
+      :ajv="customAjv"
       :config="config"
       :i18n="i18n"
     )
@@ -18,7 +18,7 @@
 <script lang="ts">
 import { JsonForms } from '@jsonforms/vue'
 import { quasarRenderers } from '../../jsonforms'
-import { createAjv } from '@jsonforms/core'
+import { createAjv } from '~/jsonforms/utils/validator'
 import type { ErrorObject } from 'ajv'
 import localize from 'ajv-i18n'
 
@@ -65,6 +65,13 @@ export default defineNuxtComponent({
   },
   setup({ mode, schemaName, manualSchema, manualUiSchema, modelValue, baseUrlValidation, baseUrlSchema }) {
     const renderers = Object.freeze([...quasarRenderers])
+    const customAjv = shallowRef(
+      createAjv({
+        allErrors: true,
+        verbose: true,
+        strict: false,
+      }),
+    )
     const employeeType = computed(() => modelValue?.inetOrgPerson?.employeeType || 'LOCAL')
 
     if (!schemaName && (!manualSchema || !manualUiSchema)) {
@@ -92,6 +99,7 @@ export default defineNuxtComponent({
         refresh: () => {},
         refreshUi: () => {},
         renderers,
+        customAjv,
         createTranslator,
       }
     }
@@ -131,6 +139,7 @@ export default defineNuxtComponent({
       schema,
       uischema,
       renderers,
+      customAjv,
       refresh,
       refreshUi,
       createTranslator,
@@ -152,13 +161,6 @@ export default defineNuxtComponent({
     },
   },
   computed: {
-    customAjv() {
-      return createAjv({
-        allErrors: true,
-        verbose: true,
-        strict: false,
-      })
-    },
     i18n() {
       return {
         locale: 'fr',

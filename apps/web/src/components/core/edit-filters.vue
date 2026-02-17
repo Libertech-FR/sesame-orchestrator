@@ -127,9 +127,12 @@ q-card.transparent(style='min-width: 45vw; max-width: 90vw')
         :suffix="comparator?.suffix"
         :type='searchInputType'
         :readonly='!filter.operator'
-        @keydown.enter.prevent="writeFilter(filter)"
         :options="optionsMapping"
+        @filter="filterFn"
+        new-value-mode="add-unique"
+        input-debounce="0"
         emit-value
+        use-input
         use-chips
         map-options
         dense

@@ -79,19 +79,7 @@
 </template>
 
 <script lang="ts">
-import {
-  and,
-  type ControlElement,
-  hasOption,
-  isBooleanControl,
-  isEnumControl,
-  isNumberControl,
-  isPrimitiveArrayControl,
-  isStringControl,
-  type JsonFormsRendererRegistryEntry,
-  or,
-  rankWith,
-} from '@jsonforms/core'
+import { type ControlElement } from '@jsonforms/core'
 import { rendererProps, type RendererProps, useJsonFormsEnumControl } from '@jsonforms/vue'
 import { QItem, QItemLabel, QItemSection, QSelect } from 'quasar'
 import { defineComponent } from 'vue'
@@ -125,25 +113,4 @@ const controlRenderer = defineComponent({
 })
 
 export default controlRenderer
-
-export const entry: JsonFormsRendererRegistryEntry = {
-  renderer: controlRenderer,
-  // prettier-ignore
-  tester: rankWith(2,
-    or(
-      isPrimitiveArrayControl,
-      and(
-        or(
-          isStringControl,
-          isNumberControl,
-          isBooleanControl,
-        ),
-        or(
-          hasOption('suggestion'),
-          isEnumControl,
-        ),
-      ),
-    ),
-  ),
-}
 </script>

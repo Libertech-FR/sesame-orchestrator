@@ -1,7 +1,12 @@
 <template lang="pug">
   q-card-section.q-pr-sm
+    div(v-if="!schema || !uischema")
+      p Debug: schema={{ !!schema }}, uischema={{ !!uischema }}
+      p Debug: pending={{ pending }}, error={{ error }}
     json-forms(
+      v-if="schema && uischema"
       @change="onChange"
+      @error="onJsonFormsError"
       validationMode="ValidateAndShow"
       :data="modelValue"
       :schema="schema"
@@ -17,7 +22,7 @@
 
 <script lang="ts">
 import { JsonForms } from '@jsonforms/vue'
-import { quasarRenderers } from '../../jsonforms'
+import { quasarRenderers } from '~/jsonforms'
 import { createAjv } from '~/jsonforms/utils/validator'
 import type { ErrorObject } from 'ajv'
 import localize from 'ajv-i18n'
@@ -65,6 +70,25 @@ export default defineNuxtComponent({
   },
   setup({ mode, schemaName, manualSchema, manualUiSchema, modelValue, baseUrlValidation, baseUrlSchema }) {
     const renderers = Object.freeze([...quasarRenderers])
+
+    // Debug
+    if (process.env.NODE_ENV === 'development' || true) {
+      console.log('[JsonForms] renderers loaded:', renderers.length, renderers)
+      console.log('[JsonForms] quasarRenderers:', quasarRenderers.length, quasarRenderers)
+
+      // Log what testers we have
+      console.log(
+        '[JsonForms] Available testers:',
+        renderers.map((r, i) => {
+          try {
+            return `${i}: ${r.renderer?.name || 'unknown'}`
+          } catch (e) {
+            return `${i}: error getting name`
+          }
+        }),
+      )
+    }
+
     const customAjv = shallowRef(
       createAjv({
         allErrors: true,
@@ -135,6 +159,25 @@ export default defineNuxtComponent({
     const schema = computed(() => result.value?.data)
     const uischema = computed(() => resultUi.value?.data)
 
+    // Debug
+    watch(
+      [schema, uischema],
+      ([s, u]) => {
+        console.log('[JsonForms] schema updated:', s)
+        console.log('[JsonForms] uischema updated:', u)
+        console.log('[JsonForms] result.value:', result.value)
+        console.log('[JsonForms] resultUi.value:', resultUi.value)
+
+        // Check if JsonForms component can render these
+        if (s && u) {
+          console.log('[JsonForms] Schema properties:', Object.keys(s))
+          console.log('[JsonForms] UISchema type:', u.type)
+          console.log('[JsonForms] UISchema elements:', u.elements?.length)
+        }
+      },
+      { deep: true },
+    )
+
     return {
       schema,
       uischema,
@@ -159,6 +202,13 @@ export default defineNuxtComponent({
         })
       }
     },
+    onJsonFormsError(error: any) {
+      console.error('[JsonForms] Rendering error:', error)
+    },
+  },
+  errorCaptured(err: any, instance: any, info: any) {
+    console.error('[JsonForms] Error captured:', err, info, instance?.$options?.name)
+    return false
   },
   computed: {
     i18n() {

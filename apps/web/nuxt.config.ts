@@ -228,6 +228,15 @@ export default defineNuxtConfig({
   alias: {
     cookie: resolve(__dirname, '../node_modules/cookie'),
   },
+  build: {
+    transpile: [
+      '@jsonforms/core',
+      '@jsonforms/vue',
+      'ajv',
+      'ajv-i18n',
+      'quasar',
+    ],
+  },
   future: {
     typescriptBundlerResolution: true,
   },

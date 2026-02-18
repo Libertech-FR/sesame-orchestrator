@@ -82,7 +82,7 @@
 </template>
 
 <script lang="ts">
-import { type ControlElement, type JsonFormsRendererRegistryEntry, rankWith, isStringControl, and, optionIs, or, isObjectArrayControl, isObjectControl } from '@jsonforms/core'
+import { type ControlElement } from '@jsonforms/core'
 import { defineComponent, ref, computed } from 'vue'
 import { rendererProps, type RendererProps, useJsonFormsControl } from '@jsonforms/vue'
 import { ControlWrapper, FilePreview } from '../common'
@@ -432,21 +432,6 @@ const controlRenderer = defineComponent({
 })
 
 export default controlRenderer
-
-export const entry: JsonFormsRendererRegistryEntry = {
-  renderer: controlRenderer,
-  // prettier-ignore
-  tester: rankWith(3,
-    and(
-      or(
-        isStringControl,
-        isObjectArrayControl,
-        isObjectControl,
-      ),
-      optionIs('format', 'file'),
-    ),
-  ), // Rend prioritaire les contrôles string, object ou array avec options.format === 'file'
-}
 </script>
 
 <style lang="scss" scoped>

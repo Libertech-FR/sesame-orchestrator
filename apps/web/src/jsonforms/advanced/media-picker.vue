@@ -177,7 +177,7 @@
 </template>
 
 <script lang="ts">
-import { type ControlElement, type JsonFormsRendererRegistryEntry, rankWith, isStringControl, and, hasOption, or, isPrimitiveArrayControl } from '@jsonforms/core'
+import { type ControlElement } from '@jsonforms/core'
 import { defineComponent, ref, computed } from 'vue'
 import { rendererProps, type RendererProps, useJsonFormsControl } from '@jsonforms/vue'
 import { ControlWrapper, FilePreview } from '../common'
@@ -644,20 +644,6 @@ const controlRenderer = defineComponent({
 })
 
 export default controlRenderer
-
-export const entry: JsonFormsRendererRegistryEntry = {
-  renderer: controlRenderer,
-  // prettier-ignore
-  tester: rankWith(2,
-    and(
-      or(
-        isStringControl,
-        isPrimitiveArrayControl,
-      ),
-      hasOption('media'),
-    ),
-  ), // Matches string or primitive array controls with 'media' option defined
-}
 </script>
 
 <style lang="scss" scoped>

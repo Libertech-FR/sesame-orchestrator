@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { type JsonFormsRendererRegistryEntry, type LabelElement, rankWith, uiTypeIs } from '@jsonforms/core'
+import { type LabelElement } from '@jsonforms/core'
 import { defineComponent } from 'vue'
 import { rendererProps, type RendererProps, useJsonFormsLabel } from '@jsonforms/vue'
 import { useQuasarLabel } from '../utils'
@@ -71,15 +71,4 @@ const labelRenderer = defineComponent({
 })
 
 export default labelRenderer
-
-/**
- * JSONForms Renderer Registry Entry
- *
- * Registers the LabelRenderer component with JSONForms rendering system.
- * The tester function determines when this renderer should be used based on UI schema type.
- */
-export const entry: JsonFormsRendererRegistryEntry = {
-  renderer: labelRenderer,
-  tester: rankWith(1, uiTypeIs('Label')), // Matches UI elements with type "Label"
-}
 </script>

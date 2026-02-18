@@ -216,7 +216,7 @@
 </template>
 
 <script lang="ts">
-import { type ControlElement, type JsonFormsRendererRegistryEntry, rankWith, isObjectControl, and, optionIs } from '@jsonforms/core'
+import { type ControlElement } from '@jsonforms/core'
 import { rendererProps, useJsonFormsControl, type RendererProps } from '@jsonforms/vue'
 import { isEmpty } from 'radash'
 import { ControlWrapper } from '../common'
@@ -401,11 +401,6 @@ const controlRenderer = defineComponent({
 }) as ReturnType<typeof defineComponent>
 
 export default controlRenderer
-
-export const entry: JsonFormsRendererRegistryEntry = {
-  renderer: controlRenderer,
-  tester: rankWith(2, and(isObjectControl, optionIs('wysiwyg', true))),
-}
 </script>
 
 <style lang="scss" scoped>

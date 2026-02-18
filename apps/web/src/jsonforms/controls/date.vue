@@ -109,7 +109,7 @@
 </template>
 
 <script lang="ts">
-import { type ControlElement, type JsonFormsRendererRegistryEntry, rankWith, isDateControl, or, isDateTimeControl, isTimeControl } from '@jsonforms/core'
+import { type ControlElement } from '@jsonforms/core'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { defineComponent } from 'vue'
@@ -150,18 +150,6 @@ const controlRenderer = defineComponent({
 })
 
 export default controlRenderer
-
-export const entry: JsonFormsRendererRegistryEntry = {
-  renderer: controlRenderer,
-  // prettier-ignore
-  tester: rankWith(2,
-    or(
-      isDateControl,
-      isDateTimeControl,
-      isTimeControl,
-    ),
-  ), // Matches schema properties with format "date", "date-time" or "time"
-}
 </script>
 
 <style>

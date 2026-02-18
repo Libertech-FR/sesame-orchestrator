@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { and, categorizationHasCategory, isCategorization, type JsonFormsRendererRegistryEntry, rankWith, type Layout } from '@jsonforms/core'
+import { type Layout } from '@jsonforms/core'
 import { DispatchRenderer, rendererProps, useJsonFormsCategorization, type RendererProps } from '@jsonforms/vue'
 import { computed, defineComponent, onMounted } from 'vue'
 import { useQuasarLayout } from '../utils'
@@ -117,9 +117,4 @@ const layoutRenderer = defineComponent({
 })
 
 export default layoutRenderer
-
-export const entry: JsonFormsRendererRegistryEntry = {
-  renderer: layoutRenderer,
-  tester: rankWith(2, and(isCategorization, categorizationHasCategory)),
-}
 </script>

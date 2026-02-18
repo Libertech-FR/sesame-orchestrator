@@ -79,7 +79,7 @@
 </template>
 
 <script lang="ts">
-import { type ControlElement, type JsonFormsRendererRegistryEntry, rankWith, isStringControl, and, hasOption, isPrimitiveArrayControl } from '@jsonforms/core'
+import { type ControlElement } from '@jsonforms/core'
 import { defineComponent } from 'vue'
 import { rendererProps, type RendererProps, useJsonFormsEnumControl } from '@jsonforms/vue'
 import { ControlWrapper, FieldAddons } from '../common'
@@ -113,15 +113,4 @@ const controlRenderer = defineComponent({
 })
 
 export default controlRenderer
-
-export const entry: JsonFormsRendererRegistryEntry = {
-  renderer: controlRenderer,
-  // prettier-ignore
-  tester: rankWith(2,
-    and(
-      isStringControl,
-      hasOption('api'),
-    ),
-  ), // Matches string controls with 'api' option defined
-}
 </script>

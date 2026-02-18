@@ -69,7 +69,7 @@
 </template>
 
 <script lang="ts">
-import { isRangeControl, type JsonFormsRendererRegistryEntry, rankWith, type ControlElement } from '@jsonforms/core'
+import { type ControlElement } from '@jsonforms/core'
 import { defineComponent } from 'vue'
 import { rendererProps, useJsonFormsControl, type RendererProps } from '@jsonforms/vue'
 import { ControlWrapper, FieldAddons } from '../common'
@@ -101,12 +101,4 @@ const controlRenderer = defineComponent({
 })
 
 export default controlRenderer
-
-export const entry: JsonFormsRendererRegistryEntry = {
-  renderer: controlRenderer,
-  // prettier-ignore
-  tester: rankWith(4,
-    isRangeControl,
-  ), // Matches schema properties with type "number" or "integer" and with "range" option set to true
-}
 </script>

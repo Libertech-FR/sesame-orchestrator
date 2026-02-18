@@ -73,7 +73,7 @@
 </template>
 
 <script lang="ts">
-import { type ControlElement, type JsonFormsRendererRegistryEntry, rankWith, isBooleanControl } from '@jsonforms/core'
+import { type ControlElement } from '@jsonforms/core'
 import { defineComponent } from 'vue'
 import { rendererProps, useJsonFormsControl, type RendererProps } from '@jsonforms/vue'
 import { ControlWrapper, FieldAddons } from '../common'
@@ -142,20 +142,6 @@ const controlRenderer = defineComponent({
 })
 
 export default controlRenderer
-
-/**
- * JSONForms Renderer Registry Entry
- *
- * Registers the BooleanControlRenderer component with JSONForms rendering system.
- * The tester function determines when this renderer should be used based on schema type.
- */
-export const entry: JsonFormsRendererRegistryEntry = {
-  renderer: controlRenderer,
-  // prettier-ignore
-  tester: rankWith(1,
-    isBooleanControl,
-  ), // Matches schema properties with type "boolean"
-}
 </script>
 
 <style lang="scss">

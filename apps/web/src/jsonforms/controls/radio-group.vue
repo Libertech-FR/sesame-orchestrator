@@ -70,7 +70,7 @@
 </template>
 
 <script lang="ts">
-import { and, type ControlElement, isEnumControl, type JsonFormsRendererRegistryEntry, optionIs, rankWith } from '@jsonforms/core'
+import { type ControlElement } from '@jsonforms/core'
 import { rendererProps, type RendererProps, useJsonFormsEnumControl } from '@jsonforms/vue'
 import { QField, QOptionGroup } from 'quasar'
 import { defineComponent } from 'vue'
@@ -102,17 +102,6 @@ const controlRenderer = defineComponent({
 })
 
 export default controlRenderer
-
-export const entry: JsonFormsRendererRegistryEntry = {
-  renderer: controlRenderer,
-  // prettier-ignore
-  tester: rankWith(20,
-    and(
-      isEnumControl,
-      optionIs('format', 'radio'),
-    ),
-  ), // Matches enum controls with option format set to 'radio'
-}
 </script>
 
 <style lang="scss">

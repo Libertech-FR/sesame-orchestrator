@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { isLayout, type JsonFormsRendererRegistryEntry, type Layout, rankWith } from '@jsonforms/core'
+import { type Layout } from '@jsonforms/core'
 import { defineComponent } from 'vue'
 import { DispatchRenderer, rendererProps, useJsonFormsLayout, type RendererProps } from '@jsonforms/vue'
 import { useQuasarLayout } from '../utils'
@@ -86,15 +86,4 @@ const layoutRenderer = defineComponent({
 })
 
 export default layoutRenderer
-
-/**
- * JSONForms Renderer Registry Entry
- *
- * Registers the LayoutRenderer component with JSONForms rendering system.
- * The tester function determines when this renderer should be used for any layout type.
- */
-export const entry: JsonFormsRendererRegistryEntry = {
-  renderer: layoutRenderer,
-  tester: rankWith(1, isLayout), // Matches UI elements with layout types (VerticalLayout/HorizontalLayout)
-}
 </script>

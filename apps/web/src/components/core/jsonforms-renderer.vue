@@ -3,21 +3,22 @@
     div(v-if="!schema || !uischema")
       p Debug: schema={{ !!schema }}, uischema={{ !!uischema }}
       p Debug: pending={{ pending }}, error={{ error }}
-    json-forms(
-      v-if="schema && uischema"
-      @change="onChange"
-      @error="onJsonFormsError"
-      validationMode="ValidateAndShow"
-      :data="modelValue"
-      :schema="schema"
-      :uischema="uischema"
-      :renderers="renderers"
-      :additionalErrors="getSchemaValidations"
-      :readonly="readonlyRenderer"
-      :ajv="customAjv"
-      :config="config"
-      :i18n="i18n"
-    )
+    client-only
+      json-forms(
+        v-if="schema && uischema"
+        @change="onChange"
+        @error="onJsonFormsError"
+        validationMode="ValidateAndShow"
+        :data="modelValue"
+        :schema="schema"
+        :uischema="uischema"
+        :renderers="renderers"
+        :additionalErrors="getSchemaValidations"
+        :readonly="readonlyRenderer"
+        :ajv="customAjv"
+        :config="config"
+        :i18n="i18n"
+      )
 </template>
 
 <script lang="ts">
@@ -25,7 +26,7 @@ import { JsonForms } from '@jsonforms/vue'
 import { quasarRenderers } from '~/jsonforms'
 import { createAjv } from '~/jsonforms/utils/validator'
 import type { ErrorObject } from 'ajv'
-import localize from 'ajv-i18n'
+import localize from 'ajv-i18n/localize'
 
 export default defineNuxtComponent({
   name: 'SesameCoreJsonformsRendererComponent',
@@ -71,31 +72,6 @@ export default defineNuxtComponent({
   setup({ mode, schemaName, manualSchema, manualUiSchema, modelValue, baseUrlValidation, baseUrlSchema }) {
     const renderers = Object.freeze([...quasarRenderers])
 
-    // Debug
-    if (process.env.NODE_ENV === 'development' || true) {
-      console.log('[JsonForms] renderers loaded:', renderers.length, renderers)
-      console.log('[JsonForms] quasarRenderers:', quasarRenderers.length, quasarRenderers)
-
-      // Log what testers we have
-      console.log(
-        '[JsonForms] Available testers:',
-        renderers.map((r, i) => {
-          try {
-            return `${i}: ${r.renderer?.name || 'unknown'}`
-          } catch (e) {
-            return `${i}: error getting name`
-          }
-        }),
-      )
-    }
-
-    const customAjv = shallowRef(
-      createAjv({
-        allErrors: true,
-        verbose: true,
-        strict: false,
-      }),
-    )
     const employeeType = computed(() => modelValue?.inetOrgPerson?.employeeType || 'LOCAL')
 
     if (!schemaName && (!manualSchema || !manualUiSchema)) {
@@ -123,7 +99,6 @@ export default defineNuxtComponent({
         refresh: () => {},
         refreshUi: () => {},
         renderers,
-        customAjv,
         createTranslator,
       }
     }
@@ -182,7 +157,6 @@ export default defineNuxtComponent({
       schema,
       uischema,
       renderers,
-      customAjv,
       refresh,
       refreshUi,
       createTranslator,
@@ -211,6 +185,13 @@ export default defineNuxtComponent({
     return false
   },
   computed: {
+    customAjv() {
+      return createAjv({
+        allErrors: true,
+        verbose: true,
+        strict: false,
+      })
+    },
     i18n() {
       return {
         locale: 'fr',

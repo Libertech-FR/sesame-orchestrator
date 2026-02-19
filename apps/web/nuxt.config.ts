@@ -230,10 +230,6 @@ export default defineNuxtConfig({
   },
   build: {
     transpile: [
-      '@jsonforms/core',
-      '@jsonforms/vue',
-      'ajv',
-      'ajv-i18n',
       'quasar',
     ],
   },

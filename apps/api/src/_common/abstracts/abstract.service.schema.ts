@@ -69,7 +69,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
       }
     }
     this.logger.debug(['count', JSON.stringify(Object.values(arguments))].join(' '))
-    return await this._model.countDocuments(filter, options).exec()
+    return await this._model.countDocuments(filter, options as any).exec()
   }
 
   public async trashAndCount<T extends AbstractSchema | Document>(

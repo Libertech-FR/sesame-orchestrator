@@ -83,11 +83,22 @@ export default defineNuxtComponent({
   async setup({ identity }) {
     const { state, set } = useHashState()
     const tabs = ref<string[]>(identity?.additionalFields?.objectClasses || [])
+    const isHydrated = ref(false)
+
+    // Wait for the hash state to be fully hydrated before using it
+    onMounted(() => {
+      isHydrated.value = true
+    })
 
     const tab = computed({
-      get: () => state.value['schema'] || 'inetOrgPerson',
+      get: () => {
+        return state.value['schema'] || 'inetOrgPerson'
+      },
       set: (val: string) => {
-        set({ ['schema']: val })
+        // Only update the hash if the state is hydrated to avoid writing the default value
+        if (isHydrated.value) {
+          set({ ['schema']: val })
+        }
       },
     })
 

@@ -134,25 +134,6 @@ export default defineNuxtComponent({
     const schema = computed(() => result.value?.data)
     const uischema = computed(() => resultUi.value?.data)
 
-    // Debug
-    watch(
-      [schema, uischema],
-      ([s, u]) => {
-        console.log('[JsonForms] schema updated:', s)
-        console.log('[JsonForms] uischema updated:', u)
-        console.log('[JsonForms] result.value:', result.value)
-        console.log('[JsonForms] resultUi.value:', resultUi.value)
-
-        // Check if JsonForms component can render these
-        if (s && u) {
-          console.log('[JsonForms] Schema properties:', Object.keys(s))
-          console.log('[JsonForms] UISchema type:', u.type)
-          console.log('[JsonForms] UISchema elements:', u.elements?.length)
-        }
-      },
-      { deep: true },
-    )
-
     return {
       schema,
       uischema,

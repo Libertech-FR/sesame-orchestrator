@@ -48,7 +48,7 @@ q-page.container
           template(v-if="col.name === 'identity'")
             q-chip.bg-positive.text-white.q-pa-sm(
               v-if="props.row?.concernedTo?.name"
-              @click="open(`/identities?read=${props.row?.concernedTo?.id}&filters[^inetOrgPerson.cn]=/${props.row?.concernedTo?.name}/i&skip=0&limit=16&sort[metadata.lastUpdatedAt]=desc`)"
+              @click="open(`/identities/table/${props.row?.concernedTo?.id}?filters[^inetOrgPerson.cn]=/${props.row?.concernedTo?.name}/i&skip=0&limit=16&sort[metadata.lastUpdatedAt]=desc`)"
               icon="mdi-account"
               clickable
               dense
@@ -57,7 +57,7 @@ q-page.container
               q-tooltip.text-body2(anchor='top middle' self="bottom middle")
                 span Voir&nbsp;l'identité&nbsp;
                 span(v-text="'(' + props.row?.concernedTo?.id + ')'" class="text-caption")
-            q-chip.bg-warning.q-pa-sm(
+            q-chip.bg-orange-8.q-pa-sm(
               v-else
               icon="mdi-account-question"
               label="Inconnu"

@@ -32,13 +32,22 @@
               span {{ getLifecycleName(props.row.lifecycle) }} &nbsp;
               small(v-text="'(' + props.row?.lifecycle + ')'")
             template(v-else-if="col.name === 'identity'")
-              q-chip(
+              q-chip.bg-positive.text-white.q-pa-sm(
                 href='javascript:void(0)'
                 v-if="props.row?.refId?.inetOrgPerson?.cn"
-                @click="open(`/identities?read=${props.row.refId._id}&filters[^inetOrgPerson.cn]=/${props.row?.refId?.inetOrgPerson?.cn}/i&skip=0&limit=16&sort[metadata.lastUpdatedAt]=desc`)"
+                @click="open(`/identities/table/${props.row.refId._id}?filters[^inetOrgPerson.cn]=/${props.row?.refId?.inetOrgPerson?.cn}/i&skip=0&limit=16&sort[metadata.lastUpdatedAt]=desc`)"
                 icon="mdi-account" clickable dense
-              ) {{ props.row?.refId?.inetOrgPerson?.cn }}
-              span(v-else) Inconnu
+              )
+                span {{ props.row?.refId?.inetOrgPerson?.cn }}
+                q-tooltip.text-body2(anchor='top middle' self="bottom middle")
+                  span Voir&nbsp;l'identité&nbsp;
+                  span(v-text="'(' + props.row?.refId?._id + ')'" class="text-caption")
+              q-chip.bg-orange-8.q-pa-sm(
+                v-else
+                icon="mdi-account-question"
+                label="Inconnu"
+                dense
+              )
             template(v-else)
               span {{ col.value || col.field(props.row) || "" }}
           q-td.text-center(auto-width)

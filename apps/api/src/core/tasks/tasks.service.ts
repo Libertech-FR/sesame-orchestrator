@@ -5,7 +5,7 @@ import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.sche
 import { Tasks } from './_schemas/tasks.schema';
 
 @Injectable()
-export class TasksService extends AbstractServiceSchema {
+export class TasksService extends AbstractServiceSchema<Tasks> {
   public constructor(@InjectModel(Tasks.name) protected _model: Model<Tasks>) {
     super();
   }

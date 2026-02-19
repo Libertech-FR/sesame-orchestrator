@@ -195,7 +195,7 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
       this._model.countDocuments({
         ...filter,
         deletedFlag: { $ne: true },
-      }, options).then(count => [key, count])
+      }, options as any).then(count => [key, count])
     ));
 
     return Object.fromEntries(results);

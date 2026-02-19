@@ -5,7 +5,7 @@ import { Jobs } from './_schemas/jobs.schema';
 import { Model } from 'mongoose';
 
 @Injectable()
-export class JobsService extends AbstractServiceSchema {
+export class JobsService extends AbstractServiceSchema<Jobs> {
   public constructor(@InjectModel(Jobs.name) protected _model: Model<Jobs>) {
     super();
   }

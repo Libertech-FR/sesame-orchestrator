@@ -1,4 +1,4 @@
-import { Queue, QueueEvents } from 'bullmq';
+import { Queue, QueueEvents, ConnectionOptions } from 'bullmq';
 import { AbstractService, AbstractServiceContext } from './abstract.service';
 import { getRedisConnectionToken } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
@@ -26,10 +26,10 @@ export abstract class AbstractQueueProcessor extends AbstractService implements 
     this.redis = this.moduleRef.get<Redis>(getRedisConnectionToken(), { strict: false });
 
     this._queue = new Queue(this.config.get<string>('application.nameQueue'), {
-      connection: this.redis,
+      connection: this.redis as unknown as ConnectionOptions,
     });
     this.queueEvents = new QueueEvents(this.config.get<string>('application.nameQueue'), {
-      connection: this.redis,
+      connection: this.redis as unknown as ConnectionOptions,
     });
   }
 }

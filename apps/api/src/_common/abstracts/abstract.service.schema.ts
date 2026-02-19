@@ -18,17 +18,16 @@ import { ServiceSchemaInterface } from './interfaces/service.schema.interface';
 import { AbstractSchema } from './schemas/abstract.schema';
 import mongodb from 'mongodb';
 import { omit } from 'radash';
-import { cp } from 'fs';
 
 @Injectable()
-export abstract class AbstractServiceSchema extends AbstractService implements ServiceSchemaInterface {
-  protected abstract _model: Model<AbstractSchema | Document>;
+export abstract class AbstractServiceSchema<T extends AbstractSchema | Document = AbstractSchema | Document> extends AbstractService implements ServiceSchemaInterface {
+  protected abstract _model: Model<T>;
 
   protected constructor(context?: AbstractServiceContext) {
     super(context);
   }
 
-  public get model(): Model<AbstractSchema | Document> {
+  public get model(): Model<T> {
     return this._model;
   }
 
@@ -281,7 +280,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
             'metadata.lastUpdatedBy': this.request?.user?.username || 'anonymous',
             'metadata.lastUpdatedAt': new Date(),
           }
-        },
+        } as any,
         {
           new: true,
           runValidators: true,
@@ -341,7 +340,7 @@ export abstract class AbstractServiceSchema extends AbstractService implements S
             'metadata.lastUpdatedBy': this.request?.user?.username || 'anonymous',
             'metadata.lastUpdatedAt': new Date(),
           }
-        },
+        } as any,
         {
           upsert: true,
           new: true,

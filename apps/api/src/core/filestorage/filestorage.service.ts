@@ -30,7 +30,7 @@ function hasFileExtension(path: string): boolean {
 }
 
 @Injectable(/*{ scope: Scope.REQUEST }*/)
-export class FilestorageService extends AbstractServiceSchema {
+export class FilestorageService extends AbstractServiceSchema<Filestorage> {
   protected readonly reservedChars = ['\\', '?', '%', '*', ':', '|', '"', '<', '>', '#'];
 
   public constructor(

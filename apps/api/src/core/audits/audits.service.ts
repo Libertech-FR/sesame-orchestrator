@@ -26,7 +26,7 @@ import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.sche
  * de manière transparente.
  */
 @Injectable()
-export class AuditsService extends AbstractServiceSchema {
+export class AuditsService extends AbstractServiceSchema<Audits> {
   /**
    * Constructeur du service AuditsService.
    *

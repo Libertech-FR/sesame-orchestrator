@@ -5,8 +5,8 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
-export class LoggerService extends AbstractServiceSchema {
-  constructor(@InjectModel(Logger.name) protected _model: Model<Logger>) {
+export class LoggerService<T extends Logger = Logger> extends AbstractServiceSchema<T> {
+  constructor(@InjectModel(Logger.name) protected _model: Model<T>) {
     super();
   }
 }

@@ -6,7 +6,7 @@ import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.sche
 import { ModuleRef } from '@nestjs/core';
 
 @Injectable()
-export class FormService extends AbstractServiceSchema {
+export class FormService extends AbstractServiceSchema<Form> {
   constructor(
     @InjectModel(Form.name) protected _model: Model<Form>,
     protected readonly moduleRef: ModuleRef,

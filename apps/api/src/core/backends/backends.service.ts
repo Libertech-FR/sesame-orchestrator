@@ -165,7 +165,7 @@ export class BackendsService extends AbstractQueueProcessor {
       };
     });
 
-    const task: Tasks = await this.tasksService.create<Tasks>({
+    const task: Document<Tasks> = await this.tasksService.create<Tasks>({
       jobs: identities.map((identity) => identity.identity._id),
     });
 
@@ -187,7 +187,7 @@ export class BackendsService extends AbstractQueueProcessor {
           {
             ...options,
             updateStatus: true,
-            task: task._id,
+            task: task._id as unknown as Types.ObjectId,
           },
         );
         result[identity.identity._id] = executedJob;
@@ -232,7 +232,7 @@ export class BackendsService extends AbstractQueueProcessor {
       });
     }
 
-    const task: Tasks = await this.tasksService.create<Tasks>({
+    const task: Document<Tasks> = await this.tasksService.create<Tasks>({
       jobs: identities.map((identity) => identity.identity._id),
     });
 
@@ -241,7 +241,7 @@ export class BackendsService extends AbstractQueueProcessor {
       const [executedJob] = await this.executeJob(identity.action, identity.identity._id, identity.identity, {
         ...options,
         updateStatus: true,
-        task: task._id,
+        task: task._id as unknown as Types.ObjectId,
       });
       result[identity.identity._id] = executedJob;
     }
@@ -271,7 +271,7 @@ export class BackendsService extends AbstractQueueProcessor {
       });
     }
 
-    const task: Tasks = await this.tasksService.create<Tasks>({
+    const task: Document<Tasks> = await this.tasksService.create<Tasks>({
       jobs: identities.map((identity) => identity.identity._id),
     });
 
@@ -280,7 +280,7 @@ export class BackendsService extends AbstractQueueProcessor {
       const [executedJob] = await this.executeJob(identity.action, identity.identity._id, identity.identity, {
         ...options,
         updateStatus: true,
-        task: task._id,
+        task: task._id as unknown as Types.ObjectId,
       });
       result[identity.identity._id] = executedJob;
     }
@@ -319,7 +319,7 @@ export class BackendsService extends AbstractQueueProcessor {
       });
     }
 
-    const task: Tasks = await this.tasksService.create<Tasks>({
+    const task: Document<Tasks> = await this.tasksService.create<Tasks>({
       jobs: identities.map((identity) => identity.identity._id),
     });
 
@@ -331,7 +331,7 @@ export class BackendsService extends AbstractQueueProcessor {
         switchToProcessing: false,
         targetState: IdentityState.DONT_SYNC,
         dataState: DataStatusEnum.DELETED,
-        task: task._id,
+        task: task._id as unknown as Types.ObjectId,
       });
       result[identity.identity._id] = executedJob;
       // console.log(res);
@@ -368,7 +368,7 @@ export class BackendsService extends AbstractQueueProcessor {
       });
     }
 
-    const task: Tasks = await this.tasksService.create<Tasks>({
+    const task: Document<Tasks> = await this.tasksService.create<Tasks>({
       jobs: identities.map((identity) => identity.identity._id),
     });
 
@@ -380,7 +380,7 @@ export class BackendsService extends AbstractQueueProcessor {
         switchToProcessing: false,
         targetState: IdentityState.SYNCED,
         dataState: DataStatusEnum.INACTIVE,
-        task: task._id,
+        task: task._id as unknown as Types.ObjectId,
       });
       result[identity.identity._id] = executedJob;
       console.log(res);
@@ -417,7 +417,7 @@ export class BackendsService extends AbstractQueueProcessor {
       });
     }
 
-    const task: Tasks = await this.tasksService.create<Tasks>({
+    const task: Document<Tasks> = await this.tasksService.create<Tasks>({
       jobs: identities.map((identity) => identity.identity._id),
     });
 
@@ -429,7 +429,7 @@ export class BackendsService extends AbstractQueueProcessor {
         switchToProcessing: false,
         targetState: IdentityState.SYNCED,
         dataState: DataStatusEnum.ACTIVE,
-        task: task._id,
+        task: task._id as unknown as Types.ObjectId,
       });
       result[identity.identity._id] = executedJob;
       console.log(res);

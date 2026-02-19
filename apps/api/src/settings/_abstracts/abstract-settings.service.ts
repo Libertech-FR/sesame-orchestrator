@@ -3,10 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Settings, SettingsSchema } from '~/settings/_schemas/settings.schema';
 
-export class AbstractSettingsService extends AbstractServiceSchema {
+export class AbstractSettingsService<T extends Settings = Settings> extends AbstractServiceSchema<T> {
   protected settingsName: string;
 
-  constructor(@InjectModel(Settings.name) protected _model: Model<Settings>) {
+  constructor(@InjectModel(Settings.name) protected _model: Model<T>) {
     super();
   }
 

@@ -11,7 +11,7 @@ import { SchedulerRegistry } from '@nestjs/schedule'
 import { ConfigService } from '@nestjs/config'
 
 @Injectable()
-export abstract class AbstractLifecycleService extends AbstractServiceSchema implements OnModuleInit, OnApplicationBootstrap {
+export abstract class AbstractLifecycleService extends AbstractServiceSchema<Lifecycle> implements OnModuleInit, OnApplicationBootstrap {
   /**
    * Map des sources de cycle de vie et leurs règles associées
    * @protected

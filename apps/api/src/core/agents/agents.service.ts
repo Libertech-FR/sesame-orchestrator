@@ -26,7 +26,7 @@ import { SecurityPartDTO } from './_dto/parts/security.part.dto'
  * - Hérite des opérations CRUD standard via AbstractServiceSchema
  */
 @Injectable()
-export class AgentsService extends AbstractServiceSchema {
+export class AgentsService extends AbstractServiceSchema<Agents> {
   /**
    * Constructeur du service AgentsService.
    *

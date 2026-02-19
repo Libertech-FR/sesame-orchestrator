@@ -8,7 +8,7 @@ import { randomBytes } from 'node:crypto';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
 
 @Injectable()
-export class KeyringsService extends AbstractServiceSchema {
+export class KeyringsService extends AbstractServiceSchema<Keyrings> {
   constructor(@InjectModel(Keyrings.name) protected _model: Model<Keyrings>) {
     super();
   }

@@ -3,10 +3,10 @@ import { Model } from 'mongoose';
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { Settings } from '~/settings/_schemas/settings.schema';
 
-export class AbstractSettingsService extends AbstractServiceSchema {
+export class AbstractSettingsService<T extends Settings = Settings> extends AbstractServiceSchema<T> {
   protected settingsName: string;
 
-  constructor(@InjectModel(Settings.name) protected _model: Model<Settings>) {
+  constructor(@InjectModel(Settings.name) protected _model: Model<T>) {
     super();
   }
 

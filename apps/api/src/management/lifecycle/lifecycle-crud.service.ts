@@ -1,5 +1,5 @@
-import { Injectable, OnModuleInit } from '@nestjs/common'
-import { Model, Query, Types } from 'mongoose'
+import { Injectable } from '@nestjs/common'
+import { Query, Types } from 'mongoose'
 import { FilterOptions } from '~/_common/restools'
 import { IdentityLifecycleDefault, IdentityLifecycleDefaultList, IdentityLifecycleState } from '../identities/_enums/lifecycle.enum'
 import { Lifecycle, LifecycleRefId } from './_schemas/lifecycle.schema'
@@ -10,7 +10,7 @@ import { AbstractLifecycleService } from './_abstracts/abstract.lifecycle.servic
  * Service CRUD de gestion du cycle de vie des identités
  *
  * @class LifecycleService
- * @extends AbstractServiceSchema
+ * @extends AbstractLifecycleService
  * @description Service CRUD pour la gestion de l'historique et des statistiques du cycle de vie des identités.
  *
  * Fonctionnalités principales :

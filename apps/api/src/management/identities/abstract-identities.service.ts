@@ -26,7 +26,7 @@ import { ConfigService } from '@nestjs/config';
  * génération d'empreintes et gestion des états des identités
  */
 @Injectable()
-export abstract class AbstractIdentitiesService extends AbstractServiceSchema {
+export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Identities> {
   /**
    * Constructeur du service abstrait des identités
    *

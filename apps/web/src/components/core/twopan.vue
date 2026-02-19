@@ -276,7 +276,7 @@ export default defineNuxtComponent({
       this.selected = []
     },
     async onRequestEvent(props: { pagination: QTableProps['pagination']; filter: string; getCellValue: Function }) {
-      console.log('onRequestEvent', props)
+      // console.log('onRequestEvent', props)
       await this.onRequest(props as any)
     },
   },

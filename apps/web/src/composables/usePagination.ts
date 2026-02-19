@@ -2,6 +2,9 @@ import { isEqual } from 'radash'
 import type { MultiWatchSources } from 'vue'
 import type { LocationQueryRaw, LocationQueryValue } from 'vue-router'
 
+const defaultSortBy = 'metadata.lastUpdatedAt'
+const defaultDescending = true
+
 interface Pagination {
   sortBy?: string | null
   descending?: boolean
@@ -56,10 +59,12 @@ export function usePagination(options?: { name?: string }) {
   }
 
   const onRequest = async (props: { pagination: Pagination, filter: any, getCellValue: any }) => {
-    const { page, rowsPerPage } = props.pagination
+    const { page, rowsPerPage, sortBy, descending } = props.pagination
 
     pagination.value.page = page
     pagination.value.rowsPerPage = rowsPerPage
+    pagination.value.sortBy = sortBy
+    pagination.value.descending = descending
 
     await paginationQuery()
   }
@@ -115,19 +120,38 @@ export function usePagination(options?: { name?: string }) {
   }
 
   const paginationQuery = async () => {
+    let sortKey = `sort[${defaultSortBy}]`
+    let sortDirection = defaultDescending ? 'desc' : 'asc'
+    if (pagination.value.sortBy) {
+      sortKey = `sort[${pagination.value.sortBy}]`
+      sortDirection = pagination.value.descending ? 'desc' : 'asc'
+    }
+    const query = removeSortKey()
+
     const newQuery = <LocationQueryRaw>{
-      ...$route.query,
+      ...query,
       page: `${pagination.value.page}`,
       limit: `${pagination.value.rowsPerPage}`,
+      [sortKey]: sortDirection,
     }
 
-    if (isEqual($route.query, newQuery)) {
+    if (isEqual(query, newQuery)) {
       return
     }
 
     $router.replace({
       query: newQuery,
     })
+  }
+
+  function removeSortKey() {
+    const query = { ...$route.query }
+    for (const key in query) {
+      if (key.startsWith('sort[')) {
+        delete query[key]
+      }
+    }
+    return query
   }
 
   const updatePaginationData = (data: { total?: number }) => {

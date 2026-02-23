@@ -1,103 +1,148 @@
-<template>
-  <div>
-  <div class="row q-gutter-lg">
-    <h5>Serveur SMTP (envoi des courriels)</h5>
-  </div>
-  <div class="q-pa-md q-gutter-md">
-    <div class="row">
-      <q-input style="width:50%" type="text" outlined v-model="host"   label="Serveur SMTP (URL smtp://...) " dense/>
-    </div>
-    <div class="row">
-      <q-input style="width:50%" type="text" outlined v-model="emetteur"   label="Adresse emetteur" dense/>
-    </div>
-    <div class="row">
-      <q-input style="width:50%" type="text" outlined v-model="username"   label="Compte SMTP" dense/>
-    </div>
-    <div class="row">
-      <q-input style="width:50%" :type="typePasswordProp" outlined v-model="password"   label="Mot de passe" dense>
-        <template v-slot:append>
-          <q-icon name="mdi-eye" @click="togglePassword" style="cursor: pointer;"/>
-        </template>
-      </q-input>
-    </div>
-    <div class="q-pa-md q-gutter-sm fixed-bottom">
-      <q-btn color="primary" style="width: 100%" @click="saveParams">
-        <div class="ellipsis">
-          Sauvegarder les parametres
-        </div>
-      </q-btn>
-    </div>
-  </div>
-  </div>
+<template lang="pug">
+.sesame-page
+  .sesame-page-content.q-pa-md.flex
+    div.fit
+      .row.q-gutter-lg
+        h5.q-ma-lg
+          span Serveur SMTP&nbsp;
+          small (envoi des courriels)
+      .row.q-col-gutter-md
+        q-input.col-12.col-md-6(
+          type="text"
+          outlined
+          v-model="payload.host"
+          label="Serveur SMTP (URL smtp://...)"
+          hint="Exemple : smtp://smtp.server.com:port"
+          :error="!!validations['host']"
+          :error-message='validations["host"]'
+          dense
+        )
+        .offset-md-1
+        q-input.col-12.col-md-6(
+          type="text"
+          outlined
+          v-model="payload.emetteur"
+          label="Adresse émetteur"
+          hint="Adresse émetteur de connexion au serveur SMTP"
+          :error="!!validations['emetteur']"
+          :error-message='validations["emetteur"]'
+          dense
+        )
+        .offset-md-1
+        q-input.col-12.col-md-6(
+          type="text"
+          outlined
+          v-model="payload.username"
+          label="Nom d'utilisateur"
+          hint="Nom d'utilisateur de connexion au serveur SMTP"
+          :error="!!validations['username']"
+          :error-message='validations["username"]'
+          dense
+        )
+        .offset-md-1
+        q-input.col-12.col-md-6(
+          :type="typePasswordProp"
+          outlined
+          v-model="payload.password"
+          label="Mot de passe"
+          hint="Mot de passe de connexion au serveur SMTP"
+          :error="!!validations['password']"
+          :error-message='validations["password"]'
+          dense
+        )
+          template(v-slot:append)
+            q-icon.cursor-pointer(name="mdi-eye" @click="togglePassword")
+        .offset-md-1
+  q-card-actions.sticky-footer.border-top.full-width
+    q-space
+    q-btn.text-positive(
+      flat
+      label="Sauvegarder les paramètres"
+      icon-right="mdi-content-save"
+      @click="saveParams"
+    )
 </template>
 
-<script setup>
-import {onMounted, ref} from "vue";
-import {useQuasar} from "quasar";
-const { handleError } = useErrorHandling()
-const $q=useQuasar()
-const host=ref('')
-const username=ref('')
-const password=ref('')
-const emetteur=ref('')
-const typePasswordProp=ref('password')
-onMounted(() => {
-  readParams()
+<script lang="ts">
+import { ref } from 'vue'
+
+type SmtpSettings = {
+  host: string
+  emetteur: string
+  username: string
+  password: string
+}
+
+export default defineComponent({
+  name: 'SettingsSmtpPage',
+  data() {
+    return {
+      typePasswordProp: 'password',
+    }
+  },
+  async setup() {
+    const { handleError } = useErrorHandling()
+
+    const payload = ref({
+      host: '',
+      emetteur: '',
+      username: '',
+      password: '',
+    } as SmtpSettings)
+    const validations = ref({} as Record<string, any>)
+
+    const {
+      data: result,
+      pending,
+      error,
+      refresh,
+    } = await useHttp<{ data: SmtpSettings }>(`/settings/mail/get`, {
+      method: 'GET',
+    })
+    if (error.value) {
+      handleError({
+        error: error.value,
+        message: 'Erreur lors de de la lecture des paramètres',
+      })
+    } else {
+      payload.value = result.value?.data || payload.value
+      validations.value = {}
+    }
+
+    return {
+      payload,
+      handleError,
+      pending,
+      refresh,
+      validations,
+    }
+  },
+  methods: {
+    async saveParams() {
+      try {
+        await this.$http.post(`/settings/mail/set`, {
+          body: this.payload,
+        })
+
+        this.$q.notify({
+          message: 'Les paramètres ont été sauvegardés',
+          color: 'positive',
+          position: 'top-right',
+          icon: 'mdi-check-circle-outline',
+        })
+        this.validations = {}
+      } catch (error: any) {
+        this.handleError({
+          error,
+          message: error?.response?._data?.message || 'Erreur lors de la sauvegarde des paramètres',
+          notify: true,
+        })
+        this.validations = error?.response?._data?.validations || {}
+      }
+    },
+    togglePassword() {
+      this.typePasswordProp = this.typePasswordProp === 'password' ? 'text' : 'password'
+    },
+  },
 })
-async function readParams(){
-  console.log('readParams')
-  const { data: result, pending, error, refresh } = await useHttp(`/settings/mail/get`, {
-    method: 'GET',
-  });
-  if (error.value) {
-    handleError({
-      error: error.value,
-      message: 'Erreur lors de de la lecture des paramètres'
-    })
-  } else {
-    host.value=result.value.data.host
-    emetteur.value=result.value.data.sender
-    username.value=result.value.data.username
-    password.value=result.value.data.password
-  }
-}
-async function saveParams() {
-  const data = {
-    host: host.value,
-    sender: emetteur.value,
-    username: username.value,
-    password: password.value
-
-  }
-  const {data: result, pending, error, refresh} = await useHttp(`/settings/mail/set`, {
-    method: 'POST',
-    body: data
-  });
-  if (error.value) {
-    handleError({
-      error: error.value,
-      message: 'Erreur lors de la sauvegarde des parametres',
-      notify: true
-    })
-
-  } else {
-    $q.notify({
-      message: 'Les parametres ont été sauvegardés',
-      color: 'positive',
-      position: 'top-right',
-      icon: 'mdi-check-circle-outline',
-    })
-  }
-}
-function togglePassword(){
-  if (typePasswordProp.value === 'password'){
-    typePasswordProp.value='text'
-  }else{
-    typePasswordProp.value='password'
-  }
-}
 </script>
-
-<style scoped>
-
-</style>

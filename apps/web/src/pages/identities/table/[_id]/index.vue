@@ -1,5 +1,6 @@
 <template lang="pug">
-  .column.no-wrap.full-height
+  .column.no-wrap.full-height.relative
+    div.sesame-sticky-bar toto
     q-toolbar.bg-transparent.q-pr-none.sesame-sticky-bar
       q-btn.sesame.infinite.animated.flash(size="sm" padding="xs" color="negative" @click="validationsModal = true" v-if="!isNew && hasValidations" outline)
         q-tooltip.text-body2(slot="trigger") Afficher les erreurs
@@ -107,7 +108,6 @@
                 q-icon(name="mdi-delete" color="negative")
               q-item-section
                 q-item-label Supprimer l'identité
-    q-separator(v-for='_ in 2' :key='_')
     //- pre(v-html="JSON.stringify(identity, null, 2)")
     sesame-pages-identities-schemas-bar(
       :identity='identity'

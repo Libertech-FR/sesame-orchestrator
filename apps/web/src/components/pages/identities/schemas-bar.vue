@@ -1,6 +1,6 @@
 <template lang="pug">
 div
-  q-bar.q-px-none.sesame-sticky-bar
+  q-bar.q-px-none.sesame-sticky-bar(:style="{ top: '36px' }")
     q-tabs(
       v-model="tab"
       align="left"
@@ -58,7 +58,6 @@ div
       span(v-else-if="schemas.length === 0") Tous les schémas sont déjà ajoutés
       span(v-else-if="!readonly") Ajouter un schéma
       span(v-else) Impossible d'ajouter un schéma en mode lecture seule
-  q-separator(v-for='_ in 2' :key='_')
   q-tab-panels(v-model="tab" keep-alive)
     slot(name='items' :tabs="tabs")
       q-tab-panel.q-pa-none(v-for="key in ['inetOrgPerson', ...tabs]" :key="key" :name="key")

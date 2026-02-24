@@ -38,7 +38,7 @@ export default defineNuxtComponent({
     const tab = computed({
       get: () => router.currentRoute.value.path,
       set: (val: string) => {
-        router.replace(val)
+        window.location.href = val
       },
     })
     const drawer = ref(true)

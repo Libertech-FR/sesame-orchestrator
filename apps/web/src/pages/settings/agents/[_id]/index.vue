@@ -1,5 +1,5 @@
 <template lang="pug">
-  .column.no-wrap.full-height
+  .column.no-wrap.full-height.relative(style='padding-top: 36px;')
     q-toolbar.bg-transparent.q-pr-none.sesame-sticky-bar
       q-toolbar-title Fiche agent
       q-separator(v-for='_ in 2' :key='_' vertical)
@@ -17,7 +17,6 @@
               q-icon(name="mdi-delete" color="negative")
             q-item-section
               q-item-label Supprimer l'agent
-    q-separator(v-for='_ in 2' :key='_')
     sesame-core-jsonforms-renderer(
       :manualSchema='schema'
       :manualUiSchema='uischema'

@@ -2,6 +2,7 @@
 .sesame-page
   .sesame-page-content
     sesame-core-twopan.col(
+      table-title='Agents'
       ref='twoPan'
       :simple='false'
       :loading='pending'
@@ -75,7 +76,6 @@ export default defineNuxtComponent({
     }
   },
   async setup() {
-    const $route = useRoute()
     const { useHttpPaginationOptions, useHttpPaginationReactive } = usePagination()
     const { toPathWithQueries, navigateToTab } = useRouteQueries()
 

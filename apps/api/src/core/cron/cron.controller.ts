@@ -1,5 +1,5 @@
 
-import { Controller, Get, Res, HttpStatus } from '@nestjs/common'
+import { Controller, Get, Res, HttpStatus, Query } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { CronService } from './cron.service'
 import { Response } from 'express'
@@ -15,8 +15,16 @@ export class CronController {
   public constructor(private readonly cronService: CronService) { }
 
   @Get()
-  public async search(@Res() res: Response): Promise<Response> {
-    const [data, total] = await this.cronService.search()
+  public async search(
+    @Query('search') search: string,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const [data, total] = await this.cronService.search(search, {
+      page,
+      limit,
+    })
 
     return res.json({
       statusCode: HttpStatus.OK,

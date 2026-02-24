@@ -34,7 +34,6 @@ export default defineNuxtComponent({
   name: 'SettingsPage',
   setup() {
     const router = useRouter()
-    const $q = useQuasar()
     const tab = computed({
       get: () => router.currentRoute.value.path,
       set: (val: string) => {
@@ -56,7 +55,6 @@ export default defineNuxtComponent({
       drawer,
       navItems,
       router,
-      $q,
     }
   },
 })

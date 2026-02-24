@@ -76,25 +76,20 @@ export default defineNuxtComponent({
   },
   async setup() {
     const $route = useRoute()
-    const { getDefaults } = usePagination()
+    const { useHttpPaginationOptions, useHttpPaginationReactive } = usePagination()
     const { toPathWithQueries, navigateToTab } = useRouteQueries()
 
-    const computedQuery = computed(() => {
-      return {
-        ...getDefaults(),
-        ...$route.query,
-      }
-    })
-    const queryDebounced = refDebounced(computedQuery, 700)
+    const paginationOptions = useHttpPaginationOptions()
 
     const {
       data: agents,
       error,
       pending,
       refresh,
+      execute,
     } = await useHttp<Response>('/core/agents', {
       method: 'get',
-      query: queryDebounced,
+      ...paginationOptions,
     })
     if (error.value) {
       console.error(error.value)
@@ -103,6 +98,8 @@ export default defineNuxtComponent({
         statusMessage: 'Internal Server Error',
       })
     }
+
+    useHttpPaginationReactive(paginationOptions, execute)
 
     return {
       agents,

@@ -29,6 +29,10 @@ export class CronHooksService {
    */
   protected _cronTaskFileAge = 0
 
+  public getCronTasks(): CronTaskDTO[] {
+    return this.cronTasks
+  }
+
   public constructor(
     private configService: ConfigService,
     private schedulerRegistry: SchedulerRegistry,
@@ -75,7 +79,7 @@ export class CronHooksService {
   public async onApplicationBootstrap(): Promise<void> {
     this.logger.verbose('Bootstrap CronHooksService application...')
 
-    const cronTasks = await this.refreshCronTasksFileCache()
+    this.cronTasks = await this.refreshCronTasksFileCache()
     this._cronTaskFileAge = Date.now()
 
     this.logger.debug('Cron tasks:', JSON.stringify(this.cronTasks, null, 2))

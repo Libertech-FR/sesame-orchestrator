@@ -112,6 +112,7 @@
     sesame-pages-identities-schemas-bar(
       :identity='identity'
       :readonly="identity.state === IdentityState.TO_SYNC"
+      top-offset='36px'
     )
       template(#items="{ tabs }")
         q-tab-panel.q-pa-none(name="inetOrgPerson")

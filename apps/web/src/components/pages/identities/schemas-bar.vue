@@ -1,6 +1,6 @@
 <template lang="pug">
 div
-  q-bar.q-px-none.sesame-sticky-bar(:style="{ top: '36px' }")
+  q-bar.q-px-none.sesame-sticky-bar(:style="{ top: topOffset || '0px' }")
     q-tabs(
       v-model="tab"
       align="left"
@@ -77,6 +77,10 @@ export default defineNuxtComponent({
     readonly: {
       type: Boolean,
       default: false,
+    },
+    topOffset: {
+      type: String,
+      default: '0px',
     },
   },
   async setup({ identity }) {

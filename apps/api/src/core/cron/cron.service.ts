@@ -16,6 +16,13 @@ export class CronService {
   ) {
   }
 
+  /**
+   * Recherche et liste les tâches cron configurées, avec support pour la recherche par nom ou description, et la pagination.
+   *
+   * @param search Recherche par nom ou description de la tâche cron
+   * @param options Options de pagination (page, limit)
+   * @returns Une liste paginée des tâches cron avec leurs détails d'exécution, et le nombre total de tâches correspondant à la recherche
+   */
   public async search(
     search?: string,
     options?: { page?: number; limit?: number },
@@ -63,5 +70,46 @@ export class CronService {
       })
 
     return [result, total]
+  }
+
+  /**
+   * Lit les détails d'une tâche cron spécifique par son nom, incluant les informations d'exécution si la tâche est activée.
+   *
+   * @param name Nom de la tâche cron à lire
+   * @returns Les détails de la tâche cron avec les informations d'exécution si elle est activée, ou null si la tâche n'existe pas
+   */
+  public async read(name: string): Promise<CronTaskDTO & { _job: Partial<CronJob> } | null> {
+    const task = this.cronHooksService.getCronTasks().find((t) => t.name === name)
+    if (!task) {
+      return null
+    }
+
+    let _job = undefined
+
+    if (task.enabled) {
+      try {
+        const cronJob = this.schedulerRegistry.getCronJob(`cron-task-${task.name}`)
+        _job = {
+          lastExecution: cronJob.lastDate()?.toISOString() || null,
+          nextExecution: cronJob.nextDate()?.toJSDate() || null,
+          isActive: cronJob.isActive,
+          isCallbackRunning: cronJob.isCallbackRunning,
+          ...pick(cronJob, [
+            'name',
+            'threshold',
+            'unrefTimeout',
+            'runOnce',
+            'waitForCompletion',
+          ]),
+        }
+      } catch (error) {
+        this.logger.warn(`No cron job found for task ${task.name}`)
+      }
+    }
+
+    return {
+      ...task,
+      _job,
+    }
   }
 }

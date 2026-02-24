@@ -1,5 +1,6 @@
 <template lang="pug">
-  .column.no-wrap.full-height.relative(style='padding-top: 72px;')
+  .column.no-wrap.full-height.relative
+    .sesame-sticky-space
     q-toolbar.bg-transparent.q-pr-none.sesame-sticky-bar
       q-btn.sesame.infinite.animated.flash(size="sm" padding="xs" color="negative" @click="validationsModal = true" v-if="!isNew && hasValidations" outline)
         q-tooltip.text-body2(slot="trigger") Afficher les erreurs

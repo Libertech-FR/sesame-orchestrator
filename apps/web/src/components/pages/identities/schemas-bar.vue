@@ -1,5 +1,6 @@
 <template lang="pug">
 div
+  .sesame-sticky-space
   q-bar.q-px-none.sesame-sticky-bar(:style="{ top: topOffset || '0px' }")
     q-tabs(
       v-model="tab"

@@ -3,6 +3,8 @@ import { Injectable, Logger } from '@nestjs/common'
 import { SchedulerRegistry } from '@nestjs/schedule'
 import { CronHooksService } from './cron-hooks.service'
 import { pick } from 'radash'
+import { CronTaskDTO } from './_dto/config-task.dto'
+import { CronJob } from 'cron'
 
 @Injectable()
 export class CronService {
@@ -12,8 +14,7 @@ export class CronService {
     this.logger.log('CronService initialized')
   }
 
-
-  public async search() {
+  public async search(): Promise<[CronTaskDTO[] & { _job: Partial<CronJob> }[], number]> {
     const tasks = this.cronHooksService.getCronTasks().map((task) => {
       let _job = undefined
 

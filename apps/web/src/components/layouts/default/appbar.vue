@@ -32,7 +32,7 @@
         flat
       )
         q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Paramètres
-      q-btn-dropdown(icon="mdi-account-circle-outline" :label="auth?.user?.displayName" flat stretch size="md")
+      q-btn-dropdown(icon="mdi-account-circle-outline" :label="auth?.user?.displayName || auth?.user?.username || 'Utilisateur'" flat stretch size="md")
         q-list
           q-item.q-pa-none(v-for="button in buttons" :key="button.name")
             q-btn.full-width.items-baseline.q-pa-sm(

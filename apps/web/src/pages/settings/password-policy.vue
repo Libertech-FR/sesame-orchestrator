@@ -1,7 +1,7 @@
 <template lang="pug">
 .sesame-page
   .sesame-page-content.q-pa-md.flex
-    div.fit
+    div(style='min-height: 100%; min-width: 100%;')
       .row.q-gutter-lg
         h5.q-ma-lg
           span Politique des mots de passe&nbsp;

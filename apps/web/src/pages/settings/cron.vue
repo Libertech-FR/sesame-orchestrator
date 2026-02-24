@@ -16,6 +16,11 @@
     )
       template(#top-table)
         sesame-core-pan-filters(:columns='columns' mode='simple' placeholder='Rechercher par nom, description, ...')
+      template(v-slot:row-actions='{ row }')
+        q-btn(:to='toPathWithQueries(`/settings/cron/${row.name}`)' color='primary' icon='mdi-eye' size='sm' flat round dense)
+      template(#body-cell-enabled="props")
+        q-td
+          q-checkbox(:model-value="props.row.enabled" :disable="true" size="xs")
 </template>
 
 <script lang="ts">
@@ -27,7 +32,7 @@ export default defineNuxtComponent({
   data() {
     return {
       NewTargetId,
-      visibleColumns: ['name', 'description', 'schedule', 'nextExecution'],
+      visibleColumns: ['name', 'description', 'schedule', 'enabled', 'nextExecution'],
       columns: [
         {
           name: 'name',
@@ -47,6 +52,13 @@ export default defineNuxtComponent({
           name: 'schedule',
           label: 'Schedule',
           field: (row) => row.schedule,
+          align: 'left',
+          sortable: true,
+        },
+        {
+          name: 'enabled',
+          label: 'Activée',
+          field: (row) => row.enabled,
           align: 'left',
           sortable: true,
         },

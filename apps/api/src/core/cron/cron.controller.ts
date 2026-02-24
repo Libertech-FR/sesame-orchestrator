@@ -41,4 +41,13 @@ export class CronController {
       total,
     })
   }
+
+  @Get(':name')
+  public async read(
+    @Res() res: Response,
+  ): Promise<Response> {
+    return res.json({
+      statusCode: HttpStatus.OK,
+    })
+  }
 }

@@ -21,6 +21,7 @@ ENV BUILD_VERSION=${BUILD_VERSION}
 ENV ALLOW_RUNTIME_BUILD=true
 ENV DO_NOT_TRACK=1
 ENV PYTHONWARNINGS=ignore::UserWarning
+ENV TZ=Europe/Paris
 
 WORKDIR /data
 
@@ -37,6 +38,7 @@ RUN apk add --no-cache \
   openssl \
   git \
   jq \
+  tzdata \
   bash \
   nano && \
   mkdir -p /var/log/supervisor
@@ -49,6 +51,9 @@ RUN ARCH=$(uname -m) && \
   else \
   echo "Unsupported architecture: $ARCH" && exit 1; \
   fi
+
+RUN cp /usr/share/zoneinfo/$TZ /etc/localtime \
+  && echo $TZ > /etc/timezone
 
 RUN yarn install \
   --prefer-offline \

@@ -64,7 +64,7 @@ const dateControlRendererEntry: JsonFormsRendererRegistryEntry = {
 
 const passwordControlRendererEntry: JsonFormsRendererRegistryEntry = {
   renderer: PasswordControlRendererComponent,
-  tester: rankWith(2, and(isStringControl, formatIs('password'))), // Matches schema properties with format "password"
+  tester: rankWith(2, and(isStringControl, or(formatIs('password'), optionIs('format', 'password')))), // Matches schema properties with format "password"
 }
 
 const sliderControlRendererEntry: JsonFormsRendererRegistryEntry = {
@@ -74,7 +74,7 @@ const sliderControlRendererEntry: JsonFormsRendererRegistryEntry = {
 
 const enumAndSuggestionControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: EnumAndSuggestionControlRendererComponent,
-  tester: rankWith(2, or(isPrimitiveArrayControl, and(or(isStringControl, isNumberControl, isBooleanControl), or(hasOption('suggestion'), isEnumControl)))),
+  tester: rankWith(3, or(isPrimitiveArrayControl, and(or(isStringControl, isNumberControl, isBooleanControl), or(hasOption('suggestion'), hasOption('api'), isEnumControl)))),
 }
 
 const radioGroupControlRenderer: JsonFormsRendererRegistryEntry = {
@@ -94,7 +94,7 @@ const textareaControlRendererEntry: JsonFormsRendererRegistryEntry = {
 
 const autocompleteControlRendererEntry: JsonFormsRendererRegistryEntry = {
   renderer: AutocompleteControlRendererComponent,
-  tester: rankWith(2, and(isStringControl, hasOption('api'))), // Matches string controls with 'api' option defined
+  tester: rankWith(10, and(isStringControl, hasOption('api'), optionIs('format', 'autocomplete'))), // Matches string controls with 'api' option and explicit format 'autocomplete'
 }
 
 const fileUploadControlRendererEntry: JsonFormsRendererRegistryEntry = {

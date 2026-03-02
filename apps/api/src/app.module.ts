@@ -28,6 +28,9 @@ import { HttpModule } from '@nestjs/axios';
 import { ExtensionsModule } from './extensions/extensions.module';
 import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
 import { isConsoleEntrypoint } from './_common/functions/is-cli';
+import { AccessControlModule, ACGuard, RolesBuilder } from 'nest-access-control';
+import { RolesService } from './core/roles/roles.service';
+import { AcGuard } from './_common/guards/ac.guard';
 
 @Module({
   imports: [
@@ -120,6 +123,13 @@ import { isConsoleEntrypoint } from './_common/functions/is-cli';
         blockingConnection: true,
       }),
     }),
+    AccessControlModule.forRootAsync({
+      imports: [CoreModule],
+      inject: [RolesService],
+      useFactory: async (service: RolesService): Promise<RolesBuilder> => {
+        return await service.getRolesBuilder()
+      },
+    }),
     FactorydriveModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -149,6 +159,10 @@ import { isConsoleEntrypoint } from './_common/functions/is-cli';
     {
       provide: APP_GUARD,
       useClass: AuthGuard('jwt'),
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AcGuard(),
     },
     // {
     //   provide: APP_FILTER,

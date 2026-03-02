@@ -1,5 +1,6 @@
 import { computed, ref } from 'vue'
 import { get, isArray, isObject } from 'radash'
+import { useNuxtApp } from '#imports'
 import { buildControlElementId, useQuasarControl } from '../../utils'
 import type { useJsonFormsEnumControl } from '@jsonforms/vue'
 import {
@@ -104,19 +105,23 @@ export const extractAutocompleteApiConfig = (
 export const buildAutocompleteRequest = (
   api: AutocompleteApiConfig,
   search: string,
-): { url: string; headers: Record<string, string> } => {
-  const baseUrl = api.base ? new URL(api.url, api.base) : new URL(api.url)
+): { url: string; params: Record<string, any>; headers: Record<string, string> } => {
   const queryKey = api.queryKey ?? 'q'
-  baseUrl.searchParams.set(queryKey, search)
+  const params: Record<string, any> = { ...api.params }
 
-  if (api.params) {
-    Object.entries(api.params).forEach(([key, value]) => {
-      baseUrl.searchParams.set(key, String(value))
-    })
+  if (search && search.length > 0) {
+    params[queryKey] = search
+  }
+
+  let finalUrl = api.url
+  if (api.base) {
+    const baseUrl = new URL(api.url, api.base)
+    finalUrl = baseUrl.toString()
   }
 
   return {
-    url: baseUrl.toString(),
+    url: finalUrl,
+    params,
     headers: api.headers ?? {},
   }
 }
@@ -267,20 +272,16 @@ export const useAutocompleteControl = ({
 
     clearPendingRequest()
     abortController.value = new AbortController()
+    const { $http } = useNuxtApp()
 
     try {
       console.log('[autocomplete] fetching URL:', request.url)
-      const response = await fetch(request.url, {
+      const data = await $http.$get(request.url, {
         signal: abortController.value.signal,
         headers: request.headers,
+        params: request.params,
       })
 
-      if (!response.ok) {
-        console.warn('[autocomplete] HTTP error:', response.status)
-        throw new Error(`HTTP ${response.status}`)
-      }
-
-      const data = await response.json()
       const rawItems = apiConfig.itemsPath ? get(data, apiConfig.itemsPath) : data
       const items = isArray(rawItems) ? rawItems : []
       console.log('[autocomplete] items length:', items.length)

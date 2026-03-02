@@ -128,7 +128,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
     if (options?.scopes) scopes.push(...options.scopes);
     const jwtid = `${identity._id}_${randomBytes(16).toString('hex')}`;
     const access_token = this.jwtService.sign(
-      { identity: pick(identity, ['_id', 'username', 'email', 'token']), scopes },
+      { identity: pick(identity, ['_id', 'username', 'email', 'token', 'roles']), scopes },
       {
         expiresIn: this.ACCESS_TOKEN_EXPIRES_IN,
         jwtid,

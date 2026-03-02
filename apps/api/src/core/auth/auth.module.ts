@@ -8,6 +8,7 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { JwtStrategy } from '~/core/auth/_strategies/jwt.strategy';
 import { LocalStrategy } from '~/core/auth/_strategies/local.strategy';
 import { KeyringsModule } from '../keyrings/keyrings.module';
+import { RolesModule } from '../roles/roles.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { KeyringsModule } from '../keyrings/keyrings.module';
       }),
     }),
     AgentsModule,
+    RolesModule,
     forwardRef(() => KeyringsModule),
   ],
   controllers: [AuthController],

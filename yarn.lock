@@ -2058,7 +2058,7 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@jsonforms/core@^3.6.0":
+"@jsonforms/core@^3.7.0":
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/@jsonforms/core/-/core-3.7.0.tgz#444fff8860342d097443e6c33374d90fc076a8cc"
   integrity sha512-CE9viWtwi9QWLqlWLeOul1/R1GRAyOA9y6OoUpsCc0FhyR+g5p29F3k0fUExHWxL0Sf4KHcXYkfhtqfRBPS8ww==
@@ -2068,7 +2068,7 @@
     ajv-formats "^2.1.0"
     lodash "^4.17.21"
 
-"@jsonforms/vue@^3.6.0":
+"@jsonforms/vue@^3.7.0":
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/@jsonforms/vue/-/vue-3.7.0.tgz#2d51e912e4b0252951f42bb6380ad005c5a709ab"
   integrity sha512-S5NXYeu6lTh2yfNmPz17TRo32dSYqAhOe8Co2mp0lmeq1ODJNBQs8SesXqBRdVMEmMK20ZW/1i7i/38J0TGjdw==
@@ -6707,6 +6707,13 @@ accepts@^1.3.7, accepts@~1.3.8:
   dependencies:
     mime-types "~2.1.34"
     negotiator "0.6.3"
+
+accesscontrol@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/accesscontrol/-/accesscontrol-2.2.1.tgz#c942c48e330841c619682309a8c3aeec6bec66eb"
+  integrity sha512-52EvFk/J9EF+w4mYQoKnOTkEMj01R1U5n2fc1dai6x1xkgOks3DGkx01qQL2cKFxGmE4Tn1krAU3jJA9L1NMkg==
+  dependencies:
+    notation "^1.3.6"
 
 acorn-import-attributes@^1.9.5:
   version "1.9.5"
@@ -12592,6 +12599,14 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+nest-access-control@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/nest-access-control/-/nest-access-control-3.2.0.tgz#6dd7a5287311f0e0bb0d0a0aff57af5ab9dfe7b7"
+  integrity sha512-Bx+rTG/ratMlzxkex8cFQZqq9XEuPTjJn5StJThjeuqHy1ClR/4xG0xYqx5dhc3lh9/vSs8wgBh2v+NOhnlJfw==
+  dependencies:
+    accesscontrol "^2.2.1"
+    tslib "^2.6.2"
+
 nest-commander@^3.13.0:
   version "3.20.1"
   resolved "https://registry.yarnpkg.com/nest-commander/-/nest-commander-3.20.1.tgz#bc2cdb18beb74e4451cff696d40578967438870a"
@@ -12837,6 +12852,11 @@ normalize-url@^8.0.0:
   version "8.1.1"
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-8.1.1.tgz#751a20c8520e5725404c06015fea21d7567f25ef"
   integrity sha512-JYc0DPlpGWB40kH5g07gGTrYuMqV653k3uBKY6uITPWds3M0ov3GaWGp9lbE3Bzngx8+XkfzgvASb9vk9JDFXQ==
+
+notation@^1.3.6:
+  version "1.3.6"
+  resolved "https://registry.yarnpkg.com/notation/-/notation-1.3.6.tgz#bc87b88d1f1159e2931e7f9317a3020313790321"
+  integrity sha512-DIuJmrP/Gg1DcXKaApsqcjsJD6jEccqKSfmU3BUx/f1GHsMiTJh70cERwYc64tOmTRTARCeMwkqNNzjh3AHhiw==
 
 npm-run-path@^2.0.0:
   version "2.0.2"

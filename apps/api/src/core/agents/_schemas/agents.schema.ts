@@ -166,6 +166,19 @@ export class Agents extends AbstractSchema {
   public security: SecurityPart
 
   /**
+   * Rôles de l'agent.
+   * Permet de définir les rôles de l'agent.
+   *
+   * @type {string[]}
+   * @default []
+   */
+  @Prop({
+    type: [String],
+    default: [],
+  })
+  public roles: string[]
+
+  /**
    * Champs personnalisés définis par l'utilisateur.
    * Permet de stocker des données métier spécifiques sans modifier le schéma.
    *

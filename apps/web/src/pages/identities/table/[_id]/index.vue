@@ -76,12 +76,12 @@
         q-btn.q-px-sm.text-orange-8(
           @click='sync()'
           v-if="identity?._id"
-          :disabled="identity?.state != IdentityState.TO_VALIDATE"
+          :disabled="identity?.state != IdentityState.TO_VALIDATE && identity?.state != IdentityState.TO_CREATE"
           icon='mdi-sync'
           dense
         )
           q-tooltip.text-body2(slot="trigger" :class='identity?.state == IdentityState.TO_VALIDATE ? "bg-orange-8" : ""')
-            span(v-if="identity.state == IdentityState.TO_VALIDATE") Synchroniser l'identité
+            span(v-if="identity.state == IdentityState.TO_VALIDATE || identity.state == IdentityState.TO_CREATE") Synchroniser l'identité
             span(v-else) L'état de l'identité ne permet pas de la synchroniser
         q-separator(v-if="identity?._id" v-for='_ in 2' :key='_' vertical)
         q-btn-dropdown.q-pl-sm.full-height.text-purple-8(v-if="identity?._id" icon='mdi-clock' square unelevated dense)

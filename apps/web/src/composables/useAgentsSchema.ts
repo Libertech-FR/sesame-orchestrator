@@ -13,11 +13,18 @@ export default function useAgentsSchema() {
       },
       "password": {
         "type": "string",
-        "description": "Mot de passe"
+        "description": "Mot de passe",
       },
       "email": {
         "type": "string",
         "description": "Adresse e-mail"
+      },
+      "roles": {
+        "type": "array",
+        "description": "Rôles",
+        "items": {
+          "type": "string"
+        }
       },
       "thirdPartyAuth": {
         "type": "string",
@@ -81,10 +88,41 @@ export default function useAgentsSchema() {
           },
           {
             "type": "Control",
+            "label": "Password",
+            "scope": "#/properties/password",
+            "options": {
+              "format": "password"
+            }
+          },
+        ]
+      },
+      {
+        "type": "HorizontalLayout",
+        "elements": [
+          {
+            "type": "Control",
             "label": "Email",
             "scope": "#/properties/email",
             "options": {
               "required": true
+            }
+          },
+          {
+            "type": "Control",
+            "label": "Rôles",
+            "scope": "#/properties/roles",
+            "options": {
+              "required": true,
+              minLength: 3,
+              api: {
+                url: '/core/roles/list',
+                itemsPath: 'data',
+                labelKey: 'displayName',
+                valueKey: 'name',
+                headers: {
+                  accept: 'application/json',
+                },
+              },
             }
           },
         ]

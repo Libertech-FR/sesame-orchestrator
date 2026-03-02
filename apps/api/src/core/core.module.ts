@@ -13,6 +13,7 @@ import { FilestorageModule } from './filestorage/filestorage.module'
 import { AuditsModule } from './audits/audits.module'
 import { HealthModule } from './health/health.module'
 import { CronModule } from './cron/cron.module'
+import { RolesModule } from './roles/roles.module'
 
 /**
  * Module Core - Fonctionnalités essentielles du système.
@@ -55,9 +56,11 @@ import { CronModule } from './cron/cron.module'
     AuditsModule,
     HealthModule,
     CronModule,
+    RolesModule,
   ],
   providers: [CoreService],
   controllers: [CoreController],
+  exports: [RolesModule],
 })
 export class CoreModule {
   /**

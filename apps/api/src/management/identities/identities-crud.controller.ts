@@ -276,7 +276,7 @@ export class IdentitiesCrudController extends AbstractController {
     if (!identity) {
       throw new BadRequestException('Identity not found');
     }
-    if (identity.state !== IdentityState.TO_VALIDATE) {
+    if (identity.state !== IdentityState.TO_VALIDATE && identity.state !== IdentityState.TO_CREATE) {
       throw new BadRequestException("La validation de l'identité est déjà complétée.");
     }
     const data = await this._service.updateState(_id, body.state);

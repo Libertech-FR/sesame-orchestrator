@@ -9,7 +9,8 @@ import { Response } from 'express';
 import { ReqIdentity } from '~/_common/decorators/params/req-identity.decorator';
 import { AgentType } from '~/_common/types/agent.type';
 import { hash } from 'crypto';
-import { omit, pick } from 'radash';
+import { omit } from 'radash';
+import { RolesService } from '../roles/roles.service';
 
 @Public()
 @ApiTags('core/auth')
@@ -18,6 +19,7 @@ export class AuthController extends AbstractController {
   constructor(
     protected moduleRef: ModuleRef,
     private readonly service: AuthService,
+    private readonly rolesService: RolesService,
   ) {
     super();
   }
@@ -40,11 +42,16 @@ export class AuthController extends AbstractController {
     this.logger.debug(`Session request for ${identity._id} (${identity.email})`);
     const user = await this.service.getSessionData(identity);
     this.logger.debug(`Session data delivered for ${identity._id} (${identity.email}) with ${JSON.stringify(user)}`);
+
+    const ac = await this.rolesService.getRolesBuilder()
+    console.log('ac.getGrants()', ac.getGrants())
+
     return res.status(HttpStatus.OK).json({
       user: {
         ...omit(user, ['security', 'metadata']),
         sseToken: hash('sha256', user.security.secretKey),
       },
+      access: ac.getGrants(),
     });
   }
 

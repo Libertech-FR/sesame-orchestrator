@@ -21,9 +21,9 @@
       :required="control.required"
       :placeholder="appliedOptions.placeholder"
       :hide-bottom-space="!!control.description"
-      :use-input="!suggestions || suggestions.length === 0"
+      :use-input="(!suggestions || suggestions.length === 0) && !apiConfig"
       :options="options"
-      :hide-dropdown-icon="!suggestions || suggestions.length === 0"
+      :hide-dropdown-icon="(!suggestions || suggestions.length === 0) && !apiConfig"
       :option-value="optionValueKey"
       :option-label="optionLabelKey"
       :option-disable="optionDisableKey"
@@ -110,6 +110,9 @@ const controlRenderer = defineComponent({
 
     return api
   },
+  mounted() {
+    this.fetchSuggestions()
+  }
 })
 
 export default controlRenderer

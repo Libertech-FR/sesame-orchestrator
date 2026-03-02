@@ -19,6 +19,8 @@ import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pip
 import { PartialProjectionType } from '~/_common/types/partial-projection.type'
 import { AgentsCreateDto, AgentsDto, AgentsUpdateDto } from '~/core/agents/_dto/agents.dto'
 import { AgentsService } from './agents.service'
+import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types'
+import { UseRoles } from '~/_common/decorators/use-roles.decorator'
 
 /**
  * Contrôleur pour la gestion des agents
@@ -79,6 +81,11 @@ export class AgentsController extends AbstractController {
    * @throws {BadRequestException} Si les données fournies sont invalides
    */
   @Post()
+  @UseRoles({
+    resource: 'core/agents',
+    action: AC_ACTIONS.CREATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiCreateDecorator(AgentsCreateDto, AgentsDto)
   public async create(@Res() res: Response, @Body() body: AgentsCreateDto): Promise<Response> {
     const data = await this._service.create(body)
@@ -102,6 +109,11 @@ export class AgentsController extends AbstractController {
    * @todo Implémenter la recherche arborescente par parentId
    */
   @Get()
+  @UseRoles({
+    resource: 'core/agents',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiPaginatedDecorator(PickProjectionHelper(AgentsDto, AgentsController.projection))
   public async search(
     @Res() res: Response,
@@ -148,6 +160,11 @@ export class AgentsController extends AbstractController {
    * @throws {NotFoundException} Si l'agent n'est pas trouvé
    */
   @Get(':_id([0-9a-fA-F]{24})')
+  @UseRoles({
+    resource: 'core/agents',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiParam({ name: '_id', type: String })
   @ApiReadResponseDecorator(AgentsDto)
   public async read(
@@ -179,6 +196,11 @@ export class AgentsController extends AbstractController {
    * @throws {BadRequestException} Si les données fournies sont invalides
    */
   @Patch(':_id([0-9a-fA-F]{24})')
+  @UseRoles({
+    resource: 'core/agents',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiParam({ name: '_id', type: String })
   @ApiUpdateDecorator(AgentsUpdateDto, AgentsDto)
   public async update(
@@ -205,6 +227,11 @@ export class AgentsController extends AbstractController {
    * @throws {NotFoundException} Si l'agent n'est pas trouvé
    */
   @Delete(':_id([0-9a-fA-F]{24})')
+  @UseRoles({
+    resource: 'core/agents',
+    action: AC_ACTIONS.DELETE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiParam({ name: '_id', type: String })
   @ApiDeletedResponseDecorator(AgentsDto)
   public async remove(

@@ -131,6 +131,18 @@ export class AgentsCreateDto extends CustomFieldsDto {
   public baseURL?: string
 
   /**
+   * Rôles de l'agent.
+   *
+   * @type {string[]}
+   * @optional
+   * @default []
+   */
+  @IsString({ each: true })
+  @IsOptional()
+  @ApiProperty()
+  public roles?: string[]
+
+  /**
    * Configuration de sécurité de l'agent.
    * Contient les clés, restrictions et paramètres de sécurité.
    *

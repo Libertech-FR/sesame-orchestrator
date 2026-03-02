@@ -11,6 +11,7 @@ q-dialog(:model-value="true" transition-show='none' transition-hide='none' full-
           v-if='drawer'
           v-model="tab"
           :vertical='$q.screen.gt.sm'
+          :inline-label="$q.screen.lt.md"
           mobile-arrows
           outside-arrows
         )
@@ -44,6 +45,7 @@ export default defineNuxtComponent({
 
     const navItems = [
       { route: '/settings/agents', icon: 'mdi-account', label: 'Utilisateurs' },
+      { route: '/settings/roles', icon: 'mdi-group', label: 'Rôles' },
       { route: '/settings/password-policy', icon: 'mdi-form-textbox-password', label: 'Politique de mot de passe' },
       { route: '/settings/smtp', icon: 'mdi-mail', label: 'Serveur SMTP' },
       { route: '/settings/sms', icon: 'mdi-message-processing', label: 'Serveur SMS' },

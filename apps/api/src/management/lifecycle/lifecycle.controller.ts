@@ -16,6 +16,8 @@ import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pip
 import { Lifecycle } from './_schemas/lifecycle.schema'
 import { LifecycleCrudService } from './lifecycle-crud.service'
 import { LifecycleCacheInterceptor } from './_interceptors/lifecycle-cache.interceptor'
+import { UseRoles } from '~/_common/decorators/use-roles.decorator'
+import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types'
 
 /**
  * Contrôleur de gestion du cycle de vie des identités
@@ -84,9 +86,14 @@ export class LifecycleController extends AbstractController {
    *   total: 2
    * }
    */
+  @Get('identity/:identityId')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiOperation({ summary: 'Récupérer l\'historique du cycle de vie d\'une identité' })
   @ApiParam({ name: 'identityId', description: 'Identifiant de l\'identité' })
-  @Get('identity/:identityId')
   public async getLifecycleHistory(
     @Param('identityId', ObjectIdValidationPipe) identityId: Types.ObjectId,
     @Res() res: Response,
@@ -126,8 +133,13 @@ export class LifecycleController extends AbstractController {
    *   }
    * }
    */
-  @ApiOperation({ summary: 'Récupérer les statistiques du cycle de vie' })
   @Get('stats')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiOperation({ summary: 'Récupérer les statistiques du cycle de vie' })
   public async getStats(
     @Res() res: Response,
   ): Promise<Response<Lifecycle[]>> {
@@ -172,11 +184,11 @@ export class LifecycleController extends AbstractController {
    * // Réponse (si non modifié)
    * 304 Not Modified
    */
+  @Get('states')
   @ApiOperation({
     summary: 'Récupérer tous les états de cycle de vie disponibles',
     description: 'Retourne tous les états de cycle de vie incluant les états par défaut et les états personnalisés de la configuration'
   })
-  @Get('states')
   public async getAllStates(
     @Req() req: Request,
     @Res() res: Response,
@@ -228,11 +240,11 @@ export class LifecycleController extends AbstractController {
    *   ]
    * }
    */
+  @Get('states/custom')
   @ApiOperation({
     summary: 'Récupérer les états personnalisés du cycle de vie',
     description: 'Retourne uniquement les états personnalisés chargés depuis le fichier de configuration states.yml'
   })
-  @Get('states/custom')
   public async getCustomStates(
     @Res() res: Response,
   ): Promise<Response<Array<{ key: string; label: string; description: string }>>> {
@@ -273,9 +285,14 @@ export class LifecycleController extends AbstractController {
    *   ],
    *   total: 156
    * }
-   */
-  @ApiOperation({ summary: 'Récupérer les changements récents du cycle de vie' })
+  */
   @Get('recent')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiOperation({ summary: 'Récupérer les changements récents du cycle de vie' })
   public async getRecentChanges(
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
     @Res() res: Response,

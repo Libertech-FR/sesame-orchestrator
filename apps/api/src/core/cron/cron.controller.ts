@@ -3,6 +3,13 @@ import { Controller, Get, Res, HttpStatus, Query } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { CronService } from './cron.service'
 import { Response } from 'express'
+import { UseRoles } from '~/_common/decorators/use-roles.decorator'
+import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types'
+import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator'
+import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper'
+import { CronDto } from './_dto/cron.dto'
+import { PartialProjectionType } from '~/_common/types/partial-projection.type'
+import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator'
 
 /**
  * Contrôleur Cron - Endpoints pour les tâches planifiées.
@@ -14,6 +21,12 @@ import { Response } from 'express'
 export class CronController {
   public constructor(private readonly cronService: CronService) { }
 
+  protected static readonly projection: PartialProjectionType<CronDto> = {
+    name: 1,
+    description: 1,
+    schedule: 1,
+  }
+
   /**
    * Endpoint pour rechercher et lister les tâches cron configurées.
    *
@@ -24,6 +37,12 @@ export class CronController {
    * @returns Une liste paginée des tâches cron avec leurs détails d'exécution
    */
   @Get()
+  @UseRoles({
+    resource: '/core/cron',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiPaginatedDecorator(PickProjectionHelper(CronDto, CronController.projection))
   public async search(
     @Query('search') search: string,
     @Query('page') page: number,
@@ -43,6 +62,12 @@ export class CronController {
   }
 
   @Get(':name')
+  @UseRoles({
+    resource: '/core/cron',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiReadResponseDecorator(CronDto)
   public async read(
     @Res() res: Response,
   ): Promise<Response> {

@@ -7,6 +7,8 @@ div
       align="left"
       narrow-indicator
       outside-arrows
+      indicator-color="primary"
+      active-color="primary"
       inline-label
       stretch
       no-caps
@@ -24,6 +26,7 @@ div
         )
         q-btn.q-px-xs(
           v-if="!readonly"
+          :disable="!hasPermission('/management/identities', 'update')"
           @click.native.stop="removeSchema(name)"
           icon='mdi-delete-outline'
           color='negative'
@@ -32,11 +35,17 @@ div
           dense
           flat
         )
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/management/identities', 'update')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
+          q-tooltip.text-body2(slot="trigger" v-else) Supprimer le schéma
         q-separator(vertical)
     q-space
     q-separator(v-for='_ in 2' :key='_' vertical)
     q-btn-dropdown.q-pl-sm.full-height#schema-add(
-      :disabled="pending || schemas.length === 0 || readonly"
+      :disabled="pending || schemas.length === 0 || readonly || !hasPermission('/management/identities', 'update')"
       icon="mdi-newspaper-plus"
       flat dense
     )
@@ -50,7 +59,14 @@ div
         )
           q-item-section
             q-item-label(v-text="schema.name")
+    q-tooltip.text-body2.bg-negative.text-white(
+      anchor="top middle"
+      self="center middle"
+      target='#schema-add'
+      v-if="!hasPermission('/management/identities', 'update')"
+    ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
     q-tooltip.text-body2(
+      v-else
       anchor="top middle"
       self="center middle"
       target='#schema-add'
@@ -86,6 +102,7 @@ export default defineNuxtComponent({
   },
   async setup({ identity }) {
     const { state, set } = useHashState()
+    const { hasPermission } = useAccessControl()
     const tabs = ref<string[]>(identity?.additionalFields?.objectClasses || [])
     const isHydrated = ref(false)
 
@@ -133,6 +150,7 @@ export default defineNuxtComponent({
     return {
       tab,
       tabs,
+      hasPermission,
       schemas,
       pending,
       refresh,

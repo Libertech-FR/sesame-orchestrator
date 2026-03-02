@@ -1,22 +1,35 @@
 <template lang="pug">
-  .column.no-wrap.full-height.relative(style='padding-top: 36px;')
+  .column.no-wrap.full-height.relative(style='padding-top: 38px;')
     q-toolbar.bg-transparent.q-pr-none.sesame-sticky-bar
       q-toolbar-title Fiche agent
       q-separator(v-for='_ in 2' :key='_' vertical)
-      q-btn-group.q-ml-none(flat stretch dense)
+      q-btn-group.q-ml-none(
+        flat stretch dense
+      )
         q-btn.q-px-sm.text-positive(
+          :disable='!hasPermission("/core/agents", isNew ? "create" : "update")'
           @click='save()'
           icon='mdi-content-save'
           dense
         )
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/core/agents', isNew ? 'create' : 'update')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
       q-separator(v-if="data.agent?._id" v-for='_ in 2' :key='_' vertical)
       q-btn-dropdown(v-if="data.agent?._id" :class="[$q.dark.isActive ? 'text-white' : 'text-black']" dropdown-icon="mdi-dots-vertical" unelevated dense)
         q-list(dense)
-          q-item(v-if="data.agent?._id" clickable v-close-popup @click="deleteAgent(data.agent)")
+          q-item(v-if="data.agent?._id" :disable='!hasPermission("/core/agents", "delete")' clickable v-close-popup @click="deleteAgent(data.agent)")
             q-item-section(avatar)
               q-icon(name="mdi-delete" color="negative")
             q-item-section
               q-item-label Supprimer l'agent
+              q-tooltip.text-body2.bg-negative.text-white(
+                v-if="!hasPermission('/core/agents', 'delete')"
+                anchor="top middle"
+                self="center middle"
+              ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
     sesame-core-jsonforms-renderer(
       :manualSchema='schema'
       :manualUiSchema='uischema'
@@ -42,6 +55,7 @@ export default defineNuxtComponent({
   inject: ['refresh', 'deleteAgent'],
   setup() {
     const validations = ref({} as Record<string, any>)
+    const { hasPermission } = useAccessControl()
 
     const { schema, uischema } = useAgentsSchema()
     const { handleErrorReq } = useErrorHandling()
@@ -51,6 +65,7 @@ export default defineNuxtComponent({
       schema,
       uischema,
       handleErrorReq,
+      hasPermission,
     }
   },
   computed: {

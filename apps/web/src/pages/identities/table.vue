@@ -19,11 +19,17 @@ q-page.grid
       sesame-core-pan-filters(:columns='columns' :columnsType='columnsType' mode='complex' :placeholder='"Rechercher par nom, prénom, email, ..."')
     template(#before-top-right-before="{ selected, clearSelection }")
       q-btn.q-ml-md(
+        :disable='!hasPermission("/management/identities", "create")'
         :to='toPathWithQueries(`/identities/table/${NewTargetId}`, {}, "schema=inetOrgPerson")'
         icon='mdi-plus'
         flat
         dense
       )
+        q-tooltip.text-body2.bg-negative.text-white(
+          v-if="!hasPermission('/management/identities', 'create')"
+          anchor="top middle"
+          self="center middle"
+        ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
       q-separator.q-mx-sm(vertical)
     template(#before-top-left="{ selected, clearSelection }")
       q-btn-group(rounded flat)
@@ -54,7 +60,12 @@ q-page.grid
             q-item-section
               q-item-label(v-text="tab.label")
           q-separator
-          q-item(clickable v-close-popup @click="deleteIdentity(row)")
+          q-item(clickable v-close-popup @click="deleteIdentity(row)" :disable='!hasPermission("/management/identities", "delete")')
+            q-tooltip.text-body2.bg-negative.text-white(
+              v-if="!hasPermission('/management/identities', 'delete')"
+              anchor="top middle"
+              self="center middle"
+            ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
             q-item-section(avatar)
               q-icon(name="mdi-delete" color="negative")
             q-item-section
@@ -98,6 +109,7 @@ export default defineNuxtComponent({
   },
   async setup() {
     const page = ref<typeof Page | null>(null)
+    const { hasPermission } = useAccessControl()
     const $route = useRoute()
     const { getDefaults } = usePagination()
     const { debug } = useDebug()
@@ -156,6 +168,7 @@ export default defineNuxtComponent({
     return {
       debug,
       page,
+      hasPermission,
       identities,
       pending,
       refresh,
@@ -177,18 +190,21 @@ export default defineNuxtComponent({
           icon: 'mdi-card-account-details',
           label: 'Fiche identité',
           action: (i) => navigateToTab(`/identities/table/${i._id}`),
+          condition: () => hasPermission('/management/identities', 'read'),
         },
         {
           name: 'jobs',
           icon: 'mdi-book-clock',
           label: 'Journaux des tâches',
           action: (i) => navigateToTab(`/identities/table/${i._id}/jobs`),
+          condition: () => hasPermission('/core/jobs', 'read'),
         },
         {
           name: 'lifecycle',
           icon: 'mdi-timeline-clock-outline',
           label: 'Historique des cycles de vie',
           action: (i) => navigateToTab(`/identities/table/${i._id}/lifecycle`),
+          condition: () => hasPermission('/management/lifecycle', 'read'),
         },
         {
           name: 'debug',

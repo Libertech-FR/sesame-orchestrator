@@ -29,8 +29,8 @@ import { ExtensionsModule } from './extensions/extensions.module';
 import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
 import { isConsoleEntrypoint } from './_common/functions/is-cli';
 import { AccessControlModule, ACGuard, RolesBuilder } from 'nest-access-control';
-import { RolesService } from './core/roles/roles.service';
 import { AcGuard } from './_common/guards/ac.guard';
+import { AclRuntimeService } from './core/roles/acl-runtime.service';
 
 @Module({
   imports: [
@@ -125,9 +125,9 @@ import { AcGuard } from './_common/guards/ac.guard';
     }),
     AccessControlModule.forRootAsync({
       imports: [CoreModule],
-      inject: [RolesService],
-      useFactory: async (service: RolesService): Promise<RolesBuilder> => {
-        return await service.getRolesBuilder()
+      inject: [AclRuntimeService],
+      useFactory: async (service: AclRuntimeService): Promise<RolesBuilder> => {
+        return await service.getGuardRolesBuilder()
       },
     }),
     FactorydriveModule.forRootAsync({

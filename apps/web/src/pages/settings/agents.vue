@@ -16,11 +16,17 @@
     )
       template(#before-top-right-before="{ selected, clearSelection }")
         q-btn(
+          :disable='!hasPermission("/core/agents", "create")'
           :to='toPathWithQueries(`/settings/agents/${NewTargetId}`)'
           icon='mdi-plus'
           flat
           dense
         )
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/core/agents', 'create')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
         q-separator.q-mx-sm(vertical)
       template(#top-table)
         sesame-core-pan-filters(:columns='columns' mode='simple' placeholder='Rechercher par username, email, ...')
@@ -28,11 +34,16 @@
         q-btn(:to='toPathWithQueries(`/settings/agents/${row._id}`)' color='primary' icon='mdi-eye' size='sm' flat round dense)
         q-btn-dropdown(:class="[$q.dark.isActive ? 'text-white' : 'text-black']" dropdown-icon="mdi-dots-horizontal" size='sm' flat round dense)
           q-list(dense)
-            q-item(clickable v-close-popup @click="deleteAgent(row)")
+            q-item(:disable='!hasPermission("/core/agents", "delete")' clickable v-close-popup @click="deleteAgent(row)")
               q-item-section(avatar)
                 q-icon(name="mdi-delete" color="negative")
               q-item-section
                 q-item-label Supprimer l'agent
+              q-tooltip.text-body2.bg-negative.text-white(
+                v-if="!hasPermission('/core/agents', 'delete')"
+                anchor="top middle"
+                self="center middle"
+              ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
       template(#after-content)
         nuxt-page(ref='page' @refresh='refresh')
 </template>
@@ -80,6 +91,7 @@ export default defineNuxtComponent({
     const { toPathWithQueries, navigateToTab } = useRouteQueries()
 
     const paginationOptions = useHttpPaginationOptions()
+    const { hasPermission } = useAccessControl()
 
     const {
       data: agents,
@@ -107,6 +119,7 @@ export default defineNuxtComponent({
       refresh,
       toPathWithQueries,
       navigateToTab,
+      hasPermission,
     }
   },
   computed: {

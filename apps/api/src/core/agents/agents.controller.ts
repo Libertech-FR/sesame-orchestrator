@@ -110,7 +110,7 @@ export class AgentsController extends AbstractController {
    */
   @Get()
   @UseRoles({
-    resource: 'core/agents',
+    resource: '/core/agents',
     action: AC_ACTIONS.READ,
     possession: AC_DEFAULT_POSSESSION,
   })
@@ -161,7 +161,7 @@ export class AgentsController extends AbstractController {
    */
   @Get(':_id([0-9a-fA-F]{24})')
   @UseRoles({
-    resource: 'core/agents',
+    resource: '/core/agents',
     action: AC_ACTIONS.READ,
     possession: AC_DEFAULT_POSSESSION,
   })
@@ -197,7 +197,7 @@ export class AgentsController extends AbstractController {
    */
   @Patch(':_id([0-9a-fA-F]{24})')
   @UseRoles({
-    resource: 'core/agents',
+    resource: '/core/agents',
     action: AC_ACTIONS.UPDATE,
     possession: AC_DEFAULT_POSSESSION,
   })
@@ -228,7 +228,7 @@ export class AgentsController extends AbstractController {
    */
   @Delete(':_id([0-9a-fA-F]{24})')
   @UseRoles({
-    resource: 'core/agents',
+    resource: '/core/agents',
     action: AC_ACTIONS.DELETE,
     possession: AC_DEFAULT_POSSESSION,
   })

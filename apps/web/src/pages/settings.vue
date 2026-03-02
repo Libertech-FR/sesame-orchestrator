@@ -21,7 +21,13 @@ q-dialog(:model-value="true" transition-show='none' transition-hide='none' full-
             :name="item.route"
             :label="item.label"
             :icon="item.icon"
+            :disable="item._disabled"
           )
+            q-tooltip.text-body2.bg-negative.text-white(
+              v-if="item._disabled"
+              anchor="top middle"
+              self="center middle"
+            ) Vous n'avez pas les permissions nécessaires pour accéder à cette page
       .col
         q-tab-panels.fit(v-model="tab")
           q-tab-panel.q-pa-none(
@@ -31,10 +37,19 @@ q-dialog(:model-value="true" transition-show='none' transition-hide='none' full-
 </template>
 
 <script lang="ts">
+interface NavItem {
+  route: string
+  icon: string
+  label: string
+  _disabled?: boolean
+  _acl?: string
+}
+
 export default defineNuxtComponent({
   name: 'SettingsPage',
   setup() {
     const router = useRouter()
+    const { hasPermission } = useAccessControl()
     const tab = computed({
       get: () => router.currentRoute.value.path,
       set: (val: string) => {
@@ -43,14 +58,58 @@ export default defineNuxtComponent({
     })
     const drawer = ref(true)
 
-    const navItems = [
-      { route: '/settings/agents', icon: 'mdi-account', label: 'Utilisateurs' },
-      { route: '/settings/roles', icon: 'mdi-group', label: 'Rôles' },
-      { route: '/settings/password-policy', icon: 'mdi-form-textbox-password', label: 'Politique de mot de passe' },
-      { route: '/settings/smtp', icon: 'mdi-mail', label: 'Serveur SMTP' },
-      { route: '/settings/sms', icon: 'mdi-message-processing', label: 'Serveur SMS' },
-      { route: '/settings/cron', icon: 'mdi-clipboard-list', label: 'Tâches planifiés' },
-    ]
+    const navItemsInternal = ref<NavItem[]>([
+      {
+        route: '/settings/agents',
+        icon: 'mdi-account',
+        label: 'Utilisateurs',
+        _acl: '/core/agents',
+      },
+      {
+        route: '/settings/roles',
+        icon: 'mdi-group',
+        label: 'Rôles',
+        _acl: '/core/roles',
+      },
+      {
+        route: '/settings/password-policy',
+        icon: 'mdi-form-textbox-password',
+        label: 'Politique de mot de passe',
+        _acl: '/settings/passwdadm',
+      },
+      {
+        route: '/settings/smtp',
+        icon: 'mdi-mail',
+        label: 'Serveur SMTP',
+        _acl: '/settings/mailadm',
+      },
+      {
+        route: '/settings/sms',
+        icon: 'mdi-message-processing',
+        label: 'Serveur SMS',
+        _acl: '/settings/smsadm',
+      },
+      {
+        route: '/settings/cron',
+        icon: 'mdi-clipboard-list',
+        label: 'Tâches planifiés',
+        _acl: '/core/cron',
+      },
+    ])
+
+    const navItems = computed(() => {
+      return navItemsInternal.value.map((item) => {
+        //console.log(item._acl, !hasPermission(item._acl!, AccessControlAction.READ))
+        if (!item._acl) {
+          return item
+        }
+
+        return {
+          ...item,
+          _disabled: !hasPermission(item._acl!, AccessControlAction.READ),
+        }
+      })
+    })
 
     return {
       tab,

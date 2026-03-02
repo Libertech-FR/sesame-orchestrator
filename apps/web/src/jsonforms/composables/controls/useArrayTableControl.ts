@@ -26,6 +26,7 @@ export type ArrayTableField = {
   itemType?: 'string' | 'number' | 'integer'
   suggestions?: unknown[]
   uiOptions?: Record<string, any>
+  uiElement?: Record<string, any>
   api?: AutocompleteApiConfig
 }
 
@@ -95,6 +96,7 @@ export const useArrayTableControl = ({
       itemType,
       suggestions,
       uiOptions,
+      uiElement,
       api: uiOptions?.api,
     }
   }
@@ -218,6 +220,7 @@ export const useArrayTableControl = ({
   return {
     ...control,
     rows,
+    itemSchema,
     fields,
     dialogOpen,
     editedRow,

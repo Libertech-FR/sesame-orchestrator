@@ -11,13 +11,19 @@ const config = useAppConfig()
 
 type useMenuReturnType = {
   getMenu: () => MenuItem[]
-  menuParts: Ref<string[]>
+  menuParts: Ref<MenuPartItem[]>
   getMenuByPart: (part: string) => MenuItem[]
   initialize: () => Promise<void>
 }
 
+type MenuPartItem = {
+  label: string
+  position: number
+}
+
 function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): useMenuReturnType {
-  const menuParts = ref(DefaultMenuParts)
+  const menuParts = ref<MenuPartItem[]>(DefaultMenuParts)
+  const { hasPermission, hasPermissionStartsWith } = useAccessControl()
 
   if (config?.menus?.parts) {
     menuParts.value = sort([...menuParts.value, ...(config.menus?.parts as any) || []], (part) => {
@@ -35,6 +41,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       badge: { color: 'primary' },
       part: MenuPart.DONNEES,
       hideInMenuBar: false,
+      _acl: '/management/identities',
     },
     {
       icon: 'mdi-download-outline',
@@ -42,14 +49,16 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       path: '/identities/export',
       color: 'accent',
       part: MenuPart.DONNEES,
-      hideInMenuBar: true
+      hideInMenuBar: true,
+      _acl: '/management/identities',
     }, {
       icon: 'mdi-book-clock',
       label: 'Journal des jobs',
       path: '/jobs/table?filters[:state]=-1',
       color: 'info',
       part: MenuPart.DONNEES,
-      hideInMenuBar: false
+      hideInMenuBar: false,
+      _acl: '/core/jobs',
     }, {
       icon: 'mdi-timeline-clock-outline',
       label: 'Cycle de vie des identités',
@@ -57,6 +66,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       color: 'info',
       part: MenuPart.DONNEES,
       hideInMenuBar: false,
+      _acl: '/management/lifecycle',
     },
     {
       icon: 'mdi-set-merge',
@@ -65,6 +75,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       color: 'positive',
       part: MenuPart.DONNEES,
       hideInMenuBar: true,
+      _acl: '/management/identities',
     },
     {
       icon: 'mdi-trash-can',
@@ -73,6 +84,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       color: 'grey-10',
       hideInMenuBar: true,
       part: MenuPart.DONNEES,
+      _acl: '/management/identities',
     },
     {
       icon: 'mdi-account-check',
@@ -83,6 +95,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       badge: getStateBadge(IdentityState.TO_VALIDATE),
       part: MenuPart.ETATS,
       hideInMenuBar: false,
+      _acl: '/management/identities',
     },
     {
       icon: 'mdi-account-alert',
@@ -93,6 +106,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       badge: getStateBadge(IdentityState.TO_COMPLETE),
       part: MenuPart.ETATS,
       hideInMenuBar: false,
+      _acl: '/management/identities',
     },
     {
       icon: 'mdi-sync',
@@ -102,6 +116,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       badge: getStateBadge(IdentityState.TO_SYNC),
       part: MenuPart.ETATS,
       hideInMenuBar: false,
+      _acl: '/management/identities',
     },
     {
       icon: 'mdi-loading',
@@ -111,6 +126,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       badge: getStateBadge(IdentityState.PROCESSING),
       part: MenuPart.ETATS,
       hideInMenuBar: false,
+      _acl: '/management/identities',
     },
     {
       icon: 'mdi-check',
@@ -120,6 +136,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       color: 'positive',
       part: MenuPart.ETATS,
       hideInMenuBar: false,
+      _acl: '/management/identities',
     },
     {
       icon: 'mdi-account-switch-outline',
@@ -130,8 +147,20 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       badge: { color: 'linear-gradient(135deg, #7C3AED 0%, #EC4899 50%, #F97316 100%)', textColor: 'white' },
       part: MenuPart.ETATS,
       hideInMenuBar: false,
+      _acl: '/management/identities',
     },
-    ...config?.menus?.entries || [],
+    ...config?.menus?.entries
+      .filter((entry: any) => {
+        if (entry._acl) {
+          return hasPermissionStartsWith([entry._acl])
+        }
+
+        const basePath = entry.path.replace(/^\//, '')
+        const path = basePath.split('?')[0] || ''
+        const uri = path[0].split('/')[0] || ''
+
+        return hasPermissionStartsWith([uri])
+      }) || [],
     {
       icon: 'mdi-account-remove',
       label: 'En erreur',
@@ -140,6 +169,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       badge: getStateBadge(IdentityState.ON_ERROR),
       part: MenuPart.ETATS,
       hideInMenuBar: false,
+      _acl: '/management/identities',
     },
     {
       icon: 'mdi-email-alert',
@@ -149,6 +179,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       part: MenuPart.ACTIVATION,
       badge: { color: 'negative' },
       hideInMenuBar: false,
+      _acl: '/management/identities',
     },
     {
       icon: 'mdi-email-fast',
@@ -159,6 +190,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       part: MenuPart.ACTIVATION,
       badge: { color: 'warning', textColor: 'black' },
       hideInMenuBar: false,
+      _acl: '/management/identities',
     },
     {
       icon: 'mdi-email-open',
@@ -169,6 +201,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       part: MenuPart.ACTIVATION,
       badge: { color: 'positive' },
       hideInMenuBar: false,
+      _acl: '/management/identities',
     },
     {
       icon: 'mdi-email-remove',
@@ -177,6 +210,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       color: 'accent',
       part: MenuPart.ACTIVATION,
       hideInMenuBar: false,
+      _acl: '/management/identities',
     },
   ])
 
@@ -189,6 +223,10 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       const label = normalizeLabel(menu.label)
       const stateValue = identityStateStore.getStateValue(label)
       const value = stateValue > MaxMenuBadgeCount ? MaxMenuBadgeCount + '+' : stateValue?.toString() || '0'
+
+      if (menu._acl && !hasPermission(menu._acl, AccessControlAction.READ, AccessControlPossession.ANY)) {
+        return acc
+      }
 
       acc.push({
         ...menu,

@@ -31,60 +31,102 @@
         @click="switchAccountStatus"
         :color="getStatusColor"
         :label="getStatusLabel"
-        :disable="loadingSwitchStatus"
+        :disable="loadingSwitchStatus || !hasPermission('/management/identities', 'update')"
         :model-value="identity.dataStatus"
         :true-value="1"
         :indeterminate-value="-2"
         :false-value="-3"
       )
+        q-tooltip.text-body2.bg-negative.text-white(
+          v-if="!hasPermission('/management/identities', 'update')"
+          anchor="top middle"
+          self="center middle"
+        ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
+        q-tooltip.text-body2(slot="trigger" v-else) Activer/Désactiver l'identité
       q-separator(v-if="identity?._id" v-for='_ in 2' :key='_' vertical)
       q-btn-group.q-ml-none(flat stretch dense)
         q-btn.q-px-sm(
           v-if="identity?._id"
           @click="forceChangePassword()"
           :color="identity.state != IdentityState.SYNCED ? 'grey-7' : 'orange-8'"
-          :disabled="identity.state != IdentityState.SYNCED"
+          :disabled="identity.state != IdentityState.SYNCED || !hasPermission('/management/identities', 'update')"
           icon="mdi-lock-reset"
           flat dense
         )
-          q-tooltip.text-body2(slot="trigger") Obliger l'utilisateur à changer son mot de passe
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/management/identities', 'update')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
+          q-tooltip.text-body2(slot="trigger" v-else) Obliger l'utilisateur à changer son mot de passe
         q-btn.q-px-sm(
           v-if="identity?._id"
           @click="resetPasswordModal = true"
           :color="identity.state != IdentityState.SYNCED ? 'grey-7' : 'red-8'"
-          :disabled="identity.state != IdentityState.SYNCED"
+          :disabled="identity.state != IdentityState.SYNCED || !hasPermission('/management/identities', 'update')"
           icon="mdi-account-key"
           flat dense
         )
-          q-tooltip.text-body2(slot="trigger") Définir le mot de passe
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/management/identities', 'update')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
+          q-tooltip.text-body2(slot="trigger" v-else) Définir le mot de passe
         q-btn.q-px-sm(
           v-if="identity?._id"
           @click="sendInit()"
           :color="identity.state != IdentityState.SYNCED ? 'grey-7' : 'primary'"
-          :disabled="identity.state != IdentityState.SYNCED"
+          :disabled="identity.state != IdentityState.SYNCED || !hasPermission('/management/identities', 'update')"
           icon="mdi-email-arrow-right"
           flat dense
         )
-          q-tooltip.text-body2(slot="trigger") Envoyer le mail d'invitation
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/management/identities', 'update')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
+          q-tooltip.text-body2(slot="trigger" v-else) Envoyer le mail d'invitation
         q-separator(v-if="identity?._id" v-for='_ in 2' :key='_' vertical)
         q-btn.q-px-sm.text-positive(
+          :disable="!hasPermission('/management/identities', 'update')"
           @click='save()'
           icon='mdi-content-save'
           dense
         )
-          q-tooltip.text-body2.bg-positive(slot='trigger') Enregistrer les modifications
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/management/identities', 'update')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
+          q-tooltip.text-body2.bg-positive(slot='trigger' v-else) Enregistrer les modifications
         q-btn.q-px-sm.text-orange-8(
+          :disable="!hasPermission('/management/identities', 'update')"
           @click='sync()'
           v-if="identity?._id"
-          :disabled="identity?.state != IdentityState.TO_VALIDATE && identity?.state != IdentityState.TO_CREATE"
+          :disabled="(identity?.state != IdentityState.TO_VALIDATE && identity?.state != IdentityState.TO_CREATE) || !hasPermission('/management/identities', 'update')"
           icon='mdi-sync'
           dense
         )
-          q-tooltip.text-body2(slot="trigger" :class='identity?.state == IdentityState.TO_VALIDATE ? "bg-orange-8" : ""')
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/management/identities', 'update')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
+          q-tooltip.text-body2(slot="trigger" v-else :class='identity?.state == IdentityState.TO_VALIDATE ? "bg-orange-8" : ""')
             span(v-if="identity.state == IdentityState.TO_VALIDATE || identity.state == IdentityState.TO_CREATE") Synchroniser l'identité
             span(v-else) L'état de l'identité ne permet pas de la synchroniser
         q-separator(v-if="identity?._id" v-for='_ in 2' :key='_' vertical)
-        q-btn-dropdown.q-pl-sm.full-height.text-purple-8(v-if="identity?._id" icon='mdi-clock' square unelevated dense)
+        q-btn-dropdown.q-pl-sm.full-height.text-purple-8(
+          v-if="identity?._id"
+          :disable="!hasPermission('/management/lifecycle', 'update')"
+          icon='mdi-clock' square unelevated dense
+        )
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/management/lifecycle', 'update')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
           q-list(dense)
             q-item(
               v-for='stateItem in stateList' :key='stateItem.key'
@@ -103,7 +145,12 @@
         q-separator(v-for='_ in 2' :key='_' vertical)
         q-btn-dropdown(:class="[$q.dark.isActive ? 'text-white' : 'text-black']" dropdown-icon="mdi-dots-vertical" unelevated dense)
           q-list(dense)
-            q-item(v-if="identity?._id" clickable v-close-popup @click="deleteIdentity(identity)")
+            q-item(v-if="identity?._id" clickable v-close-popup @click="deleteIdentity(identity)" :disable="!hasPermission('/management/identities', 'delete')")
+              q-tooltip.text-body2.bg-negative.text-white(
+                v-if="!hasPermission('/management/identities', 'delete')"
+                anchor="top middle"
+                self="center middle"
+              ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
               q-item-section(avatar)
                 q-icon(name="mdi-delete" color="negative")
               q-item-section
@@ -112,7 +159,7 @@
     sesame-pages-identities-schemas-bar(
       :identity='identity'
       :readonly="identity.state === IdentityState.TO_SYNC"
-      top-offset='36px'
+      top-offset='38px'
     )
       template(#items="{ tabs }")
         q-tab-panel.q-pa-none(name="inetOrgPerson")
@@ -120,7 +167,7 @@
             schemaName="inetOrgPerson"
             v-model="identity.inetOrgPerson"
             v-model:validations="validations"
-            :readonly="identity.state === IdentityState.TO_SYNC"
+            :readonly="identity.state === IdentityState.TO_SYNC || !hasPermission('/management/identities', 'update')"
             :mode="isNew ? 'create' : 'update'"
           )
         q-tab-panel.q-pa-none(v-for="t in tabs" :key="t" :name="t")
@@ -128,7 +175,7 @@
             :schema-name="t"
             v-model="identity.additionalFields.attributes[t]"
             v-model:validations="validations"
-            :readonly="identity.state === IdentityState.TO_SYNC"
+            :readonly="identity.state === IdentityState.TO_SYNC || !hasPermission('/management/identities', 'update')"
             :mode="isNew ? 'create' : 'update'"
           )
 
@@ -169,9 +216,11 @@ export default defineNuxtComponent({
   },
   async setup() {
     const { stateList } = await useIdentityLifecycles()
+    const { hasPermission } = useAccessControl()
 
     return {
       stateList,
+      hasPermission,
     }
   },
   computed: {
@@ -335,6 +384,10 @@ export default defineNuxtComponent({
         })
     },
     async switchAccountStatus() {
+      if (!this.hasPermission('/management/identities', 'update')) {
+        return
+      }
+
       let bouton = ''
       let message = ''
       let status = DataStatus.NOTINITIALIZED

@@ -1,22 +1,35 @@
 <template lang="pug">
-  .column.no-wrap.full-height.relative(style='padding-top: 36px;')
+  .column.no-wrap.full-height.relative(style='padding-top: 38px;')
     q-toolbar.bg-transparent.q-pr-none.sesame-sticky-bar
       q-toolbar-title Fiche de rôle
       q-separator(v-for='_ in 2' :key='_' vertical)
-      q-btn-group.q-ml-none(flat stretch dense)
+      q-btn-group.q-ml-none(
+        flat stretch dense
+      )
         q-btn.q-px-sm.text-positive(
+          :disable='!hasPermission("/core/roles", isNew ? "create" : "update")'
           @click='save()'
           icon='mdi-content-save'
           dense
         )
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/core/roles', isNew ? 'create' : 'update')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
       q-separator(v-if="data.role?._id" v-for='_ in 2' :key='_' vertical)
       q-btn-dropdown(v-if="data.role?._id" :class="[$q.dark.isActive ? 'text-white' : 'text-black']" dropdown-icon="mdi-dots-vertical" unelevated dense)
         q-list(dense)
-          q-item(v-if="data.role?._id" clickable v-close-popup @click="deleteRole(data.role)")
+          q-item(v-if="data.role?._id" :disable='!hasPermission("/core/roles", "delete")' clickable v-close-popup @click="deleteRole(data.role)")
             q-item-section(avatar)
               q-icon(name="mdi-delete" color="negative")
             q-item-section
               q-item-label Supprimer le rôle
+            q-tooltip.text-body2.bg-negative.text-white(
+              v-if="!hasPermission('/core/roles', 'delete')"
+              anchor="top middle"
+              self="center middle"
+            ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
     sesame-core-jsonforms-renderer(
       :manualSchema='schema'
       :manualUiSchema='uischema'
@@ -42,7 +55,7 @@ export default defineNuxtComponent({
   inject: ['refresh', 'deleteRole'],
   setup() {
     const validations = ref({} as Record<string, any>)
-
+    const { hasPermission } = useAccessControl()
     const { schema, uischema } = useRolesSchema()
     const { handleErrorReq } = useErrorHandling()
 
@@ -51,6 +64,7 @@ export default defineNuxtComponent({
       schema,
       uischema,
       handleErrorReq,
+      hasPermission,
     }
   },
   computed: {

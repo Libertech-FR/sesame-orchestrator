@@ -37,8 +37,8 @@ import { IdentitiesValidationService } from './validations/identities.validation
 import { FilestorageService } from '~/core/filestorage/filestorage.service';
 import { TransformersFilestorageService } from '~/core/filestorage/_services/transformers-filestorage.service';
 import { IdentitiesCrudService } from '~/management/identities/identities-crud.service';
-import { Public } from '~/_common/decorators/public.decorator';
-import { isEmpty } from 'radash';
+import { UseRoles } from '~/_common/decorators/use-roles.decorator';
+import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
 
 @ApiTags('management/identities')
 @Controller('identities')
@@ -70,6 +70,11 @@ export class IdentitiesCrudController extends AbstractController {
   };
 
   @Post()
+  @UseRoles({
+    resource: '/management/identities',
+    action: AC_ACTIONS.CREATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiCreateDecorator(IdentitiesCreateDto, IdentitiesDto)
   public async create(
     @Res() res: Response,
@@ -116,7 +121,13 @@ export class IdentitiesCrudController extends AbstractController {
       message,
     });
   }
+
   @Get('getdeleted')
+  @UseRoles({
+    resource: '/management/identities',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiPaginatedDecorator(PickProjectionHelper(IdentitiesDto, IdentitiesCrudController.projection))
   public async getdeleted(
     @Res() res: Response,
@@ -143,6 +154,11 @@ export class IdentitiesCrudController extends AbstractController {
   }
 
   @Get()
+  @UseRoles({
+    resource: '/management/identities',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiPaginatedDecorator(PickProjectionHelper(IdentitiesDto, IdentitiesCrudController.projection))
   public async search(
     @Res() res: Response,
@@ -183,6 +199,11 @@ export class IdentitiesCrudController extends AbstractController {
   }
 
   @Get(':_id([0-9a-fA-F]{24})')
+  @UseRoles({
+    resource: '/management/identities',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiParam({ name: '_id', type: String })
   @ApiReadResponseDecorator(IdentitiesDto)
   public async read(
@@ -250,6 +271,11 @@ export class IdentitiesCrudController extends AbstractController {
   }
 
   @Patch(':_id([0-9a-fA-F]{24})')
+  @UseRoles({
+    resource: '/management/identities',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiParam({ name: '_id', type: String })
   @ApiUpdateDecorator(IdentitiesUpdateDto, IdentitiesDto)
   public async update(
@@ -265,6 +291,11 @@ export class IdentitiesCrudController extends AbstractController {
   }
 
   @Patch(':_id([0-9a-fA-F]{24})/state')
+  @UseRoles({
+    resource: '/management/identities',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiParam({ name: '_id', type: String })
   @ApiUpdateDecorator(IdentitiesUpdateDto, IdentitiesDto)
   public async updateState(
@@ -287,6 +318,11 @@ export class IdentitiesCrudController extends AbstractController {
   }
 
   @Patch(':_id([0-9a-fA-F]{24})/lifecycle')
+  @UseRoles({
+    resource: '/management/identities',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiParam({ name: '_id', type: String })
   @ApiUpdateDecorator(IdentitiesUpdateDto, IdentitiesDto)
   public async updateLifecycle(
@@ -306,6 +342,11 @@ export class IdentitiesCrudController extends AbstractController {
   }
 
   @Patch('state')
+  @UseRoles({
+    resource: '/management/identities',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiOperation({ summary: "Met à jour l'état d'une ou plusieurs <Identitées> en masse" })
   public async updateStateMany(
     @Res() res: Response,

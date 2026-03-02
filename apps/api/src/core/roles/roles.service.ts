@@ -129,7 +129,13 @@ export class RolesService extends AbstractServiceSchema<Roles> {
     }
 
     for (const resource of this.getResourcesFromDecorators()) {
-      resources.add(`/${resource}`)
+      if (!resource.startsWith('/')) {
+        resources.add(`/${resource}`)
+        this.logger.warn(`Resource ${resource} does not start with /, adding /${resource}`)
+        continue
+      }
+
+      resources.add(resource)
     }
 
     return [...resources]

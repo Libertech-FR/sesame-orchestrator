@@ -5,6 +5,12 @@ export const AC_ACTIONS = [
   "delete",
 ]
 
+export const AC_ACTION_SUGGESTIONS = [
+  { label: "R", value: ["read"] },
+  { label: "R/W", value: ["read", "create", "update"] },
+  { label: "R/W/D", value: ["read", "create", "update", "delete"] },
+]
+
 export default function useRolesSchema() {
   const schema = ref({
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -110,7 +116,8 @@ export default function useRolesSchema() {
                   "label": "ACL",
                   "scope": "#/properties/action",
                   "options": {
-                    "suggestion": AC_ACTIONS
+                    "format": "acl",
+                    "suggestion": AC_ACTION_SUGGESTIONS
                   }
                 }
               ]

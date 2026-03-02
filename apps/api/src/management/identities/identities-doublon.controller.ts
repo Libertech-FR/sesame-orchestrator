@@ -7,6 +7,8 @@ import { IdentitiesDto } from './_dto/identities.dto';
 import { FusionDto } from '~/management/identities/_dto/fusion.dto';
 import { IdentitiesDoublonService } from '~/management/identities/identities-doublon.service';
 import { Types } from 'mongoose';
+import { UseRoles } from '~/_common/decorators/use-roles.decorator';
+import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
 
 @ApiTags('management/identities')
 @Controller('identities')
@@ -24,6 +26,11 @@ export class IdentitiesDoublonController extends AbstractController {
   };
 
   @Get('duplicates')
+  @UseRoles({
+    resource: '/management/identities',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiOperation({ summary: 'Renvoie la liste des doublons supposés' })
   public async getDoublons(@Res() res: Response, @Query('includeIgnored') includeIgnored?: string): Promise<Response> {
     const includeIgnoredBool = /^(true|1|yes|on)$/i.test(includeIgnored || '');
@@ -38,6 +45,11 @@ export class IdentitiesDoublonController extends AbstractController {
   }
 
   @Post('ignore-fusion')
+  @UseRoles({
+    resource: '/management/identities',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiOperation({ summary: 'Ignore la fusion pour une identité' })
   @ApiParam({ name: 'id', description: 'ID de l\'identité', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Fusion ignorée avec succès' })
@@ -63,6 +75,11 @@ export class IdentitiesDoublonController extends AbstractController {
   }
 
   @Post('unignore-fusion')
+  @UseRoles({
+    resource: '/management/identities',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiOperation({ summary: 'Annule l\'ignorance de la fusion pour une identité' })
   @ApiParam({ name: 'id', description: 'ID de l\'identité', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Ignorance de fusion annulée avec succès' })
@@ -88,6 +105,11 @@ export class IdentitiesDoublonController extends AbstractController {
   }
 
   @Post('fusion')
+  @UseRoles({
+    resource: '/management/identities',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiOperation({ summary: 'fusionne les deux identités' })
   @ApiResponse({ status: HttpStatus.OK })
   public async fusion(

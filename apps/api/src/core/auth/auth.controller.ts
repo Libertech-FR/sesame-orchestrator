@@ -50,8 +50,8 @@ export class AuthController extends AbstractController {
       user: {
         ...omit(user, ['security', 'metadata']),
         sseToken: hash('sha256', user.security.secretKey),
+        access: ac.getGrants(),
       },
-      access: ac.getGrants(),
     });
   }
 

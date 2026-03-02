@@ -7,6 +7,7 @@
           span Politique des mots de passe&nbsp;
       .row.q-col-gutter-md
         q-input.col-12.col-sm-4.col-md-3.col-lg-3(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="number"
           outlined
           v-model="payload.len"
@@ -16,6 +17,7 @@
           dense
         )
         q-input.col-12.col-sm-4.col-md-3.col-lg-3(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="number"
           outlined
           v-model="payload.minComplexity"
@@ -25,6 +27,7 @@
           dense
         )
         q-input.col-12.col-sm-4.col-md-3.col-lg-3(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="number"
           outlined
           v-model="payload.goodComplexity"
@@ -36,6 +39,7 @@
       q-separator.q-mt-xl
       .row.q-col-gutter-md.q-mt-md
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
+          :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
           v-model="payload.hasUpperCase"
           color="green"
@@ -44,6 +48,7 @@
           :false-value="0"
         )
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
+          :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
           v-model="payload.hasLowerCase"
           color="purple"
@@ -52,6 +57,7 @@
           :false-value="0"
         )
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
+          :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
           v-model="payload.hasNumbers"
           color="orange"
@@ -60,6 +66,7 @@
           :false-value="0"
         )
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
+          :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
           v-model="payload.hasSpecialChars"
           color="blue"
@@ -68,6 +75,7 @@
           :false-value="0"
         )
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
+          :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
           v-model="payload.checkPwned"
           color="black"
@@ -75,6 +83,7 @@
           hint="Utilise l'API de pwned pour vérifier si le mot de passe a été compromis dans une fuite de données"
         )
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
+          :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
           v-model="payload.resetBySms"
           color="red"
@@ -83,6 +92,7 @@
       q-separator.q-mt-lg
       .row.q-col-gutter-md.q-mt-md
         q-input.col-12.col-sm-6.col-md-5.col-lg-4(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="text"
           outlined
           v-model="payload.emailAttribute"
@@ -91,6 +101,7 @@
           dense
         )
         q-input.col-12.col-sm-6.col-md-5.col-lg-4(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="text"
           outlined
           v-model="payload.mobileAttribute"
@@ -99,6 +110,7 @@
           dense
         )
         q-input.col-12.col-md-10.col-lg-8(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="url"
           outlined
           v-model="payload.redirectUrl"
@@ -109,6 +121,7 @@
       q-separator.q-my-lg
       .row.q-col-gutter-md
         q-input.col-12.col-md-6(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="number"
           outlined
           v-model="payload.resetCodeTTL"
@@ -117,6 +130,7 @@
           dense
         )
         q-input.col-12.col-md-6(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="number"
           outlined
           v-model="payload.initTokenTTL"
@@ -127,11 +141,17 @@
   q-card-actions.sticky-footer.border-top.full-width
     q-space
     q-btn.text-positive(
+      :disable='!hasPermission("/settings/passwdadm", "update")'
       flat
       label="Sauvegarder les paramètres"
       icon-right="mdi-content-save"
       @click="saveParams"
     )
+      q-tooltip.text-body2.bg-negative.text-white(
+        v-if="!hasPermission('/settings/passwdadm', 'update')"
+        anchor="top middle"
+        self="center middle"
+      ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
 </template>
 
 <script lang="ts">
@@ -161,6 +181,7 @@ export default defineComponent({
   },
   async setup() {
     const { handleError } = useErrorHandling()
+    const { hasPermission } = useAccessControl()
 
     const payload = ref({
       len: 8,
@@ -204,6 +225,7 @@ export default defineComponent({
       pending,
       refresh,
       validations,
+      hasPermission,
     }
   },
   methods: {

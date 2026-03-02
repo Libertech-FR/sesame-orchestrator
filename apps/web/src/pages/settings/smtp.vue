@@ -8,6 +8,7 @@
           small (envoi des courriels)
       .row.q-col-gutter-md
         q-input.col-12.col-md-6(
+          :disable='!hasPermission("/settings/mailadm", "update")'
           type="text"
           outlined
           v-model="payload.host"
@@ -19,6 +20,7 @@
         )
         .offset-md-1
         q-input.col-12.col-md-6(
+          :disable='!hasPermission("/settings/mailadm", "update")'
           type="text"
           outlined
           v-model="payload.emetteur"
@@ -30,6 +32,7 @@
         )
         .offset-md-1
         q-input.col-12.col-md-6(
+          :disable='!hasPermission("/settings/mailadm", "update")'
           type="text"
           outlined
           v-model="payload.username"
@@ -41,6 +44,7 @@
         )
         .offset-md-1
         q-input.col-12.col-md-6(
+          :disable='!hasPermission("/settings/mailadm", "update")'
           :type="typePasswordProp"
           outlined
           v-model="payload.password"
@@ -56,6 +60,7 @@
   q-card-actions.sticky-footer.border-top.full-width
     q-space
     q-btn.text-positive(
+      :disable='!hasPermission("/settings/mailadm", "update")'
       flat
       label="Sauvegarder les paramètres"
       icon-right="mdi-content-save"
@@ -82,6 +87,7 @@ export default defineComponent({
   },
   async setup() {
     const { handleError } = useErrorHandling()
+    const { hasPermission } = useAccessControl()
 
     const payload = ref({
       host: '',
@@ -115,6 +121,7 @@ export default defineComponent({
       pending,
       refresh,
       validations,
+      hasPermission,
     }
   },
   methods: {

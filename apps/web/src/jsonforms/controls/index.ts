@@ -34,6 +34,7 @@ export { default as numericControlRenderer } from './numeric.vue'
 export { default as TextareaControlRenderer } from './textarea.vue'
 export { default as AutocompleteControlRenderer } from './autocomplete.vue'
 export { default as FileUploadControlRenderer } from './file-upload.vue'
+export { default as AclControlRenderer } from './acl.vue'
 
 import InputControlRendererComponent from './input.vue'
 import BooleanControlRendererComponent from './boolean.vue'
@@ -46,6 +47,7 @@ import NumericControlRendererComponent from './numeric.vue'
 import TextareaControlRendererComponent from './textarea.vue'
 import AutocompleteControlRendererComponent from './autocomplete.vue'
 import FileUploadControlRendererComponent from './file-upload.vue'
+import AclControlRendererComponent from './acl.vue'
 
 const inputControlRendererEntry: JsonFormsRendererRegistryEntry = {
   renderer: InputControlRendererComponent,
@@ -102,6 +104,11 @@ const fileUploadControlRendererEntry: JsonFormsRendererRegistryEntry = {
   tester: rankWith(3, and(or(isStringControl, isObjectArrayControl, isObjectControl), optionIs('format', 'file'))), // Rend prioritaire les contrôles string, object ou array avec options.format === 'file'
 }
 
+const aclControlRendererEntry: JsonFormsRendererRegistryEntry = {
+  renderer: AclControlRendererComponent,
+  tester: rankWith(30, and(isPrimitiveArrayControl, optionIs('format', 'acl'))),
+}
+
 export const controlsRenderers = [
   inputControlRendererEntry,
   booleanControlRendererEntry,
@@ -114,4 +121,5 @@ export const controlsRenderers = [
   textareaControlRendererEntry,
   autocompleteControlRendererEntry,
   fileUploadControlRendererEntry,
+  aclControlRendererEntry,
 ]

@@ -26,6 +26,7 @@
 
       q-btn(
         @click="$router.push('/settings/agents')"
+        v-if="hasPermissionStartsWith(['/core', '/settings'])"
         icon="mdi-cog"
         size="md"
         stretch
@@ -51,9 +52,20 @@ import { useIdentityStateStore } from '~/stores/identityState'
 
 export default defineNuxtComponent({
   name: 'LayoutsDefaultAppbarComponent',
-  data() {
-    return {
-      buttons: [
+  inject: ['syncing'],
+  setup() {
+    const stateValue = ref(0)
+    const { hasPermissionStartsWith } = useAccessControl()
+    const identityStateStore = useIdentityStateStore()
+    const badgesValues = ref({
+      TO_SYNC: computed(() => (stateValue.value > 9999 ? '9999+' : stateValue.value)),
+    })
+
+    const $auth = useAuth()
+    const roles = $auth.user?.roles as string[] || []
+
+    const buttons = computed(() => [
+      ...(roles.includes(AC_ADMIN_ROLE) ? [
         {
           icon: 'mdi-bug',
           name: 'Debug',
@@ -63,25 +75,17 @@ export default defineNuxtComponent({
             debug.value = !debug.value
           },
         },
-        {
-          icon: 'mdi-logout',
-          name: 'Déconnexion',
-          color: 'negative',
-          action: async () => {
-            await useAuth().logout()
-            useRouter().go(0)
-          },
+      ] : []),
+      {
+        icon: 'mdi-logout',
+        name: 'Déconnexion',
+        color: 'negative',
+        action: async () => {
+          await useAuth().logout()
+          useRouter().go(0)
         },
-      ],
-    }
-  },
-  inject: ['syncing'],
-  setup() {
-    const stateValue = ref(0)
-    const identityStateStore = useIdentityStateStore()
-    const badgesValues = ref({
-      TO_SYNC: computed(() => (stateValue.value > 9999 ? '9999+' : stateValue.value)),
-    })
+      },
+    ])
 
     watch(
       () => identityStateStore.getStateValue('a_synchroniser'),
@@ -93,8 +97,10 @@ export default defineNuxtComponent({
 
     return {
       auth,
+      buttons,
       badgesValues,
       identityStateStore,
+      hasPermissionStartsWith,
     }
   },
   methods: {

@@ -32,7 +32,7 @@
       :error="control.errors !== ''"
       :error-message="control.errors"
       :multiple="isArrayControl"
-      :clearable="isClearable"
+      :_clearable="isClearable"
       :debounce="100"
       :emit-value="emitValue"
       map-options

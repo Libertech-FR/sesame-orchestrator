@@ -17,6 +17,7 @@ import { ApiDeletedResponseDecorator } from "~/_common/decorators/api-deleted-re
 import { UseRoles } from "~/_common/decorators/use-roles.decorator"
 import { AC_ACTIONS, AC_ADMIN_ROLE, AC_DEFAULT_POSSESSION, AC_GUEST_ROLE } from "~/_common/types/ac-types"
 import { Roles } from "./_schemas/roles.schema"
+import { AclRuntimeService } from "./acl-runtime.service"
 
 @ApiTags('core/roles')
 @Controller('roles')
@@ -32,13 +33,16 @@ export class RolesController extends AbstractController {
     description: 1,
   };
 
-  public constructor(private readonly _service: RolesService) {
+  public constructor(
+    private readonly _service: RolesService,
+    private readonly _aclRuntimeService: AclRuntimeService,
+  ) {
     super()
   }
 
   @Get('list')
   @UseRoles({
-    resource: 'core/roles',
+    resource: '/core/roles',
     action: AC_ACTIONS.READ,
     possession: AC_DEFAULT_POSSESSION,
   })
@@ -68,7 +72,7 @@ export class RolesController extends AbstractController {
 
   @Get('resources')
   @UseRoles({
-    resource: 'core/roles',
+    resource: '/core/roles',
     action: AC_ACTIONS.READ,
     possession: AC_DEFAULT_POSSESSION,
   })
@@ -85,7 +89,7 @@ export class RolesController extends AbstractController {
 
   @Get()
   @UseRoles({
-    resource: 'core/roles',
+    resource: '/core/roles',
     action: AC_ACTIONS.READ,
     possession: AC_DEFAULT_POSSESSION,
   })
@@ -125,13 +129,14 @@ export class RolesController extends AbstractController {
 
   @Post()
   @UseRoles({
-    resource: 'core/roles',
+    resource: '/core/roles',
     action: AC_ACTIONS.CREATE,
     possession: AC_DEFAULT_POSSESSION,
   })
   @ApiCreateDecorator(RolesCreateDto, RolesDto)
   public async create(@Res() res: Response, @Body() body: RolesCreateDto): Promise<Response> {
     const data = await this._service.create(body)
+    await this._aclRuntimeService.refresh()
     return res.status(HttpStatus.CREATED).json({
       statusCode: HttpStatus.CREATED,
       data,
@@ -140,7 +145,7 @@ export class RolesController extends AbstractController {
 
   @Get(':_id([0-9a-fA-F]{24})')
   @UseRoles({
-    resource: 'core/roles',
+    resource: '/core/roles',
     action: AC_ACTIONS.READ,
     possession: AC_DEFAULT_POSSESSION,
   })
@@ -159,7 +164,7 @@ export class RolesController extends AbstractController {
 
   @Patch(':_id([0-9a-fA-F]{24})')
   @UseRoles({
-    resource: 'core/roles',
+    resource: '/core/roles',
     action: AC_ACTIONS.UPDATE,
     possession: AC_DEFAULT_POSSESSION,
   })
@@ -171,6 +176,7 @@ export class RolesController extends AbstractController {
     @Res() res: Response,
   ): Promise<Response> {
     const data = await this._service.update(_id, body)
+    await this._aclRuntimeService.refresh()
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,
@@ -179,7 +185,7 @@ export class RolesController extends AbstractController {
 
   @Delete(':_id([0-9a-fA-F]{24})')
   @UseRoles({
-    resource: 'core/roles',
+    resource: '/core/roles',
     action: AC_ACTIONS.DELETE,
     possession: AC_DEFAULT_POSSESSION,
   })
@@ -190,6 +196,7 @@ export class RolesController extends AbstractController {
     @Res() res: Response,
   ): Promise<Response> {
     const data = await this._service.delete(_id)
+    await this._aclRuntimeService.refresh()
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,

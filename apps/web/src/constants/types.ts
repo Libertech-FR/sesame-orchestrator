@@ -15,4 +15,5 @@ export type MenuItem = {
   drawerColor?: string
   badge?: BadgeItem
   hideInMenuBar?: boolean
+  _acl?: string
 }

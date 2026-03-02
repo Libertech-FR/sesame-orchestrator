@@ -60,67 +60,14 @@
 
         q-card-section
           .column.q-gutter-sm
-            div(v-for="field in fields" :key="field.key")
-              q-select(
-                v-if="field.type === 'array' && isPrimitiveArrayField(field)"
-                :model-value="editedRow[field.key] || []"
-                :label="field.label"
-                :options="getFieldOptions(field)"
-                multiple
-                use-input
-                use-chips
-                hide-dropdown-icon
-                new-value-mode="add-unique"
-                outlined
-                dense
-                :placeholder="field.uiOptions?.placeholder"
-                :readonly="!canEdit"
-                option-label="label"
-                option-value="value"
-                emit-value
-                map-options
-                @update:model-value="updateField(field.key, $event)"
-                @new-value="(value, done) => addArrayItem(field.key, value, done)"
-                @filter="(value, update) => onFieldFilter(field, value, update)"
-              )
-              q-select(
-                v-else-if="field.type === 'string' && shouldUseEnumSuggestion(field)"
-                :model-value="editedRow[field.key] || null"
-                :label="field.label"
-                :options="getFieldOptions(field)"
-                use-input
-                hide-dropdown-icon
-                new-value-mode="add-unique"
-                outlined
-                dense
-                :placeholder="field.uiOptions?.placeholder"
-                :readonly="!canEdit"
-                option-label="label"
-                option-value="value"
-                emit-value
-                map-options
-                @update:model-value="updateField(field.key, $event)"
-                @new-value="(value, done) => addSingleValue(field.key, value, done)"
-                @filter="(value, update) => onFieldFilter(field, value, update)"
-              )
-              q-toggle(
-                v-else-if="field.type === 'boolean'"
-                :model-value="Boolean(editedRow[field.key])"
-                :label="field.label"
-                :disable="!canEdit"
-                @update:model-value="updateField(field.key, $event)"
-              )
-              q-input(
-                v-else
-                :model-value="editedRow[field.key]"
-                :type="field.type === 'number' || field.type === 'integer' ? 'number' : 'text'"
-                :label="field.label"
-                outlined
-                dense
-                :placeholder="field.uiOptions?.placeholder"
-                :readonly="!canEdit"
-                @update:model-value="updateField(field.key, castScalarValue(field, $event))"
-              )
+            json-forms(
+              :data="editedRow"
+              :schema="dialogSchema"
+              :uischema="dialogUiSchema"
+              :renderers="dialogRenderers"
+              :readonly="!canEdit"
+              @change="onDialogChange"
+            )
 
         q-card-actions(align="right")
           q-btn(flat label="Annuler" @click="closeDialog")
@@ -136,8 +83,8 @@
 <script lang="ts">
 import { type ControlElement } from '@jsonforms/core'
 import { defineComponent, computed } from 'vue'
-import { rendererProps, useJsonFormsControl, type RendererProps } from '@jsonforms/vue'
-import { QBtn, QCard, QCardActions, QCardSection, QDialog, QInput, QSelect, QTable, QTd, QToggle } from 'quasar'
+import { JsonForms, rendererProps, useJsonFormsControl, type RendererProps } from '@jsonforms/vue'
+import { QBtn, QCard, QCardActions, QCardSection, QDialog, QTable, QTd } from 'quasar'
 import { ControlWrapper } from '../common'
 import { determineClearValue } from '../utils'
 import { useArrayTableControl, type ArrayTableField } from '../composables'
@@ -153,9 +100,7 @@ const controlRenderer = defineComponent({
     QCard,
     QCardSection,
     QCardActions,
-    QInput,
-    QSelect,
-    QToggle,
+    JsonForms,
   },
   props: {
     ...rendererProps<ControlElement>(),
@@ -201,50 +146,32 @@ const controlRenderer = defineComponent({
       api.openEditDialog(row, index)
     }
 
-    const updateField = (key: string, value: unknown) => {
-      api.editedRow.value = {
-        ...api.editedRow.value,
-        [key]: value,
-      }
-    }
+    const dialogSchema = computed(() => api.itemSchema.value)
 
-    const isPrimitiveArrayField = (field: ArrayTableField) => {
-      return field.itemType === 'string' || field.itemType === 'number' || field.itemType === 'integer'
-    }
+    const dialogUiSchema = computed(() => {
+      const elements = api.fields.value.map((field: ArrayTableField) => {
+        if (field.uiElement) {
+          return field.uiElement
+        }
 
-    const shouldUseEnumSuggestion = (field: ArrayTableField) => {
-      return Boolean(field.api?.url) || Array.isArray(field.suggestions)
-    }
-
-    const onFieldFilter = (field: ArrayTableField, value: string, update: (callbackFn: () => void) => void) => {
-      update(async () => {
-        if (!field.api?.url) return
-        await api.fetchFieldOptions(field, value)
+        return {
+          type: 'Control',
+          label: field.label,
+          scope: `#/properties/${field.key}`,
+          options: field.uiOptions || {},
+        }
       })
-    }
 
-    const addArrayItem = (key: string, value: unknown, done: () => void) => {
-      const current = Array.isArray(api.editedRow.value[key]) ? api.editedRow.value[key] : []
-      const nextValue = typeof value === 'string' ? value.trim() : value
-      if (nextValue !== '' && !current.includes(nextValue)) {
-        updateField(key, [...current, nextValue])
+      return {
+        type: 'VerticalLayout',
+        elements,
       }
-      done()
-    }
+    })
 
-    const addSingleValue = (key: string, value: unknown, done: () => void) => {
-      const nextValue = typeof value === 'string' ? value.trim() : value
-      if (nextValue !== '') {
-        updateField(key, nextValue)
-      }
-      done()
-    }
+    const dialogRenderers = computed(() => props.renderers || [])
 
-    const castScalarValue = (field: ArrayTableField, value: unknown) => {
-      if (field.type !== 'number' && field.type !== 'integer') return value
-      if (value === '' || value === null || value === undefined) return null
-      const parsed = Number(value)
-      return Number.isNaN(parsed) ? null : parsed
+    const onDialogChange = (event: { data?: Record<string, unknown> }) => {
+      api.editedRow.value = (event?.data || {}) as Record<string, unknown>
     }
 
     return {
@@ -253,13 +180,10 @@ const controlRenderer = defineComponent({
       tableRows,
       tableColumns,
       openEditByIndex,
-      updateField,
-      isPrimitiveArrayField,
-      shouldUseEnumSuggestion,
-      onFieldFilter,
-      addArrayItem,
-      addSingleValue,
-      castScalarValue,
+      dialogSchema,
+      dialogUiSchema,
+      dialogRenderers,
+      onDialogChange,
     }
   },
 })

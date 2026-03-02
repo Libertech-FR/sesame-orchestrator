@@ -8,6 +8,7 @@
           small (envoi des SMS)
       .row.q-col-gutter-md
         q-input.col-12.col-md-6(
+          :readonly='!hasPermission("/settings/smsadm", "update")'
           type="text"
           outlined
           v-model="payload.host"
@@ -19,6 +20,7 @@
         )
         .offset-md-1
         q-input.col-12.col-md-6(
+          :readonly='!hasPermission("/settings/smsadm", "update")'
           type="text"
           outlined
           v-model="payload.systemId"
@@ -30,6 +32,7 @@
         )
         .offset-md-1
         q-input.col-12.col-md-6(
+          :readonly='!hasPermission("/settings/smsadm", "update")'
           :type="typePasswordProp"
           outlined
           v-model="payload.password"
@@ -39,10 +42,11 @@
           :error-message='validations["password"]'
           dense
         )
-          template(v-slot:append)
+          template(v-slot:append v-if="hasPermission('/settings/smsadm', 'update')")
             q-icon.cursor-pointer(name="mdi-eye" @click="togglePassword")
         .offset-md-1
         q-input.col-12.col-md-6(
+          :readonly='!hasPermission("/settings/smsadm", "update")'
           type="text"
           outlined
           v-model="payload.sourceAddr"
@@ -56,11 +60,17 @@
   q-card-actions.sticky-footer.border-top.full-width
     q-space
     q-btn.text-positive(
+      :disable='!hasPermission("/settings/smsadm", "update")'
       flat
       label="Sauvegarder les paramètres"
       icon-right="mdi-content-save"
       @click="saveParams"
     )
+      q-tooltip.text-body2.bg-negative.text-white(
+        v-if="!hasPermission('/settings/smsadm', 'update')"
+        anchor="top middle"
+        self="center middle"
+      ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
 </template>
 
 <script lang="ts">
@@ -83,7 +93,7 @@ export default defineComponent({
   },
   async setup() {
     const { handleError } = useErrorHandling()
-
+    const { hasPermission } = useAccessControl()
     const payload = ref({
       host: '',
       systemId: '',
@@ -117,6 +127,7 @@ export default defineComponent({
       pending,
       refresh,
       validations,
+      hasPermission,
     }
   },
   methods: {

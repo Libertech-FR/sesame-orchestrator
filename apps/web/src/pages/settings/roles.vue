@@ -16,11 +16,17 @@
     )
       template(#before-top-right-before="{ selected, clearSelection }")
         q-btn(
+          :disable='!hasPermission("/core/roles", "create")'
           :to='toPathWithQueries(`/settings/roles/${NewTargetId}`)'
           icon='mdi-plus'
           flat
           dense
         )
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/core/roles', 'create')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
         q-separator.q-mx-sm(vertical)
       template(#top-table)
         sesame-core-pan-filters(:columns='columns' mode='simple' placeholder='Rechercher par username, email, ...')
@@ -28,11 +34,16 @@
         q-btn(:to='toPathWithQueries(`/settings/roles/${row._id}`)' color='primary' icon='mdi-eye' size='sm' flat round dense)
         q-btn-dropdown(:class="[$q.dark.isActive ? 'text-white' : 'text-black']" dropdown-icon="mdi-dots-horizontal" size='sm' flat round dense)
           q-list(dense)
-            q-item(clickable v-close-popup @click="deleteRole(row)")
+            q-item(:disable='!hasPermission("/core/roles", "delete")' clickable v-close-popup @click="deleteRole(row)")
               q-item-section(avatar)
                 q-icon(name="mdi-delete" color="negative")
               q-item-section
                 q-item-label Supprimer le rôle
+              q-tooltip.text-body2.bg-negative.text-white(
+                v-if="!hasPermission('/core/roles', 'delete')"
+                anchor="top middle"
+                self="center middle"
+              ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
       template(#after-content)
         nuxt-page(ref='page' @refresh='refresh')
 </template>
@@ -78,6 +89,7 @@ export default defineNuxtComponent({
   async setup() {
     const { useHttpPaginationOptions, useHttpPaginationReactive } = usePagination()
     const { toPathWithQueries, navigateToTab } = useRouteQueries()
+    const { hasPermission } = useAccessControl()
 
     const paginationOptions = useHttpPaginationOptions()
 
@@ -107,6 +119,7 @@ export default defineNuxtComponent({
       refresh,
       toPathWithQueries,
       navigateToTab,
+      hasPermission,
     }
   },
   computed: {

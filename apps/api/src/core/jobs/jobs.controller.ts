@@ -16,6 +16,8 @@ import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pip
 import { PartialProjectionType } from '~/_common/types/partial-projection.type';
 import { JobsDto } from './_dto/jobs.dto';
 import { JobsService } from './jobs.service';
+import { UseRoles } from '~/_common/decorators/use-roles.decorator';
+import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
 
 @ApiTags('core/jobs')
 @Controller('jobs')
@@ -35,6 +37,11 @@ export class JobsController extends AbstractController {
   }
 
   @Get()
+  @UseRoles({
+    resource: '/core/jobs',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiPaginatedDecorator(PickProjectionHelper(JobsDto, JobsController.projection))
   public async search(
     @Res() res: Response,
@@ -58,6 +65,11 @@ export class JobsController extends AbstractController {
   }
 
   @Get(':_id([0-9a-fA-F]{24})')
+  @UseRoles({
+    resource: '/core/jobs',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiParam({ name: '_id', type: String })
   @ApiReadResponseDecorator(JobsDto)
   public async read(

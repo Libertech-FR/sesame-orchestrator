@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { Roles, RolesSchema } from './_schemas/roles.schema'
 import { RolesService } from './roles.service'
 import { RolesController } from './roles.controller'
+import { AclRuntimeService } from './acl-runtime.service'
 
 @Module({
   imports: [
@@ -15,8 +16,8 @@ import { RolesController } from './roles.controller'
       },
     ]),
   ],
-  providers: [RolesService],
+  providers: [RolesService, AclRuntimeService],
   controllers: [RolesController],
-  exports: [RolesService],
+  exports: [RolesService, AclRuntimeService],
 })
 export class RolesModule { }

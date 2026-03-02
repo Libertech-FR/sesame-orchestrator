@@ -7,10 +7,11 @@ q-drawer.flex(v-model="drawer" side="left" :mini="true" :breakpoint="0" bordered
           q-item-section(avatar)
             q-icon(name="mdi-home")
         q-separator
-      q-list(v-for="(part, i) in menuParts" :key="i")
-        div(v-for="menu in getMenuByPart(part.label)")
-          q-item(v-if="menu.hideInMenuBar !== true"
-            :key="i" clickable v-ripple
+      q-list(v-for="(part, i) in visibleMenuParts" :key="part.label")
+        div(v-for="menu in part.menus" :key="menu.path")
+          q-item(
+            clickable
+            v-ripple
             :href="encodePath(menu.path)" :active="encodePath(menu.path) === $route.fullPath"
             active-class="q-item--active"
           )
@@ -36,7 +37,7 @@ q-drawer.flex(v-model="drawer" side="left" :mini="true" :breakpoint="0" bordered
               anchor="center right"
               self="center left"
             ) {{ menu.label }}
-        q-separator
+        q-separator(v-if="i < visibleMenuParts.length - 1")
 </template>
 
 <script lang="ts">
@@ -54,11 +55,18 @@ export default defineNuxtComponent({
     const identityStateStore = useIdentityStateStore()
     const { menuParts, getMenuByPart, initialize } = useMenu(identityStateStore)
     const { encodePath } = useFiltersQuery(ref([]))
+    const visibleMenuParts = computed(() => menuParts.value
+      .map(part => ({
+        ...part,
+        menus: getMenuByPart(part.label).filter(menu => menu.hideInMenuBar !== true),
+      }))
+      .filter(part => part.menus.length > 0))
 
     await initialize()
 
     return {
       menuParts,
+      visibleMenuParts,
       getMenuByPart,
       encodePath,
     }

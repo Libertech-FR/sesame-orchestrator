@@ -42,7 +42,7 @@ export function getAuditOperationLabel(op?: string): string {
     case 'insert':
       return 'Creation'
     case 'update':
-      return 'Mise a jour'
+      return 'Mise à jour'
     case 'delete':
       return 'Suppression'
     case 'replace':

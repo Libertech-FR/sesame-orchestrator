@@ -1,17 +1,23 @@
 <template lang="pug">
-q-page.container
-  q-table(
-    title="Journal des jobs"
-    v-model:expanded="expanded"
-    :rows="rows || []"
-    :columns="columns"
-    :rows-per-page-options="[18, 100, 0]"
-    row-key="jobId"
-    bordered
-    dense
-    flat
-  )
-    template(v-slot:top-right)
+q-page.container.q-pa-sm
+  q-card(bordered square flat style='border-bottom: none;')
+    q-card-section.q-pa-none
+      q-toolbar(bordered dense style='height: 28px; line-height: 28px;')
+        q-toolbar-title Journal des jobs
+        q-btn(
+          icon='mdi-refresh'
+          color='primary'
+          flat
+          round
+          dense
+          :loading='pending'
+          :disable='pending'
+          @click='refreshJobs'
+        )
+
+    q-separator
+    q-toolbar(bordered dense style='height: 28px; line-height: 28px;')
+      q-space
       q-select(
         v-model="stateFilter"
         :options="foptions"
@@ -23,8 +29,22 @@ q-page.container
         style="width: 150px"
         map-options
       )
-        template(v-slot:append)
-          q-icon(name="mdi-filter")
+  q-table(
+    flat
+    bordered
+    dense
+    binary-state-sort
+    v-model:pagination='pagination'
+    v-model:expanded='expanded'
+    :rows='rows || []'
+    :columns='columns'
+    :rows-per-page-options='[16, 32, 64, 100]'
+    :loading='pending'
+    :pagination-label='(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`'
+    row-key='jobId'
+    @request='onRequest'
+  )
+    template(v-slot:top-right)
     template(v-slot:no-data)
       div.text-center.q-pa-md
         span Aucune donnée à afficher.
@@ -113,13 +133,23 @@ export default defineComponent({
   },
   async setup() {
     const { monacoOptions } = useDebug()
-    const $route = useRoute()
+    const route = useRoute()
+    const router = useRouter()
+    const pagination = ref({
+      sortBy: 'date',
+      descending: true,
+      page: route.query.page ? parseInt(route.query.page as string, 10) : 1,
+      rowsPerPage: route.query.limit ? parseInt(route.query.limit as string, 10) : 16,
+      rowsNumber: 0,
+    })
     const query = computed(() => {
+      const { page, limit, skip, ...restQuery } = route.query
+
       return {
-        limit: 2000,
-        skip: 0,
+        limit: pagination.value.rowsPerPage,
+        skip: (pagination.value.page - 1) * pagination.value.rowsPerPage,
         'sort[metadata.lastUpdatedAt]': 'desc',
-        ...$route.query,
+        ...restQuery,
       }
     })
 
@@ -131,17 +161,18 @@ export default defineComponent({
     } = await useHttp<any>('/core/jobs', {
       method: 'GET',
       transform: (result) => {
-        const data = result?.data?.map((enr) => {
-          return enr
-        })
-
-        return data || []
+        return result?.data || []
+      },
+      onResponse({ response }) {
+        pagination.value.rowsNumber = response?._data?.total || 0
       },
       query,
     })
 
     return {
       monacoOptions,
+      router,
+      pagination,
       rows,
       pending,
       error,
@@ -181,9 +212,27 @@ export default defineComponent({
     },
   },
   methods: {
+    async onRequest(props): Promise<void> {
+      const { page, rowsPerPage } = props.pagination
+
+      this.pagination.page = page
+      this.pagination.rowsPerPage = rowsPerPage
+
+      await this.router.replace({
+        query: {
+          ...this.$route.query,
+          page: `${page}`,
+          limit: `${rowsPerPage}`,
+        },
+      })
+    },
+    async refreshJobs(): Promise<void> {
+      await this.refresh()
+    },
     updateStateFilter(selection: { value: string | null }): void {
       const query = {
         ...this.$route.query,
+        page: '1',
       }
 
       if (!selection.value) {
@@ -191,6 +240,7 @@ export default defineComponent({
       } else {
         query['filters[:state]'] = selection.value
       }
+      delete query.skip
 
       this.$router.replace({
         query,

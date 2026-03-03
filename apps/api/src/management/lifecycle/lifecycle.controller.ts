@@ -3,6 +3,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Query,
   Req,
   Res,
   UseInterceptors,
@@ -296,8 +297,9 @@ export class LifecycleController extends AbstractController {
   public async getRecentChanges(
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
     @Res() res: Response,
+    @Query('lifecycle') lifecycle?: string,
   ): Promise<Response<Lifecycle[]>> {
-    const [total, data] = await this._service.getRecentChanges(searchFilterOptions);
+    const [total, data] = await this._service.getRecentChanges(searchFilterOptions, lifecycle);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,

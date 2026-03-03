@@ -1,16 +1,51 @@
 <template lang="pug">
-  q-page.container
+  q-page.container.q-pa-sm
+    q-card(bordered square flat style='border-bottom: none;')
+      q-card-section.q-pa-none
+        q-toolbar(bordered dense style='height: 28px; line-height: 28px;')
+          q-toolbar-title Derniers cycles déclenchés
+          q-btn(
+            icon='mdi-refresh'
+            color='primary'
+            flat
+            round
+            dense
+            :loading='pending'
+            :disable='pending'
+            @click='refreshLifecycles'
+          )
+      q-separator
+      q-toolbar(bordered dense style='height: 28px; line-height: 28px;')
+        q-space
+        q-select(
+          v-model='selectedLifecycle'
+          :options='lifecycleOptions'
+          dense
+          outlined
+          clearable
+          clear-icon='mdi-close'
+          hide-dropdown-icon
+          label='Filtrer par cycle'
+          style='width: 210px'
+          emit-value
+          map-options
+          option-label='label'
+          option-value='value'
+        )
     q-table(
-      flat bordered dense
-      title="Derniers cycles déclenchés"
+      flat
+      bordered
+      dense
+      binary-state-sort
       :rows="rows || []"
       :columns="columns"
       row-key="_id"
       v-model:pagination="pagination"
       v-model:expanded="expanded"
+      :rows-per-page-options='[16, 32, 64, 100]'
+      :pagination-label='(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`'
       :loading="pending"
       :filter="filter"
-      binary-state-sort
       @request="onRequest"
     )
       template(#header="props")
@@ -85,7 +120,7 @@ export default defineComponent({
     const route = useRoute()
     const router = useRouter()
 
-    const { getLifecycleName, getLifecycleIcon, getLifecycleColor } = await useIdentityLifecycles()
+    const { getLifecycleName, getLifecycleIcon, getLifecycleColor, stateList } = await useIdentityLifecycles()
 
     const pagination = ref({
       sortBy: 'desc',
@@ -109,7 +144,7 @@ export default defineComponent({
       query,
       onRequest() {
         pagination.value.page = parseInt(route.query.page as string, 10) || 1
-        pagination.value.rowsPerPage = parseInt(route.query.limit as string, 10) || 18
+        pagination.value.rowsPerPage = parseInt(route.query.limit as string, 10) || 16
       },
       onResponse({ response }) {
         pagination.value.rowsNumber = response._data.total || 0
@@ -120,6 +155,10 @@ export default defineComponent({
     return {
       monacoOptions,
       pagination,
+      lifecycleOptions: computed(() => stateList.value.map((state) => ({
+        label: state?.label || state?.key || 'Inconnu',
+        value: state?.key,
+      }))),
 
       getLifecycleName,
       getLifecycleIcon,
@@ -134,6 +173,21 @@ export default defineComponent({
     }
   },
   computed: {
+    selectedLifecycle: {
+      get(): string | undefined {
+        const lifecycle = this.$route.query.lifecycle
+        return lifecycle ? `${lifecycle}` : undefined
+      },
+      set(v: string | undefined): void {
+        this.$router.replace({
+          query: {
+            ...this.$route.query,
+            lifecycle: v || undefined,
+            page: '1',
+          },
+        })
+      },
+    },
     columns() {
       return [
         {
@@ -164,11 +218,12 @@ export default defineComponent({
     },
   },
   methods: {
+    async refreshLifecycles() {
+      await this.refresh()
+    },
     async onRequest(props) {
       const { page, rowsPerPage: limit, sortBy, descending } = props.pagination
       const filter = props.filter
-
-      console.log('Requesting data with:', { page, limit, sortBy, descending, filter, props })
 
       await this.router.replace({
         query: {

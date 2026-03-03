@@ -282,9 +282,11 @@ export class LifecycleCrudService extends AbstractLifecycleService {
    */
   public async getRecentChanges(
     options?: FilterOptions,
+    lifecycle?: string,
   ): Promise<[number, Query<Array<Lifecycle>, Lifecycle, any, Lifecycle>[]]> {
-    const total = await this.count({})
-    const result = await this.find<Lifecycle>({}, null, {
+    const searchFilter = lifecycle ? { lifecycle } : {}
+    const total = await this.count(searchFilter)
+    const result = await this.find<Lifecycle>(searchFilter, null, {
       populate: 'refId',
       sort: {
         ...options?.sort,

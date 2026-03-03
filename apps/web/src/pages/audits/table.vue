@@ -1,5 +1,5 @@
 <template lang="pug">
-q-page.container.q-pa-md
+q-page.container.q-pa-sm
   q-card(bordered square flat style='border-bottom: none;')
     q-card-section.q-pa-none
       q-toolbar(bordered dense style='height: 28px; line-height: 28px;')
@@ -48,6 +48,7 @@ q-page.container.q-pa-md
     v-model:pagination='pagination'
     :loading='loading'
     :filter='search'
+    :rows-per-page-options='[16, 32, 64, 100]'
     :pagination-label='(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`'
     @request='onRequest'
   )

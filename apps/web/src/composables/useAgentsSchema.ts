@@ -15,6 +15,10 @@ export default function useAgentsSchema() {
         "type": "string",
         "description": "Mot de passe",
       },
+      "password_confirm": {
+        "type": "string",
+        "description": "Confirmation du mot de passe",
+      },
       "email": {
         "type": "string",
         "description": "Adresse e-mail"
@@ -80,7 +84,7 @@ export default function useAgentsSchema() {
         "elements": [
           {
             "type": "Control",
-            "label": "Password",
+            "label": "Mot de passe",
             "scope": "#/properties/password",
             "options": {
               "format": "password"
@@ -88,8 +92,8 @@ export default function useAgentsSchema() {
           },
           {
             "type": "Control",
-            "label": "Password",
-            "scope": "#/properties/password",
+            "label": "Confirmation du mot de passe",
+            "scope": "#/properties/password_confirm",
             "options": {
               "format": "password"
             }

@@ -4,7 +4,6 @@ div.q-pa-md
     q-card-section.q-pa-none
       q-toolbar(bordered dense style="height: 28px; line-height: 28px;")
         q-toolbar-title Historique des changements
-        q-space
         q-btn(
           icon="mdi-refresh"
           color="primary"
@@ -23,6 +22,9 @@ div.q-pa-md
     :rows="rows"
     :columns="columns"
     row-key="_id"
+    binary-state-sort
+    :rows-per-page-options="[5, 10, 20, 50, 100]"
+    rows-per-page-label="Lignes par page"
     v-model:pagination="pagination"
     :loading="loading"
     @request="onRequest"
@@ -83,7 +85,7 @@ div.q-pa-md
         q-space
         .text-caption.text-grey-7
           span(v-if="diffDialog.author") Par: {{ diffDialog.author }}
-          span(v-if="diffDialog.author && diffDialog.date")  -  
+          span(v-if="diffDialog.author && diffDialog.date")  -
           span(v-if="diffDialog.date") Le: {{ diffDialog.date }}
       q-separator
       .q-pa-md.row.justify-center(v-if="diffDialog.loading")

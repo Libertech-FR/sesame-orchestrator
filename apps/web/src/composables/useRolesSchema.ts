@@ -35,10 +35,12 @@ export default function useRolesSchema() {
           "type": "object",
           "properties": {
             "resource": {
-              "type": "string"
+              "type": "string",
+              "description": "Ressource à accéder (ex: /core/roles)"
             },
             "action": {
               "type": "array",
+              "description": "Actions autorisées sur la ressource",
               "items": {
                 "type": "string",
                 "enum": AC_ACTIONS

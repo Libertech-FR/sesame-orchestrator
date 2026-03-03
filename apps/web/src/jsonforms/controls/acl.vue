@@ -19,7 +19,7 @@
       :hide-hint="persistentHint()"
       :error="control.errors !== ''"
       :error-message="control.errors"
-      :clearable="isClearable"
+      :_clearable="isClearable"
       option-label="label"
       option-value="key"
       emit-value
@@ -66,7 +66,7 @@ import { type ControlElement } from '@jsonforms/core'
 import { rendererProps, useJsonFormsControl, type RendererProps } from '@jsonforms/vue'
 import { QSelect } from 'quasar'
 import { computed, defineComponent } from 'vue'
-import { ControlWrapper } from '../common'
+import { ControlWrapper, FieldAddons } from '../common'
 import { useQuasarControl } from '../utils'
 
 type AclOption = {
@@ -92,6 +92,7 @@ const controlRenderer = defineComponent({
   components: {
     ControlWrapper,
     QSelect,
+    FieldAddons,
   },
   props: {
     ...rendererProps<ControlElement>(),

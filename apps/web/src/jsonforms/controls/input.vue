@@ -28,7 +28,7 @@
       :hide-bottom-space="!!control.description"
       :maxlength="maxLength"
       :counter="counter"
-      :clearable="isClearable"
+      :_clearable="isClearable"
       :debounce="100"
       outlined
       stack-label

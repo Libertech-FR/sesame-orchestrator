@@ -1,5 +1,5 @@
 <template lang="pug">
-div
+div.schemas-bar.full-height
   .sesame-sticky-space
   q-bar.q-px-none.sesame-sticky-bar(:style="{ top: topOffset || '0px' }")
     q-tabs(
@@ -75,7 +75,7 @@ div
       span(v-else-if="schemas.length === 0") Tous les schémas sont déjà ajoutés
       span(v-else-if="!readonly") Ajouter un schéma
       span(v-else) Impossible d'ajouter un schéma en mode lecture seule
-  q-tab-panels(v-model="tab" keep-alive)
+  q-tab-panels.schemas-bar__panels(v-model="tab" keep-alive)
     slot(name='items' :tabs="tabs")
       q-tab-panel.q-pa-none(v-for="key in ['inetOrgPerson', ...tabs]" :key="key" :name="key")
         div.q-pa-md Unknown schema "{{ key }}"
@@ -207,3 +207,18 @@ export default defineNuxtComponent({
   },
 })
 </script>
+
+<style lang="scss" scoped>
+.schemas-bar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.schemas-bar__panels {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+</style>

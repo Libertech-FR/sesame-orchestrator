@@ -69,12 +69,16 @@ export default defineNuxtComponent({
   components: {
     JsonForms,
   },
-  setup({ mode, schemaName, manualSchema, manualUiSchema, modelValue, baseUrlValidation, baseUrlSchema }) {
+  setup(props) {
     const renderers = Object.freeze([...quasarRenderers])
 
-    const employeeType = computed(() => modelValue?.inetOrgPerson?.employeeType || 'LOCAL')
+    const employeeType = computed(() => {
+      // `modelValue` can be the full identity object or directly inetOrgPerson.
+      return props.modelValue?.employeeType || props.modelValue?.inetOrgPerson?.employeeType || 'LOCAL'
+    })
 
-    if (!schemaName && (!manualSchema || !manualUiSchema)) {
+
+    if (!props.schemaName && (!props.manualSchema || !props.manualUiSchema)) {
       throw new Error('Either schemaName or manualSchema/manualUiSchema props must be provided')
     }
 
@@ -90,10 +94,10 @@ export default defineNuxtComponent({
       return err[0].message
     }
 
-    if (!schemaName) {
+    if (!props.schemaName) {
       return {
-        schema: computed(() => manualSchema),
-        uischema: computed(() => manualUiSchema),
+        schema: computed(() => props.manualSchema),
+        uischema: computed(() => props.manualUiSchema),
         pending: computed(() => false),
         error: computed(() => null),
         refresh: () => {},
@@ -108,7 +112,7 @@ export default defineNuxtComponent({
       pending,
       error,
       refresh,
-    } = useHttp<any>(`${baseUrlValidation}${schemaName}`, {
+    } = useHttp<any>(`${props.baseUrlValidation}${props.schemaName}`, {
       method: 'GET',
     })
 
@@ -117,18 +121,18 @@ export default defineNuxtComponent({
       pending: pendingUi,
       error: errorUi,
       refresh: refreshUi,
-    } = useHttp<any>(`${baseUrlSchema}${schemaName}`, {
+    } = useHttp<any>(`${props.baseUrlSchema}${props.schemaName}`, {
       method: 'POST',
       params: {
-        mode,
+        mode: props.mode,
       },
       query: {
-        mode,
+        mode: props.mode,
       },
       watch: [employeeType],
-      body: {
-        employeeType,
-      },
+      body: computed(() => ({
+        employeeType: employeeType.value,
+      })),
     })
 
     const schema = computed(() => result.value?.data)

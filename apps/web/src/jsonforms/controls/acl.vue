@@ -1,37 +1,64 @@
 <template lang="pug">
-control-wrapper(
-  v-bind="controlWrapper"
-  :styles="styles"
-  :is-focused="isFocused"
-  :applied-options="appliedOptions"
-  v-model:is-hovered="isHovered"
-)
-  q-select(
-    :model-value="selectedKey"
-    :label="computedLabel"
-    :options="normalizedOptions"
-    :placeholder="appliedOptions.placeholder"
-    :disable="!control.enabled && !isReadonly"
-    :readonly="isReadonly"
-    clear-icon="mdi-close"
-    :required="control.required"
-    :hint="control.description"
-    :hide-hint="persistentHint()"
-    :error="control.errors !== ''"
-    :error-message="control.errors"
-    :clearable="isClearable"
-    option-label="label"
-    option-value="key"
-    emit-value
-    map-options
-    outlined
-    stack-label
-    dense
-    @focus="isFocused = true"
-    @blur="isFocused = false"
-    @update:model-value="onUpdate"
-    v-bind="quasarProps('q-select')"
+  control-wrapper(
+    v-bind="controlWrapper"
+    :styles="styles"
+    :is-focused="isFocused"
+    :applied-options="appliedOptions"
+    v-model:is-hovered="isHovered"
   )
+    q-select(
+      :model-value="selectedKey"
+      :label="computedLabel"
+      :options="normalizedOptions"
+      :placeholder="appliedOptions.placeholder"
+      :disable="!control.enabled && !isReadonly"
+      :readonly="isReadonly"
+      clear-icon="mdi-close"
+      :required="control.required"
+      :hint="control.description"
+      :hide-hint="persistentHint()"
+      :error="control.errors !== ''"
+      :error-message="control.errors"
+      :clearable="isClearable"
+      option-label="label"
+      option-value="key"
+      emit-value
+      map-options
+      outlined
+      stack-label
+      dense
+      @focus="isFocused = true"
+      @blur="isFocused = false"
+      @update:model-value="onUpdate"
+      v-bind="quasarProps('q-select')"
+    )
+      template(#before v-if="appliedOptions?.addons?.before && appliedOptions.addons.before.length")
+        field-addons(
+          position="before"
+          :items="appliedOptions.addons.before"
+          :control-id="control.id"
+        )
+      template(#prepend)
+        field-addons(
+          v-if="appliedOptions?.addons?.prepend && appliedOptions.addons.prepend.length"
+          position="prepend"
+          :items="appliedOptions.addons.prepend"
+          :control-id="control.id"
+        )
+      template(#append)
+        field-addons(
+          v-if="appliedOptions?.addons?.append && appliedOptions.addons.append.length"
+          position="append"
+          :items="appliedOptions.addons.append"
+          :control-id="control.id"
+        )
+      template(#after)
+        field-addons(
+          v-if="appliedOptions?.addons?.after && appliedOptions.addons.after.length"
+          position="after"
+          :items="appliedOptions.addons.after"
+          :control-id="control.id"
+        )
 </template>
 
 <script lang="ts">

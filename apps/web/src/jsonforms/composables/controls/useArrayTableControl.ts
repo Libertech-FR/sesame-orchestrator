@@ -53,6 +53,9 @@ export const useArrayTableControl = ({
 }: UseArrayTableControlOptions) => {
   const control = useQuasarControl(jsonFormsControl, (v) => v ?? clearValue, debounceWait)
   const { $http } = useNuxtApp()
+  const $q = useQuasar()
+
+  const { cancelButton, saveButton, cancelDeleteButton, deleteButton, confirmButton } = useModalButtons()
 
   const rows = computed<Record<string, any>[]>(() => {
     const value = control.control.value.data
@@ -205,8 +208,17 @@ export const useArrayTableControl = ({
   }
 
   const removeRow = (index: number) => {
-    const nextRows = rows.value.filter((_, rowIndex) => rowIndex !== index)
-    control.onChange(nextRows)
+    $q.dialog({
+      title: 'Supprimer l\'élément',
+      message: 'Êtes-vous sûr de vouloir supprimer cet élément ?',
+      persistent: true,
+      ok: deleteButton.value,
+      cancel: cancelDeleteButton.value,
+    })
+    .onOk(() => {
+      const nextRows = rows.value.filter((_, rowIndex) => rowIndex !== index)
+      control.onChange(nextRows)
+    })
   }
 
   const formatCellValue = (value: unknown): string => {

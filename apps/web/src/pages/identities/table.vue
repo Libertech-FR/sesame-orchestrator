@@ -417,21 +417,14 @@ export default defineNuxtComponent({
     },
 
     async deleteIdentity(identity: Record<string, any>) {
+      const { deleteButton, cancelDeleteButton } = useModalButtons()
       this.$q
         .dialog({
           title: 'Confirmation',
           message: 'Voulez-vous vraiment supprimer cette identité ?',
           persistent: true,
-          ok: {
-            push: true,
-            color: 'positive',
-            label: 'Supprimer',
-          },
-          cancel: {
-            push: true,
-            color: 'negative',
-            label: 'Annuler',
-          },
+          ok: deleteButton.value,
+          cancel: cancelDeleteButton.value,
         })
         .onOk(() => {
           this.$http

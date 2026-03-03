@@ -44,9 +44,8 @@
       dense
       v-bind="quasarProps('q-select')"
     )
-      template(#before)
+      template(#before v-if="appliedOptions?.addons?.before && appliedOptions.addons.before.length")
         field-addons(
-          v-if="appliedOptions?.addons?.before && appliedOptions.addons.before.length"
           position="before"
           :items="appliedOptions.addons.before"
           :control-id="control.id"

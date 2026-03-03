@@ -6,9 +6,9 @@ export const AC_ACTIONS = [
 ]
 
 export const AC_ACTION_SUGGESTIONS = [
-  { label: "R", value: ["read"] },
-  { label: "R/W", value: ["read", "create", "update"] },
-  { label: "R/W/D", value: ["read", "create", "update", "delete"] },
+  { label: "Lecture", value: ["read"] },
+  { label: "Lecture/Écriture", value: ["read", "create", "update"] },
+  { label: "Lecture/Écriture/Suppression", value: ["read", "create", "update", "delete"] },
 ]
 
 export default function useRolesSchema() {
@@ -30,7 +30,7 @@ export default function useRolesSchema() {
       },
       "access": {
         "type": "array",
-        "description": "Permissions",
+        "description": "Accès aux ressources",
         "items": {
           "type": "object",
           "properties": {
@@ -90,7 +90,7 @@ export default function useRolesSchema() {
         "elements": [
           {
             "type": "Control",
-            "label": "Access",
+            "label": "Accès aux ressources",
             "scope": "#/properties/access",
             "options": {
               "format": "array-table",

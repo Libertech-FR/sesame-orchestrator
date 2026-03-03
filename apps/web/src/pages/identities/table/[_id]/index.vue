@@ -384,6 +384,7 @@ export default defineNuxtComponent({
         })
     },
     async switchAccountStatus() {
+      const { confirmButton } = useModalButtons()
       if (!this.hasPermission('/management/identities', 'update')) {
         return
       }
@@ -411,10 +412,7 @@ export default defineNuxtComponent({
           title: 'Information',
           message: "L'identité n'a jamais été synchronisée. Impossible de changer le statut.",
           persistent: true,
-          ok: {
-            color: 'warning',
-            label: 'OK !',
-          },
+          ok: confirmButton.value,
         })
         return
       }

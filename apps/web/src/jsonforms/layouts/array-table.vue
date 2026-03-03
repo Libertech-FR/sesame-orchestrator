@@ -6,21 +6,25 @@
     :applied-options="appliedOptions"
     v-model:is-hovered="isHovered"
   )
-    .q-mb-sm
-      q-btn(
-        label="Ajouter"
-        icon="mdi-plus"
-        color="primary"
-        unelevated
-        dense
-        :disable="!canEdit"
-        @click="openCreateDialog"
-      )
+    q-card(bordered flat square)
+      q-card-section.q-pa-none.q-ma-none
+        q-toolbar(bordered dense flat style="height: 32px; line-height: 32px;")
+          q-toolbar-title {{ controlWrapper.label }}
+          q-btn(
+            icon="mdi-plus"
+            unelevated
+            dense
+            round
+            flat
+            :disable="!canEdit"
+            @click="openCreateDialog"
+          )
 
     q-table(
-      flat
       bordered
       dense
+      square
+      flat
       :rows="tableRows"
       :columns="tableColumns"
       row-key="__rowIndex"
@@ -36,6 +40,7 @@
                 flat
                 dense
                 round
+                size="sm"
                 :disable="!canEdit"
                 @click="openEditByIndex(props.row.__rowIndex)"
               )
@@ -45,6 +50,7 @@
                 flat
                 dense
                 round
+                size="sm"
                 :disable="!canEdit"
                 @click="removeRow(props.row.__rowIndex)"
               )
@@ -55,10 +61,10 @@
 
     q-dialog(v-model="dialogOpen" persistent)
       q-card(style="min-width: 560px; max-width: 90vw;")
-        q-card-section
-          .text-h6 {{ editedIndex === null ? 'Ajouter un élément' : "Modifier l'élément" }}
+        q-toolbar.bg-primary.text-white(bordered dense flat style="height: 32px; line-height: 32px;")
+          q-toolbar-title {{ editedIndex === null ? 'Ajouter un élément' : "Modifier l'élément" }}
 
-        q-card-section
+        q-card-section.q-mt-sm
           .column.q-gutter-sm
             json-forms(
               :data="editedRow"
@@ -70,11 +76,15 @@
             )
 
         q-card-actions(align="right")
-          q-btn(flat label="Annuler" @click="closeDialog")
+          q-space
           q-btn(
-            color="primary"
-            unelevated
-            label="Enregistrer"
+            v-bind="cancelButton"
+            @click="closeDialog"
+          )
+          q-btn(
+            color="positive"
+            push
+            :label="editedIndex === null ? 'Ajouter' : 'Enregistrer'"
             :disable="!canEdit"
             @click="saveRow"
           )
@@ -85,7 +95,7 @@ import { type ControlElement } from '@jsonforms/core'
 import { defineComponent, computed } from 'vue'
 import { JsonForms, rendererProps, useJsonFormsControl, type RendererProps } from '@jsonforms/vue'
 import { QBtn, QCard, QCardActions, QCardSection, QDialog, QTable, QTd } from 'quasar'
-import { ControlWrapper } from '../common'
+import { ControlWrapper, FieldAddons } from '../common'
 import { determineClearValue } from '../utils'
 import { useArrayTableControl, type ArrayTableField } from '../composables'
 
@@ -100,6 +110,7 @@ const controlRenderer = defineComponent({
     QCard,
     QCardSection,
     QCardActions,
+    FieldAddons,
     JsonForms,
   },
   props: {
@@ -108,6 +119,7 @@ const controlRenderer = defineComponent({
   setup(props: RendererProps<ControlElement>) {
     const jsonFormsControl = useJsonFormsControl(props)
     const clearValue = determineClearValue([])
+    const { cancelButton, saveButton } = useModalButtons()
     const api = useArrayTableControl({
       jsonFormsControl,
       clearValue,
@@ -181,6 +193,8 @@ const controlRenderer = defineComponent({
       tableColumns,
       openEditByIndex,
       dialogSchema,
+      cancelButton,
+      saveButton,
       dialogUiSchema,
       dialogRenderers,
       onDialogChange,

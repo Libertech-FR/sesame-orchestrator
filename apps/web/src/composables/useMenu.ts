@@ -69,6 +69,15 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       _acl: '/management/lifecycle',
     },
     {
+      icon: 'mdi-clipboard-text-clock',
+      label: 'Historique des changements',
+      path: '/audits/table',
+      color: 'lime-8',
+      hideInMenuBar: false,
+      part: MenuPart.DONNEES,
+      _acl: '/core/audits',
+    },
+    {
       icon: 'mdi-set-merge',
       label: 'Detection des doublons',
       path: '/identities/fusion',

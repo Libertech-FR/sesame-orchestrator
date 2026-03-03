@@ -35,4 +35,9 @@ export class AuditsService extends AbstractServiceSchema<Audits> {
   constructor(@InjectModel(Audits.name) protected _model: Model<Audits>) {
     super()
   }
+
+  public async getCollections(): Promise<string[]> {
+    const values = await this._model.distinct('coll', { coll: { $exists: true, $ne: null } })
+    return values.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).sort()
+  }
 }

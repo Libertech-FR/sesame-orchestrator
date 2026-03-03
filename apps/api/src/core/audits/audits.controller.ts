@@ -1,11 +1,11 @@
-import { Controller, Get, HttpStatus, Param, Res } from '@nestjs/common'
+import { Controller, Get, HttpStatus, Param, Query, Res } from '@nestjs/common'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { ApiTags } from '@nestjs/swagger'
 import { PartialProjectionType } from '~/_common/types/partial-projection.type'
 import { AuditsService } from '~/core/audits/audits.service'
 import { UseRoles } from '~/_common/decorators/use-roles.decorator'
 import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types'
-import { FilterOptions, SearchFilterOptions } from '~/_common/restools'
+import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '~/_common/restools'
 import { Response } from 'express'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Types } from 'mongoose'
@@ -52,6 +52,16 @@ export class AuditsController extends AbstractController {
     metadata: 1,
   }
 
+  protected static readonly searchFields: PartialProjectionType<any> = {
+    coll: 1,
+    documentId: 1,
+    op: 1,
+    'agent.name': 1,
+    'changes.path': 1,
+    'changes.value': 1,
+    'changes.oldValue': 1,
+  }
+
   /**
    * Constructeur du contrôleur AuditsController.
    *
@@ -59,6 +69,20 @@ export class AuditsController extends AbstractController {
    */
   public constructor(private readonly _service: AuditsService) {
     super()
+  }
+
+  @Get('collections')
+  @UseRoles({
+    resource: '/core/audits',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async collections(@Res() res: Response): Promise<Response> {
+    const data = await this._service.getCollections()
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    })
   }
 
   @Get()
@@ -69,9 +93,29 @@ export class AuditsController extends AbstractController {
   })
   public async search(
     @Res() res: Response,
+    @Query('search') search: string,
+    @Query('coll') coll: string,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
   ): Promise<Response> {
-    const [data, total] = await this._service.findAndCount({}, AuditsController.projection, searchFilterOptions)
+    const searchFilter = {}
+
+    if (search && search.trim().length > 0) {
+      const searchRequest = {}
+      searchRequest['$or'] = Object.keys(AuditsController.searchFields).map((key) => {
+        return { [key]: { $regex: `^${search}`, $options: 'i' } }
+      }).filter((item) => item !== undefined)
+      searchFilter['$and'] = [searchRequest]
+      searchFilter['$and'].push(searchFilterSchema)
+    } else {
+      Object.assign(searchFilter, searchFilterSchema)
+    }
+
+    if (coll && coll.trim().length > 0) {
+      searchFilter['coll'] = coll.trim()
+    }
+
+    const [data, total] = await this._service.findAndCount(searchFilter, AuditsController.projection, searchFilterOptions)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,

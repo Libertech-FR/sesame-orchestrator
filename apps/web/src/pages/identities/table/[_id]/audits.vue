@@ -101,6 +101,16 @@ div.q-pa-md
 </template>
 
 <script lang="ts">
+import {
+  buildAuditDiffFromChanges,
+  createDefaultAuditDiffDialogState,
+  fetchAuditDetails,
+  fetchAuditsRows,
+  formatAuditChangeLabel,
+  getAuditOperationColor,
+  getAuditOperationLabel,
+} from '~/composables/useAuditsTable'
+
 export default defineNuxtComponent({
   name: 'IdentitiesIdAuditsPage',
   data() {
@@ -114,21 +124,7 @@ export default defineNuxtComponent({
         rowsPerPage: 10,
         rowsNumber: 0,
       },
-      diffDialog: {
-        open: false,
-        loading: false,
-        hasChanges: false,
-        original: '',
-        modified: '',
-        author: '',
-        date: '',
-      },
-      maxChangesForDiff: 250,
-      maxStringLength: 2000,
-      maxDepth: 6,
-      maxArrayItems: 100,
-      maxObjectKeys: 100,
-      maxJsonLength: 120000,
+      diffDialog: createDefaultAuditDiffDialogState(),
       minLoadingMs: 350,
     }
   },
@@ -204,42 +200,13 @@ export default defineNuxtComponent({
       })
     },
     getOperationLabel(op: string): string {
-      switch (op) {
-        case 'insert':
-          return 'Creation'
-        case 'update':
-          return 'Mise a jour'
-        case 'delete':
-          return 'Suppression'
-        case 'replace':
-          return 'Remplacement'
-        default:
-          return op || 'Inconnue'
-      }
+      return getAuditOperationLabel(op)
     },
     getOperationColor(op: string): string {
-      switch (op) {
-        case 'insert':
-          return 'positive'
-        case 'update':
-          return 'primary'
-        case 'delete':
-          return 'negative'
-        case 'replace':
-          return 'warning'
-        default:
-          return 'grey-7'
-      }
+      return getAuditOperationColor(op)
     },
     formatChangeLabel(change: any): string {
-      const path = change?.path || 'unknown'
-      const type = change?.type || 'CHANGE'
-      return `${type}: ${path}`
-    },
-    toSortField(sortBy: string): string {
-      if (sortBy === 'author') return 'agent.name'
-      if (sortBy === 'op') return 'op'
-      return 'metadata.createdAt'
+      return formatAuditChangeLabel(change)
     },
     async fetchAudits({
       page,
@@ -256,19 +223,18 @@ export default defineNuxtComponent({
       this.loading = true
       const documentId = this.$route.params._id as string
       const coll = 'Identities'
-      const sortField = this.toSortField(sortBy)
 
       try {
-        const res = await this.$http.get(`/core/audits/${coll}/${documentId}`, {
-          query: {
-            page,
-            limit,
-            [`sort[${sortField}]`]: descending ? 'desc' : 'asc',
-          },
+        const result = await fetchAuditsRows({
+          http: this.$http,
+          url: `/core/audits/${coll}/${documentId}`,
+          page,
+          limit,
+          sortBy,
+          descending,
         })
-
-        this.rows = res?._data?.data || []
-        this.pagination.rowsNumber = res?._data?.total || 0
+        this.rows = result.rows
+        this.pagination.rowsNumber = result.total
       } catch (error: any) {
         this.$q.notify({
           message: "Erreur lors du chargement de l'historique des audits",
@@ -300,105 +266,11 @@ export default defineNuxtComponent({
         descending: this.pagination.descending,
       })
     },
-    sanitizeDetailedValue(value: any, depth = 0): any {
-      if (value === null || value === undefined) return value
-
-      if (depth >= this.maxDepth) {
-        return '[truncated: max depth reached]'
-      }
-
-      if (typeof value === 'string') {
-        if (value.length <= this.maxStringLength) return value
-        return `${value.slice(0, this.maxStringLength)}...[truncated ${value.length - this.maxStringLength} chars]`
-      }
-
-      if (typeof value === 'number' || typeof value === 'boolean') {
-        return value
-      }
-
-      if (Array.isArray(value)) {
-        const sliced = value.slice(0, this.maxArrayItems).map((item) => this.sanitizeDetailedValue(item, depth + 1))
-        if (value.length > this.maxArrayItems) {
-          return [
-            ...sliced,
-            `[truncated: ${value.length - this.maxArrayItems} more items]`,
-          ]
-        }
-        return sliced
-      }
-
-      if (typeof value === 'object') {
-        const entries = Object.entries(value)
-        const slicedEntries = entries.slice(0, this.maxObjectKeys)
-        const sanitized: Record<string, any> = {}
-
-        for (const [key, child] of slicedEntries) {
-          sanitized[key] = this.sanitizeDetailedValue(child, depth + 1)
-        }
-
-        if (entries.length > this.maxObjectKeys) {
-          sanitized.__truncatedKeys = `[truncated: ${entries.length - this.maxObjectKeys} more keys]`
-        }
-
-        return sanitized
-      }
-
-      return String(value)
-    },
-    stringifyDiffPayload(payload: Record<string, any>): string {
-      const json = JSON.stringify(payload, null, 2)
-      if (json.length <= this.maxJsonLength) return json
-      return `${json.slice(0, this.maxJsonLength)}\n...[truncated ${json.length - this.maxJsonLength} chars]`
-    },
     buildDiffFromChanges(changes: any[]): { original: string; modified: string; hasChanges: boolean } {
-      if (!Array.isArray(changes) || changes.length === 0) {
-        return {
-          original: '',
-          modified: '',
-          hasChanges: false,
-        }
-      }
-
-      const originalObject: Record<string, any> = {}
-      const modifiedObject: Record<string, any> = {}
-      const selectedChanges = changes.slice(0, this.maxChangesForDiff)
-
-      for (const change of selectedChanges) {
-        const path = Array.isArray(change?.path) ? change.path.join('.') : `${change?.path || ''}`
-        if (!path) continue
-
-        switch (change?.type) {
-          case 'CHANGE':
-            if (Object.prototype.hasOwnProperty.call(change, 'oldValue')) {
-              originalObject[path] = this.sanitizeDetailedValue(change.oldValue)
-            }
-            if (Object.prototype.hasOwnProperty.call(change, 'value')) {
-              modifiedObject[path] = this.sanitizeDetailedValue(change.value)
-            }
-            break
-          case 'CREATE':
-            if (Object.prototype.hasOwnProperty.call(change, 'value')) {
-              modifiedObject[path] = this.sanitizeDetailedValue(change.value)
-            }
-            break
-          case 'REMOVE':
-            if (Object.prototype.hasOwnProperty.call(change, 'oldValue')) {
-              originalObject[path] = this.sanitizeDetailedValue(change.oldValue)
-            }
-            break
-          default:
-            if (Object.prototype.hasOwnProperty.call(change, 'oldValue')) {
-              originalObject[path] = this.sanitizeDetailedValue(change.oldValue)
-            }
-            if (Object.prototype.hasOwnProperty.call(change, 'value')) {
-              modifiedObject[path] = this.sanitizeDetailedValue(change.value)
-            }
-        }
-      }
-
-      if (changes.length > this.maxChangesForDiff) {
+      const diff = buildAuditDiffFromChanges(changes)
+      if (diff.truncated) {
         this.$q.notify({
-          message: `Diff tronque aux ${this.maxChangesForDiff} premiers changements pour eviter un timeout memoire`,
+          message: 'Diff tronque aux 250 premiers changements pour eviter un timeout memoire',
           color: 'warning',
           icon: 'mdi-alert',
           position: 'top-right',
@@ -406,9 +278,9 @@ export default defineNuxtComponent({
       }
 
       return {
-        original: this.stringifyDiffPayload(originalObject),
-        modified: this.stringifyDiffPayload(modifiedObject),
-        hasChanges: true,
+        original: diff.original,
+        modified: diff.modified,
+        hasChanges: diff.hasChanges,
       }
     },
     async openDiffModal(row: any) {
@@ -423,9 +295,8 @@ export default defineNuxtComponent({
         : ''
 
       try {
-        const res = await this.$http.get(`/core/audits/${row._id}`)
-        const audit = res?._data?.data || {}
-        const diff = this.buildDiffFromChanges(res?._data?.data?.changes || [])
+        const audit = await fetchAuditDetails(this.$http, row._id)
+        const diff = this.buildDiffFromChanges(audit?.changes || [])
 
         this.diffDialog.original = diff.original
         this.diffDialog.modified = diff.modified

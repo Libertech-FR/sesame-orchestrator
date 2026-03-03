@@ -1,8 +1,14 @@
-import { Controller } from '@nestjs/common'
+import { Controller, Get, HttpStatus, Param, Res } from '@nestjs/common'
 import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { ApiTags } from '@nestjs/swagger'
 import { PartialProjectionType } from '~/_common/types/partial-projection.type'
 import { AuditsService } from '~/core/audits/audits.service'
+import { UseRoles } from '~/_common/decorators/use-roles.decorator'
+import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types'
+import { FilterOptions, SearchFilterOptions } from '~/_common/restools'
+import { Response } from 'express'
+import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
+import { Types } from 'mongoose'
 
 /**
  * Contrôleur pour la gestion des audits et de l'historique des enregistrements.
@@ -27,7 +33,24 @@ export class AuditsController extends AbstractController {
    * Configuration de la projection pour limiter les champs retournés.
    * Par défaut, tous les champs sont retournés (projection vide).
    */
-  protected static readonly projection: PartialProjectionType<any> = {}
+  protected static readonly projection: PartialProjectionType<any> = {
+    coll: 1,
+    documentId: 1,
+    op: 1,
+    agent: 1,
+    'changes.path': 1,
+    'changes.type': 1,
+    metadata: 1,
+  }
+
+  protected static readonly detailProjection: PartialProjectionType<any> = {
+    coll: 1,
+    documentId: 1,
+    op: 1,
+    agent: 1,
+    changes: 1,
+    metadata: 1,
+  }
 
   /**
    * Constructeur du contrôleur AuditsController.
@@ -36,5 +59,67 @@ export class AuditsController extends AbstractController {
    */
   public constructor(private readonly _service: AuditsService) {
     super()
+  }
+
+  @Get()
+  @UseRoles({
+    resource: '/core/audits',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async search(
+    @Res() res: Response,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+  ): Promise<Response> {
+    const [data, total] = await this._service.findAndCount({}, AuditsController.projection, searchFilterOptions)
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      total,
+      data,
+    })
+  }
+
+  @Get(':coll/:documentId')
+  @UseRoles({
+    resource: '/core/audits',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async searchByDocumentId(
+    @Param('coll') coll: string,
+    @Param('documentId', ObjectIdValidationPipe) documentId: Types.ObjectId,
+    @Res() res: Response,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+  ): Promise<Response> {
+    const [data, total] = await this._service.findAndCount(
+      {
+        coll,
+        documentId,
+      } as any,
+      AuditsController.projection,
+      searchFilterOptions,
+    )
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      total,
+      data,
+    })
+  }
+
+  @Get(':_id([0-9a-fA-F]{24})')
+  @UseRoles({
+    resource: '/core/audits',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async read(
+    @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const data = await this._service.findById(_id, AuditsController.detailProjection)
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    })
   }
 }

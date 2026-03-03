@@ -193,6 +193,13 @@ export default defineNuxtComponent({
           condition: () => hasPermission('/management/identities', 'read'),
         },
         {
+          name: 'audits',
+          icon: 'mdi-clipboard-text-clock',
+          label: 'Historique des changements',
+          action: (i) => navigateToTab(`/identities/table/${i._id}/audits`),
+          condition: () => hasPermission('/core/audits', 'read'),
+        },
+        {
           name: 'jobs',
           icon: 'mdi-book-clock',
           label: 'Journaux des tâches',

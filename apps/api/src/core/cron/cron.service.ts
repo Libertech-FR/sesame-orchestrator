@@ -5,6 +5,10 @@ import { CronHooksService } from './cron-hooks.service'
 import { pick } from 'radash'
 import { CronTaskDTO } from './_dto/config-task.dto'
 import { CronJob } from 'cron'
+import path from 'node:path'
+import { existsSync, readFileSync, statSync } from 'node:fs'
+import { ConfigService } from '@nestjs/config'
+import { toSafeHandlerName } from '~/_common/functions/handler-logger'
 
 @Injectable()
 export class CronService {
@@ -13,6 +17,7 @@ export class CronService {
   public constructor(
     private schedulerRegistry: SchedulerRegistry,
     private readonly cronHooksService: CronHooksService,
+    private readonly configService: ConfigService,
   ) {
   }
 
@@ -110,6 +115,57 @@ export class CronService {
     return {
       ...task,
       _job,
+    }
+  }
+
+  public async readLogs(name: string, tail = 500): Promise<{
+    name: string
+    exists: boolean
+    file: string
+    updatedAt: string | null
+    content: string
+  }> {
+    const safeName = toSafeHandlerName(name)
+    const logDir = this.configService.get('cron.logDirectory') || path.join(process.cwd(), 'logs', 'handlers')
+    const logFile = path.join(logDir, `${safeName}.log`)
+
+    if (!existsSync(logFile)) {
+      return {
+        name,
+        exists: false,
+        file: logFile,
+        updatedAt: null,
+        content: '',
+      }
+    }
+
+    const stats = statSync(logFile)
+    const fullContent = readFileSync(logFile, 'utf-8')
+    const boundedTail = Math.min(Math.max(tail || 200, 1), 2_000)
+    const maxLineChars = 4_000
+    const maxContentChars = 200_000
+
+    const tailedLines = fullContent
+      .split('\n')
+      .slice(-boundedTail)
+      .map((line) => {
+        if (line.length <= maxLineChars) {
+          return line
+        }
+        return `${line.slice(0, maxLineChars)} … [line truncated]`
+      })
+
+    let content = tailedLines.join('\n')
+    if (content.length > maxContentChars) {
+      content = `... [output truncated to last ${maxContentChars} characters]\n${content.slice(-maxContentChars)}`
+    }
+
+    return {
+      name,
+      exists: true,
+      file: logFile,
+      updatedAt: stats.mtime.toISOString(),
+      content,
     }
   }
 }

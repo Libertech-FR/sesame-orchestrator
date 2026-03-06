@@ -1,5 +1,5 @@
 
-import { Controller, Get, Res, HttpStatus, Query } from '@nestjs/common'
+import { Controller, Get, Res, HttpStatus, Query, Param, DefaultValuePipe, ParseIntPipe, NotFoundException } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { CronService } from './cron.service'
 import { Response } from 'express'
@@ -69,10 +69,36 @@ export class CronController {
   })
   @ApiReadResponseDecorator(CronDto)
   public async read(
+    @Param('name') name: string,
     @Res() res: Response,
   ): Promise<Response> {
+    const data = await this.cronService.read(name)
+    if (!data) {
+      throw new NotFoundException(`Cron task <${name}> not found`)
+    }
+
     return res.json({
       statusCode: HttpStatus.OK,
+      data,
+    })
+  }
+
+  @Get(':name/logs')
+  @UseRoles({
+    resource: '/core/cron',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async readLogs(
+    @Param('name') name: string,
+    @Query('tail', new DefaultValuePipe(500), ParseIntPipe) tail: number,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const data = await this.cronService.readLogs(name, tail)
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data,
     })
   }
 }

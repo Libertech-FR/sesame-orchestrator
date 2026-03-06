@@ -51,12 +51,17 @@ export function useDebug() {
   }
 
   const monacoOptions = computed<Monaco.editor.IStandaloneEditorConstructionOptions>(() => {
+    ;(window as any).MonacoEnvironment = {
+      locale: 'fr'
+    }
+
     return {
       theme: $q.dark.isActive ? 'vs-dark' : 'vs-light',
       readOnly: true,
       minimap: {
         enabled: true,
       },
+      largeFileOptimizations: true,
       scrollBeyondLastColumn: 0,
       scrollBeyondLastLine: false,
     }

@@ -3,6 +3,10 @@ import path from 'path'
 import { ConfigService } from '@nestjs/config'
 import { Logger } from '@nestjs/common'
 
+export function toSafeHandlerName(handler: string): string {
+  return handler.replace(/[^a-zA-Z0-9-_]/g, '_').toLowerCase()
+}
+
 function ensureDir(dir: string) {
   try {
     fs.mkdirSync(dir, { recursive: true, mode: 0o777 })
@@ -18,7 +22,7 @@ function stripAnsiCodes(str: string): string {
 }
 
 export function createHandlerLogger(config: ConfigService, handler: string) {
-  const safeHandler = handler.replace(/[^a-zA-Z0-9-_]/g, '_').toLowerCase()
+  const safeHandler = toSafeHandlerName(handler)
   const logDir = config.get('cron.logDirectory') || path.join(process.cwd(), 'logs', 'handlers')
   const logFile = path.join(logDir, `${safeHandler}.log`)
 
@@ -61,7 +65,7 @@ export function createHandlerLogger(config: ConfigService, handler: string) {
   return {
     log: (msg: string) => log(msg),
     error: (msg: string) => error(msg),
-    close: () => () => {
+    close: () => {
       jump(2)
       stream?.close()
     },

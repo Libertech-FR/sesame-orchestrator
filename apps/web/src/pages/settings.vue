@@ -95,6 +95,11 @@ export default defineNuxtComponent({
         label: 'Tâches planifiés',
         _acl: '/core/cron',
       },
+      // {
+      //   route: '/settings/health',
+      //   icon: 'mdi-heart-pulse',
+      //   label: 'Santé applicative',
+      // },
     ])
 
     const navItems = computed(() => {

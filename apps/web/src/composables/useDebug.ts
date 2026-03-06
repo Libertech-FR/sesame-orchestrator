@@ -51,8 +51,10 @@ export function useDebug() {
   }
 
   const monacoOptions = computed<Monaco.editor.IStandaloneEditorConstructionOptions>(() => {
+    const existingMonacoEnvironment = (window as any).MonacoEnvironment ?? {}
     ;(window as any).MonacoEnvironment = {
-      locale: 'fr'
+      ...existingMonacoEnvironment,
+      locale: 'fr',
     }
 
     return {

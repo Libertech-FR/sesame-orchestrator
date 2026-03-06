@@ -84,6 +84,7 @@ dev: ## Start development environment
 		--network dev \
 		--name $(APP_NAME) \
 		-e SESAME_SENTRY_DSN=$(SESAME_SENTRY_DSN) \
+		-e SESAME_CRON_LOG_ROTATE_MAX_SIZE_BYTES=10485760 \
 		-p $(APP_WEB_PORT):3000 \
 		-p $(APP_WEB_PORT_SECURE):3443 \
 		-p $(APP_API_PORT):4000 \

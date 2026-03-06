@@ -12,6 +12,8 @@ import { createHandlerLogger } from '~/_common/functions/handler-logger'
 @Injectable()
 export class CronHooksService {
   private readonly logger = new Logger(CronHooksService.name)
+  private manualRunInProgress = false
+  private manualRunTaskName: string | null = null
 
   private cronHandlerExpression = '0 * * * *' // Toutes les heures
 
@@ -102,7 +104,12 @@ export class CronHooksService {
     await this.handleCron()
   }
 
-  public async runTaskNow(name: string): Promise<boolean> {
+  public async runTaskNow(name: string): Promise<'started' | 'not_found' | 'busy'> {
+    if (this.manualRunInProgress) {
+      this.logger.warn(`Manual run ignored for <${name}>: another task is already running (<${this.manualRunTaskName}>)`)
+      return 'busy'
+    }
+
     let currentTask = this.cronTasks.find((task) => task.name === name)
     if (!currentTask) {
       await this.refreshCronTasksFileCache()
@@ -110,10 +117,13 @@ export class CronHooksService {
     }
 
     if (!currentTask) {
-      return false
+      return 'not_found'
     }
 
     this.logger.warn(`Running cron task manually: ${currentTask.name}`)
+    this.manualRunInProgress = true
+    this.manualRunTaskName = currentTask.name
+
     // Fire-and-forget: the HTTP caller should get an immediate response.
     void this.executeHandlerCommand(currentTask.name, currentTask.handler, currentTask.options)
       .then(() => {
@@ -122,8 +132,12 @@ export class CronHooksService {
       .catch((error) => {
         this.logger.error(`Manual cron task <${currentTask.name}> failed`, error?.message || error)
       })
+      .finally(() => {
+        this.manualRunInProgress = false
+        this.manualRunTaskName = null
+      })
 
-    return true
+    return 'started'
   }
 
   private async handleCron(): Promise<void> {

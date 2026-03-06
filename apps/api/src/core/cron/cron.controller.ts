@@ -1,5 +1,5 @@
 
-import { Body, Controller, DefaultValuePipe, Get, HttpStatus, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, Res } from '@nestjs/common'
+import { Body, ConflictException, Controller, DefaultValuePipe, Get, HttpStatus, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, Res } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { CronService } from './cron.service'
 import { Response } from 'express'
@@ -140,9 +140,12 @@ export class CronController {
     @Param('name') name: string,
     @Res() res: Response,
   ): Promise<Response> {
-    const launched = await this.cronService.runImmediately(name)
-    if (!launched) {
+    const status = await this.cronService.runImmediately(name)
+    if (status === 'not_found') {
       throw new NotFoundException(`Cron task <${name}> not found`)
+    }
+    if (status === 'busy') {
+      throw new ConflictException('Another run-immediately task is already in progress')
     }
 
     return res.json({

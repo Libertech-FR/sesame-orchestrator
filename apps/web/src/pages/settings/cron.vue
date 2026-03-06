@@ -62,10 +62,25 @@
   q-dialog(v-model='logsDialog' maximized)
     q-card.fit.column.no-wrap(style='overflow: hidden;')
       q-toolbar.bg-info.text-white(bordered dense style='height: 28px; line-height: 28px;')
-        q-toolbar-title Logs de la tâche "{{ selectedCronName }}"
+        q-toolbar-title
+          span Logs de la tâche "{{ selectedCronName }}"
+          span.q-ml-sm.text-caption(v-if='logsDialog && selectedCronName') (Actualisation dans {{ logsAutoRefreshCountdown }}s)
         q-space
+        q-btn(
+          flat
+          round
+          dense
+          icon='mdi-play-circle-outline'
+          :loading='logsRunLoading'
+          :disable='!selectedCronName'
+          @click='runSelectedCronImmediately'
+        )
+          q-tooltip.text-body2(anchor='top middle' self='bottom middle') Exécuter immédiatement
+        q-separator.q-mx-xs(vertical inset)
         q-btn(flat round dense icon='mdi-refresh' :loading='logsLoading' @click='loadCronLogs')
+          q-tooltip.text-body2(anchor='top middle' self='bottom middle') Actualiser les logs
         q-btn(flat round dense icon='mdi-close' v-close-popup)
+          q-tooltip.text-body2(anchor='top middle' self='bottom middle') Fermer
       q-separator
       q-card-section.col.q-pa-none(ref='logsContainer' style='min-height: 0; overflow: auto;')
         q-inner-loading(:showing='logsLoading')
@@ -156,6 +171,10 @@ export default defineNuxtComponent({
     const logsMonacoEditor = ref<any>(null)
     const logsScrollDispose = ref<null | (() => void)>(null)
     const logsLoadingMore = ref(false)
+    const logsRunLoading = ref(false)
+    const logsAutoRefreshMs = ref(60_000)
+    const logsAutoRefreshTimer = ref<ReturnType<typeof setInterval> | null>(null)
+    const logsAutoRefreshCountdown = ref(5)
     const cronToggleLoading = reactive<Record<string, boolean>>({})
     const cronRunLoading = reactive<Record<string, boolean>>({})
     const logsMonacoOptions = computed(() => ({
@@ -209,6 +228,10 @@ export default defineNuxtComponent({
       logsMonacoEditor,
       logsScrollDispose,
       logsLoadingMore,
+      logsRunLoading,
+      logsAutoRefreshMs,
+      logsAutoRefreshTimer,
+      logsAutoRefreshCountdown,
       cronToggleLoading,
       cronRunLoading,
       logsMonacoOptions,
@@ -217,13 +240,16 @@ export default defineNuxtComponent({
   watch: {
     logsDialog(isOpen: boolean): void {
       if (isOpen) {
+        this.startLogsAutoRefresh()
         return
       }
 
+      this.stopLogsAutoRefresh()
       this.resetLogsViewerState()
     },
   },
   beforeUnmount(): void {
+    this.stopLogsAutoRefresh()
     this.resetLogsViewerState()
   },
   computed: {
@@ -247,6 +273,36 @@ export default defineNuxtComponent({
     },
   },
   methods: {
+    startLogsAutoRefresh(): void {
+      if (this.logsAutoRefreshTimer || !this.logsDialog) {
+        return
+      }
+
+      const refreshSeconds = Math.max(Math.round(this.logsAutoRefreshMs / 1000), 1)
+      this.logsAutoRefreshCountdown = refreshSeconds
+      this.logsAutoRefreshTimer = setInterval(() => {
+        if (!this.logsDialog || !this.selectedCronName || this.logsLoading || this.logsLoadingMore) {
+          return
+        }
+
+        if (this.logsAutoRefreshCountdown > 1) {
+          this.logsAutoRefreshCountdown -= 1
+          return
+        }
+
+        this.logsAutoRefreshCountdown = refreshSeconds
+        void this.loadCronLogs()
+      }, 1000)
+    },
+    stopLogsAutoRefresh(): void {
+      if (!this.logsAutoRefreshTimer) {
+        return
+      }
+
+      clearInterval(this.logsAutoRefreshTimer)
+      this.logsAutoRefreshTimer = null
+      this.logsAutoRefreshCountdown = Math.max(Math.round(this.logsAutoRefreshMs / 1000), 1)
+    },
     resetLogsViewerState(): void {
       if (this.logsScrollDispose) {
         this.logsScrollDispose()
@@ -272,6 +328,7 @@ export default defineNuxtComponent({
       this.selectedCronName = cronTask?.name || ''
       this.logsDialog = true
       await this.loadCronLogs()
+      this.startLogsAutoRefresh()
     },
     async toggleCronEnabled(cronTask: any): Promise<void> {
       const name = cronTask?.name
@@ -315,7 +372,7 @@ export default defineNuxtComponent({
         this.$q.notify({
           message: `Exécution immédiate lancée pour "${name}".`,
           color: 'positive',
-          position: 'top-right',
+          position: 'bottom-center',
           icon: 'mdi-play-circle-outline',
         })
         await this.refresh()
@@ -328,6 +385,31 @@ export default defineNuxtComponent({
         })
       } finally {
         this.cronRunLoading[name] = false
+      }
+    },
+    async runSelectedCronImmediately(): Promise<void> {
+      if (!this.selectedCronName) {
+        return
+      }
+
+      this.logsRunLoading = true
+      try {
+        await this.$http.post(`/core/cron/${encodeURIComponent(this.selectedCronName)}/run-immediately`)
+        this.$q.notify({
+          message: `Exécution immédiate lancée pour "${this.selectedCronName}".`,
+          color: 'positive',
+          position: 'bottom',
+          icon: 'mdi-play-circle-outline',
+        })
+      } catch (error: any) {
+        this.$q.notify({
+          message: error?.response?._data?.message || `Impossible de lancer immédiatement "${this.selectedCronName}".`,
+          color: 'negative',
+          position: 'bottom',
+          icon: 'mdi-alert-circle-outline',
+        })
+      } finally {
+        this.logsRunLoading = false
       }
     },
     async loadCronLogs(): Promise<void> {
@@ -358,6 +440,9 @@ export default defineNuxtComponent({
         })
       } finally {
         this.logsLoading = false
+        if (this.logsDialog && this.selectedCronName) {
+          this.logsAutoRefreshCountdown = Math.max(Math.round(this.logsAutoRefreshMs / 1000), 1)
+        }
       }
     },
     onLogsEditorLoad(editor: any): void {

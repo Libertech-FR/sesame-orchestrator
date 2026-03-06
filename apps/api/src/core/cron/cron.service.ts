@@ -132,14 +132,13 @@ export class CronService {
     return this.read(name)
   }
 
-  public async runImmediately(name: string): Promise<boolean> {
+  public async runImmediately(name: string): Promise<'started' | 'not_found' | 'busy'> {
     const task = await this.read(name)
     if (!task) {
-      return false
+      return 'not_found'
     }
 
-    await this.cronHooksService.runTaskNow(name)
-    return true
+    return this.cronHooksService.runTaskNow(name)
   }
 
   public async readLogs(name: string, tail = 500): Promise<{

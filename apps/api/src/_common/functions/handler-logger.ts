@@ -21,16 +21,54 @@ function stripAnsiCodes(str: string): string {
   return str.replace(/\x1b\[[0-9;?]*[A-Za-z]/g, '')
 }
 
+function rotateFile(logFile: string, maxFiles: number) {
+  for (let index = maxFiles - 1; index >= 1; index--) {
+    const source = `${logFile}.${index}`
+    const destination = `${logFile}.${index + 1}`
+
+    if (fs.existsSync(source)) {
+      fs.renameSync(source, destination)
+    }
+  }
+
+  fs.renameSync(logFile, `${logFile}.1`)
+}
+
+function rotateHandlerLogIfNeeded(logFile: string, maxSizeBytes: number, maxFiles: number) {
+  if (!fs.existsSync(logFile)) {
+    return
+  }
+
+  const stats = fs.statSync(logFile)
+  if (stats.size < maxSizeBytes) {
+    return
+  }
+
+  try {
+    const oldestArchive = `${logFile}.${maxFiles}`
+    if (fs.existsSync(oldestArchive)) {
+      fs.unlinkSync(oldestArchive)
+    }
+
+    rotateFile(logFile, maxFiles)
+  } catch (err) {
+    Logger.error(`Could not rotate handler log file ${logFile}: ${(err as Error).message}`, rotateHandlerLogIfNeeded.name)
+  }
+}
+
 export function createHandlerLogger(config: ConfigService, handler: string) {
   const safeHandler = toSafeHandlerName(handler)
   const logDir = config.get('cron.logDirectory') || path.join(process.cwd(), 'logs', 'handlers')
   const logFile = path.join(logDir, `${safeHandler}.log`)
+  const logRotateMaxSizeBytes = config.get<number>('cron.logRotateMaxSizeBytes') || 10 * 1024 * 1024
+  const logRotateMaxFiles = config.get<number>('cron.logRotateMaxFiles') || 5
 
   let stream: fs.WriteStream | null = null
   let streamError: Error | null = null
 
   try {
     ensureDir(logDir)
+    rotateHandlerLogIfNeeded(logFile, logRotateMaxSizeBytes, logRotateMaxFiles)
     stream = fs.createWriteStream(logFile, { flags: 'a' })
 
     stream.on('error', (err) => {

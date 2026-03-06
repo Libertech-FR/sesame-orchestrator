@@ -98,6 +98,34 @@ export class CronHooksService {
     this.logger.log('CronHooksService (bootstrap) initialized')
   }
 
+  public async syncCronJobs(): Promise<void> {
+    await this.handleCron()
+  }
+
+  public async runTaskNow(name: string): Promise<boolean> {
+    let currentTask = this.cronTasks.find((task) => task.name === name)
+    if (!currentTask) {
+      await this.refreshCronTasksFileCache()
+      currentTask = this.cronTasks.find((task) => task.name === name)
+    }
+
+    if (!currentTask) {
+      return false
+    }
+
+    this.logger.warn(`Running cron task manually: ${currentTask.name}`)
+    // Fire-and-forget: the HTTP caller should get an immediate response.
+    void this.executeHandlerCommand(currentTask.name, currentTask.handler, currentTask.options)
+      .then(() => {
+        this.logger.log(`Manual cron task <${currentTask.name}> finished`)
+      })
+      .catch((error) => {
+        this.logger.error(`Manual cron task <${currentTask.name}> failed`, error?.message || error)
+      })
+
+    return true
+  }
+
   private async handleCron(): Promise<void> {
     this.logger.verbose('Syncing cron tasks jobs from configs/cron/*.yml')
 

@@ -22,6 +22,8 @@ ENV ALLOW_RUNTIME_BUILD=true
 ENV DO_NOT_TRACK=1
 ENV PYTHONWARNINGS=ignore::UserWarning
 ENV TZ=Europe/Paris
+ENV SESAME_CRON_LOG_ROTATE_MAX_SIZE_BYTES=10485760
+ENV SESAME_CRON_LOG_ROTATE_MAX_FILES=5
 
 WORKDIR /data
 
@@ -41,7 +43,8 @@ RUN apk add --no-cache \
   tzdata \
   bash \
   nano && \
-  mkdir -p /var/log/supervisor
+  mkdir -p /var/log/supervisor /data/apps/api/logs/handlers && \
+  chmod -R 0777 /data/apps/api/logs
 
 RUN ARCH=$(uname -m) && \
   if [ "$ARCH" = "x86_64" ]; then \

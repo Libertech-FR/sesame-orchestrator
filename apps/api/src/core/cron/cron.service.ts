@@ -3,12 +3,13 @@ import { Injectable, Logger } from '@nestjs/common'
 import { SchedulerRegistry } from '@nestjs/schedule'
 import { CronHooksService } from './cron-hooks.service'
 import { pick } from 'radash'
-import { CronTaskDTO } from './_dto/config-task.dto'
+import { ConfigTaskDTO, CronTaskDTO } from './_dto/config-task.dto'
 import { CronJob } from 'cron'
 import path from 'node:path'
-import { existsSync, readFileSync, statSync } from 'node:fs'
+import { closeSync, existsSync, openSync, readFileSync, readSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { ConfigService } from '@nestjs/config'
 import { toSafeHandlerName } from '~/_common/functions/handler-logger'
+import { parse, stringify } from 'yaml'
 
 @Injectable()
 export class CronService {
@@ -118,6 +119,29 @@ export class CronService {
     }
   }
 
+  public async setEnabled(name: string, enabled: boolean): Promise<CronTaskDTO & { _job: Partial<CronJob> } | null> {
+    const updated = this.updateTaskInConfig(name, (task) => {
+      task.enabled = enabled
+    })
+
+    if (!updated) {
+      return null
+    }
+
+    await this.cronHooksService.syncCronJobs()
+    return this.read(name)
+  }
+
+  public async runImmediately(name: string): Promise<boolean> {
+    const task = await this.read(name)
+    if (!task) {
+      return false
+    }
+
+    await this.cronHooksService.runTaskNow(name)
+    return true
+  }
+
   public async readLogs(name: string, tail = 500): Promise<{
     name: string
     exists: boolean
@@ -140,10 +164,46 @@ export class CronService {
     }
 
     const stats = statSync(logFile)
-    const fullContent = readFileSync(logFile, 'utf-8')
-    const boundedTail = Math.min(Math.max(tail || 200, 1), 2_000)
+    const boundedTail = Math.max(tail || 200, 1)
     const maxLineChars = 4_000
-    const maxContentChars = 200_000
+    const maxContentChars = this.configService.get<number>('cron.logRotateMaxSizeBytes') || 10 * 1024 * 1024
+    const maxReadableBytes = Math.max(maxContentChars, 1)
+    const chunkSize = 64 * 1024
+
+    // Read the file backwards in chunks to avoid loading everything in memory.
+    const fileDescriptor = openSync(logFile, 'r')
+    let filePosition = stats.size
+    let bytesReadTotal = 0
+    let lineBreakCount = 0
+    const chunks: Buffer[] = []
+
+    try {
+      while (filePosition > 0 && bytesReadTotal < maxReadableBytes && lineBreakCount <= boundedTail) {
+        const remainingBudget = maxReadableBytes - bytesReadTotal
+        const readSize = Math.min(chunkSize, filePosition, remainingBudget)
+        filePosition -= readSize
+
+        const chunkBuffer = Buffer.allocUnsafe(readSize)
+        const readBytes = readSync(fileDescriptor, chunkBuffer, 0, readSize, filePosition)
+        if (readBytes <= 0) {
+          break
+        }
+
+        const chunk = readBytes === readSize ? chunkBuffer : chunkBuffer.subarray(0, readBytes)
+        chunks.unshift(chunk)
+        bytesReadTotal += readBytes
+
+        for (let index = 0; index < chunk.length; index++) {
+          if (chunk[index] === 0x0a) {
+            lineBreakCount++
+          }
+        }
+      }
+    } finally {
+      closeSync(fileDescriptor)
+    }
+
+    const fullContent = Buffer.concat(chunks).toString('utf-8')
 
     const tailedLines = fullContent
       .split('\n')
@@ -167,5 +227,36 @@ export class CronService {
       updatedAt: stats.mtime.toISOString(),
       content,
     }
+  }
+
+  private updateTaskInConfig(name: string, updater: (task: CronTaskDTO) => void): boolean {
+    const configDir = path.join(process.cwd(), 'configs', 'cron')
+    if (!existsSync(configDir)) {
+      return false
+    }
+
+    const files = readdirSync(configDir).filter((file) => file.endsWith('.yml') || file.endsWith('.yaml'))
+
+    for (const file of files) {
+      const filePath = path.join(configDir, file)
+      const raw = readFileSync(filePath, 'utf-8')
+      const parsed = parse(raw) as ConfigTaskDTO
+      const tasks = parsed?.tasks
+
+      if (!tasks || !Array.isArray(tasks)) {
+        continue
+      }
+
+      const targetTask = tasks.find((task) => task.name === name)
+      if (!targetTask) {
+        continue
+      }
+
+      updater(targetTask)
+      writeFileSync(filePath, stringify(parsed))
+      return true
+    }
+
+    return false
   }
 }

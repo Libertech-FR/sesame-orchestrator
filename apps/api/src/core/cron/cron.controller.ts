@@ -1,5 +1,5 @@
 
-import { Controller, Get, Res, HttpStatus, Query, Param, DefaultValuePipe, ParseIntPipe, NotFoundException } from '@nestjs/common'
+import { Body, Controller, DefaultValuePipe, Get, HttpStatus, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, Res } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { CronService } from './cron.service'
 import { Response } from 'express'
@@ -10,6 +10,12 @@ import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper'
 import { CronDto } from './_dto/cron.dto'
 import { PartialProjectionType } from '~/_common/types/partial-projection.type'
 import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator'
+import { IsBoolean } from 'class-validator'
+
+class UpdateCronEnabledBody {
+  @IsBoolean()
+  enabled: boolean
+}
 
 /**
  * Contrôleur Cron - Endpoints pour les tâches planifiées.
@@ -99,6 +105,53 @@ export class CronController {
     return res.json({
       statusCode: HttpStatus.OK,
       data,
+    })
+  }
+
+  @Patch(':name/enabled')
+  @UseRoles({
+    resource: '/core/cron',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async updateEnabled(
+    @Param('name') name: string,
+    @Body() body: UpdateCronEnabledBody,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const data = await this.cronService.setEnabled(name, body.enabled)
+    if (!data) {
+      throw new NotFoundException(`Cron task <${name}> not found`)
+    }
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data,
+    })
+  }
+
+  @Post(':name/run-immediately')
+  @UseRoles({
+    resource: '/core/cron',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async runImmediately(
+    @Param('name') name: string,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const launched = await this.cronService.runImmediately(name)
+    if (!launched) {
+      throw new NotFoundException(`Cron task <${name}> not found`)
+    }
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data: {
+        name,
+        launched: true,
+        status: 'in_progress',
+      },
     })
   }
 }

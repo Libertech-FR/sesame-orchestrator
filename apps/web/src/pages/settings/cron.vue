@@ -18,10 +18,34 @@
         sesame-core-pan-filters(:columns='columns' mode='simple' placeholder='Rechercher par nom, description, ...')
       template(v-slot:row-actions='{ row }')
         q-btn(
+          :disable='!hasPermission("/core/cron", "update")'
+          :loading='!!cronToggleLoading[row.name]'
+          :color='row.enabled ? "positive" : "warning"'
+          :icon='row.enabled ? "mdi-toggle-switch-outline" : "mdi-toggle-switch-off-outline"'
+          size='12px'
+          flat
+          round
+          dense
+          @click='toggleCronEnabled(row)'
+        )
+          q-tooltip.text-body2 {{ row.enabled ? 'Désactiver' : 'Activer' }} la tâche
+        q-btn(
+          :disable='!hasPermission("/core/cron", "update")'
+          :loading='!!cronRunLoading[row.name]'
+          color='purple'
+          icon='mdi-play-circle-outline'
+          size='12px'
+          flat
+          round
+          dense
+          @click='runCronImmediately(row)'
+        )
+          q-tooltip.text-body2 Exécuter immédiatement
+        q-btn(
           :disable='!hasPermission("/core/cron", "read")'
           color='primary'
           icon='mdi-file-document-outline'
-          size='sm'
+          size='12px'
           flat
           round
           dense
@@ -58,7 +82,7 @@
 
 <script lang="ts">
 import type { LocationQueryValue } from 'vue-router'
-import { computed, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { NewTargetId } from '~/constants/variables'
 
 export default defineNuxtComponent({
@@ -130,6 +154,10 @@ export default defineNuxtComponent({
     const logsContent = ref('')
     const logsExists = ref(false)
     const logsMonacoEditor = ref<any>(null)
+    const logsScrollDispose = ref<null | (() => void)>(null)
+    const logsLoadingMore = ref(false)
+    const cronToggleLoading = reactive<Record<string, boolean>>({})
+    const cronRunLoading = reactive<Record<string, boolean>>({})
     const logsMonacoOptions = computed(() => ({
       ...monacoOptions.value,
       minimap: { enabled: false },
@@ -179,8 +207,24 @@ export default defineNuxtComponent({
       logsContent,
       logsExists,
       logsMonacoEditor,
+      logsScrollDispose,
+      logsLoadingMore,
+      cronToggleLoading,
+      cronRunLoading,
       logsMonacoOptions,
     }
+  },
+  watch: {
+    logsDialog(isOpen: boolean): void {
+      if (isOpen) {
+        return
+      }
+
+      this.resetLogsViewerState()
+    },
+  },
+  beforeUnmount(): void {
+    this.resetLogsViewerState()
   },
   computed: {
     targetId(): LocationQueryValue[] | string {
@@ -203,6 +247,19 @@ export default defineNuxtComponent({
     },
   },
   methods: {
+    resetLogsViewerState(): void {
+      if (this.logsScrollDispose) {
+        this.logsScrollDispose()
+        this.logsScrollDispose = null
+      }
+      this.logsMonacoEditor = null
+      this.logsLoadingMore = false
+      this.logsLoading = false
+      this.logsExists = false
+      this.logsContent = ''
+      this.logsFullyLoaded = false
+      this.logsTail = this.logsTailStep
+    },
     getNextExecution(cronTask: any): string {
       const nextExecution = cronTask?._job?.nextExecution
       if (nextExecution) {
@@ -211,11 +268,67 @@ export default defineNuxtComponent({
       return 'N/A'
     },
     async openLogsModal(cronTask: any): Promise<void> {
+      this.resetLogsViewerState()
       this.selectedCronName = cronTask?.name || ''
-      this.logsTail = this.logsTailStep
-      this.logsFullyLoaded = false
       this.logsDialog = true
       await this.loadCronLogs()
+    },
+    async toggleCronEnabled(cronTask: any): Promise<void> {
+      const name = cronTask?.name
+      if (!name) {
+        return
+      }
+
+      const enabled = !cronTask?.enabled
+      this.cronToggleLoading[name] = true
+      try {
+        await this.$http.patch(`/core/cron/${encodeURIComponent(name)}/enabled`, {
+          body: { enabled },
+        })
+        this.$q.notify({
+          message: enabled ? `Tâche "${name}" activée.` : `Tâche "${name}" désactivée.`,
+          color: 'positive',
+          position: 'top-right',
+          icon: 'mdi-check-circle-outline',
+        })
+        await this.refresh()
+      } catch (error: any) {
+        this.$q.notify({
+          message: error?.response?._data?.message || `Impossible de modifier l'état de la tâche "${name}".`,
+          color: 'negative',
+          position: 'top-right',
+          icon: 'mdi-alert-circle-outline',
+        })
+      } finally {
+        this.cronToggleLoading[name] = false
+      }
+    },
+    async runCronImmediately(cronTask: any): Promise<void> {
+      const name = cronTask?.name
+      if (!name) {
+        return
+      }
+
+      this.cronRunLoading[name] = true
+      try {
+        await this.$http.post(`/core/cron/${encodeURIComponent(name)}/run-immediately`)
+        this.$q.notify({
+          message: `Exécution immédiate lancée pour "${name}".`,
+          color: 'positive',
+          position: 'top-right',
+          icon: 'mdi-play-circle-outline',
+        })
+        await this.refresh()
+      } catch (error: any) {
+        this.$q.notify({
+          message: error?.response?._data?.message || `Impossible de lancer immédiatement "${name}".`,
+          color: 'negative',
+          position: 'top-right',
+          icon: 'mdi-alert-circle-outline',
+        })
+      } finally {
+        this.cronRunLoading[name] = false
+      }
     },
     async loadCronLogs(): Promise<void> {
       if (!this.selectedCronName) {
@@ -249,12 +362,17 @@ export default defineNuxtComponent({
     },
     onLogsEditorLoad(editor: any): void {
       this.logsMonacoEditor = editor
+      if (this.logsScrollDispose) {
+        this.logsScrollDispose()
+        this.logsScrollDispose = null
+      }
+
       const model = editor.getModel()
       const lineCount = model?.getLineCount() || 1
       editor.revealLineNearTop(lineCount)
-      editor.onDidScrollChange(async () => {
+      const disposable = editor.onDidScrollChange(async () => {
         const isAtTop = editor.getScrollTop() <= 0
-        if (!isAtTop || this.logsLoading || this.logsFullyLoaded || !this.logsExists) {
+        if (!isAtTop || this.logsLoading || this.logsLoadingMore || this.logsFullyLoaded || !this.logsExists) {
           return
         }
 
@@ -264,19 +382,25 @@ export default defineNuxtComponent({
           return
         }
 
+        this.logsLoadingMore = true
         this.logsTail = nextTail
         const previousModel = editor.getModel()
         const previousLineCount = previousModel?.getLineCount() || 1
         const anchorLine = editor.getVisibleRanges()?.[0]?.startLineNumber || 1
-        await this.loadCronLogs()
-        this.$nextTick(() => {
-          const updatedModel = editor.getModel()
-          const updatedLineCount = updatedModel?.getLineCount() || previousLineCount
-          const addedLines = Math.max(updatedLineCount - previousLineCount, 0)
-          const nextAnchorLine = Math.min(anchorLine + addedLines, updatedLineCount)
-          editor.revealLineNearTop(nextAnchorLine)
-        })
+        try {
+          await this.loadCronLogs()
+          this.$nextTick(() => {
+            const updatedModel = editor.getModel()
+            const updatedLineCount = updatedModel?.getLineCount() || previousLineCount
+            const addedLines = Math.max(updatedLineCount - previousLineCount, 0)
+            const nextAnchorLine = Math.min(anchorLine + addedLines, updatedLineCount)
+            editor.revealLineNearTop(nextAnchorLine)
+          })
+        } finally {
+          this.logsLoadingMore = false
+        }
       })
+      this.logsScrollDispose = () => disposable.dispose()
     },
   },
 })

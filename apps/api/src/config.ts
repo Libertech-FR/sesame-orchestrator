@@ -158,6 +158,18 @@ export const validationSchema = Joi.object({
     .string()
     .default(path.join(process.cwd(), 'logs', 'handlers')),
 
+  SESAME_CRON_LOG_ROTATE_MAX_SIZE_BYTES: Joi
+    .number()
+    .integer()
+    .min(1)
+    .default(10 * 1024 * 1024),
+
+  SESAME_CRON_LOG_ROTATE_MAX_FILES: Joi
+    .number()
+    .integer()
+    .min(1)
+    .default(5),
+
   SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES: Joi
     .string()
     .default(''),
@@ -214,6 +226,8 @@ export interface ConfigInstance {
   cron: {
     handlerExpression: string
     logDirectory: string
+    logRotateMaxSizeBytes: number
+    logRotateMaxFiles: number
   }
   factorydrive: {
     options:
@@ -331,6 +345,8 @@ export default (): ConfigInstance => ({
   cron: {
     handlerExpression: process.env['SESAME_CRON_HANDLER_EXPRESSION'] || CronExpression.EVERY_HOUR,
     logDirectory: process.env['SESAME_CRON_LOG_DIRECTORY'] || path.join(process.cwd(), 'logs', 'handlers'),
+    logRotateMaxSizeBytes: parseInt(process.env['SESAME_CRON_LOG_ROTATE_MAX_SIZE_BYTES'], 10) || 10 * 1024 * 1024,
+    logRotateMaxFiles: parseInt(process.env['SESAME_CRON_LOG_ROTATE_MAX_FILES'], 10) || 5,
   },
   factorydrive: {
     options: {

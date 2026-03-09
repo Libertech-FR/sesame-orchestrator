@@ -277,14 +277,14 @@ export class LifecycleHooksService extends AbstractLifecycleService {
     for (const lfr of lifecycleRules) {
       for (const idRule of lfr.identities) {
         if (typeof idRule.trigger === 'number' && (idRule.trigger > 0 || ignoreTrigger)) {
-          const dateKey = idRule.dateKey || 'lastLifecycleUpdate'
+          const dateKey = idRule.dateKey || 'lastSync'
 
           try {
             const checkDate = new Date(Date.now() - (idRule.trigger * 1000))
             const filterDate = {}
             filterDate[dateKey] = { $lte: checkDate }
 
-            const identities = await this.identitiesService.model.find({
+            const req = {
               ...idRule.rules,
               lifecycle: {
                 $in: idRule.sources,
@@ -294,9 +294,11 @@ export class LifecycleHooksService extends AbstractLifecycleService {
               // [dateKey]: {
               //   $lte: new Date(Date.now() - (idRule.trigger * 1000)),
               // },
-            })
+            }
+            const identities = await this.identitiesService.model.find(req)
             this.logger.log(`Found ${identities.length} identities to process for trigger in source <${idRule.sources}>`)
             this.logger.verbose(`identities process triggered`, JSON.stringify(idRule, null, 2))
+            this.logger.verbose(`identities process request`, JSON.stringify(req, null, 2))
 
             for (const identity of identities) {
               const updated = await this.identitiesService.model.findOneAndUpdate(

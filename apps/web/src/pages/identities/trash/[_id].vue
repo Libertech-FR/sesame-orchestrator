@@ -31,6 +31,8 @@ q-card.flex.column.fit.absolute(flat)
           q-tab-panel.q-pa-none(name="inetOrgPerson")
             sesame-core-jsonforms-renderer(
               schemaName="inetOrgPerson"
+              v-model:entityId="identity._id"
+              :schema-body-params="{ employeeType: identity.inetOrgPerson.employeeType }"
               v-model="identity.inetOrgPerson"
               v-model:validations="validations"
               :readonly='true'
@@ -39,6 +41,8 @@ q-card.flex.column.fit.absolute(flat)
           q-tab-panel.q-pa-none(v-for="t in tabs" :key="t" :name="t")
             sesame-core-jsonforms-renderer(
               :schema-name="t"
+              v-model:entityId="identity._id"
+              :schema-body-params="{ employeeType: identity.inetOrgPerson.employeeType }"
               v-model="identity.additionalFields.attributes[t]"
               v-model:validations="validations"
               :readonly='true'

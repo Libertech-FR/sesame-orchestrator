@@ -30,11 +30,17 @@
               anchor="top middle"
               self="center middle"
             ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
-    sesame-core-jsonforms-renderer(
+    sesame-core-jsonforms-renderer.fit(
+      :key="`role:${data.role?._id ?? 'new'}`"
       :manualSchema='schema'
       :manualUiSchema='uischema'
+      entityId="data.role?._id"
       v-model="data.role"
       v-model:validations="validations"
+    )
+    sesame-core-pan-informations(
+      v-if="data.role?._id"
+      :data="data.role"
     )
 </template>
 

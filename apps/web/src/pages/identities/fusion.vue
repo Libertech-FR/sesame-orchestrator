@@ -83,13 +83,19 @@ q-page.container
                 template(#items="{ tabs }")
                   q-tab-panel.q-pa-none(name="inetOrgPerson")
                     sesame-core-jsonforms-renderer(
+                      :key="`inetOrgPerson:${identity.inetOrgPerson.employeeType ?? ''}`"
                       schemaName="inetOrgPerson"
+                      v-model:entityId="identity._id"
+                      :schema-body-params="schemaBodyParams"
                       v-model="identity.inetOrgPerson"
                       v-model:validations="validations"
                     )
                   q-tab-panel.q-pa-none(v-for="t in tabs" :key="t" :name="t")
                     sesame-core-jsonforms-renderer(
+                      :key="`${t}:${identity.inetOrgPerson.employeeType ?? ''}`"
                       :schema-name="t"
+                      v-model:entityId="identity._id"
+                      :schema-body-params="schemaBodyParams"
                       v-model="identity.additionalFields.attributes[t]"
                       v-model:validations="validations"
                     )
@@ -171,6 +177,11 @@ export default defineNuxtComponent({
     }
   },
   computed: {
+    schemaBodyParams() {
+      return {
+        employeeType: this.identity?.inetOrgPerson?.employeeType,
+      }
+    },
     includeIgnoredFilter(): string {
       return (this.$route.query['includeIgnored'] as string) || '0'
     },

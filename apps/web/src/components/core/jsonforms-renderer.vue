@@ -6,6 +6,7 @@
     client-only
       json-forms(
         v-if="schema && uischema"
+        :key="jsonFormsInstanceKey"
         @change="onChange"
         @error="onJsonFormsError"
         validationMode="ValidateAndShow"
@@ -26,7 +27,8 @@ import { JsonForms } from '@jsonforms/vue'
 import { quasarRenderers } from '~/jsonforms'
 import { createAjv } from '~/jsonforms/utils/validator'
 import type { ErrorObject } from 'ajv'
-import localize from 'ajv-i18n/localize'
+// import localize from 'ajv-i18n/localize'
+import { useErrorHandling } from '~/composables/useErrorHandling'
 
 export default defineNuxtComponent({
   name: 'SesameCoreJsonformsRendererComponent',
@@ -49,12 +51,20 @@ export default defineNuxtComponent({
       type: String,
       default: '/management/identities/validation/',
     },
+    schemaBodyParams: {
+      type: Object,
+      default: () => ({}),
+    },
     schemaName: {
       type: String,
     },
     modelValue: {
       type: Object,
       default: () => ({}),
+    },
+    entityId: {
+      type: [String, Number],
+      default: null,
     },
     validations: {
       type: Object || null,
@@ -71,27 +81,12 @@ export default defineNuxtComponent({
   },
   setup(props) {
     const renderers = Object.freeze([...quasarRenderers])
+    const { $http } = useNuxtApp()
 
-    const employeeType = computed(() => {
-      // `modelValue` can be the full identity object or directly inetOrgPerson.
-      return props.modelValue?.employeeType || props.modelValue?.inetOrgPerson?.employeeType || 'LOCAL'
-    })
-
-
-    if (!props.schemaName && (!props.manualSchema || !props.manualUiSchema)) {
-      throw new Error('Either schemaName or manualSchema/manualUiSchema props must be provided')
-    }
-
-    const createTranslator = (locale) => (key: string, defaultMessage: string | undefined, context: { error: ErrorObject }) => {
-      const regex = /^(?!.*\s)([a-zA-Z0-9_-]+)(\.[a-zA-Z0-9_-]+)*$/
-      if (regex.test(key) || defaultMessage || !context.error.schema) {
+    const createTranslator = (locale: string) => {
+      return (key: string, defaultMessage: string | undefined, context: { error: ErrorObject }) => {
         return defaultMessage
       }
-
-      const err = [context.error]
-      localize[locale](err)
-
-      return err[0].message
     }
 
     if (!props.schemaName) {
@@ -116,27 +111,44 @@ export default defineNuxtComponent({
       method: 'GET',
     })
 
-    const {
-      data: resultUi,
-      pending: pendingUi,
-      error: errorUi,
-      refresh: refreshUi,
-    } = useHttp<any>(`${props.baseUrlSchema}${props.schemaName}`, {
-      method: 'POST',
-      params: {
-        mode: props.mode,
-      },
-      query: {
-        mode: props.mode,
-      },
-      watch: [employeeType],
-      body: computed(() => ({
-        employeeType: employeeType.value,
-      })),
-    })
+    const schemaBodyParamsSnapshot = computed(() => JSON.stringify(props.schemaBodyParams ?? {}))
+    const schemaBodyParams = computed(() => JSON.parse(schemaBodyParamsSnapshot.value))
+    const resultUi = ref<any>(null)
+    const pendingUi = ref(false)
+    const errorUi = ref<any>(null)
+    let fetchUiRequestId = 0
+
+    const refreshUi = async () => {
+      const requestId = ++fetchUiRequestId
+      pendingUi.value = true
+      errorUi.value = null
+      try {
+        const response = await $http.$post(`${props.baseUrlSchema}${props.schemaName}`, {
+          query: {
+            mode: props.mode,
+          },
+          body: schemaBodyParams.value,
+        })
+
+        // Ignore stale responses when multiple requests overlap.
+        if (requestId === fetchUiRequestId) {
+          resultUi.value = response
+        }
+      } catch (error: any) {
+        if (requestId === fetchUiRequestId) {
+          errorUi.value = error
+        }
+      } finally {
+        if (requestId === fetchUiRequestId) {
+          pendingUi.value = false
+        }
+      }
+    }
+
+    watch([() => props.schemaName, () => props.mode, schemaBodyParamsSnapshot], refreshUi, { immediate: true })
 
     const schema = computed(() => result.value?.data)
-    const uischema = computed(() => resultUi.value?.data)
+    const uischema = computed(() => resultUi.value?.data ?? resultUi.value)
 
     return {
       schema,
@@ -213,6 +225,9 @@ export default defineNuxtComponent({
           'q-select': { dense: true },
         },
       }
+    },
+    jsonFormsInstanceKey(): string {
+      return [this.schemaName || 'manual', this.mode, this.entityId || this.$route.fullPath].join(':')
     },
   },
 })

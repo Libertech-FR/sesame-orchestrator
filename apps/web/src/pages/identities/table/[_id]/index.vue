@@ -162,23 +162,50 @@
       top-offset='38px'
     )
       template(#items="{ tabs }")
-        q-tab-panel.q-pa-none(name="inetOrgPerson")
-          sesame-core-jsonforms-renderer(
-            schemaName="inetOrgPerson"
-            v-model="identity.inetOrgPerson"
-            v-model:validations="validations"
-            :readonly="identity.state === IdentityState.TO_SYNC || !hasPermission('/management/identities', 'update')"
-            :mode="isNew ? 'create' : 'update'"
+        q-tab-panel.q-pa-none.column.no-wrap.full-height(name="inetOrgPerson")
+          .col.overflow-auto(style="min-height: 0")
+            sesame-core-jsonforms-renderer.full-width(
+              :key="`inetOrgPerson:${schemaBodyParams.employeeType ?? ''}`"
+              schemaName="inetOrgPerson"
+              :entityId="identity._id"
+              :schema-body-params="schemaBodyParams"
+              v-model="identity.inetOrgPerson"
+              v-model:validations="validations"
+              :readonly="identity.state === IdentityState.TO_SYNC || !hasPermission('/management/identities', 'update')"
+              :mode="isNew ? 'create' : 'update'"
+            )
+          sesame-core-pan-informations(
+            v-if="identity?._id"
+            :data="identity"
           )
-        q-tab-panel.q-pa-none(v-for="t in tabs" :key="t" :name="t")
-          sesame-core-jsonforms-renderer(
-            :schema-name="t"
-            v-model="identity.additionalFields.attributes[t]"
-            v-model:validations="validations"
-            :readonly="identity.state === IdentityState.TO_SYNC || !hasPermission('/management/identities', 'update')"
-            :mode="isNew ? 'create' : 'update'"
+            template(#actions-right)
+              span
+                q-tooltip.text-body2.bg-lime-8.text-white(anchor="top middle" self="bottom middle")
+                  span Dernier import: {{ identity.lastSync ? $dayjs(identity.lastSync).format('DD/MM/YYYY HH:mm:ss') : 'N/A' }}
+                q-icon(name="mdi-database-import" size="16px" left)
+                small {{ identity.lastSync ? $dayjs(identity.lastSync).fromNow() : 'N/A' }}
+              q-separator.q-mx-sm(vertical inset)
+              span
+                q-tooltip.text-body2.bg-purple-8.text-white(anchor="top middle" self="bottom middle")
+                  span Dernière synchronisation: {{ identity.lastBackendSync ? $dayjs(identity.lastBackendSync).format('DD/MM/YYYY HH:mm:ss') : 'N/A' }}
+                q-icon(name="mdi-database-export" size="16px" left)
+                small {{ identity.lastBackendSync ? $dayjs(identity.lastBackendSync).fromNow() : 'N/A' }}
+        q-tab-panel.q-pa-none.column.no-wrap.full-height(v-for="t in tabs" :key="t" :name="t")
+          .col.overflow-auto(style="min-height: 0")
+            sesame-core-jsonforms-renderer.full-width(
+              :key="`${t}:${schemaBodyParams.employeeType ?? ''}`"
+              :schema-name="t"
+              :entityId="identity._id"
+              :schema-body-params="schemaBodyParams"
+              v-model="identity.additionalFields.attributes[t]"
+              v-model:validations="validations"
+              :readonly="identity.state === IdentityState.TO_SYNC || !hasPermission('/management/identities', 'update')"
+              :mode="isNew ? 'create' : 'update'"
+            )
+          sesame-core-pan-informations(
+            v-if="identity?._id"
+            :data="identity"
           )
-
   q-dialog(v-model="resetPasswordModal" persistent medium)
     q-card(style="width:800px")
       q-toolbar.bg-primary(flat)
@@ -229,6 +256,11 @@ export default defineNuxtComponent({
     },
     validations() {
       return this.identity?.additionalFields?.validations || {}
+    },
+    schemaBodyParams() {
+      return {
+        employeeType: this.identity?.inetOrgPerson?.employeeType,
+      }
     },
     hasValidations() {
       if (this.validations) {

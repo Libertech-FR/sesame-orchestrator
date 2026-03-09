@@ -25,6 +25,7 @@ import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecyc
  */
 function transformTriggerToSeconds(value: number | string): number | undefined {
   let isValid = false
+  const secondsInDay = 24 * 60 * 60
 
   if (value === undefined || value === null) {
     return undefined
@@ -41,7 +42,7 @@ function transformTriggerToSeconds(value: number | string): number | undefined {
    * - Pour les chaînes : doit correspondre au format '\d+[dms]' (nombre suivi de d, m ou s)
    */
   if (isNumber(value)) {
-    isValid = value < 0
+    isValid = value > 0
   } else if (isString(value)) {
     const timeRegex = /^\d+[dms]$/
     if (timeRegex.test(value)) {
@@ -62,7 +63,17 @@ function transformTriggerToSeconds(value: number | string): number | undefined {
    * Le signe du nombre est préservé (négatif reste négatif)
    */
   if (isNumber(value)) {
-    return value * 24 * 60 * 60 // Conversion jours → secondes avec préservation du signe
+    /**
+     * Compat:
+     * - petites valeurs numériques (< 1 jour) sont historiquement des jours
+     * - grandes valeurs numériques (>= 1 jour en secondes) sont considérées déjà en secondes
+     *   pour supporter les triggers explicitement fournis en secondes (ex: 2592000)
+     */
+    if (value >= secondsInDay) {
+      return value
+    }
+
+    return value * secondsInDay
   }
 
   /**
@@ -159,7 +170,7 @@ function ValidateRulesOrTrigger(validationOptions?: ValidationOptions) {
  * @example
  * {
  *   sources: ['OFFICIAL'],
- *   dateKey: 'lastLifecycleUpdate',
+ *   dateKey: 'lastSync',
  *   trigger: 90, // 90 jours
  *   target: 'MANUAL',
  *   mutation: { status: 'archived' }
@@ -192,15 +203,15 @@ export class ConfigRulesObjectIdentitiesDTO {
    * Clé de date utilisée pour calculer le déclencheur temporel
    *
    * @type {string}
-   * @default 'lastLifecycleUpdate'
+   * @default 'lastSync'
    * @description Nom du champ de date dans le document d'identité à utiliser
    * comme référence pour calculer le délai du trigger.
    *
-   * @example 'lastLifecycleUpdate', 'createdAt', 'lastModified'
+   * @example 'lastSync', 'createdAt', 'lastModified'
    */
   @IsOptional()
   @IsString()
-  public dateKey: string = 'lastLifecycleUpdate'
+  public dateKey: string = 'lastSync'
 
   /**
    * Règles de filtrage conditionnelles pour l'application de la transition

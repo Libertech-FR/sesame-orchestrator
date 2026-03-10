@@ -15,6 +15,20 @@ export class KeyringsCreateQuestions {
   parseName(val: string) {
     return val;
   }
+
+  @Question({
+    message: 'Roles (separés par une virgule, si vide: "admin") ?',
+    name: 'roles',
+  })
+  parseRoles(val: string) {
+    const roles = val?.split(',').map((role) => role.trim()).filter((role) => role !== '');
+
+    if (roles.length === 0) {
+      return ['admin'];
+    }
+
+    return roles;
+  }
 }
 
 @SubCommand({ name: 'create' })
@@ -48,6 +62,7 @@ export class KeyringsCreateCommand extends CommandRunner {
           username: key.name,
           displayName: key.name,
           token: key.token,
+          roles: key.roles,
         }),
         false,
         options,
@@ -59,7 +74,60 @@ export class KeyringsCreateCommand extends CommandRunner {
   }
 }
 
-@Command({ name: 'keyrings', arguments: '<task>', subCommands: [KeyringsCreateCommand] })
+@SubCommand({ name: 'list' })
+export class KeyringsListCommand extends CommandRunner {
+  public constructor(
+    protected moduleRef: ModuleRef,
+    private readonly keyringsService: KeyringsService,
+  ) {
+    super();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async run(inputs: string[], options: any): Promise<void> {
+    try {
+      const keyrings = (await this.keyringsService.find<Keyrings>({})) as unknown as Keyrings[];
+      console.table(
+        keyrings.map((keyring) => ({
+          name: keyring.name,
+          suspendedAt: keyring.suspendedAt ?? null,
+          allowedNetworks: keyring.allowedNetworks ?? [],
+        })),
+      );
+    } catch (error) {
+      console.error('Error listing keyrings', error);
+    }
+  }
+}
+
+@SubCommand({ name: 'delete' })
+export class KeyringsDeleteCommand extends CommandRunner {
+  public constructor(
+    protected moduleRef: ModuleRef,
+    private readonly keyringsService: KeyringsService,
+  ) {
+    super();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async run(inputs: string[], options: any): Promise<void> {
+    const name = inputs[0];
+    if (!name) {
+      console.error('Missing keyring name. Usage: console keyrings delete <name>');
+      return;
+    }
+
+    try {
+      const keyring = (await this.keyringsService.findOne<Keyrings>({ name })) as unknown as Keyrings;
+      await this.keyringsService.delete<Keyrings>(keyring._id);
+      console.log(`Keyring "${name}" deleted successfully`);
+    } catch (error) {
+      console.error(`Error deleting keyring "${name}"`, error);
+    }
+  }
+}
+
+@Command({ name: 'keyrings', arguments: '<task>', subCommands: [KeyringsCreateCommand, KeyringsListCommand, KeyringsDeleteCommand] })
 export class KeyringsCommand extends CommandRunner {
   public constructor(protected moduleRef: ModuleRef) {
     super();

@@ -51,6 +51,9 @@ import { InternalLogger } from './core/logger/internal.logger'
     const app = await CommandFactory.runWithoutClosing(AppModule, {
       logger,
       errorHandler: (err) => {
+        if (err instanceof Error && 'code' in err && err.code === 'commander.help') {
+          process.exit(0)
+        }
         console.error(err)
         process.exit(1)
       },

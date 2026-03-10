@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsIP, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { IsDateString, IsIP, IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto';
 
 export class KeyringsCreateDto extends CustomFieldsDto {
@@ -19,6 +19,10 @@ export class KeyringsCreateDto extends CustomFieldsDto {
 
   @IsDateString()
   public suspendedAt?: Date;
+
+  @IsString({ each: true })
+  @IsOptional()
+  public roles?: string[];
 }
 
 export class KeyringsDto extends KeyringsCreateDto {

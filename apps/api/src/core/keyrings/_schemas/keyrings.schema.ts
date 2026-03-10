@@ -24,6 +24,12 @@ export class Keyrings extends AbstractSchema {
   })
   public allowedNetworks?: string[];
 
+  @Prop({
+    type: [String],
+    default: [],
+  })
+  public roles?: string[];
+
   @Prop({ type: Date })
   public suspendedAt?: Date;
 }

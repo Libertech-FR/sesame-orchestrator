@@ -7,7 +7,7 @@ export const resolveNumericStep = (
   schema: JsonSchema | undefined,
   options?: Options,
 ): number => {
-  const defaultStep = schema?.type === 'integer' ? 1 : 0.1
+  const defaultStep = schema?.type === 'integer' || schema?.type === 'number' ? 1 : 0.1
 
   return options?.step ?? defaultStep
 }

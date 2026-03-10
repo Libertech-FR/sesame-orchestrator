@@ -1,4 +1,5 @@
 import { ModuleRef } from '@nestjs/core';
+import dayjs from 'dayjs';
 import { Command, CommandRunner, InquirerService, Question, QuestionSet, SubCommand } from 'nest-commander';
 import { ApiSession } from '~/_common/data/api-session';
 import { AuthService } from '~/core/auth/auth.service';
@@ -67,7 +68,11 @@ export class KeyringsCreateCommand extends CommandRunner {
         false,
         options,
       );
-      console.log('Keyring created successfully', access_token);
+      console.log('Keyring created successfully !');
+      console.log('Name: ', key.name);
+      console.log('Roles: ', key.roles);
+      console.log('Suspended At: ', key.suspendedAt ? dayjs(key.suspendedAt).format('DD/MM/YYYY HH:mm:ss') : 'Never');
+      console.log('Token: ', access_token);
     } catch (error) {
       console.error('Error creating keyring', error);
     }

@@ -26,7 +26,7 @@ export class Keyrings extends AbstractSchema {
 
   @Prop({
     type: [String],
-    default: [],
+    default: ['admin'],
   })
   public roles?: string[];
 

@@ -95,9 +95,11 @@ export class KeyringsListCommand extends CommandRunner {
       console.table(
         keyrings.map((keyring) => ({
           name: keyring.name,
-          suspendedAt: keyring.suspendedAt ?? null,
-          allowedNetworks: keyring.allowedNetworks ?? [],
-        })),
+          suspendedAt: keyring.suspendedAt ? dayjs(keyring.suspendedAt).format('DD/MM/YYYY HH:mm:ss') : 'Never',
+          roles: keyring.roles.length > 0 ? keyring.roles : ['admin'],
+          allowedNetworks: keyring.allowedNetworks.length > 0 ? keyring.allowedNetworks : ['0.0.0.0/0'],
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
       );
     } catch (error) {
       console.error('Error listing keyrings', error);

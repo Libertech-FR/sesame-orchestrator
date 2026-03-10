@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { Types } from 'mongoose';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
@@ -28,6 +28,11 @@ export class KeyringsController extends AbstractController {
     // suspendedAt: 1,
   };
 
+  protected static readonly searchFields: PartialProjectionType<any> = {
+    name: 1,
+    roles: 1,
+  };
+
   public constructor(private readonly _service: KeyringsService) {
     super();
   }
@@ -48,32 +53,24 @@ export class KeyringsController extends AbstractController {
     @Res() res: Response,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
+    @Query('search') search: string,
   ): Promise<Response> {
-    //TODO: search tree by parentId
+    const searchFilter = {}
+
+    if (search && search.trim().length > 0) {
+      searchFilter['$or'] = Object.keys(KeyringsController.searchFields).map((key) => {
+        return { [key]: { $regex: `^${search}`, $options: 'i' } }
+      }).filter(item => item !== undefined)
+    }
+
     const [data, total] = await this._service.findAndCount(
-      searchFilterSchema,
+      { ...searchFilter, ...searchFilterSchema },
       KeyringsController.projection,
       searchFilterOptions,
     );
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,
-      data,
-    });
-  }
-
-  @Get(':_id([0-9a-fA-F]{24})')
-  @ApiParam({ name: '_id', type: String })
-  @ApiReadResponseDecorator(KeyringsDto)
-  public async read(
-    @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
-    @Res() res: Response,
-  ): Promise<Response> {
-    const data = await this._service.findById(_id, {
-      token: 0,
-    });
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
       data,
     });
   }

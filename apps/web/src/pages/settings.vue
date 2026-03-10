@@ -96,6 +96,12 @@ export default defineNuxtComponent({
         _acl: '/core/cron',
       },
       {
+        route: '/settings/keyrings',
+        icon: 'mdi-key-chain',
+        label: 'trousseau de clés API',
+        _acl: '/core/keyrings',
+      },
+      {
         route: '/settings/health',
         icon: 'mdi-heart-pulse',
         label: 'Santé applicative',

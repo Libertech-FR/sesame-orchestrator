@@ -176,6 +176,9 @@ dbs: ## Start databases
 
 stop: ## Stop the container
 	@docker stop $(APP_NAME) || true
+
+stop-all: ## Stop all containers
+	@docker stop $(APP_NAME) || true
 	@docker stop $(BASE_NAME)-mongodb || true
 	@docker stop $(BASE_NAME)-redis || true
 	@docker stop $(BASE_NAME)-maildev || true

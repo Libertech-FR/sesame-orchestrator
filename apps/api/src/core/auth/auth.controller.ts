@@ -44,7 +44,7 @@ export class AuthController extends AbstractController {
     this.logger.debug(`Session data delivered for ${identity._id} (${identity.email}) with ${JSON.stringify(user)}`);
 
     const ac = await this.rolesService.getRolesBuilder()
-    console.log('ac.getGrants()', ac.getGrants())
+    // console.log('ac.getGrants()', ac.getGrants())
 
     return res.status(HttpStatus.OK).json({
       user: {

@@ -38,7 +38,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     if (!user) return done(new ForbiddenException(), false);
 
     const roles = [...Array.isArray(payload.identity?.roles) ? payload.identity.roles : []]
-    if (!roles.includes('admin') && payload.identity?._id === '000000000000000000000000') {
+    if (!roles.includes('admin') && (payload.identity?._id === '000000000000000000000000')) {
+      roles.push('admin')
+    }
+
+    if (roles.length === 0 && payload.scopes.includes('api')) {
       roles.push('admin')
     }
 

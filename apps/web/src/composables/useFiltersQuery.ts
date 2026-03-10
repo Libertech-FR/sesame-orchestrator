@@ -37,6 +37,16 @@ export type ColumnType = {
 
 const comparatorTypes = ref<ComparatorType[]>([
   {
+    label: "Est vide/non défini",
+    querySign: '~',
+    value: '~',
+    icon: 'mdi-tilde',
+    type: ['text', 'number', 'date', 'array'],
+    multiplefields: false,
+    prefix: '',
+    suffix: '',
+  },
+  {
     label: 'Est un booléen',
     querySign: '?',
     value: '?',
@@ -225,7 +235,7 @@ const getLabelByName = (columns: Ref<QTableProps['columns'] & { type: string }[]
  * @returns comparator and field extracted from the key
  */
 const extractComparator = (key: string): { comparator: string, field: string } | null => {
-  const match = key.match(/^(\:|\?|\||\#|\!|\>|\<|\^|\@)+/m)
+  const match = key.match(/^(\:|\?|\||\#|\!|\>|\<|\^|\@|\~)+/m)
 
   if (!match) return null
 
@@ -435,6 +445,12 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
       case '@':
         if (filter.items && filter.items.length > 0) {
           query[filterKey] = filter.items.map((item) => `${comparator?.prefix || ''}${item}${comparator?.suffix || ''}`)
+        }
+        break
+
+      case '~':
+        if (value) {
+          query[filterKey] = value
         }
         break
 

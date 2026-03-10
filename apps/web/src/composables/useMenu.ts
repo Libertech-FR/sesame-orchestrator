@@ -150,7 +150,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
     {
       icon: 'mdi-account-switch-outline',
       label: 'Fusionnées',
-      path: '/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0&filters[!:primaryEmployeeNumber]=null',
+      path: '/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0&filters[~primaryEmployeeNumber]=true',
       color: 'linear-gradient(135deg, #7C3AED 0%, #EC4899 50%, #F97316 100%)',
       textColor: 'white',
       badge: { color: 'linear-gradient(135deg, #7C3AED 0%, #EC4899 50%, #F97316 100%)', textColor: 'white' },

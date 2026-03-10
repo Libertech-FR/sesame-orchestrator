@@ -96,7 +96,7 @@ q-card.transparent(style='min-width: 45vw; max-width: 90vw')
                 span {{ scope.opt.label }}
       q-input.col(
         style='min-width: 300px'
-        v-if="!comparator?.multiplefields && optionsMapping.length === 0 && comparator?.querySign !== '?'"
+        v-if="!comparator?.multiplefields && optionsMapping.length === 0 && comparator?.querySign !== '?' && comparator?.querySign !== '~'"
         v-model='filter.value'
         label='Valeur'
         :prefix="comparator?.prefix"
@@ -120,7 +120,7 @@ q-card.transparent(style='min-width: 45vw; max-width: 90vw')
       )
       q-select.col(
         style='min-width: 300px'
-        v-if="!comparator?.multiplefields && optionsMapping.length > 0"
+        v-if="!comparator?.multiplefields && optionsMapping.length > 0 && comparator?.querySign !== '~'"
         v-model='filter.value'
         label='Valeur'
         :prefix="comparator?.prefix"
@@ -135,6 +135,20 @@ q-card.transparent(style='min-width: 45vw; max-width: 90vw')
         use-input
         use-chips
         map-options
+        dense
+        outlined
+      )
+      q-select.col(
+        style='min-width: 300px'
+        v-if="comparator?.querySign === '~'"
+        v-model='filter.value'
+        label='Valeur'
+        :prefix="comparator?.prefix"
+        :suffix="comparator?.suffix"
+        :type='searchInputType'
+        :readonly='!filter.operator'
+        :options="['true', 'false']"
+        emit-value
         dense
         outlined
       )
@@ -342,7 +356,7 @@ export default defineNuxtComponent({
     const operator = detectInitialOperator()
     const comp = comparatorTypes.value.find((comp) => comp.value === operator)
 
-    if (comp?.type.includes('date') && initialFilter.value) {
+    if (comp?.type.includes('date') && comp?.querySign !== '~' && initialFilter.value) {
       const dateValue = dayjs(initialFilter.value).format('YYYY-MM-DDTHH:mm')
       initialValue.value = dateValue
     } else {

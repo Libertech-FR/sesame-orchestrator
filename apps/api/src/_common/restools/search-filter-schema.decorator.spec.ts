@@ -102,6 +102,14 @@ describe('search-filter-schema', () => {
     ).toStrictEqual({ age: { $ne: 18 } })
   })
 
+  it('test not empty filter', () => {
+    expect(
+      filterSchema({
+        '~patterns': 'true',
+      }),
+    ).toStrictEqual({ patterns: { $exists: true, $nin: [null, ''] } })
+  })
+
 
   it('test not equal null filter', () => {
     expect(

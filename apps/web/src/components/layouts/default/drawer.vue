@@ -3,7 +3,7 @@ q-drawer.flex(v-model="drawer" side="left" :mini="true" :breakpoint="0" bordered
   template(#mini)
     q-scroll-area.fit.mini-slot.cursor-pointer
       q-list
-        q-item(href="/" clickable v-ripple)
+        q-item(to="/" clickable v-ripple)
           q-item-section(avatar)
             q-icon(name="mdi-home")
         q-separator

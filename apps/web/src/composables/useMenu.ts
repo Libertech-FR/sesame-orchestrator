@@ -23,6 +23,7 @@ type MenuPartItem = {
 
 function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): useMenuReturnType {
   const menuParts = ref<MenuPartItem[]>(DefaultMenuParts)
+  const menuEntries = (config?.menus?.entries as any[]) || []
   const { hasPermission, hasPermissionStartsWith } = useAccessControl()
 
   if (config?.menus?.parts) {
@@ -158,7 +159,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       hideInMenuBar: false,
       _acl: '/management/identities',
     },
-    ...config?.menus?.entries
+    ...menuEntries
       .filter((entry: any) => {
         if (entry._acl) {
           return hasPermissionStartsWith([entry._acl])

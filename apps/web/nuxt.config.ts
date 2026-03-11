@@ -2,7 +2,6 @@ import { resolve } from 'path'
 import { existsSync, readFileSync, statSync, writeFileSync } from 'fs'
 import openapiTS, { astToString, COMMENT_HEADER } from 'openapi-typescript'
 import { defineNuxtConfig } from 'nuxt/config'
-import { parse } from 'yaml'
 import * as consola from 'consola'
 import setupApp from './src/server/extension.setup'
 
@@ -266,20 +265,6 @@ export default defineNuxtConfig({
   },
   hooks: {
     ready: async (nuxt) => {
-      try {
-        const menus = parse(readFileSync('./config/menus.yml', 'utf8') || '{}')
-        nuxt.options.appConfig.menus = { ...menus || {} }
-      } catch (error) {
-        console.debug('[Nuxt] Error while reading menus.yml', error)
-      }
-
-      try {
-        const identitiesColumns = parse(readFileSync('./config/identities-columns.yml', 'utf8') || '{}')
-        nuxt.options.appConfig.identitiesColumns = { ...identitiesColumns || {} }
-      } catch (error) {
-        console.debug('[Nuxt] Error while reading identities-columns.yml', error)
-      }
-
       const forceOpenapiRefresh = /true|on|yes|1/i.test(`${process.env.SESAME_FORCE_OPENAPI_TYPES_REFRESH}`)
       const openapiTypesPath = '.nuxt/types/service-api.d.ts'
       const maxOpenapiTypesAgeMs = 1000 * 60 * 15

@@ -1,7 +1,7 @@
 <template lang="pug">
   q-header
     q-toolbar.bg-primary.text-white(style={ height: '32px' })
-      q-btn.q-pl-none(flat stretch @click="backToIndex()")
+      q-btn.q-pl-none(flat stretch href='/')
         q-avatar(square)
           q-img(src="/config/logo.png" error-src="/default.png" alt="Sesame logo")
         q-toolbar-title SESAME
@@ -104,9 +104,6 @@ export default defineNuxtComponent({
     }
   },
   methods: {
-    backToIndex() {
-      this.$router.push('/')
-    },
     async syncAll() {
       this.syncing({ count: this.badgesValues.TO_SYNC })
       this.$http.post('/core/backends/syncall', {

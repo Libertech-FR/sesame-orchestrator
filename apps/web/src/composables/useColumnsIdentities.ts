@@ -79,6 +79,7 @@ type useColumnsIdentitesReturnType = {
 export function useColumnsIdentites(): useColumnsIdentitesReturnType {
   const dayjs = useDayjs()
   const config = useAppConfig()
+  const identitiesEntries = (config?.identitiesColumns?.entries as any[]) || []
 
   const columns = ref<QTableProps['columns'] & { type: string }[]>([
     {
@@ -87,7 +88,7 @@ export function useColumnsIdentites(): useColumnsIdentitesReturnType {
       field: 'state',
       align: 'left',
     },
-    ...config?.identitiesColumns?.entries || [],
+    ...identitiesEntries,
     {
       name: 'metadata.lastUpdatedAt',
       label: 'Date de modification',
@@ -111,14 +112,14 @@ export function useColumnsIdentites(): useColumnsIdentitesReturnType {
   })) as ColumnConfig[])
 
   const visibleColumns = ref<QTableProps['visibleColumns']>([
-    ...config?.identitiesColumns?.entries.map((col: any) => col.name) || [],
+    ...identitiesEntries.map((col: any) => col.name),
     'metadata.lastUpdatedAt',
     'metadata.createdAt',
     'state',
   ])
 
   const columnsType = ref<ColumnType[]>([
-    ...config?.identitiesColumns?.entries.map((col: any) => {
+    ...identitiesEntries.map((col: any) => {
       // console.log('Processing column config', col)
       return {
         name: col.name,

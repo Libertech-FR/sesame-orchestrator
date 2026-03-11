@@ -198,7 +198,7 @@ export default defineNuxtConfig({
       },
     },
     extras: {
-      animations: 'all',
+      animations: IS_DEV ? 'all' : [],
     },
   },
   monacoEditor: {

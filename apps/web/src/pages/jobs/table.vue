@@ -110,7 +110,7 @@ q-page.container.q-pa-sm
         q-td(colspan="100%" style="padding: 0")
           MonacoEditor(
             style="height: 45vh; width: 100%"
-            :model-value="JSON.stringify(props.row?.result, null, 2)"
+            :model-value="stringifyForEditor(props.row?.result)"
             :options="monacoOptions"
             lang="json"
           )
@@ -123,6 +123,7 @@ export default defineComponent({
   data() {
     return {
       expanded: [] as string[],
+      editorJsonCache: new WeakMap<object, string>(),
       foptions: [
         { label: 'Ok', value: '9' },
         { label: 'En erreur', value: '-1' },
@@ -287,6 +288,27 @@ export default defineComponent({
     },
     open(path): void {
       window.open(path, '_blank')
+    },
+    stringifyForEditor(payload: unknown): string {
+      if (payload && typeof payload === 'object') {
+        const cached = this.editorJsonCache.get(payload as object)
+        if (cached) {
+          return cached
+        }
+      }
+
+      let value = ''
+      try {
+        value = JSON.stringify(payload ?? null, null, 2) ?? 'null'
+      } catch {
+        value = String(payload)
+      }
+
+      if (payload && typeof payload === 'object') {
+        this.editorJsonCache.set(payload as object, value)
+      }
+
+      return value
     },
     expandRow(props): void {
       this.expanded = this.expanded.includes(props.row.jobId) ? [] : [props.row.jobId]

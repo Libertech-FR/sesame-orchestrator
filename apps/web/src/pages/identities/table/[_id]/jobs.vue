@@ -61,9 +61,9 @@ div
             q-separator(v-if="tabs[keyCompute + '_' + key]")
             q-tab-panels.overflow-auto(v-model="tabs[keyCompute + '_' + key]")
               q-tab-panel(name="params")
-                MonacoEditor(style="height: 45vh; width: 100%" :model-value="JSON.stringify(job.params, null, 2)" :options="monacoOptions" lang="json")
+                MonacoEditor(style="height: 45vh; width: 100%" :model-value="stringifyForEditor(job.params)" :options="monacoOptions" lang="json")
               q-tab-panel(name="result")
-                MonacoEditor(style="height: 45vh; width: 100%;" :model-value="JSON.stringify(job.result, null, 2)" :options="monacoOptions" lang="json")
+                MonacoEditor(style="height: 45vh; width: 100%;" :model-value="stringifyForEditor(job.result)" :options="monacoOptions" lang="json")
       q-timeline-entry.text-h5(v-if='empty' icon='mdi-flag-off' title='Fin de la liste...' color="red")
 </template>
 
@@ -73,6 +73,7 @@ export default defineNuxtComponent({
   data() {
     return {
       tabs: {},
+      editorJsonCache: new WeakMap<object, string>(),
       jobsByOptions: [
         { label: 'Jour', value: 'DD/MM/YYYY' },
         { label: 'Mois', value: 'MM/YYYY' },
@@ -160,6 +161,27 @@ export default defineNuxtComponent({
         default:
           return 'mdi-help'
       }
+    },
+    stringifyForEditor(payload: unknown): string {
+      if (payload && typeof payload === 'object') {
+        const cached = this.editorJsonCache.get(payload as object)
+        if (cached) {
+          return cached
+        }
+      }
+
+      let value = ''
+      try {
+        value = JSON.stringify(payload ?? null, null, 2) ?? 'null'
+      } catch {
+        value = String(payload)
+      }
+
+      if (payload && typeof payload === 'object') {
+        this.editorJsonCache.set(payload as object, value)
+      }
+
+      return value
     },
   },
 })

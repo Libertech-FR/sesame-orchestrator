@@ -61,7 +61,7 @@ export function useDebug() {
       theme: $q.dark.isActive ? 'vs-dark' : 'vs-light',
       readOnly: true,
       minimap: {
-        enabled: true,
+        enabled: false,
       },
       largeFileOptimizations: true,
       scrollBeyondLastColumn: 0,

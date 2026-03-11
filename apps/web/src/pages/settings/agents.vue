@@ -87,7 +87,7 @@ export default defineNuxtComponent({
     }
   },
   async setup() {
-    const { useHttpPaginationOptions, useHttpPaginationReactive } = usePagination()
+    const { useHttpPaginationOptions, useHttpPaginationReactive } = usePagination({ name: 'settings-agents' })
     const { toPathWithQueries, navigateToTab } = useRouteQueries()
 
     const paginationOptions = useHttpPaginationOptions()

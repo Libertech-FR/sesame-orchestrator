@@ -4,7 +4,7 @@ q-dialog(:model-value="true" transition-show='none' transition-hide='none' full-
     q-toolbar.bg-primary.text-white(flat)
       q-btn(flat @click="drawer = !drawer" round dense icon="mdi-menu")
       q-toolbar-title Paramètres
-      q-btn(icon="mdi-close" flat round dense @click="router.push('/')")
+      q-btn(icon="mdi-close" flat round dense to='/')
     .flex.fit(:style='{ flexDirection: $q.screen.gt.sm ? "row" : "column" }')
       .col-0
         q-tabs.full-height.border-right(
@@ -53,7 +53,8 @@ export default defineNuxtComponent({
     const tab = computed({
       get: () => router.currentRoute.value.path,
       set: (val: string) => {
-        window.location.href = val
+        // window.location.href = val
+        router.push(val)
       },
     })
     const drawer = ref(true)

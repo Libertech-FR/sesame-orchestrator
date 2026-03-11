@@ -71,7 +71,7 @@ export default defineNuxtComponent({
     }
   },
   async setup() {
-    const { useHttpPaginationOptions, useHttpPaginationReactive } = usePagination()
+    const { useHttpPaginationOptions, useHttpPaginationReactive } = usePagination({ name: 'settings-keyrings' })
     const { hasPermission } = useAccessControl()
     const paginationOptions = useHttpPaginationOptions()
 

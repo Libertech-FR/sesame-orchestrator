@@ -87,7 +87,7 @@ export default defineNuxtComponent({
     }
   },
   async setup() {
-    const { useHttpPaginationOptions, useHttpPaginationReactive } = usePagination()
+    const { useHttpPaginationOptions, useHttpPaginationReactive } = usePagination({ name: 'settings-roles' })
     const { toPathWithQueries, navigateToTab } = useRouteQueries()
     const { hasPermission } = useAccessControl()
 

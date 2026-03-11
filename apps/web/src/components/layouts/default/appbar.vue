@@ -25,7 +25,7 @@
       )
 
       q-btn(
-        @click="$router.push('/settings/agents')"
+        to='/settings/agents'
         v-if="hasPermissionStartsWith(['/core', '/settings'])"
         icon="mdi-cog"
         size="md"

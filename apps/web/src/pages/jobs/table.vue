@@ -118,8 +118,6 @@ q-page.container.q-pa-sm
 </template>
 
 <script lang="ts">
-import * as Monaco from 'monaco-editor'
-
 export default defineComponent({
   name: 'JobsIndexPage',
   data() {

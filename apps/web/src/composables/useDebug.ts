@@ -1,4 +1,4 @@
-import * as Monaco from 'monaco-editor'
+import type { editor } from 'monaco-editor'
 
 export function useDebug() {
   const $q = useQuasar()
@@ -50,7 +50,7 @@ export function useDebug() {
     }
   }
 
-  const monacoOptions = computed<Monaco.editor.IStandaloneEditorConstructionOptions>(() => {
+  const monacoOptions = computed<editor.IStandaloneEditorConstructionOptions>(() => {
     const existingMonacoEnvironment = (window as any).MonacoEnvironment ?? {}
     ;(window as any).MonacoEnvironment = {
       ...existingMonacoEnvironment,

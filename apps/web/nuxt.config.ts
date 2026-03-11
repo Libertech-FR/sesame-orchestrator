@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { readFileSync, writeFileSync } from 'fs'
+import { existsSync, readFileSync, statSync, writeFileSync } from 'fs'
 import openapiTS, { astToString, COMMENT_HEADER } from 'openapi-typescript'
 import { defineNuxtConfig } from 'nuxt/config'
 import { parse } from 'yaml'
@@ -8,8 +8,9 @@ import setupApp from './src/server/extension.setup'
 
 const SESAME_APP_API_URL = process.env.SESAME_APP_API_URL || 'http://localhost:4002'
 const SESAME_ALLOWED_HOSTS = process.env.SESAME_ALLOWED_HOSTS ? process.env.SESAME_ALLOWED_HOSTS.split(',') : []
+const IS_DEV = process.env.NODE_ENV === 'development'
 
-if (SESAME_ALLOWED_HOSTS.length === 0 && !/localhost/.test(SESAME_APP_API_URL) && process.env.NODE_ENV === 'development') {
+if (SESAME_ALLOWED_HOSTS.length === 0 && !/localhost/.test(SESAME_APP_API_URL) && IS_DEV) {
   SESAME_ALLOWED_HOSTS.push(new URL(SESAME_APP_API_URL).hostname)
 }
 
@@ -53,9 +54,9 @@ export default defineNuxtConfig({
     ...sslCfg,
   },
   devtools: {
-    enabled: process.env.NODE_ENV === 'development',
+    enabled: IS_DEV,
     timeline: {
-      enabled: true,
+      enabled: IS_DEV,
     },
   },
   css: ['~/assets/sass/global.sass'],
@@ -86,7 +87,7 @@ export default defineNuxtConfig({
     'nuxt-quasar-ui',
     '@vueuse/nuxt',
     'dayjs-nuxt',
-    '@nuxt/devtools',
+    ...(IS_DEV ? ['@nuxt/devtools'] : []),
     'nuxt-monaco-editor',
     ...setupApp(),
   ],
@@ -219,7 +220,7 @@ export default defineNuxtConfig({
       template: {
         preprocessOptions: {
           pug: {
-            pretty: true,
+            pretty: IS_DEV,
           },
         },
       },
@@ -279,10 +280,22 @@ export default defineNuxtConfig({
         console.debug('[Nuxt] Error while reading identities-columns.yml', error)
       }
 
+      const forceOpenapiRefresh = /true|on|yes|1/i.test(`${process.env.SESAME_FORCE_OPENAPI_TYPES_REFRESH}`)
+      const openapiTypesPath = '.nuxt/types/service-api.d.ts'
+      const maxOpenapiTypesAgeMs = 1000 * 60 * 15
+
+      if (!forceOpenapiRefresh && existsSync(openapiTypesPath)) {
+        const ageMs = Date.now() - statSync(openapiTypesPath).mtimeMs
+        if (ageMs < maxOpenapiTypesAgeMs) {
+          console.log('[OpenapiTS] Skip generation (cache still fresh).')
+          return
+        }
+      }
+
       console.log('[OpenapiTS] Generating .nuxt/types/service-api.d.ts...')
       try {
         const fileData = await openapiTS(`${SESAME_APP_API_URL}/swagger/json`)
-        writeFileSync('.nuxt/types/service-api.d.ts', `${COMMENT_HEADER}${astToString(fileData)}`)
+        writeFileSync(openapiTypesPath, `${COMMENT_HEADER}${astToString(fileData)}`)
         console.log('[OpenapiTS] Generated .nuxt/types/service-api.d.ts !')
       } catch (error) {
         console.debug('[OpenapiTS] Error while generating .nuxt/types/service-api.d.ts', error)

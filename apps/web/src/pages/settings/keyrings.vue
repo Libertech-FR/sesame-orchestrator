@@ -62,8 +62,8 @@ export default defineNuxtComponent({
         },
         {
           name: 'suspendedAt',
-          label: 'Suspendu le',
-          field: (row) => (row.suspendedAt ? this.$dayjs(row.suspendedAt).format('DD/MM/YYYY HH:mm:ss') : 'N/A'),
+          label: 'Expire',
+          field: (row) => (row.suspendedAt ? this.$dayjs(row.suspendedAt).format('DD/MM/YYYY HH:mm:ss') : 'Jamais'),
           align: 'left',
           sortable: true,
         },

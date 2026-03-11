@@ -12,7 +12,7 @@ q-drawer.flex(v-model="drawer" side="left" :mini="true" :breakpoint="0" bordered
           q-item(
             clickable
             v-ripple
-            :href="encodePath(menu.path)" :active="encodePath(menu.path) === $route.fullPath"
+            :to="encodePath(menu.path)" :active="encodePath(menu.path) === $route.fullPath"
             active-class="q-item--active"
           )
             q-separator(v-if='encodePath(menu.path) === $route.fullPath' vertical color='primary' size="5px" style='position: absolute; left: 0; height: 100%; margin-top: -8px;')

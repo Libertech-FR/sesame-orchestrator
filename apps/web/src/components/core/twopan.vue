@@ -34,6 +34,16 @@ q-splitter.fit.q-custom-splitter.absolute.q-pa-sm(
         :selected-rows-label="(numberOfRows) => `${numberOfRows} entrée(s) sélectionnée(s)`"
         dense flat binary-state-sort
       )
+        template(v-slot:loading)
+          q-inner-loading(showing color='primary')
+            .full-width.q-px-md
+              q-skeleton(
+                v-for='index in loadingSkeletonRows'
+                :key='`twopan-loading-row-${index}`'
+                type='text'
+                height='18px'
+                class='q-my-sm'
+              )
         template(v-slot:top="props")
           slot(name="before-top" v-bind="{ ...props, selected, clearSelection }")
             slot(name="before-top-left" v-bind="{ ...props, selected, clearSelection }")
@@ -234,6 +244,11 @@ export default defineNuxtComponent({
     },
   },
   computed: {
+    loadingSkeletonRows(): number {
+      const rowsPerPage = Number(this.pagination?.rowsPerPage) || 12
+
+      return Math.min(Math.max(rowsPerPage, 6), 20)
+    },
     visibleColumnsSelected(): QTableProps['visibleColumns'] {
       if (!this.visibleColumns || this.visibleColumns.length === 0) {
         return (this.columns || []).map((column) => column.name)

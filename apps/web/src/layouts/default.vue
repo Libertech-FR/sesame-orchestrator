@@ -33,6 +33,9 @@ export default defineNuxtComponent({
   data() {
     return {
       es: null as ReconnectingEventSource | null,
+      removeRouteBeforeEachGuard: null as (() => void) | null,
+      removeRouteAfterEachHook: null as (() => void) | null,
+      removeRouteErrorHook: null as (() => void) | null,
       drawer: true,
       menuParts: [],
 
@@ -42,6 +45,21 @@ export default defineNuxtComponent({
     }
   },
   async setup() {
+    const $q = useQuasar()
+
+    $q.loadingBar.setDefaults({
+      color: 'purple',
+      size: '15px',
+      position: 'bottom'
+    })
+
+    setInterval(() => {
+      $q.loadingBar.start()
+      setTimeout(() => {
+        $q.loadingBar.stop()
+      }, 1000)
+    }, 1000)
+
     const identityStateStore = useIdentityStateStore()
     const { menuParts, getMenuByPart, initialize } = useMenu(identityStateStore)
 
@@ -106,6 +124,17 @@ export default defineNuxtComponent({
   mounted() {
     const auth = useAuth()
 
+    this.removeRouteBeforeEachGuard = this.$router.beforeEach((_to, _from, next) => {
+      this.$q.loadingBar.start()
+      next()
+    })
+    this.removeRouteAfterEachHook = this.$router.afterEach(() => {
+      this.$q.loadingBar.stop()
+    })
+    this.removeRouteErrorHook = this.$router.onError(() => {
+      this.$q.loadingBar.stop()
+    })
+
     const esUrl = new URL(window.location.origin + '/api/core/backends/sse')
     esUrl.searchParams.append('id', '' + auth.user?._id)
     esUrl.searchParams.append('key', '' + auth.user?.sseToken)
@@ -114,6 +143,11 @@ export default defineNuxtComponent({
     this.es.onmessage = this.onmessage.bind(this)
   },
   destroyed() {
+    this.removeRouteBeforeEachGuard?.()
+    this.removeRouteAfterEachHook?.()
+    this.removeRouteErrorHook?.()
+    this.$q.loadingBar.stop()
+
     if (this.es) {
       this.es.close()
     }

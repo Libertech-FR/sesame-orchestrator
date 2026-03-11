@@ -390,51 +390,51 @@ export default defineNuxtComponent({
 </script>
 
 <style scoped>
-::v-deep .q-table .leftid {
+:deep(.q-table .leftid) {
   color: white;
   background: green !important;
 }
 
-::v-deep .q-table .leftidlight {
+:deep(.q-table .leftidlight) {
   color: black;
   background: #cfe4d4 !important;
 }
 
-::v-deep .q-table .rightid {
+:deep(.q-table .rightid) {
   color: white;
   background: darkred !important;
 }
 
-::v-deep .q-table .rightidlight {
+:deep(.q-table .rightidlight) {
   color: black;
   background: #ecd6d6 !important;
 }
 
-::v-deep .q-table td.seplight {
+:deep(.q-table td.seplight) {
   border-left: 3px solid rgba(0, 0, 0, 0.12) !important;
   border-right: 3px solid rgba(0, 0, 0, 0.12) !important;
   width: 50px;
 }
 
-::v-deep .q-dark .q-table td.seplight {
+:deep(.q-dark .q-table td.seplight) {
   border-left: 3px solid rgba(255, 255, 255, 0.28) !important;
   border-right: 3px solid rgba(255, 255, 255, 0.28) !important;
 }
 
-::v-deep .q-dark .q-table .leftid {
+:deep(.q-dark .q-table .leftid) {
   background: darkgreen !important;
 }
-::v-deep .q-dark .q-table .leftidlight {
+:deep(.q-dark .q-table .leftidlight) {
   color: white;
   background: #253027 !important;
 }
 
-::v-deep .q-dark .q-table .rightidlight {
+:deep(.q-dark .q-table .rightidlight) {
   color: white;
   background: #362124 !important;
 }
 
-::v-deep .q-dark .q-table .rightid {
+:deep(.q-dark .q-table .rightid) {
   background: darkred !important;
 }
 </style>

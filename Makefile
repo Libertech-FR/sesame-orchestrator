@@ -177,6 +177,22 @@ dbs: ## Start databases
 stop: ## Stop the container
 	@docker stop $(APP_NAME) || true
 
+nuxt-status: ## Show Nuxt supervisor status
+	@docker exec -it $(APP_NAME) sh /etc/supervisor/supervisor-manager.sh status web
+
+supervisor-reload: ## Reload supervisor config in running container
+	@docker exec -it $(APP_NAME) sh /etc/supervisor/supervisor-manager.sh reread
+	@docker exec -it $(APP_NAME) sh /etc/supervisor/supervisor-manager.sh update
+
+nuxt-restart: ## Restart Nuxt only via supervisor
+	@docker exec -it $(APP_NAME) sh /etc/supervisor/supervisor-manager.sh restart web
+
+nuxt-stop: ## Stop Nuxt only via supervisor
+	@docker exec -it $(APP_NAME) sh /etc/supervisor/supervisor-manager.sh stop web
+
+nuxt-start: ## Start Nuxt only via supervisor
+	@docker exec -it $(APP_NAME) sh /etc/supervisor/supervisor-manager.sh start web
+
 stop-all: ## Stop all containers
 	@docker stop $(APP_NAME) || true
 	@docker stop $(BASE_NAME)-mongodb || true

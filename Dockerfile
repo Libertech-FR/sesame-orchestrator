@@ -58,6 +58,16 @@ RUN ARCH=$(uname -m) && \
 RUN cp /usr/share/zoneinfo/$TZ /etc/localtime \
   && echo $TZ > /etc/timezone
 
+RUN printf '%s\n' \
+  '#!/bin/sh' \
+  'exec /bin/sh /etc/supervisor/supervisor-manager.sh "$@"' \
+  > /usr/local/bin/supervisor-manager \
+  && printf '%s\n' \
+  '#!/bin/sh' \
+  'exec supervisor-manager "$@"' \
+  > /usr/local/bin/nuxt-supervisor \
+  && chmod +x /usr/local/bin/supervisor-manager /usr/local/bin/nuxt-supervisor
+
 RUN yarn install \
   --prefer-offline \
   --pure-lockfile \

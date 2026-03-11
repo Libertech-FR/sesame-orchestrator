@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import { JsonForms } from '@jsonforms/vue'
-import { quasarRenderers } from '~/jsonforms'
+import { quasarRenderers } from '~/jsonforms/renderers'
 import { createAjv } from '~/jsonforms/utils/validator'
 import type { ErrorObject } from 'ajv'
 // import localize from 'ajv-i18n/localize'

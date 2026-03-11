@@ -108,7 +108,7 @@ q-page.container.q-pa-sm
               span(v-text="'(' + props.row?.jobId + ')'" class="text-caption")
       q-tr(v-if="props.expand" :props="props")
         q-td(colspan="100%" style="padding: 0")
-          MonacoEditor(
+          LazyMonacoEditor(
             style="height: 45vh; width: 100%"
             :model-value="stringifyForEditor(props.row?.result)"
             :options="monacoOptions"

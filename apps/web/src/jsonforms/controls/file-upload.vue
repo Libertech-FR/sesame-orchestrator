@@ -90,7 +90,7 @@ import { determineClearValue } from '../utils'
 import { useMediaPickerControl } from '../composables'
 import { QField, QAvatar, QIcon, QBtn, QChip } from 'quasar'
 import { fileTypeFromBuffer } from 'file-type'
-import mime from 'mime'
+import { getMimeTypeFromExtension } from '~/utils/mime'
 
 const controlRenderer = defineComponent({
   name: 'FileUploadControl',
@@ -222,7 +222,7 @@ const controlRenderer = defineComponent({
       const src = item?.thumbnail || item?.value || ''
       const ext = getFileExtension(typeof src === 'string' ? src : '')
       if (!ext) return ''
-      return mime.getType(ext) || ''
+      return getMimeTypeFromExtension(ext)
     }
 
     const getMimeIcon = (item: any) => {

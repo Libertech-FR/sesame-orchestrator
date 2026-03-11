@@ -10,7 +10,7 @@
           q-tooltip.text-body2(:delay="200") Afficher la version aplatie et écrasée de l'identité
     q-separator
     client-only
-      MonacoEditor.fit(
+      LazyMonacoEditor.fit(
         :model-value='JSON.stringify(crushedIdentity, null, 2)'
         :options='monacoOptions'
         lang='json'

@@ -86,7 +86,7 @@
         q-inner-loading(:showing='logsLoading')
         div.text-center(v-if='!logsLoading && !logsExists').text-grey-7 Aucun fichier de log trouvé pour cette tâche.
         client-only(v-if='logsExists')
-          MonacoEditor.fit(
+          LazyMonacoEditor.fit(
             ref='logsMonacoEditor'
             :model-value="logsContent || 'Aucun contenu de log.'"
             :options='logsMonacoOptions'

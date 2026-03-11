@@ -149,7 +149,7 @@ q-page.container.q-pa-sm
       q-banner.bg-warning.text-black(v-if='!diffDialog.loading && !diffDialog.hasChanges')
         | Aucun changement exploitable trouve dans cette entree d'audit.
       .audit-diff-editor(v-else-if='!diffDialog.loading')
-        MonacoDiffEditor(
+        LazyMonacoDiffEditor(
           style='height: 100%; width: 100%'
           lang='json'
           :original='diffDialog.original'

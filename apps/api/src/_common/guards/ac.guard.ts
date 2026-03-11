@@ -3,6 +3,9 @@ import { Reflector } from '@nestjs/core';
 import { ACGuard as AcGuardInternal, RolesBuilder } from 'nest-access-control';
 import { META_UNPROTECTED } from '~/_common/decorators/public.decorator';
 import { AC_ADMIN_ROLE, AC_GUEST_ROLE } from '../types/ac-types';
+import { ApiSession } from '../data/api-session';
+import { ConsoleSession } from '../data/console-session';
+import { Request } from 'express';
 
 export function AcGuard(): Type<CanActivate> {
   @Injectable()
@@ -24,18 +27,20 @@ export function AcGuard(): Type<CanActivate> {
     }
 
     public async canActivate(context: ExecutionContext): Promise<boolean> {
+      const request = context.switchToHttp().getRequest<Request & { user: Express.User & (ApiSession | ConsoleSession) }>();
       const roleOrRoles = await this.getUserRoles(context)
       const roles = Array.isArray(roleOrRoles) ? roleOrRoles : [roleOrRoles]
-      //console.log('canActivate', roles)
+
       if (roles.includes(AC_ADMIN_ROLE)) {
+        this.logger.verbose(`User <${request.user._id}, ${request.user.username}> wants to access <${request.method}::${request.route.path}>. Roles: [${roles.join(', ')}] -> [is allowed]`);
         return true;
       }
 
       const result = this.isUnProtected(context) || await super.canActivate(context);
 
-      const path = context.switchToHttp().getRequest().route.path;
-      const method = context.switchToHttp().getRequest().method;
-      this.logger.verbose(`User wants to access <${method}::${path}>. Roles: [${roles.join(', ')}] -> [${result ? 'is allowed' : 'is not allowed'}]`);
+      if (request.user) {
+        this.logger.verbose(`User <${request.user._id}, ${request.user.username}> wants to access <${request.method}::${request.route.path}>. Roles: [${roles.join(', ')}] -> [${result ? 'is allowed' : 'is not allowed'}]`);
+      }
 
       return result;
     }

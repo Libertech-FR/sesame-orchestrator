@@ -185,7 +185,7 @@ import { determineClearValue } from '../utils'
 import { useMediaPickerControl } from '../composables'
 import { QInput, QAvatar, QIcon, QBtn, QCard, QImg, QSpinner, QPopupProxy, QSeparator, QSpace, QChip, QBar } from 'quasar'
 import { fileTypeFromBuffer } from 'file-type'
-import mime from 'mime'
+import { getMimeTypeFromExtension } from '~/utils/mime'
 
 const controlRenderer = defineComponent({
   name: 'MediaPickerControl',
@@ -242,7 +242,7 @@ const controlRenderer = defineComponent({
       const ext = getFileExtension(src)
       if (!ext) return ''
 
-      return mime.getType(ext) || ''
+      return getMimeTypeFromExtension(ext)
     }
 
     const getMimeIcon = (item: any) => {

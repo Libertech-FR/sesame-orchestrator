@@ -59,7 +59,7 @@ q-dialog(
 <script lang="ts">
 import { defineComponent, computed, ref, watch, type PropType } from 'vue'
 import { QDialog, QBar, QBtn, QImg, QIcon } from 'quasar'
-import mime from 'mime'
+import { getMimeTypeFromExtension } from '~/utils/mime'
 
 export default defineComponent({
   name: 'FilePreview',
@@ -115,7 +115,7 @@ export default defineComponent({
       const src = item?.thumbnail || item?.value || ''
       const ext = getFileExtension(typeof src === 'string' ? src : '')
       if (!ext) return ''
-      return mime.getType(ext) || ''
+      return getMimeTypeFromExtension(ext)
     }
 
     const isDataUrl = (v: unknown): v is string => typeof v === 'string' && v.startsWith('data:')

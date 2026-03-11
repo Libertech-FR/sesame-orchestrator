@@ -4,7 +4,7 @@
       q-toolbar-title Panneau de debuggage
     q-separator
     client-only
-      MonacoEditor.fit(
+      LazyMonacoEditor.fit(
         :model-value='JSON.stringify(data.agent, null, 2)'
         :options='monacoOptions'
         lang='json'

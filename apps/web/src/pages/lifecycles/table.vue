@@ -95,7 +95,7 @@
             )
         q-tr(v-if="props.expand" :props="props")
           q-td(colspan="100%" style="padding: 0;")
-            MonacoEditor(
+            LazyMonacoEditor(
               :model-value="stringifyForEditor(props.row)"
               lang="json"
               :options="monacoOptions"

@@ -80,7 +80,6 @@ export default defineNuxtConfig({
   modules: [
     '@sentry/nuxt/module',
     '@nuxt-alt/auth',
-    '@nuxt-alt/proxy',
     '@nuxt-alt/http',
     '@pinia/nuxt',
     'nuxt-quasar-ui',
@@ -141,28 +140,6 @@ export default defineNuxtConfig({
       },
     },
   },
-  proxy: {
-    https: false,
-    proxies: {
-      '/api': {
-        rewrite: (path: string) => path.replace(/^\/api/, ''),
-        target: SESAME_APP_API_URL,
-        secure: false,
-        changeOrigin: true,
-        xfwd: true,
-        configure: (proxy, options) => {
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            // Disable timeout for SSE endpoints
-            if (req.url?.includes('/backends/sse')) {
-              proxyReq.setTimeout(0);
-              res.setTimeout(0);
-            }
-          });
-        },
-      }
-    },
-    cors: false,
-  },
   http: {
     debug: /true|on|yes|1/i.test(`${process.env.DEBUG}`),
     browserBaseURL: '/api',
@@ -176,7 +153,7 @@ export default defineNuxtConfig({
   },
   quasar: {
     iconSet: 'mdi-v7',
-    plugins: ['Notify', 'Dialog'],
+    plugins: ['Notify', 'Dialog', 'LoadingBar'],
     config: {
       dark: SESAME_APP_DARK_MODE,
       brand: {
@@ -195,6 +172,11 @@ export default defineNuxtConfig({
         position: 'top-right',
         actions: [{ icon: 'mdi-close', color: 'white' }],
       },
+      loadingBar: {
+        color: 'primary',
+        size: '3px',
+        position: 'top',
+      },
     },
     extras: {
       animations: IS_DEV ? 'all' : [],
@@ -211,6 +193,31 @@ export default defineNuxtConfig({
   vite: {
     server: {
       allowedHosts: ['localhost', ...SESAME_ALLOWED_HOSTS],
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: (id: string) => {
+            if (!id.includes('node_modules')) return
+
+            if (id.includes('monaco-editor') || id.includes('nuxt-monaco-editor')) {
+              return 'vendor-monaco'
+            }
+
+            if (id.includes('@jsonforms/') || id.includes('@tacxou/jsonforms_builder')) {
+              return 'vendor-jsonforms'
+            }
+
+            if (id.includes('quasar') || id.includes('@quasar/')) {
+              return 'vendor-quasar'
+            }
+
+            if (id.includes('@sentry/')) {
+              return 'vendor-sentry'
+            }
+          },
+        },
+      },
     },
     define: {
       'process.env.DEBUG': process.env.NODE_ENV === 'development',
@@ -241,7 +248,11 @@ export default defineNuxtConfig({
       websocket: false,
     },
     routeRules: {
+      '/api/**': {
+        proxy: `${SESAME_APP_API_URL}/**`,
+      },
       '/api/core/backends/sse': {
+        proxy: `${SESAME_APP_API_URL}/core/backends/sse`,
         // Disable compression and caching for SSE
         headers: {
           'Cache-Control': 'no-cache, no-transform',

@@ -57,9 +57,9 @@ div
             q-separator(v-if="tabs[keyCompute + '_' + key]")
             q-tab-panels.overflow-auto(v-model="tabs[keyCompute + '_' + key]")
               q-tab-panel(name="params")
-                MonacoEditor(style="height: 45vh; width: 100%" :model-value="stringifyForEditor(job.params)" :options="monacoOptions" lang="json")
+                LazyMonacoEditor(style="height: 45vh; width: 100%" :model-value="stringifyForEditor(job.params)" :options="monacoOptions" lang="json")
               q-tab-panel(name="result")
-                MonacoEditor(style="height: 45vh; width: 100%;" :model-value="stringifyForEditor(job.result)" :options="monacoOptions" lang="json")
+                LazyMonacoEditor(style="height: 45vh; width: 100%;" :model-value="stringifyForEditor(job.result)" :options="monacoOptions" lang="json")
       q-timeline-entry.text-h5(v-if='empty' icon='mdi-flag-off' title='Fin de la liste...' color="red")
 </template>
 

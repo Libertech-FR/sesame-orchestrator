@@ -58,7 +58,11 @@ export default defineNuxtConfig({
       enabled: IS_DEV,
     },
   },
-  css: ['~/assets/sass/global.sass'],
+  css: [
+    // Keep framework CSS first, then app overrides.
+    'quasar/src/css/index.sass',
+    '~/assets/sass/global.sass',
+  ],
   plugins: [/* { src: '~/plugins/ofetch' } */],
   components: {
     global: true,
@@ -179,7 +183,7 @@ export default defineNuxtConfig({
       },
     },
     extras: {
-      animations: IS_DEV ? 'all' : [],
+      animations: 'all',
     },
   },
   monacoEditor: {
@@ -195,6 +199,8 @@ export default defineNuxtConfig({
       allowedHosts: ['localhost', ...SESAME_ALLOWED_HOSTS],
     },
     build: {
+      // Avoid per-chunk CSS ordering differences between dev/prod.
+      cssCodeSplit: false,
       rollupOptions: {
         output: {
           manualChunks: (id: string) => {
@@ -206,10 +212,6 @@ export default defineNuxtConfig({
 
             if (id.includes('@jsonforms/') || id.includes('@tacxou/jsonforms_builder')) {
               return 'vendor-jsonforms'
-            }
-
-            if (id.includes('quasar') || id.includes('@quasar/')) {
-              return 'vendor-quasar'
             }
 
             if (id.includes('@sentry/')) {

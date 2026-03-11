@@ -49,16 +49,18 @@ q-page.grid
       q-btn(:to='toPathWithQueries(`/identities/table/${row._id}`)' color='primary' icon='mdi-eye' size='sm' flat round dense)
       q-btn-dropdown(:class="[$q.dark.isActive ? 'text-white' : 'text-black']" dropdown-icon="mdi-dots-horizontal" size='sm' flat round dense)
         q-list(dense)
-          q-item(
-            v-for="tab in tabs.filter(tab => tab.name !== 'index')" :key="tab.name"
-            v-show='typeof tab?.condition === "function" ? tab.condition() : true'
-            @click='tab?.action(row)'
-            clickable v-close-popup
-          )
-            q-item-section(avatar)
-              q-icon(:name="tab.icon" :class="tab.textColor ? `text-${tab.textColor}` : 'text-primary'")
-            q-item-section
-              q-item-label(v-text="tab.label")
+          template(v-for="tab in tabs" :key="tab.name")
+            q-separator(v-if="tab.type === 'separator'")
+            q-item(
+              v-else-if="tab.type !== 'separator'"
+              v-show='typeof tab?.condition === "function" ? tab.condition() : true'
+              @click='tab?.action(row)'
+              clickable v-close-popup
+            )
+              q-item-section(avatar)
+                q-icon(:name="tab.icon" :class="tab.textColor ? `text-${tab.textColor}` : 'text-primary'")
+              q-item-section
+                q-item-label(v-text="tab.label")
           q-separator
           q-item(clickable v-close-popup @click="deleteIdentity(row)" :disable='!hasPermission("/management/identities", "delete")')
             q-tooltip.text-body2.bg-negative.text-white(
@@ -90,6 +92,8 @@ type TabItem = {
   label: string
   action: Function
   bgColor?: string
+  textColor?: string
+  type?: 'separator'
   condition?: () => boolean
 }
 
@@ -189,6 +193,8 @@ export default defineNuxtComponent({
           name: 'index',
           icon: 'mdi-card-account-details',
           label: 'Fiche identité',
+          bgColor: 'primary',
+          textColor: 'primary',
           action: (i) => navigateToTab(`/identities/table/${i._id}`),
           condition: () => hasPermission('/management/identities', 'read'),
         },
@@ -196,6 +202,8 @@ export default defineNuxtComponent({
           name: 'audits',
           icon: 'mdi-clipboard-text-clock',
           label: 'Historique des changements',
+          bgColor: 'lime-8',
+          textColor: 'lime-8',
           action: (i) => navigateToTab(`/identities/table/${i._id}/audits`),
           condition: () => hasPermission('/core/audits', 'read'),
         },
@@ -203,6 +211,8 @@ export default defineNuxtComponent({
           name: 'jobs',
           icon: 'mdi-book-clock',
           label: 'Journaux des tâches',
+          bgColor: 'info',
+          textColor: 'info',
           action: (i) => navigateToTab(`/identities/table/${i._id}/jobs`),
           condition: () => hasPermission('/core/jobs', 'read'),
         },
@@ -210,9 +220,12 @@ export default defineNuxtComponent({
           name: 'lifecycle',
           icon: 'mdi-timeline-clock-outline',
           label: 'Historique des cycles de vie',
+          bgColor: 'info',
+          textColor: 'info',
           action: (i) => navigateToTab(`/identities/table/${i._id}/lifecycle`),
           condition: () => hasPermission('/management/lifecycle', 'read'),
         },
+        { type: 'separator' },
         {
           name: 'debug',
           icon: 'mdi-bug',

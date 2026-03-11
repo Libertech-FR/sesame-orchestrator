@@ -9,25 +9,27 @@ q-card.flex.column.fit.absolute(flat)
       span(v-if='isNew') Nouvelle identitée
       span(v-else v-text='identity?.inetOrgPerson?.cn || "Identité sans nom"')
     q-tabs.full-height(:model-value='tab' v-if='!isSmall && !isNew')
-      q-tab.q-px-none(
-        v-for="tab in tabs" :key="tab.name"
-        @click='tab?.action(identity)'
-        v-show='typeof tab?.condition === "function" ? tab.condition() : true'
-        :class="[tab.textColor ? `text-${tab.textColor}` : 'text-primary']"
-        :name="tab.name"
-        :icon="tab.icon"
-      )
-        q-popup-proxy(context-menu :offset="[0, 10]")
-          q-list(dense bordered separator)
-            q-item(@click='tab?.action()' clickable)
-              q-item-section(avatar)
-                q-icon(name="mdi-open-in-new" :class="tab.textColor ? `text-${tab.textColor}` : 'text-primary'")
-              q-item-section
-                q-item-label Ouvrir dans un nouvel onglet
-        q-tooltip.text-body2(
-          :delay="200"
-          v-text="tab.label" :class="tab.bgColor ? `bg-${tab.bgColor}` : 'bg-primary'"
+      template(v-for="tab in tabs" :key="tab.name")
+        q-separator.q-mx-xs(v-if="tab.type === 'separator'" inset vertical)
+        q-tab.q-px-none(
+          v-else-if="tab.type !== 'separator'"
+          @click='tab?.action(identity)'
+          v-show='typeof tab?.condition === "function" ? tab.condition() : true'
+          :class="[tab.textColor ? `text-${tab.textColor}` : 'text-primary']"
+          :name="tab.name"
+          :icon="tab.icon"
         )
+          q-popup-proxy(context-menu :offset="[0, 10]")
+            q-list(dense bordered separator)
+              q-item(@click='tab?.action()' clickable)
+                q-item-section(avatar)
+                  q-icon(name="mdi-open-in-new" :class="tab.textColor ? `text-${tab.textColor}` : 'text-primary'")
+                q-item-section
+                  q-item-label Ouvrir dans un nouvel onglet
+          q-tooltip.text-body2(
+            :delay="200"
+            v-text="tab.label" :class="tab.bgColor ? `bg-${tab.bgColor}` : 'bg-primary'"
+          )
   q-separator(v-for='_ in 2' :key='_')
   q-card-section.col.q-pa-none.overflow-auto
     nuxt-page(:identity='identity' ref='page')

@@ -8,14 +8,16 @@ q-card.flex.column.fit.absolute(flat)
       span(v-if='isNew') Nouvel agent
       span(v-else v-text='role?.name || "Rôle sans nom"')
     q-tabs.full-height(:model-value='tab' v-if='!isSmall && !isNew')
-      q-tab.q-px-none(
-        v-for="tab in tabs" :key="tab.name"
-        @click='tab?.action(role)'
-        v-show='typeof tab?.condition === "function" ? tab.condition() : true'
-        :class="[tab.textColor ? `text-${tab.textColor}` : 'text-primary']"
-        :name="tab.name"
-        :icon="tab.icon"
-      )
+      template(v-for="tab in tabs" :key="tab.name")
+        q-separator.q-mx-xs(v-if="tab.type === 'separator'" inset vertical)
+        q-tab.q-px-none(
+          v-else-if="tab.type !== 'separator'"
+          @click='tab?.action(role)'
+          v-show='typeof tab?.condition === "function" ? tab.condition() : true'
+          :class="[tab.textColor ? `text-${tab.textColor}` : 'text-primary']"
+          :name="tab.name"
+          :icon="tab.icon"
+        )
   q-separator(v-for='_ in 2' :key='_')
   q-card-section.col.q-pa-none.overflow-auto
     nuxt-page(:data='{ role }' ref='page')
@@ -26,8 +28,8 @@ import type { components, operations } from '#build/types/service-api'
 import type { _Transform } from 'nuxt/dist/app/composables/asyncData'
 import { NewTargetId } from '~/constants/variables'
 
-type Agent = components['schemas']['AgentsDto']
-type Response = operations['AgentsController_read']['responses']['200']['content']['application/json']
+type Role = components['schemas']['RolesDto']
+type Response = operations['RolesController_read']['responses']['200']['content']['application/json']
 
 export default defineNuxtComponent({
   name: 'SettingsAgentsIdPage',
@@ -95,6 +97,7 @@ export default defineNuxtComponent({
           label: 'Fiche de rôle',
           action: (i) => this.navigateToTab(`/settings/roles/${this.isNew ? NewTargetId : i._id}`),
         },
+        { type: 'separator' },
         {
           name: 'debug',
           icon: 'mdi-bug',

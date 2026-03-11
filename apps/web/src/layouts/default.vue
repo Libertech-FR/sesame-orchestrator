@@ -48,17 +48,10 @@ export default defineNuxtComponent({
     const $q = useQuasar()
 
     $q.loadingBar.setDefaults({
-      color: 'purple',
-      size: '15px',
-      position: 'bottom'
+      color: 'white',
+      size: '3px',
+      position: 'top'
     })
-
-    setInterval(() => {
-      $q.loadingBar.start()
-      setTimeout(() => {
-        $q.loadingBar.stop()
-      }, 1000)
-    }, 1000)
 
     const identityStateStore = useIdentityStateStore()
     const { menuParts, getMenuByPart, initialize } = useMenu(identityStateStore)

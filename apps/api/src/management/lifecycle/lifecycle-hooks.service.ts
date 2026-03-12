@@ -290,6 +290,7 @@ export class LifecycleHooksService extends AbstractLifecycleService {
                 $in: idRule.sources,
               },
               ignoreLifecycle: { $ne: true },
+              deletedFlag: { $ne: true },
               ...(ignoreTrigger ? {} : filterDate),
               // [dateKey]: {
               //   $lte: new Date(Date.now() - (idRule.trigger * 1000)),

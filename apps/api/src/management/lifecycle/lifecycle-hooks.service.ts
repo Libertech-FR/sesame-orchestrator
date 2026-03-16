@@ -433,7 +433,9 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * // L'identité est automatiquement transitionnée vers MANUAL
    */
   private async fireLifecycleEvent(before: Identities, after: Identities): Promise<void> {
-    if (before.lifecycle !== after.lifecycle) {
+    const lifecycleChanged = !!before && before.lifecycle !== after.lifecycle
+
+    if (lifecycleChanged) {
       await this.create({
         refId: after._id,
         lifecycle: after.lifecycle,
@@ -490,6 +492,11 @@ export class LifecycleHooksService extends AbstractLifecycleService {
         this.logger.log(`Identity <${res._id}> updated to lifecycle <${lcs.target}> based on rules from source <${after.lifecycle}>`)
         return
       }
+    }
+
+    if (lifecycleChanged) {
+      const identities = after._id ? [after._id] : []
+      await this.backendsService.lifecycleChangedIdentities(identities)
     }
   }
 }

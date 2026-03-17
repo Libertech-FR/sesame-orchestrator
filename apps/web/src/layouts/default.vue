@@ -28,6 +28,8 @@ export default defineNuxtComponent({
   provide() {
     return {
       syncing: this.syncing,
+      orchestratorVersion: this.orchestratorVersion,
+      daemonVersion: this.daemonVersion,
     }
   },
   data() {
@@ -42,6 +44,16 @@ export default defineNuxtComponent({
       eventSeamless: false,
       eventSeamlessCurrent: 0,
       eventSeamlessCurrentJobs: {},
+      orchestratorVersion: {
+        currentVersion: '0.0.0',
+        lastVersion: '0.0.0',
+        updateAvailable: false,
+      },
+      daemonVersion: {
+        currentVersion: '0.0.0',
+        lastVersion: '0.0.0',
+        updateAvailable: false,
+      },
     }
   },
   async setup() {
@@ -72,6 +84,76 @@ export default defineNuxtComponent({
     },
   },
   methods: {
+    async fetchVersions(): Promise<void> {
+      try {
+        const orchestratorResponse = await $http.$get('/get-update/sesame-orchestrator') as {
+          data?: {
+            currentVersion?: string
+            lastVersion?: string
+            updateAvailable?: boolean
+          }
+        }
+        const orchestratorData = orchestratorResponse?.data
+        Object.assign(this.orchestratorVersion, {
+          currentVersion: orchestratorData?.currentVersion || '0.0.0',
+          lastVersion: orchestratorData?.lastVersion || '0.0.0',
+          updateAvailable: Boolean(orchestratorData?.updateAvailable),
+        })
+      } catch (error) {
+        console.error(error)
+      }
+
+      try {
+        const daemonPackageResponse = await $http.$post('/core/backends/execute?async=false', {
+          method: 'POST',
+          body: {
+            action: 'DUMP_PACKAGE_CONFIG',
+          },
+        }) as {
+          response?: {
+            data?: Array<{
+              version?: string
+            }> | {
+              package?: {
+                version?: string
+              }
+              version?: string
+            }
+            package?: {
+              version?: string
+            }
+            version?: string
+          }
+        }
+
+        const daemonResponseData = daemonPackageResponse?.response?.data
+        const daemonResponseDataVersion = Array.isArray(daemonResponseData)
+          ? daemonResponseData?.[0]?.version
+          : daemonResponseData?.package?.version || daemonResponseData?.version
+
+        const daemonCurrentVersion =
+          daemonResponseDataVersion ||
+          daemonPackageResponse?.response?.package?.version ||
+          daemonPackageResponse?.response?.version ||
+          '0.0.0'
+
+        const daemonUpdateResponse = await $http.$get(`/get-update/sesame-daemon?current=${encodeURIComponent(daemonCurrentVersion)}`) as {
+          data?: {
+            currentVersion?: string
+            lastVersion?: string
+            updateAvailable?: boolean
+          }
+        }
+        const daemonUpdateData = daemonUpdateResponse?.data
+        Object.assign(this.daemonVersion, {
+          currentVersion: daemonUpdateData?.currentVersion || daemonCurrentVersion,
+          lastVersion: daemonUpdateData?.lastVersion || '0.0.0',
+          updateAvailable: Boolean(daemonUpdateData?.updateAvailable),
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    },
     syncing(payload: { count: number }) {
       this.eventSeamlessTotal = payload.count
       this.eventSeamlessCurrent = 0
@@ -134,6 +216,8 @@ export default defineNuxtComponent({
 
     this.es = new ReconnectingEventSource(esUrl)
     this.es.onmessage = this.onmessage.bind(this)
+
+    this.fetchVersions()
   },
   destroyed() {
     this.removeRouteBeforeEachGuard?.()

@@ -1,10 +1,21 @@
 <template lang="pug">
-q-dialog(:model-value="true" transition-show='none' transition-hide='none' full-width full-height persistent)
+q-dialog(
+  :model-value="true"
+  transition-show='none'
+  transition-hide='none'
+  :full-width="$q.screen.gt.md"
+  :full-height="$q.screen.gt.md"
+  persistent
+  :maximized="!$q.screen.gt.md"
+)
   q-card.sesame-sticky-dialog
     q-toolbar.bg-primary.text-white(flat)
       q-btn(flat @click="drawer = !drawer" round dense icon="mdi-menu")
       q-toolbar-title Paramètres
+      sesame-core-help-buttons(size='sm')
+      q-separator.q-mx-sm(vertical dark inset)
       q-btn(icon="mdi-close" flat round dense to='/')
+        q-tooltip.text-body2(anchor="top middle" self="bottom middle") Fermer
     .flex.fit(:style='{ flexDirection: $q.screen.gt.sm ? "row" : "column" }')
       .col-0
         q-tabs.full-height.border-right(
@@ -129,6 +140,12 @@ export default defineNuxtComponent({
       navItems,
       router,
     }
+  },
+  methods: {
+    toogleDark() {
+      this.$q.dark.toggle()
+      window.sessionStorage.setItem('darkMode', this.$q.dark.isActive ? 'true' : 'false')
+    },
   },
 })
 </script>

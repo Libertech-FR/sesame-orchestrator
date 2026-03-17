@@ -5,9 +5,10 @@
       .col
         h5.q-ma-none Santé applicative
         .text-caption.text-grey-7 Vue en temps réel des indicateurs backend
-      .col-auto
-        q-btn(color='primary' icon='mdi-refresh' label='Actualiser' :loading='pending' @click='refreshHealth')
-
+      .col-auto.row.items-center.justify-end
+        .text-caption.text-grey-7 Dernière mise à jour: {{ $dayjs(lastRefreshTime).format('DD/MM/YYYY HH:mm:ss') }} (mise à jour automatique dans {{ secondsBeforeRefresh }}s)
+        q-btn.q-ml-sm(icon='mdi-refresh' :loading='pending' @click='refreshHealth' flat dense size='sm')
+          q-tooltip.text-body2(anchor="top middle" self="bottom middle") Actualiser les données
     q-banner.q-mb-md(
       v-if='errorMessage'
       rounded
@@ -168,11 +169,32 @@ export default defineNuxtComponent({
       return JSON.stringify(value)
     }
 
+
+    const lastRefreshTime = ref(Date.now())
     const refreshHealth = async (): Promise<void> => {
       await refresh()
+      lastRefreshTime.value = Date.now()
     }
 
+    const refreshIntervalInSeconds = 60
+    const healthRefreshInterval = setInterval(refreshHealth, refreshIntervalInSeconds * 1_000)
+    const nowTimestamp = ref(Date.now())
+    const clockInterval = setInterval(() => {
+      nowTimestamp.value = Date.now()
+    }, 1_000)
+    onUnmounted(() => {
+      clearInterval(healthRefreshInterval)
+      clearInterval(clockInterval)
+    })
+
+    const secondsBeforeRefresh = computed(() => {
+      const elapsedSeconds = Math.round((nowTimestamp.value - lastRefreshTime.value) / 1_000)
+      return Math.max(0, refreshIntervalInSeconds - elapsedSeconds)
+    })
+
     return {
+      lastRefreshTime,
+      secondsBeforeRefresh,
       pending,
       healthPayload,
       indicatorCards,

@@ -17,28 +17,49 @@ q-dialog(
       q-btn(icon="mdi-close" flat round dense to='/')
         q-tooltip.text-body2(anchor="top middle" self="bottom middle") Fermer
     .flex.fit(:style='{ flexDirection: $q.screen.gt.sm ? "row" : "column" }')
-      .col-0
-        q-tabs.full-height.border-right(
-          v-if='drawer'
-          v-model="tab"
-          :vertical='$q.screen.gt.sm'
-          :inline-label="$q.screen.lt.md"
-          mobile-arrows
-          outside-arrows
-        )
-          q-tab(
-            v-for="item in navItems"
-            :key="item.route"
-            :name="item.route"
-            :label="item.label"
-            :icon="item.icon"
-            :disable="item._disabled"
+      .col-0.settings-sidebar(v-if='drawer')
+        .settings-main-tabs-wrapper
+          q-tabs.border-right.settings-main-tabs(
+            v-model="tab"
+            :vertical="$q.screen.gt.sm"
+            :inline-label="$q.screen.lt.md"
+            mobile-arrows
+            outside-arrows
           )
-            q-tooltip.text-body2.bg-negative.text-white(
-              v-if="item._disabled"
-              anchor="top middle"
-              self="center middle"
-            ) Vous n'avez pas les permissions nécessaires pour accéder à cette page
+            q-tab(
+              v-for="item in navItems"
+              :key="item.route"
+              :name="item.route"
+              :label="item.label"
+              :icon="item.icon"
+              :disable="item._disabled"
+            )
+              q-tooltip.text-body2.bg-negative.text-white(
+                v-if="item._disabled"
+                anchor="top middle"
+                self="center middle"
+              ) Vous n'avez pas les permissions nécessaires pour accéder à cette page
+
+            q-separator(v-if="!$q.screen.gt.sm && index !== navItems.length - 1 && hasPermission('/core/health', 'read')" inset vertical)
+            q-tab(
+              v-if="!$q.screen.gt.sm && hasPermission('/core/health', 'read')"
+              name="/settings/health"
+              label="Santé applicative"
+              icon="mdi-heart-pulse"
+            )
+
+        .settings-bottom-tabs-wrapper(
+          v-if="$q.screen.gt.sm && hasPermission('/core/health', 'read')"
+        )
+          q-tabs.border-right(
+            v-model="tab"
+            vertical
+          )
+            q-tab(
+              name="/settings/health"
+              label="Santé applicative"
+              icon="mdi-heart-pulse"
+            )
       .col
         q-tab-panels.fit(v-model="tab")
           q-tab-panel.q-pa-none(
@@ -68,6 +89,7 @@ export default defineNuxtComponent({
         router.push(val)
       },
     })
+
     const drawer = ref(true)
 
     const navItemsInternal = ref<NavItem[]>([
@@ -113,11 +135,11 @@ export default defineNuxtComponent({
         label: 'trousseau de clés API',
         _acl: '/core/keyrings',
       },
-      {
-        route: '/settings/health',
-        icon: 'mdi-heart-pulse',
-        label: 'Santé applicative',
-      },
+      // {
+      //   route: '/settings/health',
+      //   icon: 'mdi-heart-pulse',
+      //   label: 'Santé applicative',
+      // },
     ])
 
     const navItems = computed(() => {
@@ -139,6 +161,7 @@ export default defineNuxtComponent({
       drawer,
       navItems,
       router,
+      hasPermission,
     }
   },
   methods: {
@@ -149,3 +172,27 @@ export default defineNuxtComponent({
   },
 })
 </script>
+
+<style scoped>
+@media (min-width: 1024px) {
+  .settings-sidebar {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .settings-main-tabs-wrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .settings-bottom-tabs-wrapper {
+    flex: 0 0 auto;
+  }
+
+  :deep(.settings-main-tabs.q-tabs--vertical) {
+    height: 100%;
+  }
+}
+</style>

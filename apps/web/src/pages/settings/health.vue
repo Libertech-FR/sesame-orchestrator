@@ -174,28 +174,28 @@
                       style='height: 30px; width: 90px;'
                     )
 
-    q-card.q-mt-md(v-if='futureCheckCards.length' flat bordered)
-      q-card-section
-        .row.items-center.no-wrap
-          q-icon(name='mdi-timeline-clock-outline' size='22px' class='q-mr-sm' color='warning')
-          .text-subtitle2 Contrôles prévus (phase suivante)
-      q-separator
-      q-card-section
-        .row.q-col-gutter-md
-          .col-12.col-md-6(v-for='card in futureCheckCards' :key='card.key')
-            q-banner(dense rounded class='bg-grey-2 text-dark')
-              .row.items-center.justify-between
-                .row.items-center.no-wrap
-                  q-icon(:name='futureCheckIcon(card.key)' size='18px' class='q-mr-xs' color='grey-8')
-                  .text-body2 {{ card.label }}
-                q-chip(
-                  dense
-                  square
-                  :color='card.enabled ? "positive" : "grey-7"'
-                  text-color='white'
-                  :label='card.enabled ? "ACTIF" : "INACTIF"'
-                )
-              .text-caption.q-mt-xs {{ card.note }}
+    //- q-card.q-mt-md(v-if='futureCheckCards.length' flat bordered)
+    //-   q-card-section
+    //-     .row.items-center.no-wrap
+    //-       q-icon(name='mdi-timeline-clock-outline' size='22px' class='q-mr-sm' color='warning')
+    //-       .text-subtitle2 Contrôles prévus (phase suivante)
+    //-   q-separator
+    //-   q-card-section
+    //-     .row.q-col-gutter-md
+    //-       .col-12.col-md-6(v-for='card in futureCheckCards' :key='card.key')
+    //-         q-banner(dense rounded class='bg-grey-2 text-dark')
+    //-           .row.items-center.justify-between
+    //-             .row.items-center.no-wrap
+    //-               q-icon(:name='futureCheckIcon(card.key)' size='18px' class='q-mr-xs' color='grey-8')
+    //-               .text-body2 {{ card.label }}
+    //-             q-chip(
+    //-               dense
+    //-               square
+    //-               :color='card.enabled ? "positive" : "grey-7"'
+    //-               text-color='white'
+    //-               :label='card.enabled ? "ACTIF" : "INACTIF"'
+    //-             )
+    //-           .text-caption.q-mt-xs {{ card.note }}
 </template>
 
 <script lang="ts">

@@ -33,19 +33,45 @@
       q-card-section.row.items-center.justify-between
         .row.items-center.no-wrap
           q-icon(name='mdi-chart-box-multiple-outline' size='20px' class='q-mr-sm' color='primary')
-          .text-subtitle2 Tendances detaillees (5 minutes)
-        .text-caption.text-grey-7 Vue multi-indicateurs
+          .text-subtitle2 Tendances detaillées (5 minutes)
       q-separator
       q-card-section
         .row.q-col-gutter-md
           .col-12
-            .text-caption.text-grey-7.q-mb-xs Ressources systeme (CPU / Heap / RSS)
+            .text-caption.text-grey-7.q-mb-xs Ressources système (CPU / Heap / RSS)
             client-only
               VChart(
                 :option='resourcesTrendChartOptions'
                 autoresize
                 style='height: 260px; width: 100%;'
               )
+
+    q-card.q-mb-md(flat bordered)
+      q-card-section.row.items-center.justify-between
+        .row.items-center.no-wrap
+          q-icon(name='mdi-lifebuoy' size='22px' class='q-mr-sm' :color='supportStatusColor')
+          .text-subtitle1 Support & maintenance
+        q-chip(
+          square
+          :color='supportStatusColor'
+          text-color='white'
+          :label='supportStatusLabel'
+        )
+      q-separator
+      q-card-section
+        .row.q-col-gutter-md
+          .col-12.col-md-6
+            .text-caption.text-grey-7 Support
+            .text-subtitle2.text-weight-medium {{ supportProvider }}
+          .col-12.col-md-6
+            .text-caption.text-grey-7 Clé de support
+            .row.items-center.no-wrap
+              .text-subtitle2.text-weight-medium {{ supportKey }}
+              q-spinner.q-ml-sm(v-if='supportKeyVerificationStatus === "checking"' color='primary' size='18px')
+              q-icon.q-ml-sm(v-else-if='hasMaintenanceContract' :name='supportKeyValidationIcon' :color='supportKeyValidationColor' size='18px')
+              q-tooltip.text-body2(v-if='hasMaintenanceContract' anchor='top middle' self='bottom middle')
+                | {{ supportKeyValidationMessage }}
+        .text-caption.text-grey-7.q-mt-sm {{ supportStatusMessage }}
 
     .row.items-center.q-col-gutter-sm.q-mb-md
       .col
@@ -202,6 +228,7 @@
 import { computed, watch } from 'vue'
 import VChart from 'vue-echarts'
 import ReconnectingEventSource from 'reconnecting-eventsource'
+import * as Sentry from '@sentry/nuxt'
 import { use } from 'echarts/core'
 import { LineChart } from 'echarts/charts'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -239,6 +266,162 @@ export default defineNuxtComponent({
     VChart,
   },
   setup() {
+    const runtimeConfig = useRuntimeConfig()
+    const sentryDsn = computed(() => `${runtimeConfig.public?.sentry?.dsn || ''}`.trim())
+    const supportProviderFromDomain = (domain: string): string => {
+      const normalizedDomain = domain.toLowerCase()
+      if (normalizedDomain.endsWith('libertech.fr')) {
+        return 'Libertech-FR'
+      }
+      return domain
+    }
+    const parseSentrySupport = (dsn: string): { key: string; domain: string; provider: string } => {
+      if (!dsn) {
+        return { key: '-', domain: '-', provider: '-' }
+      }
+
+      try {
+        const parsedUrl = new URL(dsn)
+        const key = decodeURIComponent(parsedUrl.username || '').trim() || '-'
+        const domain = parsedUrl.hostname?.trim() || '-'
+        const provider = domain === '-' ? '-' : supportProviderFromDomain(domain)
+        return { key, domain, provider }
+      } catch {
+        return { key: '-', domain: '-', provider: '-' }
+      }
+    }
+    const sentrySupport = computed(() => parseSentrySupport(sentryDsn.value))
+    const hasMaintenanceContract = computed(() => sentryDsn.value.length > 0)
+    const supportKey = computed(() => sentrySupport.value.key)
+    const supportProvider = computed(() => sentrySupport.value.provider)
+    const supportKeyFormatIsValid = computed(() => /^[a-f0-9]{32}$/i.test(supportKey.value))
+    const supportKeyVerificationStatus = ref<'idle' | 'checking' | 'valid' | 'invalid'>('idle')
+    const supportKeyValidationDetail = ref('')
+    const verifySupportKeyWithSentry = async (): Promise<void> => {
+      try {
+        if (!hasMaintenanceContract.value) {
+          supportKeyVerificationStatus.value = 'idle'
+          supportKeyValidationDetail.value = ''
+          return
+        }
+
+        if (!supportKeyFormatIsValid.value) {
+          supportKeyVerificationStatus.value = 'invalid'
+          supportKeyValidationDetail.value = 'Format de cle Sentry invalide.'
+          return
+        }
+
+        supportKeyVerificationStatus.value = 'checking'
+        supportKeyValidationDetail.value = ''
+
+        const getClientFn = (Sentry as unknown as { getClient?: () => unknown }).getClient
+        if (typeof getClientFn !== 'function') {
+          supportKeyVerificationStatus.value = 'invalid'
+          supportKeyValidationDetail.value = 'Client Sentry indisponible.'
+          return
+        }
+
+        const sentryClient = getClientFn() as { getDsn?: () => { publicKey?: string } | undefined } | null
+        const dsnPublicKey = sentryClient?.getDsn?.()?.publicKey || ''
+        if (dsnPublicKey.toLowerCase() !== supportKey.value.toLowerCase()) {
+          supportKeyVerificationStatus.value = 'invalid'
+          supportKeyValidationDetail.value = 'Cle differente de celle initialisee par le SDK Sentry.'
+          return
+        }
+
+        const parsedUrl = new URL(sentryDsn.value)
+        const projectId = parsedUrl.pathname.replace(/\//g, '')
+        if (!projectId) {
+          supportKeyVerificationStatus.value = 'invalid'
+          supportKeyValidationDetail.value = 'ProjectId absent du DSN.'
+          return
+        }
+
+        const envelopeUrl = `${parsedUrl.origin}/api/${projectId}/envelope/?sentry_version=7&sentry_key=${encodeURIComponent(
+          supportKey.value,
+        )}&sentry_client=sesame.support-check`
+        const envelopeBody = `${JSON.stringify({
+          sent_at: new Date().toISOString(),
+          dsn: sentryDsn.value,
+        })}\n${JSON.stringify({ type: 'client_report' })}\n${JSON.stringify({
+          timestamp: Math.floor(Date.now() / 1_000),
+          discarded_events: [],
+        })}`
+        const response = await fetch(envelopeUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=UTF-8',
+          },
+          body: envelopeBody,
+        })
+
+        if (response.ok) {
+          supportKeyVerificationStatus.value = 'valid'
+          supportKeyValidationDetail.value = ''
+          return
+        }
+
+        supportKeyVerificationStatus.value = 'invalid'
+        let reason = ''
+        try {
+          const payload = (await response.json()) as { detail?: string }
+          reason = payload?.detail || ''
+        } catch {
+          reason = ''
+        }
+        supportKeyValidationDetail.value = reason || `Validation Sentry en echec (${response.status} ${response.statusText}).`
+      } catch {
+        supportKeyVerificationStatus.value = 'invalid'
+        supportKeyValidationDetail.value = 'Erreur reseau pendant la verification Sentry.'
+      }
+    }
+    const supportKeyIsValid = computed(() => supportKeyVerificationStatus.value === 'valid')
+    const supportKeyValidationIcon = computed(() => (supportKeyIsValid.value ? 'mdi-check-decagram' : 'mdi-alert-circle'))
+    const supportKeyValidationColor = computed(() => (supportKeyIsValid.value ? 'positive' : 'warning'))
+    const supportKeyValidationMessage = computed(() =>
+      supportKeyVerificationStatus.value === 'checking'
+        ? 'Verification en cours via Sentry.'
+        : supportKeyVerificationStatus.value === 'valid'
+          ? 'Cle de support valide (verification Sentry OK).'
+          : supportKeyValidationDetail.value || 'Cle de support invalide.',
+    )
+    const supportStatusLabel = computed(() => {
+      if (!hasMaintenanceContract.value) {
+        return 'INACTIF'
+      }
+      if (supportKeyVerificationStatus.value === 'valid') {
+        return 'ACTIF'
+      }
+      if (supportKeyVerificationStatus.value === 'checking' || supportKeyVerificationStatus.value === 'idle') {
+        return 'VERIFICATION'
+      }
+      return 'INVALIDE'
+    })
+    const supportStatusColor = computed(() => {
+      if (!hasMaintenanceContract.value) {
+        return 'grey-7'
+      }
+      if (supportKeyVerificationStatus.value === 'valid') {
+        return 'positive'
+      }
+      if (supportKeyVerificationStatus.value === 'checking' || supportKeyVerificationStatus.value === 'idle') {
+        return 'primary'
+      }
+      return 'negative'
+    })
+    const supportStatusMessage = computed(() => {
+      if (!hasMaintenanceContract.value) {
+        return 'Maintenance inactive, support open source sur GitHub.'
+      }
+      if (supportKeyVerificationStatus.value === 'valid') {
+        return 'Contrat de maintenance actif.'
+      }
+      if (supportKeyVerificationStatus.value === 'checking' || supportKeyVerificationStatus.value === 'idle') {
+        return 'Verification de la clé de maintenance en cours...'
+      }
+      return 'Contrat de maintenance configuré, mais clé de maintenance invalide.'
+    })
+
     const { data, pending, error, refresh } = useHttp<HealthHttpResponse>('/core/health', {
       method: 'GET',
     })
@@ -769,6 +952,8 @@ export default defineNuxtComponent({
     }, 1_000)
 
     onMounted(() => {
+      verifySupportKeyWithSentry()
+
       const sseUrl = new URL(window.location.origin + '/api/core/health/sse')
       const source = new ReconnectingEventSource(sseUrl.toString())
       healthSse.value = source
@@ -828,6 +1013,16 @@ export default defineNuxtComponent({
       systemIcon,
       futureCheckIcon,
       formatMetricValue,
+      hasMaintenanceContract,
+      supportKey,
+      supportProvider,
+      supportKeyVerificationStatus,
+      supportKeyValidationIcon,
+      supportKeyValidationColor,
+      supportKeyValidationMessage,
+      supportStatusLabel,
+      supportStatusColor,
+      supportStatusMessage,
     }
   },
 })

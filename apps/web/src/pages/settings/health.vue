@@ -33,18 +33,19 @@
       q-card-section.row.items-center.justify-between
         .row.items-center.no-wrap
           q-icon(name='mdi-chart-box-multiple-outline' size='20px' class='q-mr-sm' color='primary')
-          .text-subtitle2 Tendances detaillées (5 minutes)
+          .text-subtitle2 Tendances detaillées
       q-separator
       q-card-section
         .row.q-col-gutter-md
           .col-12
             .text-caption.text-grey-7.q-mb-xs Ressources système (CPU / Heap / RSS)
-            client-only
+            client-only(v-if='historySnapshots.length > 1')
               VChart(
                 :option='resourcesTrendChartOptions'
                 autoresize
                 style='height: 260px; width: 100%;'
               )
+            .text-caption.text-grey-7.q-pa-sm(v-else) Donnees insuffisantes pour tracer une tendance (attente de nouveaux echantillons SSE).
 
     q-card.q-mb-md(flat bordered)
       q-card-section.row.items-center.justify-between
@@ -86,30 +87,11 @@
     )
       span {{ errorMessage }}
 
-    q-card.q-mb-md(v-if='healthPayload' flat bordered)
-      q-card-section.row.items-center.justify-between
-        .row.items-center.no-wrap
-          q-icon(name='mdi-shield-check-outline' size='22px' class='q-mr-sm' :color='statusColor(healthPayload.status)')
-          .text-subtitle1 Statut global
-        .row.items-center.no-wrap
-          q-chip(
-            square
-            :color="statusColor(healthPayload.status)"
-            text-color='white'
-            :label="(healthPayload.status || 'unknown').toUpperCase()"
-          )
-      q-separator
-      q-card-section
-        .row.q-col-gutter-md
-          .col-12.col-md-4
-            .text-caption.text-grey-7 Indicateurs disponibles
-            .text-subtitle1.text-weight-bold {{ indicatorCards.length }}
-          .col-12.col-md-4
-            .text-caption.text-grey-7 Services opérationnels
-            .text-subtitle1.text-weight-bold.text-positive {{ upIndicators }}
-          .col-12.col-md-4
-            .text-caption.text-grey-7 Services en anomalie
-            .text-subtitle1.text-weight-bold.text-negative {{ downIndicators }}
+    q-banner.q-mb-md(dense rounded class='bg-grey-1 text-grey-9')
+      .row.items-center.no-wrap
+        q-icon(name='mdi-information-outline' size='18px' class='q-mr-xs' color='primary')
+        .text-caption
+          | Astuce: survolez les métriques pour plus de contexte, puis utilisez la colonne Evolution pour voir la tendance récente.
 
     .row.q-col-gutter-md(v-if='indicatorCards.length')
       .col-12.col-md-6.col-lg-4(v-for='card in indicatorCards' :key='card.key')
@@ -127,15 +109,6 @@
                 :label='card.status.toUpperCase()'
               )
           q-separator
-          q-card-section.q-py-sm(v-if='serviceStatusSeries(card.key).length > 1')
-            .text-caption.text-grey-7.q-mb-xs Tendance de disponibilite
-            client-only
-              VChart(
-                :option='miniTrendChartOptions(serviceStatusSeries(card.key), card.status === "down" ? "#E5533D" : "#4CAF7A")'
-                autoresize
-                style='height: 42px; width: 100%;'
-              )
-          q-separator
           q-card-section.q-pa-none
             .text-caption.text-grey-7.q-pa-md(v-if='!card.metrics.length') Aucun détail de métrique.
             q-table(
@@ -147,18 +120,28 @@
               row-key='id'
               hide-pagination
               :rows-per-page-options='[0]'
+              no-data-label='Aucune métrique disponible pour ce service.'
             )
+              template(v-slot:body-cell-metric='props')
+                q-td(:props='props')
+                  span {{ props.row.metric }}
+                  q-tooltip.text-body2(anchor='top middle' self='bottom middle')
+                    | {{ metricHelpText(props.row.metric) }}
               template(v-slot:body-cell-value='props')
                 q-td(:props='props')
                   span.text-weight-medium {{ props.row.value }}
               template(v-slot:body-cell-trend='props')
                 q-td(:props='props')
-                  client-only
+                  .row.items-center.no-wrap
+                    q-icon(:name='metricTrendSummary(props.row.trendKey).icon' :color='metricTrendSummary(props.row.trendKey).color' size='16px')
+                    span.text-caption.q-ml-xs {{ metricTrendSummary(props.row.trendKey).label }}
+                  client-only(v-if='metricSeries(props.row.trendKey).length > 1')
                     VChart(
                       :option='miniTrendChartOptions(metricSeries(props.row.trendKey))'
                       autoresize
                       style='height: 30px; width: 90px;'
                     )
+                  span.text-caption.text-grey-6(v-else) Donnees insuffisantes
 
     .row.q-col-gutter-md.q-mt-sm(v-if='systemCards.length')
       .col-12.col-md-6(v-for='card in systemCards' :key='card.key')
@@ -176,7 +159,13 @@
               row-key='id'
               hide-pagination
               :rows-per-page-options='[0]'
+              no-data-label='Aucune métrique systeme disponible.'
             )
+              template(v-slot:body-cell-metric='props')
+                q-td(:props='props')
+                  span {{ props.row.metric }}
+                  q-tooltip.text-body2(anchor='top middle' self='bottom middle')
+                    | {{ metricHelpText(props.row.metric) }}
               template(v-slot:body-cell-value='props')
                 q-td(:props='props')
                   span.text-weight-medium {{ props.row.value }}
@@ -193,12 +182,16 @@
                   span.text-grey-6(v-else) -
               template(v-slot:body-cell-trend='props')
                 q-td(:props='props')
-                  client-only
+                  .row.items-center.no-wrap
+                    q-icon(:name='metricTrendSummary(props.row.trendKey).icon' :color='metricTrendSummary(props.row.trendKey).color' size='16px')
+                    span.text-caption.q-ml-xs {{ metricTrendSummary(props.row.trendKey).label }}
+                  client-only(v-if='metricSeries(props.row.trendKey).length > 1')
                     VChart(
                       :option='miniTrendChartOptions(metricSeries(props.row.trendKey))'
                       autoresize
                       style='height: 30px; width: 90px;'
                     )
+                  span.text-caption.text-grey-6(v-else) Donnees insuffisantes
 
     //- q-card.q-mt-md(v-if='futureCheckCards.length' flat bordered)
     //-   q-card-section
@@ -438,10 +431,22 @@ export default defineNuxtComponent({
     }
 
     const healthPayload = computed(() => {
-      if (streamedPayload.value) {
-        return streamedPayload.value
+      const httpPayload = normalizeHealthPayload(data.value)
+      const livePayload = streamedPayload.value
+
+      if (!livePayload) {
+        return httpPayload
       }
-      return normalizeHealthPayload(data.value)
+
+      const liveHistory = Array.isArray(livePayload.history) ? livePayload.history : []
+      const httpHistory = Array.isArray(httpPayload?.history) ? httpPayload.history : []
+
+      return {
+        ...(httpPayload || {}),
+        ...livePayload,
+        // Some SSE frames may omit history; keep the last HTTP history instead of dropping trends.
+        history: liveHistory.length > 0 ? liveHistory : httpHistory,
+      } as HealthApiResponse
     })
 
     const indicatorCards = computed(() => {
@@ -466,16 +471,16 @@ export default defineNuxtComponent({
     })
 
     const serviceMetricColumns = [
-      { name: 'metric', label: 'Metrique', field: 'metric', align: 'left' as const },
+      { name: 'metric', label: 'Métrique', field: 'metric', align: 'left' as const },
       { name: 'value', label: 'Valeur', field: 'value', align: 'right' as const },
-      { name: 'unit', label: 'Unite', field: 'unit', align: 'left' as const },
+      { name: 'unit', label: 'Unité', field: 'unit', align: 'left' as const },
       { name: 'trend', label: 'Evolution', field: 'trendKey', align: 'left' as const },
     ]
 
     const systemMetricColumns = [
-      { name: 'metric', label: 'Metrique', field: 'metric', align: 'left' as const },
+      { name: 'metric', label: 'Métrique', field: 'metric', align: 'left' as const },
       { name: 'value', label: 'Valeur', field: 'value', align: 'right' as const },
-      { name: 'unit', label: 'Unite', field: 'unit', align: 'left' as const },
+      { name: 'unit', label: 'Unité', field: 'unit', align: 'left' as const },
       { name: 'progress', label: 'Niveau', field: 'progressValue', align: 'left' as const },
       { name: 'trend', label: 'Evolution', field: 'trendKey', align: 'left' as const },
     ]
@@ -509,7 +514,7 @@ export default defineNuxtComponent({
       if (typeof rssMb !== 'number' || Number.isNaN(rssMb)) {
         return '-'
       }
-      return `${Math.round(rssMb)} MB`
+      return `${Math.round(rssMb)} Mb`
     })
 
     const statsCards = computed(() => {
@@ -598,7 +603,7 @@ export default defineNuxtComponent({
         return Number.isInteger(value) ? `${value}` : value.toFixed(3)
       }
       if (typeof value === 'boolean') {
-        return value ? 'true' : 'false'
+        return value ? 'Oui' : 'Non'
       }
       if (typeof value === 'string') {
         return value
@@ -608,10 +613,56 @@ export default defineNuxtComponent({
     }
 
     const beautifyMetricLabel = (label: string): string => {
+      const metricLabelMap: Record<string, string> = {
+        heapUsedMb: 'Mémoire heap utilisée',
+        heapTotalMb: 'Mémoire heap totale',
+        rssMb: 'Mémoire RSS',
+        externalMb: 'Mémoire externe',
+        arrayBuffersMb: 'Array buffers',
+        nativeMb: 'Mémoire native',
+        growthMb: 'Croissance mémoire native',
+        growthThresholdMb: 'Seuil de croissance',
+        sampleCount: 'Nombre d échantillons',
+        totalSystemMemoryMb: 'Mémoire système totale',
+        load1mPerCore: 'Charge CPU (1 min / core)',
+        load5mPerCore: 'Charge CPU (5 min / core)',
+        load15mPerCore: 'Charge CPU (15 min / core)',
+        usedPercent: 'Utilisation',
+        thresholdPercent: 'Seuil',
+        thresholdMb: 'Seuil mémoire',
+        usedMb: 'Mémoire utilisée',
+        pingMs: 'Latence',
+        status: 'Statut',
+        cores: 'Nombre de cores',
+      }
+      if (metricLabelMap[label]) {
+        return metricLabelMap[label]
+      }
+
       return label
         .replace(/([A-Z])/g, ' $1')
         .replace(/[_-]/g, ' ')
         .trim()
+    }
+
+    const metricHelpText = (metricLabel: string): string => {
+      const normalizedLabel = metricLabel.toLowerCase()
+      if (normalizedLabel.includes('rss')) {
+        return 'Memoire résidente du processus Node.js (RAM réellement occupée).'
+      }
+      if (normalizedLabel.includes('heap')) {
+        return 'Mémoire JavaScript gérée par le moteur V8.'
+      }
+      if (normalizedLabel.includes('cpu') || normalizedLabel.includes('load')) {
+        return 'Charge processeur observée sur la période récente.'
+      }
+      if (normalizedLabel.includes('latency') || normalizedLabel.includes('ping')) {
+        return 'Temps de réponse de la dépendance surveillée.'
+      }
+      if (normalizedLabel.includes('storage') || normalizedLabel.includes('disk') || normalizedLabel.includes('used')) {
+        return 'Occupation du stockage selon le seuil configuré.'
+      }
+      return 'Métrique technique issue des sondes de santé.'
     }
 
     const metricUnit = (label: string): string => {
@@ -626,7 +677,7 @@ export default defineNuxtComponent({
         return 's'
       }
       if (normalizedLabel.includes('memory') || normalizedLabel.includes('heap') || normalizedLabel.includes('rss') || normalizedLabel.includes('bytes') || normalizedLabel.includes('size')) {
-        return 'MB'
+        return 'Mb'
       }
       return ''
     }
@@ -639,7 +690,7 @@ export default defineNuxtComponent({
       if (unit === '%' && value <= 1) {
         return Math.round(value * 10000) / 100
       }
-      if (unit === 'MB' && value > 1024) {
+      if (unit === 'Mb' && value > 1024) {
         return Math.round((value / (1024 * 1024)) * 100) / 100
       }
       return value
@@ -827,6 +878,25 @@ export default defineNuxtComponent({
 
     const metricSeries = (trendKey: string): number[] => metricHistory.value[trendKey] || []
     const serviceStatusSeries = (serviceKey: string): number[] => serviceStatusHistory.value[serviceKey] || []
+    const metricTrendSummary = (trendKey: string): { icon: string; color: string; label: string } => {
+      const series = metricSeries(trendKey)
+      if (series.length < 2) {
+        return { icon: 'mdi-minus', color: 'grey-6', label: 'N/A' }
+      }
+
+      const previous = series[series.length - 2]
+      const current = series[series.length - 1]
+      const delta = current - previous
+      if (Math.abs(delta) < 0.01) {
+        return { icon: 'mdi-trending-neutral', color: 'grey-7', label: 'Stable' }
+      }
+
+      if (delta > 0) {
+        return { icon: 'mdi-trending-up', color: 'warning', label: 'Hausse' }
+      }
+
+      return { icon: 'mdi-trending-down', color: 'positive', label: 'Baisse' }
+    }
     const resourcesTrendChartOptions = computed(() => ({
       animation: false,
       legend: {
@@ -850,14 +920,14 @@ export default defineNuxtComponent({
         },
         {
           type: 'value',
-          name: 'Memoire (MB)',
+          name: 'Memoire (Mb)',
           axisLabel: { formatter: '{value}' },
         },
       ],
       series: [
         { name: 'CPU 1m/core', type: 'line', smooth: true, symbol: 'none', yAxisIndex: 0, data: cpuLoadSeries.value, lineStyle: { color: '#1976d2', width: 2.2 } },
-        { name: 'Heap MB', type: 'line', smooth: true, symbol: 'none', yAxisIndex: 1, data: heapSeries.value, lineStyle: { color: '#8E44AD', width: 2.2 } },
-        { name: 'RSS MB', type: 'line', smooth: true, symbol: 'none', yAxisIndex: 1, data: rssSeries.value, lineStyle: { color: '#2C7A7B', width: 2.2 } },
+        { name: 'Heap Mb', type: 'line', smooth: true, symbol: 'none', yAxisIndex: 1, data: heapSeries.value, lineStyle: { color: '#8E44AD', width: 2.2 } },
+        { name: 'RSS Mb', type: 'line', smooth: true, symbol: 'none', yAxisIndex: 1, data: rssSeries.value, lineStyle: { color: '#2C7A7B', width: 2.2 } },
       ],
     }))
 
@@ -901,6 +971,7 @@ export default defineNuxtComponent({
         database: 'Base de donnees',
         redis: 'Cache Redis',
         disk: 'Stockage disque',
+        memory_native: 'Memoire native',
       }
       return labels[key] || key
     }
@@ -910,6 +981,7 @@ export default defineNuxtComponent({
         database: 'mdi-database',
         redis: 'mdi-memory',
         disk: 'mdi-harddisk',
+        memory_native: 'mdi-memory-arrow-up',
         uptime: 'mdi-timer-outline',
         queue: 'mdi-format-list-checks',
       }
@@ -1000,6 +1072,8 @@ export default defineNuxtComponent({
       serviceMetricRows,
       systemMetricRows,
       metricSeries,
+      metricTrendSummary,
+      metricHelpText,
       serviceStatusSeries,
       availabilityHistory,
       historySnapshots,

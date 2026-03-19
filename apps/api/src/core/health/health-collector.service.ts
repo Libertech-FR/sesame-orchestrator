@@ -23,7 +23,7 @@ export class HealthCollectorService implements OnModuleInit {
     try {
       const snapshot = await this.healthSnapshotService.collectSnapshot()
       await this.healthHistoryService.appendSnapshot({
-        status: snapshot.status || 'unknown',
+        status: snapshot.status === 'error' ? 'down' : snapshot.status || 'unknown',
         details: snapshot.details || {},
         system: snapshot.system || {},
         futureChecks: snapshot.futureChecks || {},

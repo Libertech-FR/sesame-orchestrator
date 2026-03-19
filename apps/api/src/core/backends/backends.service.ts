@@ -466,7 +466,7 @@ export class BackendsService extends AbstractQueueProcessor {
         attempts: 1,
       },
     );
-    console.log('job', job)
+    // console.log('job', job)
     const optionals = {};
     if (!options?.async) {
       optionals['processedAt'] = new Date();

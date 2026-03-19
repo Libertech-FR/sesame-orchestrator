@@ -1,14 +1,41 @@
 import { Injectable } from '@nestjs/common'
 import { statfs } from 'fs/promises'
 import { cpus, loadavg, totalmem } from 'os'
-import { DiskHealthIndicator, HealthCheckError, HealthCheckResult, HealthCheckService, HttpHealthIndicator, MemoryHealthIndicator, MongooseHealthIndicator } from '@nestjs/terminus'
+import { DiskHealthIndicator, HealthCheckError, HealthCheckResult, HealthCheckService, HealthIndicatorResult, HttpHealthIndicator, MemoryHealthIndicator, MongooseHealthIndicator } from '@nestjs/terminus'
 
 const MEMORY_MULTIPLIER = 1024 * 1024
 const GIGABYTE_MULTIPLIER = 1024 * 1024 * 1024
 const CPU_LOAD_THRESHOLD = 0.85
 const DISK_THRESHOLD_PERCENT = 0.95
-const HEAP_MEMORY_THRESHOLD_MB = 512
-const RSS_MEMORY_THRESHOLD_MB = 512
+const IS_DEV = process.env.NODE_ENV !== 'production'
+
+const readPositiveIntegerEnv = (key: string): number | null => {
+  const rawValue = process.env[key]
+  if (!rawValue) {
+    return null
+  }
+
+  const parsedValue = Number.parseInt(rawValue, 10)
+  if (!Number.isFinite(parsedValue) || parsedValue <= 0) {
+    return null
+  }
+
+  return parsedValue
+}
+
+const resolveThresholdMb = (baseKey: string, defaults: { dev: number; prod: number }): number => {
+  const envSuffix = IS_DEV ? 'DEV' : 'PROD'
+  return (
+    readPositiveIntegerEnv(baseKey) ||
+    readPositiveIntegerEnv(`${baseKey}_${envSuffix}`) ||
+    (IS_DEV ? defaults.dev : defaults.prod)
+  )
+}
+
+const HEAP_MEMORY_THRESHOLD_MB = resolveThresholdMb('SESAME_HEALTH_HEAP_THRESHOLD_MB', { dev: 1024, prod: 512 })
+const RSS_MEMORY_THRESHOLD_MB = resolveThresholdMb('SESAME_HEALTH_RSS_THRESHOLD_MB', { dev: 3072, prod: 1024 })
+const NATIVE_MEMORY_DERIVE_MIN_SAMPLES = 6
+const NATIVE_MEMORY_DERIVE_MIN_GROWTH_MB = resolveThresholdMb('SESAME_HEALTH_NATIVE_DERIVE_MIN_GROWTH_MB', { dev: 256, prod: 128 })
 
 export type HealthSnapshotPayload = HealthCheckResult & {
   system: {
@@ -16,6 +43,9 @@ export type HealthSnapshotPayload = HealthCheckResult & {
       heapUsedMb: number
       heapTotalMb: number
       rssMb: number
+      externalMb: number
+      arrayBuffersMb: number
+      nativeMb: number
       totalSystemMemoryMb: number
     }
     cpu: {
@@ -42,6 +72,8 @@ export type HealthSnapshotPayload = HealthCheckResult & {
 
 @Injectable()
 export class HealthSnapshotService {
+  private nativeMemoryHistory: number[] = []
+
   public constructor(
     private readonly health: HealthCheckService,
     private readonly mongoose: MongooseHealthIndicator,
@@ -51,26 +83,34 @@ export class HealthSnapshotService {
   ) { }
 
   public async collectSnapshot(): Promise<HealthSnapshotPayload> {
-    const healthResult = await this.health.check([
-      () => this.checkMongoose(),
-      () => this.http.pingCheck('http-github', 'https://github.com'),
-      () => this.checkStorage(),
-      () => this.checkMemoryHeap(),
-      () => this.checkMemoryRss(),
-      () => this.checkCpu(),
-    ])
+    const healthResult = await this.collectHealthResult()
 
     const memoryUsage = process.memoryUsage()
     const cpuCount = Math.max(cpus().length, 1)
     const [load1m, load5m, load15m] = loadavg()
+    const externalMb = Number((memoryUsage.external / MEMORY_MULTIPLIER).toFixed(2))
+    const arrayBuffersMb = Number((memoryUsage.arrayBuffers / MEMORY_MULTIPLIER).toFixed(2))
+    const nativeMb = Number((externalMb + arrayBuffersMb).toFixed(2))
+    const memoryNativeIndicator = this.buildMemoryNativeIndicator(nativeMb, externalMb, arrayBuffersMb)
+
+    const details = {
+      ...((healthResult.details || {}) as HealthIndicatorResult),
+      memory_native: memoryNativeIndicator,
+    }
+    const hasAnyDown = Object.values(details).some((indicator) => indicator?.status === 'down')
 
     return {
       ...healthResult,
+      status: hasAnyDown ? 'error' : 'ok',
+      details,
       system: {
         memory: {
           heapUsedMb: Number((memoryUsage.heapUsed / MEMORY_MULTIPLIER).toFixed(2)),
           heapTotalMb: Number((memoryUsage.heapTotal / MEMORY_MULTIPLIER).toFixed(2)),
           rssMb: Number((memoryUsage.rss / MEMORY_MULTIPLIER).toFixed(2)),
+          externalMb,
+          arrayBuffersMb,
+          nativeMb,
           totalSystemMemoryMb: Number((totalmem() / MEMORY_MULTIPLIER).toFixed(2)),
         },
         cpu: {
@@ -93,6 +133,79 @@ export class HealthSnapshotService {
           note: 'Reserved for future leaked-password detection integration (k-anonymity/HIBP style).',
         },
       },
+    }
+  }
+
+  private async collectHealthResult(): Promise<HealthCheckResult> {
+    try {
+      return await this.health.check([
+        () => this.checkMongoose(),
+        () => this.http.pingCheck('http-github', 'https://github.com'),
+        () => this.checkStorage(),
+        () => this.checkMemoryHeap(),
+        () => this.checkMemoryRss(),
+        () => this.checkCpu(),
+      ])
+    } catch (error) {
+      if (error instanceof HealthCheckError) {
+        const details = this.extractHealthErrorDetails(error)
+        return {
+          status: 'error',
+          info: {},
+          error: details,
+          details,
+        }
+      }
+
+      throw error
+    }
+  }
+
+  private extractHealthErrorDetails(error: HealthCheckError): HealthIndicatorResult {
+    const candidate = error.causes || {}
+    if (typeof candidate === 'object' && candidate !== null && Object.keys(candidate).length > 0) {
+      return candidate as HealthIndicatorResult
+    }
+
+    return {
+      unknown: {
+        status: 'down',
+        message: error.message,
+      },
+    }
+  }
+
+  private buildMemoryNativeIndicator(nativeMb: number, externalMb: number, arrayBuffersMb: number): {
+    status: 'up' | 'down'
+    nativeMb: number
+    externalMb: number
+    arrayBuffersMb: number
+    growthMb: number
+    growthThresholdMb: number
+    sampleCount: number
+  } {
+    this.nativeMemoryHistory.push(nativeMb)
+    if (this.nativeMemoryHistory.length > NATIVE_MEMORY_DERIVE_MIN_SAMPLES) {
+      this.nativeMemoryHistory.shift()
+    }
+
+    const sampleCount = this.nativeMemoryHistory.length
+    const firstValue = this.nativeMemoryHistory[0] || nativeMb
+    const growthMb = Number((nativeMb - firstValue).toFixed(2))
+    const hasEnoughSamples = sampleCount >= NATIVE_MEMORY_DERIVE_MIN_SAMPLES
+    const isStrictlyIncreasing =
+      hasEnoughSamples &&
+      this.nativeMemoryHistory.every((value, index, values) => index === 0 || value > values[index - 1])
+    const isDrifting = isStrictlyIncreasing && growthMb >= NATIVE_MEMORY_DERIVE_MIN_GROWTH_MB
+
+    return {
+      status: isDrifting ? 'down' : 'up',
+      nativeMb,
+      externalMb,
+      arrayBuffersMb,
+      growthMb,
+      growthThresholdMb: NATIVE_MEMORY_DERIVE_MIN_GROWTH_MB,
+      sampleCount,
     }
   }
 

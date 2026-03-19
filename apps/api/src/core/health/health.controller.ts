@@ -101,7 +101,7 @@ export class HealthController {
     if (!latestSnapshot) {
       const freshSnapshot = await this.healthSnapshotService.collectSnapshot()
       await this.healthHistoryService.appendSnapshot({
-        status: freshSnapshot.status || 'unknown',
+        status: freshSnapshot.status === 'error' ? 'down' : freshSnapshot.status || 'unknown',
         details: freshSnapshot.details || {},
         system: freshSnapshot.system || {},
         futureChecks: freshSnapshot.futureChecks || {},

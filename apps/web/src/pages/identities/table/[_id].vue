@@ -2,12 +2,15 @@
 q-card.flex.column.fit.absolute(flat)
   q-toolbar.bg-transparent.q-pa-none(style='border-radius: 0;')
     q-btn.icon(stretch icon='mdi-arrow-left' flat @click='navigateToTab(`/identities/table`)')
-      q-tooltip.text-body2(anchor="top middle" self="center middle") Retour à la liste des identités
+      q-tooltip.text-body2(anchor="top middle" self="bottom middle") Retour à la liste des identités
     q-separator(v-for='_ in 2' :key='_' vertical)
-    sesame-pages-identities-states-info.q-mx-sm(:identity='identity')
-    q-toolbar-title.q-pa-none.cursor-pointer(@click='navigateToTab(`/identities/table/${identity._id}`)')
+    sesame-pages-identities-states-info.q-ml-sm(v-if='!isNew' :identity='identity')
+    q-toolbar-title.q-ml-sm.q-pa-none
       span(v-if='isNew') Nouvelle identitée
-      span(v-else v-text='identity?.inetOrgPerson?.cn || "Identité sans nom"')
+      span.cursor-pointer(v-else @click='navigateToTab(`/identities/table/${identity._id}`)' v-text='identity?.inetOrgPerson?.cn || "Identité sans nom"')
+      q-chip.q-ml-sm(v-if='!isNew' color='grey-8' text-color='white' size='xs')
+        q-tooltip.text-body2(slot="trigger") Type d'identitée
+        b(v-text='identity?.inetOrgPerson?.employeeType')
     q-tabs.full-height(:model-value='tab' v-if='!isSmall && !isNew')
       template(v-for="tab in tabs" :key="tab.name")
         q-separator.q-mx-xs(v-if="tab.type === 'separator'" inset vertical)

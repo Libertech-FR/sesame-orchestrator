@@ -40,7 +40,7 @@ q-dialog(
                 self="center middle"
               ) Vous n'avez pas les permissions nécessaires pour accéder à cette page
 
-            q-separator(v-if="!$q.screen.gt.sm && index !== navItems.length - 1 && hasPermission('/core/health', 'read')" inset vertical)
+            q-separator(v-if="!$q.screen.gt.sm && navItems.length > 0 && hasPermission('/core/health', 'read')" inset vertical)
             q-tab(
               v-if="!$q.screen.gt.sm && hasPermission('/core/health', 'read')"
               name="/settings/health"

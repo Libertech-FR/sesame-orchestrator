@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common'
 import { TerminusModule } from '@nestjs/terminus'
 import { HttpModule } from '@nestjs/axios'
 import { HealthController } from './health.controller'
+import { HealthHistoryService } from './health-history.service'
+import { HealthSnapshotService } from './health-snapshot.service'
+import { HealthCollectorService } from './health-collector.service'
 
 /**
  * Module de vérification de l'état de santé du système.
@@ -37,5 +40,6 @@ import { HealthController } from './health.controller'
     HttpModule,
   ],
   controllers: [HealthController],
+  providers: [HealthHistoryService, HealthSnapshotService, HealthCollectorService],
 })
 export class HealthModule { }

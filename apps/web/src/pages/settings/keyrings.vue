@@ -10,6 +10,7 @@
       :columns='columns'
       :visible-columns='visibleColumns'
       :refresh='refresh'
+      :targetId='targetId'
       row-key='_id'
     )
       template(#top-table)
@@ -37,6 +38,7 @@ export default defineNuxtComponent({
   name: 'SettingsKeyringsPage',
   data() {
     return {
+      targetId: '',
       visibleColumns: ['name', 'allowedNetworks', 'roles', 'suspendedAt'],
       columns: [
         {

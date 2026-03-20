@@ -45,7 +45,7 @@
                 autoresize
                 style='height: 260px; width: 100%;'
               )
-            .text-caption.text-grey-7.q-pa-sm(v-else) Donnees insuffisantes pour tracer une tendance (attente de nouveaux echantillons SSE).
+            .text-caption.text-grey-7.q-pa-sm(v-else) Données insuffisantes pour tracer une tendance.
 
     q-card.q-mb-md(flat bordered)
       q-card-section.row.items-center.justify-between
@@ -141,7 +141,7 @@
                       autoresize
                       style='height: 30px; width: 90px;'
                     )
-                  span.text-caption.text-grey-6(v-else) Donnees insuffisantes
+                  span.text-caption.text-grey-6(v-else) Données insuffisantes
 
     .row.q-col-gutter-md.q-mt-sm(v-if='systemCards.length')
       .col-12.col-md-6(v-for='card in systemCards' :key='card.key')
@@ -159,7 +159,7 @@
               row-key='id'
               hide-pagination
               :rows-per-page-options='[0]'
-              no-data-label='Aucune métrique systeme disponible.'
+              no-data-label='Aucune métrique système disponible.'
             )
               template(v-slot:body-cell-metric='props')
                 q-td(:props='props')
@@ -191,7 +191,7 @@
                       autoresize
                       style='height: 30px; width: 90px;'
                     )
-                  span.text-caption.text-grey-6(v-else) Donnees insuffisantes
+                  span.text-caption.text-grey-6(v-else) Données insuffisantes
 
     //- q-card.q-mt-md(v-if='futureCheckCards.length' flat bordered)
     //-   q-card-section
@@ -516,6 +516,22 @@ export default defineNuxtComponent({
       }
       return `${Math.round(rssMb)} Mb`
     })
+    const currentTotalSystemMemoryMb = computed(() => {
+      const memoryMetrics = (healthPayload.value?.system?.memory || {}) as Record<string, unknown>
+      const totalSystemMemoryMb = memoryMetrics['totalSystemMemoryMb']
+      if (typeof totalSystemMemoryMb !== 'number' || Number.isNaN(totalSystemMemoryMb)) {
+        return '-'
+      }
+      return `${totalSystemMemoryMb.toFixed(2)} Mb`
+    })
+    const currentCpuCores = computed(() => {
+      const cpuMetrics = (healthPayload.value?.system?.cpu || {}) as Record<string, unknown>
+      const cores = cpuMetrics['cores']
+      if (typeof cores !== 'number' || Number.isNaN(cores)) {
+        return '-'
+      }
+      return `${Math.round(cores)}`
+    })
 
     const statsCards = computed(() => {
       const cards = [
@@ -558,6 +574,26 @@ export default defineNuxtComponent({
           tooltipTag: 'Memoire',
           tooltipMeaning: 'RSS (Resident Set Size) = memoire physique actuellement occupee par le processus Node.js.',
           tooltipHow: 'Si RSS monte en continu sans redescendre, cela peut signaler une fuite memoire.',
+        },
+        {
+          key: 'total-memory',
+          label: 'Memoire système totale',
+          value: currentTotalSystemMemoryMb.value,
+          icon: 'mdi-memory-arrow-down',
+          color: 'indigo',
+          tooltipTag: 'Capacite',
+          tooltipMeaning: 'Memoire totale visible par le runtime applicatif (conteneur/VM).',
+          tooltipHow: 'Metrique plutot statique, utile comme reference de capacite.',
+        },
+        {
+          key: 'cpu-cores',
+          label: 'Nombre de cores',
+          value: currentCpuCores.value,
+          icon: 'mdi-chip',
+          color: 'deep-orange',
+          tooltipTag: 'Capacite CPU',
+          tooltipMeaning: 'Nombre de cores CPU visibles par le runtime applicatif.',
+          tooltipHow: 'Metrique plutot statique, utile pour interpreter la charge CPU par core.',
         },
       ]
 
@@ -629,6 +665,7 @@ export default defineNuxtComponent({
         load15mPerCore: 'Charge CPU (15 min / core)',
         usedPercent: 'Utilisation',
         thresholdPercent: 'Seuil',
+        threshold: 'Seuil CPU',
         thresholdMb: 'Seuil mémoire',
         usedMb: 'Mémoire utilisée',
         pingMs: 'Latence',
@@ -647,6 +684,18 @@ export default defineNuxtComponent({
 
     const metricHelpText = (metricLabel: string): string => {
       const normalizedLabel = metricLabel.toLowerCase()
+      if (normalizedLabel === 'threshold') {
+        return 'Seuil CPU exprime en ratio (0.85 = 85%).'
+      }
+      if (normalizedLabel === 'nativeMb'.toLowerCase()) {
+        return 'Memoire native (external) vue par Node.js; inclut deja les Array buffers.'
+      }
+      if (normalizedLabel === 'arraybuffersmb') {
+        return 'Part memoire des ArrayBuffer/Buffer, deja comprise dans la memoire externe.'
+      }
+      if (normalizedLabel === 'externalmb') {
+        return 'Memoire externe V8 (objets natifs lies au JavaScript).'
+      }
       if (normalizedLabel.includes('rss')) {
         return 'Memoire résidente du processus Node.js (RAM réellement occupée).'
       }
@@ -667,6 +716,12 @@ export default defineNuxtComponent({
 
     const metricUnit = (label: string): string => {
       const normalizedLabel = label.toLowerCase()
+      if (normalizedLabel === 'threshold') {
+        return '%'
+      }
+      if (normalizedLabel.endsWith('mb')) {
+        return 'Mb'
+      }
       if (normalizedLabel.includes('percent') || normalizedLabel.includes('usage') || normalizedLabel.includes('ratio') || normalizedLabel.includes('cpu')) {
         return '%'
       }
@@ -689,9 +744,6 @@ export default defineNuxtComponent({
       const unit = metricUnit(label)
       if (unit === '%' && value <= 1) {
         return Math.round(value * 10000) / 100
-      }
-      if (unit === 'Mb' && value > 1024) {
-        return Math.round((value / (1024 * 1024)) * 100) / 100
       }
       return value
     }
@@ -862,7 +914,9 @@ export default defineNuxtComponent({
     }
 
     const systemMetricRows = (card: { key: string; metrics: Array<{ label: string; value: unknown }> }): MetricRow[] => {
-      return card.metrics.map((metric) => {
+      return card.metrics
+        .filter((metric) => !['totalSystemMemoryMb', 'cores'].includes(metric.label))
+        .map((metric) => {
         const normalized = formatMetricWithUnit(metric.label, metric.value)
         const unitAwareProgress = normalized.unit === '%' && normalized.numericValue !== null ? Math.max(0, Math.min(100, normalized.numericValue)) : null
         return {
@@ -873,7 +927,7 @@ export default defineNuxtComponent({
           trendKey: `${card.key}.${metric.label}`,
           progressValue: unitAwareProgress,
         }
-      })
+        })
     }
 
     const metricSeries = (trendKey: string): number[] => metricHistory.value[trendKey] || []

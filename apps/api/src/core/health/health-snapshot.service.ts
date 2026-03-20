@@ -96,7 +96,8 @@ export class HealthSnapshotService {
     const rssIndicator = this.checkMemoryRss().memory_rss
     const externalMb = Number((memoryUsage.external / MEMORY_MULTIPLIER).toFixed(2))
     const arrayBuffersMb = Number((memoryUsage.arrayBuffers / MEMORY_MULTIPLIER).toFixed(2))
-    const nativeMb = Number((externalMb + arrayBuffersMb).toFixed(2))
+    // `arrayBuffers` is already included in `external` in Node.js memoryUsage.
+    const nativeMb = externalMb
     const memoryNativeIndicator = this.buildMemoryNativeIndicator(nativeMb, externalMb, arrayBuffersMb)
 
     const details = {

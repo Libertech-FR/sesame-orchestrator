@@ -3,7 +3,7 @@ q-layout(view="hHh LpR lff" style="margin-top: -1px;")
   sesame-layouts-default-appbar
   sesame-layouts-default-drawer
   q-page-container.full-height
-    nuxt-page
+    slot
     q-dialog(seamless v-model="eventSeamless" position="bottom")
       q-card(style="width: 350px")
         q-linear-progress(:value="eventSeamlessProgress" color="amber-9")

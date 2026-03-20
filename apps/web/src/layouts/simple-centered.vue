@@ -4,7 +4,7 @@ q-layout(view="lHh Lpr fff")
     q-page.window-height.window-width.row.justify-center.items-center(
       :style-fn="getStyle"
     )
-      nuxt-page
+      slot
       q-fab.absolute(
         style="bottom: 16px; right: 16px;"
         color="primary"

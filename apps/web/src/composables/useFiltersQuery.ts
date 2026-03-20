@@ -423,8 +423,10 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
     const router = useRouter()
     const query = { ...$route.query }
     const comparator = comparatorTypes.value.find((comp) => comp.value === filter.operator)
-    const filterKey = `${FILTER_PREFIX}${comparator?.querySign}${filter.key}${FILTER_SUFFIX}`
-    const value = comparator?.multiplefields ? filter.value.split(',').map((v) => v.trim()) : filter.value.trim()
+    if (!comparator) return
+
+    const filterKey = `${FILTER_PREFIX}${comparator.querySign}${filter.key}${FILTER_SUFFIX}`
+    const scalarValue = typeof filter.value === 'undefined' || filter.value === null ? '' : String(filter.value).trim()
 
     // Remove any existing filter for the same field
     for (const key in query) {
@@ -444,22 +446,28 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
     switch (filter.operator) {
       case '@':
         if (filter.items && filter.items.length > 0) {
-          query[filterKey] = filter.items.map((item) => `${comparator?.prefix || ''}${item}${comparator?.suffix || ''}`)
+          query[filterKey] = filter.items.map((item) => `${comparator.prefix || ''}${item}${comparator.suffix || ''}`)
+        } else if (scalarValue) {
+          query[filterKey] = scalarValue
+            .split(',')
+            .map((item) => item.trim())
+            .filter((item) => item.length > 0)
+            .map((item) => `${comparator.prefix || ''}${item}${comparator.suffix || ''}`)
         }
         break
 
       case '~':
-        if (value) {
-          query[filterKey] = value
+        if (scalarValue) {
+          query[filterKey] = scalarValue
         }
         break
 
       default:
-        if (comparator?.type.includes('date') && value) {
-          const dateValue = dayjs(value as string).toISOString()
-          query[filterKey] = `${comparator?.prefix || ''}${dateValue}${comparator?.suffix || ''}`
-        } else if (value) {
-          query[filterKey] = `${comparator?.prefix || ''}${value}${comparator?.suffix || ''}`
+        if (comparator.type.includes('date') && scalarValue) {
+          const dateValue = dayjs(scalarValue as string).toISOString()
+          query[filterKey] = `${comparator.prefix || ''}${dateValue}${comparator.suffix || ''}`
+        } else if (scalarValue) {
+          query[filterKey] = `${comparator.prefix || ''}${scalarValue}${comparator.suffix || ''}`
         }
         break
     }

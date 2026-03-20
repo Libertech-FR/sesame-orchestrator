@@ -1025,6 +1025,7 @@ export default defineNuxtComponent({
         database: 'Base de donnees',
         redis: 'Cache Redis',
         disk: 'Stockage disque',
+        cpu: 'Ressources CPU',
         memory_native: 'Memoire native',
       }
       return labels[key] || key
@@ -1035,6 +1036,7 @@ export default defineNuxtComponent({
         database: 'mdi-database',
         redis: 'mdi-memory',
         disk: 'mdi-harddisk',
+        cpu: 'mdi-cpu-64-bit',
         memory_native: 'mdi-memory-arrow-up',
         uptime: 'mdi-timer-outline',
         queue: 'mdi-format-list-checks',

@@ -130,30 +130,41 @@ export default defineNuxtComponent({
     },
   },
   methods: {
-    async undeleteIdentity(identity) {
-      try {
-        await this.$http.post('/core/backends/undelete', {
-          body: {
-            payload: [identity._id],
-          },
+    undeleteIdentity(identity) {
+      const { confirmButton, cancelDeleteButton } = useModalButtons()
+      this.$q
+        .dialog({
+          title: 'Confirmation',
+          message: 'Voulez-vous vraiment restaurer cette identité ?',
+          ok: confirmButton.value,
+          cancel: cancelDeleteButton.value,
+          persistent: true,
         })
+        .onOk(async () => {
+          try {
+            await this.$http.post('/core/backends/undelete', {
+              body: {
+                payload: [identity._id],
+              },
+            })
 
-        this.$q.notify({
-          message: "L'identité a été restaurée.",
-          color: 'positive',
-          position: 'top-right',
-          icon: 'mdi-check-circle-outline',
+            this.$q.notify({
+              message: "L'identité a été restaurée.",
+              color: 'positive',
+              position: 'top-right',
+              icon: 'mdi-check-circle-outline',
+            })
+            await this.fetchAllStateCount()
+            this.refresh()
+          } catch (error: any) {
+            this.$q.notify({
+              message: "Impossible de restaurer l'identité : " + (error?.response?._data?.message || 'erreur inconnue'),
+              color: 'negative',
+              position: 'top-right',
+              icon: 'mdi-alert-circle-outline',
+            })
+          }
         })
-        await this.fetchAllStateCount()
-        this.refresh()
-      } catch (error: any) {
-        this.$q.notify({
-          message: "Impossible de restaurer l'identité : " + (error?.response?._data?.message || 'erreur inconnue'),
-          color: 'negative',
-          position: 'top-right',
-          icon: 'mdi-alert-circle-outline',
-        })
-      }
     },
   },
 })

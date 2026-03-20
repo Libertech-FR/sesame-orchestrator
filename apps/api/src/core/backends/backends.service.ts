@@ -361,13 +361,13 @@ export class BackendsService extends AbstractQueueProcessor {
           message: `Identity ${key} not found`,
         });
       }
-
+ 
       const targetState = identity.lastBackendSync ? IdentityState.TO_SYNC : IdentityState.TO_CREATE;
       await this.identitiesService.model.findByIdAndUpdate(key, {
         $set: {
           state: targetState,
           deletedFlag: false,
-          dataStatus: DataStatusEnum.ACTIVE,
+          dataStatus: DataStatusEnum.NOTINITIALIZED,
         },
       });
       result[identity._id] = { restored: true, state: targetState };

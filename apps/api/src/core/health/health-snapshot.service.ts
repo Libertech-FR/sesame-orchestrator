@@ -37,6 +37,7 @@ const RSS_MEMORY_THRESHOLD_MB = resolveThresholdMb('SESAME_HEALTH_RSS_THRESHOLD_
 const NATIVE_MEMORY_DERIVE_MIN_SAMPLES = 6
 const NATIVE_MEMORY_DERIVE_MIN_GROWTH_MB = resolveThresholdMb('SESAME_HEALTH_NATIVE_DERIVE_MIN_GROWTH_MB', { dev: 256, prod: 128 })
 const ENABLE_HTTP_GITHUB_CHECK = !/^(false|0|off|no)$/i.test(`${process.env.SESAME_HEALTH_ENABLE_HTTP_CHECK || 'false'}`)
+const HTTP_GITHUB_CHECK_INTERVAL_MS = readPositiveIntegerEnv('SESAME_HEALTH_HTTP_CHECK_INTERVAL_MS') || 5 * 60 * 1_000
 
 export type HealthSnapshotPayload = HealthCheckResult & {
   system: {
@@ -74,6 +75,8 @@ export type HealthSnapshotPayload = HealthCheckResult & {
 @Injectable()
 export class HealthSnapshotService {
   private nativeMemoryHistory: number[] = []
+  private lastHttpGithubIndicator: HealthIndicatorResult<'http-github'> | null = null
+  private lastHttpGithubCheckedAt = 0
 
   public constructor(
     private readonly health: HealthCheckService,
@@ -150,7 +153,7 @@ export class HealthSnapshotService {
       ]
 
       if (ENABLE_HTTP_GITHUB_CHECK) {
-        checks.splice(1, 0, () => this.http.pingCheck('http-github', 'https://github.com'))
+        checks.splice(1, 0, () => this.checkHttpGithubThrottled())
       }
 
       return await this.health.check(checks)
@@ -166,6 +169,34 @@ export class HealthSnapshotService {
       }
 
       throw error
+    }
+  }
+
+  private async checkHttpGithubThrottled(): Promise<HealthIndicatorResult<'http-github'>> {
+    const now = Date.now()
+    const hasFreshValue = Boolean(
+      this.lastHttpGithubIndicator &&
+      now - this.lastHttpGithubCheckedAt < HTTP_GITHUB_CHECK_INTERVAL_MS,
+    )
+
+    if (hasFreshValue && this.lastHttpGithubIndicator) {
+      return this.lastHttpGithubIndicator
+    }
+
+    try {
+      const indicator = await this.http.pingCheck('http-github', 'https://github.com')
+      this.lastHttpGithubIndicator = indicator
+      this.lastHttpGithubCheckedAt = now
+      return indicator
+    } catch {
+      const indicator: HealthIndicatorResult<'http-github'> = {
+        'http-github': {
+          status: 'down',
+        },
+      }
+      this.lastHttpGithubIndicator = indicator
+      this.lastHttpGithubCheckedAt = now
+      return indicator
     }
   }
 

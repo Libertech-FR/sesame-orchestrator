@@ -7,6 +7,12 @@ import { Public } from '~/_common/decorators/public.decorator'
 import { HealthHistoryService, HealthHistorySnapshot } from './health-history.service'
 import { HealthSnapshotPayload, HealthSnapshotService } from './health-snapshot.service'
 
+const DEFAULT_HEALTH_SSE_INTERVAL_MS = 15_000
+const parsedHealthSseIntervalMs = Number.parseInt(`${process.env.SESAME_HEALTH_SSE_INTERVAL_MS || ''}`, 10)
+const HEALTH_SSE_INTERVAL_MS = Number.isFinite(parsedHealthSseIntervalMs) && parsedHealthSseIntervalMs > 0
+  ? parsedHealthSseIntervalMs
+  : DEFAULT_HEALTH_SSE_INTERVAL_MS
+
 type HealthResponse = HealthSnapshotPayload & {
   history: HealthHistorySnapshot[]
 }
@@ -82,7 +88,7 @@ export class HealthController {
       const heartbeat = setInterval(() => {
         observer.next({ type: 'ping', data: 'keepalive' } as MessageEvent)
       }, 15_000)
-      const interval = setInterval(emitHealthPayload, 5_000)
+      const interval = setInterval(emitHealthPayload, HEALTH_SSE_INTERVAL_MS)
 
       const cleanup = () => {
         clearInterval(interval)

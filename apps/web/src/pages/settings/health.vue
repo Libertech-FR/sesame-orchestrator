@@ -1016,7 +1016,7 @@ export default defineNuxtComponent({
       lastRefreshTime.value = Date.now()
     }
 
-    const refreshIntervalInSeconds = 5
+    const refreshIntervalInSeconds = 15
     const healthSse = ref<ReconnectingEventSource | null>(null)
     const nowTimestamp = ref(Date.now())
     const clockInterval = setInterval(() => {

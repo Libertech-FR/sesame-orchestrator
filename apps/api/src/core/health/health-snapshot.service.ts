@@ -36,7 +36,7 @@ const HEAP_MEMORY_THRESHOLD_MB = resolveThresholdMb('SESAME_HEALTH_HEAP_THRESHOL
 const RSS_MEMORY_THRESHOLD_MB = resolveThresholdMb('SESAME_HEALTH_RSS_THRESHOLD_MB', { dev: 3072, prod: 1024 })
 const NATIVE_MEMORY_DERIVE_MIN_SAMPLES = 6
 const NATIVE_MEMORY_DERIVE_MIN_GROWTH_MB = resolveThresholdMb('SESAME_HEALTH_NATIVE_DERIVE_MIN_GROWTH_MB', { dev: 256, prod: 128 })
-const ENABLE_HTTP_GITHUB_CHECK = !/^(false|0|off|no)$/i.test(`${process.env.SESAME_HEALTH_ENABLE_HTTP_CHECK || 'true'}`)
+const ENABLE_HTTP_GITHUB_CHECK = !/^(false|0|off|no)$/i.test(`${process.env.SESAME_HEALTH_ENABLE_HTTP_CHECK || 'false'}`)
 
 export type HealthSnapshotPayload = HealthCheckResult & {
   system: {

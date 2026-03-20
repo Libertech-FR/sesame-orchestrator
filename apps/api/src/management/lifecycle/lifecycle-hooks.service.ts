@@ -9,6 +9,7 @@ import { AbstractLifecycleService } from './_abstracts/abstract.lifecycle.servic
 import { ConfigRulesObjectSchemaDTO } from './_dto/config-rules.dto'
 import { loadCustomStates } from './_functions/load-custom-states.function'
 import { loadLifecycleRules } from './_functions/load-lifecycle-rules.function'
+import { resolveConfigVariables } from '~/_common/functions/resolve-config-variables.function'
 
 @Injectable()
 export class LifecycleHooksService extends AbstractLifecycleService {
@@ -278,6 +279,8 @@ export class LifecycleHooksService extends AbstractLifecycleService {
       for (const idRule of lfr.identities) {
         if (typeof idRule.trigger === 'number' && (idRule.trigger > 0 || ignoreTrigger)) {
           const dateKey = idRule.dateKey || 'lastSync'
+          const resolvedRules = await resolveConfigVariables(idRule.rules ?? {})
+          const resolvedMutation = await resolveConfigVariables(idRule.mutation ?? {})
 
           try {
             const checkDate = new Date(Date.now() - (idRule.trigger * 1000))
@@ -285,7 +288,7 @@ export class LifecycleHooksService extends AbstractLifecycleService {
             filterDate[dateKey] = { $lte: checkDate }
 
             const req = {
-              ...idRule.rules,
+              ...resolvedRules,
               lifecycle: {
                 $in: idRule.sources,
               },
@@ -306,7 +309,7 @@ export class LifecycleHooksService extends AbstractLifecycleService {
                 { _id: identity._id },
                 {
                   $set: {
-                    ...idRule.mutation,
+                    ...resolvedMutation,
                     lifecycle: idRule.target,
                     lastLifecycleUpdate: new Date(),
                   },
@@ -450,6 +453,8 @@ export class LifecycleHooksService extends AbstractLifecycleService {
 
       for (const lcs of this.lifecycleSources[after.lifecycle]) {
         this.logger.verbose(`Processing lifecycle source <${after.lifecycle}> with rules: ${JSON.stringify(lcs.rules)}`)
+        const resolvedRules = await resolveConfigVariables(lcs.rules ?? {})
+        const resolvedMutation = await resolveConfigVariables(lcs.mutation ?? {})
 
         if (lcs.trigger) {
           this.logger.debug(`Skipping lifecycle source <${after.lifecycle}> with trigger: ${lcs.trigger}`)
@@ -458,13 +463,13 @@ export class LifecycleHooksService extends AbstractLifecycleService {
 
         const res = await this.identitiesService.model.findOneAndUpdate(
           {
-            ...lcs.rules,
+            ...resolvedRules,
             _id: after._id,
             ignoreLifecycle: { $ne: true },
           },
           {
             $set: {
-              ...lcs.mutation,
+              ...resolvedMutation,
               lifecycle: lcs.target,
               lastLifecycleUpdate: new Date(),
             },

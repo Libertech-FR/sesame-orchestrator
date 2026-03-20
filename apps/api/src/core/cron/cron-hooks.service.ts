@@ -8,6 +8,7 @@ import { CronTaskDTO } from './_dto/config-task.dto'
 import { loadcronTasks } from './_functions/load-cron-tasks.function'
 import { ConfigService } from '@nestjs/config'
 import { createHandlerLogger } from '~/_common/functions/handler-logger'
+import { resolveConfigVariables } from '~/_common/functions/resolve-config-variables.function'
 
 @Injectable()
 export class CronHooksService {
@@ -293,9 +294,10 @@ export class CronHooksService {
 
   private async executeHandlerCommand(name: string, handler: string, options?: Record<string, any>): Promise<void> {
     const args: string[] = []
+    const resolvedOptions = await resolveConfigVariables(options)
 
-    if (options && typeof options === 'object') {
-      for (const [k, v] of Object.entries(options)) {
+    if (resolvedOptions && typeof resolvedOptions === 'object') {
+      for (const [k, v] of Object.entries(resolvedOptions)) {
         if (typeof v === 'boolean') {
           if (v) args.push(`--${k}`)
         } else if (v === null || v === undefined) {

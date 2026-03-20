@@ -104,7 +104,13 @@ export default defineNuxtComponent({
       }
 
       try {
-        const daemonPackageResponse = await $http.$post('/core/backends/execute?async=false', {
+        const daemonPackageResponse = await $http.$post('/core/backends/execute', {
+          query: {
+            async: 'false',
+            disableLogs: 'true',
+            timeoutDiscard: 'true',
+            syncTimeout: '3000',
+          },
           method: 'POST',
           body: {
             action: 'DUMP_PACKAGE_CONFIG',

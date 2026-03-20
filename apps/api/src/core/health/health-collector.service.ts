@@ -3,7 +3,11 @@ import { Interval } from '@nestjs/schedule'
 import { HealthHistoryService } from './health-history.service'
 import { HealthSnapshotService } from './health-snapshot.service'
 
-const HEALTH_COLLECTION_INTERVAL_MS = 5_000
+const DEFAULT_HEALTH_COLLECTION_INTERVAL_MS = 5_000
+const parsedHealthCollectionIntervalMs = Number.parseInt(`${process.env.SESAME_HEALTH_COLLECTION_INTERVAL_MS || ''}`, 10)
+const HEALTH_COLLECTION_INTERVAL_MS = Number.isFinite(parsedHealthCollectionIntervalMs) && parsedHealthCollectionIntervalMs > 0
+  ? parsedHealthCollectionIntervalMs
+  : DEFAULT_HEALTH_COLLECTION_INTERVAL_MS
 
 @Injectable()
 export class HealthCollectorService implements OnModuleInit {

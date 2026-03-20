@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { statfs } from 'fs/promises'
 import { cpus, loadavg, totalmem } from 'os'
-import { DiskHealthIndicator, HealthCheckError, HealthCheckResult, HealthCheckService, HealthIndicatorResult, HttpHealthIndicator, MemoryHealthIndicator, MongooseHealthIndicator } from '@nestjs/terminus'
+import { DiskHealthIndicator, HealthCheckError, HealthCheckResult, HealthCheckService, HealthIndicatorResult, HttpHealthIndicator, MongooseHealthIndicator } from '@nestjs/terminus'
 
 const MEMORY_MULTIPLIER = 1024 * 1024
 const GIGABYTE_MULTIPLIER = 1024 * 1024 * 1024
@@ -36,6 +36,7 @@ const HEAP_MEMORY_THRESHOLD_MB = resolveThresholdMb('SESAME_HEALTH_HEAP_THRESHOL
 const RSS_MEMORY_THRESHOLD_MB = resolveThresholdMb('SESAME_HEALTH_RSS_THRESHOLD_MB', { dev: 3072, prod: 1024 })
 const NATIVE_MEMORY_DERIVE_MIN_SAMPLES = 6
 const NATIVE_MEMORY_DERIVE_MIN_GROWTH_MB = resolveThresholdMb('SESAME_HEALTH_NATIVE_DERIVE_MIN_GROWTH_MB', { dev: 256, prod: 128 })
+const ENABLE_HTTP_GITHUB_CHECK = !/^(false|0|off|no)$/i.test(`${process.env.SESAME_HEALTH_ENABLE_HTTP_CHECK || 'true'}`)
 
 export type HealthSnapshotPayload = HealthCheckResult & {
   system: {
@@ -79,7 +80,6 @@ export class HealthSnapshotService {
     private readonly mongoose: MongooseHealthIndicator,
     private readonly http: HttpHealthIndicator,
     private readonly disk: DiskHealthIndicator,
-    private readonly memory: MemoryHealthIndicator,
   ) { }
 
   public async collectSnapshot(): Promise<HealthSnapshotPayload> {
@@ -88,6 +88,9 @@ export class HealthSnapshotService {
     const memoryUsage = process.memoryUsage()
     const cpuCount = Math.max(cpus().length, 1)
     const [load1m, load5m, load15m] = loadavg()
+    const cpuIndicator = this.checkCpu().cpu
+    const heapIndicator = this.checkMemoryHeap().memory_heap
+    const rssIndicator = this.checkMemoryRss().memory_rss
     const externalMb = Number((memoryUsage.external / MEMORY_MULTIPLIER).toFixed(2))
     const arrayBuffersMb = Number((memoryUsage.arrayBuffers / MEMORY_MULTIPLIER).toFixed(2))
     const nativeMb = Number((externalMb + arrayBuffersMb).toFixed(2))
@@ -95,6 +98,9 @@ export class HealthSnapshotService {
 
     const details = {
       ...((healthResult.details || {}) as HealthIndicatorResult),
+      cpu: cpuIndicator,
+      memory_heap: heapIndicator,
+      memory_rss: rssIndicator,
       memory_native: memoryNativeIndicator,
     }
     const hasAnyDown = Object.values(details).some((indicator) => indicator?.status === 'down')
@@ -138,14 +144,16 @@ export class HealthSnapshotService {
 
   private async collectHealthResult(): Promise<HealthCheckResult> {
     try {
-      return await this.health.check([
+      const checks: Array<() => Promise<HealthIndicatorResult>> = [
         () => this.checkMongoose(),
-        () => this.http.pingCheck('http-github', 'https://github.com'),
         () => this.checkStorage(),
-        () => this.checkMemoryHeap(),
-        () => this.checkMemoryRss(),
-        () => this.checkCpu(),
-      ])
+      ]
+
+      if (ENABLE_HTTP_GITHUB_CHECK) {
+        checks.splice(1, 0, () => this.http.pingCheck('http-github', 'https://github.com'))
+      }
+
+      return await this.health.check(checks)
     } catch (error) {
       if (error instanceof HealthCheckError) {
         const details = this.extractHealthErrorDetails(error)
@@ -219,10 +227,6 @@ export class HealthSnapshotService {
       cores: cpuCount,
     } as const
 
-    if (indicator.status === 'down') {
-      throw new HealthCheckError('cpu_check_failed', { cpu: indicator })
-    }
-
     return { cpu: indicator }
   }
 
@@ -275,8 +279,7 @@ export class HealthSnapshotService {
     return { storage: indicator }
   }
 
-  private async checkMemoryHeap(): Promise<Record<string, { status: 'up' | 'down'; usedMb: number; thresholdMb: number; usedPercent: number }>> {
-    await this.memory.checkHeap('memory_heap', HEAP_MEMORY_THRESHOLD_MB * MEMORY_MULTIPLIER)
+  private checkMemoryHeap(): Record<string, { status: 'up' | 'down'; usedMb: number; thresholdMb: number; usedPercent: number }> {
     const heapUsedMb = process.memoryUsage().heapUsed / MEMORY_MULTIPLIER
     const usedPercent = heapUsedMb / HEAP_MEMORY_THRESHOLD_MB
 
@@ -287,15 +290,10 @@ export class HealthSnapshotService {
       usedPercent: Number((usedPercent * 100).toFixed(2)),
     } as const
 
-    if (indicator.status === 'down') {
-      throw new HealthCheckError('memory_heap_check_failed', { memory_heap: indicator })
-    }
-
     return { memory_heap: indicator }
   }
 
-  private async checkMemoryRss(): Promise<Record<string, { status: 'up' | 'down'; usedMb: number; thresholdMb: number; usedPercent: number }>> {
-    await this.memory.checkRSS('memory_rss', RSS_MEMORY_THRESHOLD_MB * MEMORY_MULTIPLIER)
+  private checkMemoryRss(): Record<string, { status: 'up' | 'down'; usedMb: number; thresholdMb: number; usedPercent: number }> {
     const rssMb = process.memoryUsage().rss / MEMORY_MULTIPLIER
     const usedPercent = rssMb / RSS_MEMORY_THRESHOLD_MB
 
@@ -305,10 +303,6 @@ export class HealthSnapshotService {
       thresholdMb: RSS_MEMORY_THRESHOLD_MB,
       usedPercent: Number((usedPercent * 100).toFixed(2)),
     } as const
-
-    if (indicator.status === 'down') {
-      throw new HealthCheckError('memory_rss_check_failed', { memory_rss: indicator })
-    }
 
     return { memory_rss: indicator }
   }

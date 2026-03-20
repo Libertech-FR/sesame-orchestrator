@@ -532,6 +532,19 @@ export default defineNuxtComponent({
       }
       return `${Math.round(cores)}`
     })
+    const cpuResourcesStatus = computed(() => {
+      const cpuDetails = (healthPayload.value?.details?.cpu || {}) as Record<string, unknown>
+      return typeof cpuDetails['status'] === 'string' ? cpuDetails['status'] : 'unknown'
+    })
+    const currentCpuThresholdPercent = computed(() => {
+      const cpuDetails = (healthPayload.value?.details?.cpu || healthPayload.value?.system?.cpu || {}) as Record<string, unknown>
+      const threshold = cpuDetails['threshold']
+      if (typeof threshold !== 'number' || Number.isNaN(threshold)) {
+        return '-'
+      }
+      const normalized = threshold <= 1 ? threshold * 100 : threshold
+      return `${Math.round(normalized)}%`
+    })
 
     const statsCards = computed(() => {
       const cards = [
@@ -557,13 +570,13 @@ export default defineNuxtComponent({
         },
         {
           key: 'cpu',
-          label: 'CPU 1m/core',
-          value: currentCpuLoadPercent.value,
+          label: 'Ressources CPU',
+          value: `${cpuResourcesStatus.value.toUpperCase()} • ${currentCpuLoadPercent.value}`,
           icon: 'mdi-cpu-64-bit',
-          color: 'primary',
-          tooltipTag: 'Charge',
-          tooltipMeaning: 'Charge CPU moyenne sur 1 minute, normalisee par nombre de coeurs.',
-          tooltipHow: 'Exemple: 75% signifie une charge moderee; >90% de facon durable merite investigation.',
+          color: statusColor(cpuResourcesStatus.value),
+          tooltipTag: 'Sonde CPU',
+          tooltipMeaning: 'Statut de la sonde CPU avec la charge moyenne 1 minute par core.',
+          tooltipHow: `Cores: ${currentCpuCores.value} - Seuil: ${currentCpuThresholdPercent.value}`,
         },
         {
           key: 'rss',
@@ -738,14 +751,20 @@ export default defineNuxtComponent({
     }
 
     const normalizeMetricNumericValue = (label: string, value: unknown): number | null => {
-      if (typeof value !== 'number' || Number.isNaN(value)) {
+      const numericValue = typeof value === 'number'
+        ? value
+        : typeof value === 'string'
+          ? Number.parseFloat(value)
+          : NaN
+
+      if (!Number.isFinite(numericValue)) {
         return null
       }
       const unit = metricUnit(label)
-      if (unit === '%' && value <= 1) {
-        return Math.round(value * 10000) / 100
+      if (unit === '%' && numericValue <= 1) {
+        return Math.round(numericValue * 10000) / 100
       }
-      return value
+      return numericValue
     }
 
     const formatMetricWithUnit = (label: string, value: unknown): { value: string; unit: string; numericValue: number | null } => {

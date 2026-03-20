@@ -163,7 +163,15 @@ export default defineNuxtComponent({
   },
   methods: {
     getTabValidations(tab: string) {
-      return this.validations?.hasOwnProperty(tab) ? 'red' : false
+      const hasValidation = (value: unknown): boolean => {
+        if (value == null) return false
+        if (typeof value === 'string') return value.trim().length > 0
+        if (Array.isArray(value)) return value.length > 0
+        if (typeof value === 'object') return Object.values(value as Record<string, unknown>).some(hasValidation)
+        return false
+      }
+
+      return hasValidation(this.validations?.[tab]) ? 'red' : false
     },
     addSchema(schema) {
       if (!this.identity.additionalFields) {

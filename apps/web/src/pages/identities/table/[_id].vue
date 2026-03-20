@@ -148,6 +148,10 @@ export default defineNuxtComponent({
           body: sanitizedIdentity,
         })
 
+        if (this.identity?.additionalFields?.validations) {
+          this.identity.additionalFields.validations = {}
+        }
+
         if (this.isNew) {
           this.$router.push('/identities/table')
         }
@@ -169,6 +173,24 @@ export default defineNuxtComponent({
           icon: 'mdi-alert-circle-outline',
         })
         console.error('Erreur lors de la sauvegarde de l identité:', error)
+
+        if (error?.response?._data?.validations) {
+          if (!this.identity.additionalFields) {
+            this.identity.additionalFields = {
+              attributes: {},
+              objectClasses: [],
+              validations: {},
+            }
+          }
+
+          if (!this.identity.additionalFields.validations) {
+            this.identity.additionalFields.validations = {}
+          }
+
+          this.identity.additionalFields.validations = {
+            ...error.response._data.validations,
+          }
+        }
       }
     },
     async sync() {

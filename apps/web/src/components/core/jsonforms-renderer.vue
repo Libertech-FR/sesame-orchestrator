@@ -196,24 +196,61 @@ export default defineNuxtComponent({
       }
     },
     getSchemaValidations(): any[] {
-      let validationList: any = []
-      if (!this.schemaName) {
-        validationList = this.validations || []
-      } else {
-        validationList = this.validations[this.schemaName] || []
+      const rootValidations = this.validations || {}
+      const hasSchemaScopedValidation = Boolean(this.schemaName && rootValidations?.[this.schemaName])
+      const isFlatValidationMap = Object.values(rootValidations).every((value) => typeof value === 'string' || Array.isArray(value))
+
+      const scopedValidations = !this.schemaName
+        ? rootValidations
+        : hasSchemaScopedValidation
+          ? rootValidations[this.schemaName]
+          : isFlatValidationMap
+            ? rootValidations
+            : {}
+
+      const entries: Array<{ path: string; message: string }> = []
+
+      const collectValidationEntries = (value: unknown, path = ''): void => {
+        if (value == null) return
+
+        if (typeof value === 'string') {
+          const message = value.trim()
+          if (message) entries.push({ path, message })
+          return
+        }
+
+        if (Array.isArray(value)) {
+          for (const item of value) {
+            if (typeof item === 'string' && item.trim()) {
+              entries.push({ path, message: item.trim() })
+            }
+          }
+          return
+        }
+
+        if (typeof value === 'object') {
+          for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+            const nextPath = path ? `${path}.${key}` : key
+            collectValidationEntries(child, nextPath)
+          }
+        }
       }
 
-      const errorObject: ErrorObject[] = []
-      for (const key in validationList) {
-        errorObject.push({
-          message: validationList[key],
-          instancePath: `/${key}`,
+      collectValidationEntries(scopedValidations)
+
+      return entries.map((entry) => {
+        const normalizedPath = entry.path
+          .split('.')
+          .filter(Boolean)
+          .join('/')
+
+        return {
+          message: entry.message,
+          instancePath: normalizedPath ? `/${normalizedPath}` : '',
           keyword: 'type',
           params: {},
-        } as any)
-      }
-
-      return errorObject
+        } as ErrorObject
+      })
     },
     readonlyRenderer(): boolean {
       return this.readonly || /1|true|on|yes/i.test(String(this.$route.query.readonly).toLowerCase())

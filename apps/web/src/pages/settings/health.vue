@@ -407,12 +407,12 @@ export default defineNuxtComponent({
         return 'Maintenance inactive, support open source sur GitHub.'
       }
       if (supportKeyVerificationStatus.value === 'valid') {
-        return 'Contrat de maintenance actif.'
+        return 'Support & maintenance actif.'
       }
       if (supportKeyVerificationStatus.value === 'checking' || supportKeyVerificationStatus.value === 'idle') {
         return 'Verification de la clé de maintenance en cours...'
       }
-      return 'Contrat de maintenance configuré, mais clé de maintenance invalide.'
+      return 'Support & maintenance configuré, mais clé de maintenance invalide.'
     })
 
     const { data, pending, error, refresh } = useHttp<HealthHttpResponse>('/core/health', {

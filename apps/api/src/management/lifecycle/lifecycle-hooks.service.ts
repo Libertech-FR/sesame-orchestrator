@@ -486,7 +486,7 @@ export class LifecycleHooksService extends AbstractLifecycleService {
           date: new Date(),
         })
 
-        const identities = res._id ? [res._id] : []
+        const identities = res._id ? [{ id: res._id.toString(), before: after, after: res }] : []
         await this.backendsService.lifecycleChangedIdentities(identities)
 
         this.logger.log(`Identity <${res._id}> updated to lifecycle <${lcs.target}> based on rules from source <${after.lifecycle}>`)
@@ -495,7 +495,7 @@ export class LifecycleHooksService extends AbstractLifecycleService {
     }
 
     if (lifecycleChanged) {
-      const identities = after._id ? [after._id] : []
+      const identities = after._id ? [{ id: after._id.toString(), before, after }] : []
       await this.backendsService.lifecycleChangedIdentities(identities)
     }
   }

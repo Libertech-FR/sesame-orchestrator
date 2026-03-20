@@ -248,16 +248,23 @@ export class BackendsService extends AbstractQueueProcessor {
     return result;
   }
 
-  public async lifecycleChangedIdentities(payload: string[], options?: ExecuteJobOptions): Promise<any> {
+  public async lifecycleChangedIdentities(
+    payload: (string | { id?: string; before?: Identities; after?: Identities })[],
+    options?: ExecuteJobOptions,
+  ): Promise<any> {
     const identities: {
       action: ActionType;
+      before?: Identities;
       identity: Identities;
     }[] = [];
 
     if (!payload.length) throw new BadRequestException('No identities to sync');
 
-    for (const key of payload) {
-      const identity = await this.identitiesService.findById<any>(key);
+    for (const item of payload) {
+      const before = typeof item === 'string' ? undefined : item.before;
+      const identityId = typeof item === 'string' ? item : (item.after?._id?.toString() || item.id);
+      if (!identityId) throw new BadRequestException('Missing identity id for lifecycle change');
+      const identity = (typeof item === 'string' || !item.after) ? await this.identitiesService.findById<any>(identityId) : item.after;
       // cas des fusion l employeeNumber doit etre celui de l identite primaire
       if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== '') {
         identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
@@ -267,6 +274,7 @@ export class BackendsService extends AbstractQueueProcessor {
       }
       identities.push({
         action: ActionType.IDENTITY_LIFECYCLE_CHANGED,
+        before,
         identity,
       });
     }
@@ -277,7 +285,7 @@ export class BackendsService extends AbstractQueueProcessor {
 
     const result = {};
     for (const identity of identities) {
-      const [executedJob] = await this.executeJob(identity.action, identity.identity._id, identity.identity, {
+      const [executedJob] = await this.executeJob(identity.action, identity.identity._id, { before: identity.before, after: identity.identity }, {
         ...options,
         updateStatus: true,
         task: task._id as unknown as Types.ObjectId,

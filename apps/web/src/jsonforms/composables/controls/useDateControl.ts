@@ -17,7 +17,7 @@ type UseDateControlOptions = {
   debounceWait?: number
 }
 
-export const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
+export const DEFAULT_DATE_FORMAT = 'DD/MM/YYYY'
 export const DEFAULT_DATETIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss'
 export const DEFAULT_TIME_FORMAT = 'HH:mm:ss'
 

@@ -19,6 +19,26 @@ q-page.grid
         sesame-pages-identities-states-info(:identity='props.row')
     template(v-slot:row-actions='{ row }')
       q-btn(:to='toPathWithQueries(`/identities/trash/${row._id}`)' color='primary' icon='mdi-eye' size='sm' flat round dense)
+      q-btn(
+        color='orange-8'
+        icon='mdi-restore'
+        size='sm'
+        flat
+        round
+        dense
+        :disable='!hasPermission("/management/identities", "update")'
+        @click='undeleteIdentity(row)'
+      )
+        q-tooltip.text-body2.bg-negative.text-white(
+          v-if='!hasPermission("/management/identities", "update")'
+          anchor='top middle'
+          self='center middle'
+        ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
+        q-tooltip.text-body2.bg-orange-8.text-white(
+          v-else
+          anchor='top middle'
+          self='center middle'
+        ) Restaurer l'identité
     template(#after-content)
       nuxt-page(ref='page' @refresh='refresh')
 </template>
@@ -34,6 +54,7 @@ export default defineNuxtComponent({
   async setup() {
     const page = ref<typeof Page | null>(null)
     const $route = useRoute()
+    const { hasPermission } = useAccessControl()
     const { getDefaults } = usePagination()
     const { debug } = useDebug()
 
@@ -71,6 +92,7 @@ export default defineNuxtComponent({
     return {
       debug,
       page,
+      hasPermission,
       identities,
       pending,
       refresh,
@@ -105,6 +127,33 @@ export default defineNuxtComponent({
           },
         })
       },
+    },
+  },
+  methods: {
+    async undeleteIdentity(identity) {
+      try {
+        await this.$http.post('/core/backends/undelete', {
+          body: {
+            payload: [identity._id],
+          },
+        })
+
+        this.$q.notify({
+          message: "L'identité a été restaurée.",
+          color: 'positive',
+          position: 'top-right',
+          icon: 'mdi-check-circle-outline',
+        })
+        await this.fetchAllStateCount()
+        this.refresh()
+      } catch (error: any) {
+        this.$q.notify({
+          message: "Impossible de restaurer l'identité : " + (error?.response?._data?.message || 'erreur inconnue'),
+          color: 'negative',
+          position: 'top-right',
+          icon: 'mdi-alert-circle-outline',
+        })
+      }
     },
   },
 })

@@ -347,6 +347,35 @@ export class BackendsService extends AbstractQueueProcessor {
     return result;
   }
 
+  public async undeleteIdentities(payload: string[], options?: ExecuteJobOptions): Promise<any> {
+    const result = {};
+    void options;
+
+    if (!payload.length) throw new BadRequestException('No identities to restore');
+
+    for (const key of payload) {
+      const identity = await this.identitiesService.findById<any>(key);
+      if (!identity) {
+        throw new BadRequestException({
+          status: HttpStatus.BAD_REQUEST,
+          message: `Identity ${key} not found`,
+        });
+      }
+
+      const targetState = identity.lastBackendSync ? IdentityState.TO_SYNC : IdentityState.TO_CREATE;
+      await this.identitiesService.model.findByIdAndUpdate(key, {
+        $set: {
+          state: targetState,
+          deletedFlag: false,
+          dataStatus: DataStatusEnum.ACTIVE,
+        },
+      });
+      result[identity._id] = { restored: true, state: targetState };
+    }
+
+    return result;
+  }
+
   public async disableIdentities(payload: string[], options?: ExecuteJobOptions): Promise<any> {
     const identities: {
       action: ActionType;

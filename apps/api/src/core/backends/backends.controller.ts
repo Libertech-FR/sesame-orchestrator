@@ -65,6 +65,21 @@ export class BackendsController {
     return res.status(HttpStatus.ACCEPTED).json({ async, data });
   }
 
+  @Post('undelete')
+  @ApiOperation({ summary: "Restaure une liste d'identitées supprimées" })
+  public async undeleteIdentities(
+    @Res() res: Response,
+    @Body() body: DeleteIdentitiesDto,
+    @Query('async') asyncQuery: string,
+  ) {
+    const async = /true|on|yes|1/i.test(asyncQuery);
+    const data = await this.backendsService.undeleteIdentities(body.payload, {
+      async,
+    });
+
+    return res.status(HttpStatus.ACCEPTED).json({ async, data });
+  }
+
   @Post('sync')
   @ApiOperation({ summary: "Synchronise une liste d'identitées" })
   public async syncIdentities(

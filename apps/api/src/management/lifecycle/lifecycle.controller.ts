@@ -99,8 +99,13 @@ export class LifecycleController extends AbstractController {
     @Param('identityId', ObjectIdValidationPipe) identityId: Types.ObjectId,
     @Res() res: Response,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
+    @Query('populateRefId') populateRefId?: string,
   ): Promise<Response<Lifecycle[]>> {
-    const [total, data] = await this._service.getLifecycleHistory(identityId, searchFilterOptions)
+    const populateRefIdEnabled = /true|1|yes|on/i.test(populateRefId)
+    const [total, data] = await this._service.getLifecycleHistory(identityId, {
+      ...searchFilterOptions,
+      populateRefId: populateRefIdEnabled,
+    })
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

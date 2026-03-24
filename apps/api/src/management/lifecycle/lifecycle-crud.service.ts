@@ -6,6 +6,10 @@ import { Lifecycle, LifecycleRefId } from './_schemas/lifecycle.schema'
 import { loadCustomStates } from './_functions/load-custom-states.function'
 import { AbstractLifecycleService } from './_abstracts/abstract.lifecycle.service'
 
+type LifecycleHistoryOptions = FilterOptions & {
+  populateRefId?: boolean
+}
+
 /**
  * Service CRUD de gestion du cycle de vie des identités
  *
@@ -201,10 +205,11 @@ export class LifecycleCrudService extends AbstractLifecycleService {
    */
   public async getLifecycleHistory(
     refId: Types.ObjectId,
-    options?: FilterOptions,
+    options?: LifecycleHistoryOptions,
   ): Promise<[number, Query<Array<Lifecycle>, Lifecycle, any, Lifecycle>[]]> {
+    const shouldPopulateRefId = options?.populateRefId !== false
     const result = await this.find<Lifecycle>({ refId }, null, {
-      populate: LifecycleRefId,
+      ...(shouldPopulateRefId ? { populate: LifecycleRefId } : {}),
       sort: {
         ...options?.sort,
         createdAt: -1,

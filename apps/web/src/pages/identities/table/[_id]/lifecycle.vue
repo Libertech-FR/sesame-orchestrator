@@ -1,5 +1,5 @@
 <template lang="pug">
-.column.no-wrap.fit(style='height: 100%; overflow: hidden;')
+.column.no-wrap.fit(style='height: 100%;')
   div(style='position: sticky; top: 0; z-index: 1; flex: 0 0 auto;')
       q-toolbar(:class='[$q.dark.isActive ? "bg-dark" : "bg-white"]')
         q-toolbar-title Historique des cycles de vie
@@ -53,6 +53,39 @@
                   @click.stop="openLifecycleDetails(lifecycle)"
                 )
                   q-tooltip.text-body2(anchor='top middle' self="bottom middle") Voir le détail de l'événement
+              q-slide-transition
+                q-card.q-mt-sm(v-if="selectedLifecycleId === lifecycle?._id" flat bordered)
+                  q-toolbar(bordered dense style="height: 28px; line-height: 28px;")
+                    q-toolbar-title Détails événement cycle de vie
+                    q-space
+                    q-btn(icon="mdi-close" flat round dense @click="closeLifecycleDetails" aria-label="Fermer")
+                  q-bar.bg-transparent(dense style="height: 28px; line-height: 28px;")
+                    q-chip(
+                      v-if="lifecycleDetailsMeta.lifecycleLabel"
+                      dense
+                      size="sm"
+                      :color="lifecycleDetailsMeta.lifecycleColor"
+                      :text-color="lifecycleDetailsMeta.lifecycleTextColor"
+                      :icon="lifecycleDetailsMeta.lifecycleIcon"
+                    )
+                      span {{ lifecycleDetailsMeta.lifecycleLabel }}
+                    q-space
+                    .text-caption.text-grey-7
+                      span(v-if="lifecycleDetailsMeta.actor") Par: {{ lifecycleDetailsMeta.actor }}
+                      span(v-if="lifecycleDetailsMeta.actor && lifecycleDetailsMeta.date")  -
+                      span(v-if="lifecycleDetailsMeta.date") Le: {{ lifecycleDetailsMeta.date }}
+                  q-separator
+                  .q-pa-md.row.justify-center(v-if="lifecycleDetailsLoading")
+                    q-spinner-dots(color="primary" size="32px")
+                  q-banner.bg-warning.text-black(v-else-if="!lifecycleDetailsJson")
+                    | Aucun détail exploitable trouvé pour cet événement.
+                  .audit-diff-editor(v-else)
+                    LazyMonacoEditor(
+                      style="height: 45vh; width: 100%"
+                      lang="json"
+                      :model-value="lifecycleDetailsJson"
+                      :options="monacoOptions"
+                    )
             q-timeline-entry(
               :key="`${group.key}-end-dot`"
               color="grey-5"
@@ -60,40 +93,6 @@
             )
       q-banner.text-negative.text-center(v-if="empty" dense icon="mdi-flag-off" class="q-my-md")
         | Fin de la liste ({{ lifecycles.length }} événement{{ lifecycles.length > 1 ? 's' : '' }}).
-
-  q-dialog(v-model="lifecycleDetailsDialogOpen" maximized)
-    q-card.audit-diff-card
-      q-toolbar.bg-orange-8.text-white(dense style="height: 28px; line-height: 28px;")
-        q-toolbar-title Détails événement cycle de vie
-        q-space
-        q-btn(icon="mdi-close" flat round dense v-close-popup aria-label="Fermer")
-      q-bar.bg-transparent(dense style="height: 28px; line-height: 28px;")
-        q-chip(
-          v-if="lifecycleDetailsMeta.lifecycleLabel"
-          dense
-          size="sm"
-          :color="lifecycleDetailsMeta.lifecycleColor"
-          :text-color="lifecycleDetailsMeta.lifecycleTextColor"
-          :icon="lifecycleDetailsMeta.lifecycleIcon"
-        )
-          span {{ lifecycleDetailsMeta.lifecycleLabel }}
-        q-space
-        .text-caption.text-grey-7
-          span(v-if="lifecycleDetailsMeta.actor") Par: {{ lifecycleDetailsMeta.actor }}
-          span(v-if="lifecycleDetailsMeta.actor && lifecycleDetailsMeta.date")  -
-          span(v-if="lifecycleDetailsMeta.date") Le: {{ lifecycleDetailsMeta.date }}
-      q-separator
-      .q-pa-md.row.justify-center(v-if="lifecycleDetailsLoading")
-        q-spinner-dots(color="primary" size="40px")
-      q-banner.bg-warning.text-black(v-if="!lifecycleDetailsLoading && !lifecycleDetailsJson")
-        | Aucun détail exploitable trouvé pour cet événement.
-      .audit-diff-editor(v-else-if="!lifecycleDetailsLoading")
-        LazyMonacoEditor(
-          style="height: 100%; width: 100%"
-          lang="json"
-          :model-value="lifecycleDetailsJson"
-          :options="monacoOptions"
-        )
 </template>
 
 <script lang="ts">
@@ -109,6 +108,8 @@ export default defineNuxtComponent({
         { label: 'Mois', value: 'MM/YYYY' },
         { label: 'Année', value: 'YYYY' },
       ],
+      editorJsonCache: new WeakMap<object, string>(),
+      maxLifecycleEditorChars: 30000,
     }
   },
   async setup() {
@@ -143,16 +144,9 @@ export default defineNuxtComponent({
     const lifecycles = ref<any>([])
 
     const lifecycleDetails = ref<any>(null)
-    const lifecycleDetailsDialogOpen = ref(false)
+    const selectedLifecycleId = ref<string | null>(null)
     const lifecycleDetailsLoading = ref(false)
-    const lifecycleDetailsJson = computed(() => {
-      if (!lifecycleDetails.value) return ''
-      try {
-        return JSON.stringify(lifecycleDetails.value, null, 2)
-      } catch {
-        return ''
-      }
-    })
+    const lifecycleDetailsJson = ref('')
     const lifecycleDetailsMeta = reactive({
       actor: '',
       date: '',
@@ -280,7 +274,7 @@ export default defineNuxtComponent({
       getLifecycleTimelineIconStyle,
       monacoOptions,
       lifecycleDetails,
-      lifecycleDetailsDialogOpen,
+      selectedLifecycleId,
       lifecycleDetailsLoading,
       lifecycleDetailsJson,
       lifecycleDetailsMeta,
@@ -317,13 +311,18 @@ export default defineNuxtComponent({
         done(true)
       }
     },
-    openLifecycleDetails(lifecycle: any) {
+    async openLifecycleDetails(lifecycle: any) {
+      if (this.selectedLifecycleId === lifecycle?._id) {
+        this.closeLifecycleDetails()
+        return
+      }
       this.lifecycleDetails = lifecycle
-      this.lifecycleDetailsDialogOpen = true
+      this.selectedLifecycleId = lifecycle?._id || null
       this.lifecycleDetailsLoading = true
 
       try {
         const lifecycleInfos = lifecycle?.lifecycle ? this.getLifecycleInfos(lifecycle.lifecycle) : null
+        this.lifecycleDetailsJson = this.stringifyForEditor(this.buildLifecycleDetailsPayload(lifecycle))
 
         this.lifecycleDetailsMeta.actor = this.getLifecycleActor(lifecycle)
         this.lifecycleDetailsMeta.date = this.formatLifecycleDate(lifecycle)
@@ -347,6 +346,94 @@ export default defineNuxtComponent({
       } finally {
         this.lifecycleDetailsLoading = false
       }
+    },
+    closeLifecycleDetails() {
+      this.selectedLifecycleId = null
+      this.lifecycleDetails = null
+      this.lifecycleDetailsJson = ''
+    },
+    buildLifecycleDetailsPayload(lifecycle: any) {
+      return lifecycle
+    },
+    stringifyForEditor(payload: unknown): string {
+      if (payload && typeof payload === 'object') {
+        const cached = this.editorJsonCache.get(payload as object)
+        if (cached) {
+          return cached
+        }
+      }
+
+      let value = ''
+      try {
+        const seen = new WeakSet<object>()
+        const maxDepth = 4
+        const maxArrayItems = 50
+        const maxObjectKeys = 60
+        const maxStringLength = 1200
+
+        const sanitize = (input: unknown, depth: number): unknown => {
+          if (input === null || input === undefined) return input
+
+          const inputType = typeof input
+          if (inputType === 'string') {
+            const text = input as string
+            return text.length > maxStringLength ? `${text.slice(0, maxStringLength)}...[truncated:${text.length - maxStringLength}]` : text
+          }
+          if (inputType === 'number' || inputType === 'boolean') return input
+          if (inputType !== 'object') return String(input)
+
+          const obj = input as Record<string, unknown>
+          if (seen.has(obj)) {
+            return '[Circular]'
+          }
+          if (depth >= maxDepth) {
+            return '[MaxDepthReached]'
+          }
+          seen.add(obj)
+
+          if (Array.isArray(obj)) {
+            const items = obj.slice(0, maxArrayItems).map((item) => sanitize(item, depth + 1))
+            if (obj.length > maxArrayItems) {
+              items.push(`[ArrayTruncated:${obj.length - maxArrayItems}]`)
+            }
+            return items
+          }
+
+          const entries = Object.entries(obj)
+          const limitedEntries = entries.slice(0, maxObjectKeys)
+          const out: Record<string, unknown> = {}
+
+          limitedEntries.forEach(([key, val]) => {
+            out[key] = sanitize(val, depth + 1)
+          })
+
+          if (entries.length > maxObjectKeys) {
+            out.__truncatedKeys = entries.length - maxObjectKeys
+          }
+
+          return out
+        }
+
+        value = JSON.stringify(sanitize(payload ?? null, 0), null, 2) ?? 'null'
+      } catch {
+        value = String(payload)
+      }
+
+      if (value.length > this.maxLifecycleEditorChars) {
+        this.$q.notify({
+          message: `Contenu tronque a ${this.maxLifecycleEditorChars} caracteres pour eviter un depassement memoire`,
+          color: 'warning',
+          icon: 'mdi-alert',
+          position: 'top-right',
+        })
+        value = `${value.slice(0, this.maxLifecycleEditorChars)}\n\n/* ... contenu tronque ... */`
+      }
+
+      if (payload && typeof payload === 'object') {
+        this.editorJsonCache.set(payload as object, value)
+      }
+
+      return value
     },
   },
 })

@@ -5,6 +5,17 @@ import { BadRequestException } from '@nestjs/common';
 import { Types } from 'mongoose';
 
 export class IdentitiesDoublonService extends AbstractIdentitiesService {
+  private removeInjectedValues(baseValues: string[] = [], injectedValues: string[] = []): string[] {
+    const nextValues = [...baseValues]
+    injectedValues.forEach((injectedValue) => {
+      const index = nextValues.findIndex((value) => value === injectedValue)
+      if (index !== -1) {
+        nextValues.splice(index, 1)
+      }
+    })
+    return nextValues
+  }
+
   public async ignoreFusionForIdentities(ids: Types.ObjectId[]) {
     if (ids.length !== 2) {
       throw new BadRequestException('Deux IDs doivent être fournis pour ignorer la fusion.');
@@ -288,5 +299,72 @@ export class IdentitiesDoublonService extends AbstractIdentitiesService {
     // modification identité1
     await super.update(identity1._id, identity1);
     return identity1._id;
+  }
+
+  public async cancelFusion(id1, id2) {
+    let identity1: Identities = null
+    let identity2: Identities & any = null
+    try {
+      identity1 = await this.findById<Identities>(id1)
+    } catch (error) {
+      throw new BadRequestException('Id1 not found')
+    }
+    try {
+      identity2 = await this.findById<Identities>(id2)
+    } catch (error) {
+      throw new BadRequestException('Id2 not found')
+    }
+
+    if (!identity1.srcFusionId || identity1.srcFusionId.toString() !== identity2._id.toString()) {
+      throw new BadRequestException('Id1 ne contient pas de fusion avec Id2')
+    }
+    if (!identity2.destFusionId || identity2.destFusionId.toString() !== identity1._id.toString()) {
+      throw new BadRequestException('Id2 ne contient pas de destination de fusion vers Id1')
+    }
+
+    identity1.inetOrgPerson.employeeNumber = this.removeInjectedValues(
+      identity1.inetOrgPerson.employeeNumber,
+      identity2.inetOrgPerson.employeeNumber.map((value) => value.replace(/^F/, '')),
+    )
+    identity1.inetOrgPerson.departmentNumber = this.removeInjectedValues(
+      identity1.inetOrgPerson.departmentNumber,
+      identity2.inetOrgPerson.departmentNumber,
+    )
+
+    if (
+      identity1.additionalFields.objectClasses.includes('supannPerson') &&
+      identity2.additionalFields.objectClasses.includes('supannPerson')
+    ) {
+      const identity1SupannPerson = identity1.additionalFields.attributes.supannPerson as any
+      const identity2SupannPerson = identity2.additionalFields.attributes.supannPerson as any
+
+      if (identity1SupannPerson?.supannTypeEntiteAffectation && identity2SupannPerson?.supannTypeEntiteAffectation) {
+        identity1SupannPerson.supannTypeEntiteAffectation = this.removeInjectedValues(
+          identity1SupannPerson.supannTypeEntiteAffectation,
+          identity2SupannPerson.supannTypeEntiteAffectation,
+        )
+      }
+
+      if (identity1SupannPerson?.supannRefId && identity2SupannPerson?.supannRefId) {
+        identity1SupannPerson.supannRefId = this.removeInjectedValues(
+          identity1SupannPerson.supannRefId,
+          identity2SupannPerson.supannRefId,
+        )
+      }
+    }
+
+    identity1.srcFusionId = null
+    identity1.primaryEmployeeNumber = null
+    identity1.state = IdentityState.TO_VALIDATE
+
+    identity2.destFusionId = null
+    identity2.state = IdentityState.TO_VALIDATE
+    if (identity2.inetOrgPerson.employeeNumber?.[0]?.startsWith('F')) {
+      identity2.inetOrgPerson.employeeNumber[0] = identity2.inetOrgPerson.employeeNumber[0].substring(1)
+    }
+
+    await super.update(identity2._id, identity2)
+    await super.update(identity1._id, identity1)
+    return identity1._id
   }
 }

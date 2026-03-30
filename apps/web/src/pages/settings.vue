@@ -74,7 +74,7 @@ interface NavItem {
   icon: string
   label: string
   _disabled?: boolean
-  _acl?: string
+  acl?: string[]
 }
 
 export default defineNuxtComponent({
@@ -97,43 +97,43 @@ export default defineNuxtComponent({
         route: '/settings/agents',
         icon: 'mdi-account',
         label: 'Utilisateurs',
-        _acl: '/core/agents',
+        acl: ['/core/agents'],
       },
       {
         route: '/settings/roles',
         icon: 'mdi-group',
         label: 'Rôles',
-        _acl: '/core/roles',
+        acl: ['/core/roles'],
       },
       {
         route: '/settings/password-policy',
         icon: 'mdi-form-textbox-password',
         label: 'Politique de mot de passe',
-        _acl: '/settings/passwdadm',
+        acl: ['/settings/passwdadm'],
       },
       {
         route: '/settings/smtp',
         icon: 'mdi-mail',
         label: 'Serveur SMTP',
-        _acl: '/settings/mailadm',
+        acl: ['/settings/mailadm'],
       },
       {
         route: '/settings/sms',
         icon: 'mdi-message-processing',
         label: 'Serveur SMS',
-        _acl: '/settings/smsadm',
+        acl: ['/settings/smsadm'],
       },
       {
         route: '/settings/cron',
         icon: 'mdi-clipboard-list',
         label: 'Tâches planifiés',
-        _acl: '/core/cron',
+        acl: ['/core/cron'],
       },
       {
         route: '/settings/keyrings',
         icon: 'mdi-key-chain',
         label: 'trousseau de clés API',
-        _acl: '/core/keyrings',
+        acl: ['/core/keyrings'],
       },
       // {
       //   route: '/settings/health',
@@ -144,14 +144,15 @@ export default defineNuxtComponent({
 
     const navItems = computed(() => {
       return navItemsInternal.value.map((item) => {
-        //console.log(item._acl, !hasPermission(item._acl!, AccessControlAction.READ))
-        if (!item._acl) {
+        //console.log(item.acl, !hasPermission(item.acl!, AccessControlAction.READ))
+        if (!item.acl || item.acl.length === 0) {
           return item
         }
 
+        const canAccess = item.acl.some((acl) => hasPermission(acl, AccessControlAction.READ))
         return {
           ...item,
-          _disabled: !hasPermission(item._acl!, AccessControlAction.READ),
+          _disabled: !canAccess,
         }
       })
     })

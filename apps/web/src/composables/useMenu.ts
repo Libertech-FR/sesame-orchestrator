@@ -4,6 +4,7 @@ import qs from 'qs'
 import type { useIdentityStateStore } from '~/stores/identityState'
 import { getDefaultMenuEntries } from '~/constants/defaultMenuEntries'
 import { sort } from 'radash'
+import { AC_ADMIN_ROLE } from './useAccessControl'
 
 const config = useAppConfig() as any
 
@@ -24,6 +25,18 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
   const useDefaultEntries = config?.menus?.useDefaultEntries !== false
   const menuEntries = (config?.menus?.entries as any[]) || []
   const { hasPermission, hasPermissionStartsWith } = useAccessControl()
+  const $auth = useAuth()
+  const userRoles = ($auth.user?.roles as string[]) || []
+  const isAdmin = userRoles.includes(AC_ADMIN_ROLE)
+
+  function getRequiredAcls(entry: any): string[] {
+    const directAcls = Array.isArray(entry?.acl) ? entry.acl : []
+    if (directAcls.length > 0) return directAcls
+
+    // Compatibilité : ancien champ `_acl` (string) -> `acl: [string]`
+    const legacyAcl = typeof entry?._acl === 'string' ? entry._acl : ''
+    return legacyAcl ? [legacyAcl] : []
+  }
 
   function normalizeNameFromLabel(label: string): string {
     // Auto-remplissage côté déploiement :
@@ -93,10 +106,20 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
     const matchIndex = matchIndexByPath >= 0 ? matchIndexByPath : matchIndexByName >= 0 ? matchIndexByName : matchIndexByLabel
 
     if (matchIndex >= 0) {
-      mergedMenuEntries[matchIndex] = {
-        ...mergedMenuEntries[matchIndex],
+      const existingEntry = mergedMenuEntries[matchIndex] as any
+      const nextEntry: any = {
+        ...existingEntry,
         ...(overrideEntry as any),
       }
+
+      // Règle de fusion : `acl` fourni dans menus.yml -> on ajoute, on n'écrase pas.
+      if (Array.isArray((overrideEntry as any)?.acl)) {
+        const baseAcls = Array.isArray(existingEntry?.acl) ? existingEntry.acl : []
+        const overrideAcls = (overrideEntry as any).acl as string[]
+        nextEntry.acl = Array.from(new Set([...baseAcls, ...overrideAcls].filter((a) => typeof a === 'string' && a.trim())))
+      }
+
+      mergedMenuEntries[matchIndex] = nextEntry
     } else {
       unmatchedOverrides.push(overrideEntry as any)
     }
@@ -117,8 +140,13 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
 
   const menus = ref<MenuItem[]>(
     mergedMenuEntries.filter((entry) => {
-      // Si `_acl` est fourni, on laisse `getMenu()` gérer l'autorisation exacte.
-      if (entry._acl) return true
+      const entryRoles = (entry as any)?.roles as unknown
+      const requiredRoles = Array.isArray(entryRoles) ? (entryRoles as string[]) : []
+      const canSeeByRole = isAdmin || requiredRoles.length === 0 ? true : requiredRoles.some((r) => userRoles.includes(r))
+      if (!canSeeByRole) return false
+
+      // Si `acl` est fourni, on laisse `getMenu()` gérer l'autorisation exacte.
+      if (getRequiredAcls(entry).length > 0) return true
       if (!entry.path) return false
 
       const basePath = entry.path.replace(/^\//, '')
@@ -139,8 +167,12 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       const stateValue = identityStateStore.getStateValue(stateKey)
       const value = stateValue > MaxMenuBadgeCount ? MaxMenuBadgeCount + '+' : stateValue?.toString() || '0'
 
-      if (menu._acl && !hasPermission(menu._acl, AccessControlAction.READ, AccessControlPossession.ANY)) {
-        return acc
+      const requiredAcls = getRequiredAcls(menu as any)
+      if (requiredAcls.length > 0) {
+        const canSeeByAcl = requiredAcls.some((requiredAcl) =>
+          hasPermission(requiredAcl, AccessControlAction.READ, AccessControlPossession.ANY),
+        )
+        if (!canSeeByAcl) return acc
       }
 
       acc.push({

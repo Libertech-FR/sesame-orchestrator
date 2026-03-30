@@ -17,5 +17,10 @@ export type MenuItem = {
   badge?: BadgeItem
   hideInMenuBar?: boolean
   hideInDashboard?: boolean
-  _acl?: string
+  // Liste de rôles autorisés à voir l'entrée de menu.
+  // Si vide ou absent => visible pour tous (sous réserve des autres contraintes ACL/permission).
+  roles?: string[]
+  // Liste des ACL nécessaires pour voir l'entrée.
+  // Si vide ou absent => visible (sous réserve des autres contraintes ACL/permission).
+  acl?: string[]
 }

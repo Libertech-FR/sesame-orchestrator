@@ -16,7 +16,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       badge: { color: 'primary' },
       part: MenuPart.DONNEES,
       hideInMenuBar: false,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-download-outline',
@@ -26,7 +26,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       color: 'accent',
       part: MenuPart.DONNEES,
       hideInMenuBar: true,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-book-clock',
@@ -36,7 +36,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       color: 'info',
       part: MenuPart.DONNEES,
       hideInMenuBar: false,
-      _acl: '/core/jobs',
+      acl: ['/core/jobs'],
     },
     {
       icon: 'mdi-timeline-clock-outline',
@@ -46,7 +46,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       color: 'info',
       part: MenuPart.DONNEES,
       hideInMenuBar: false,
-      _acl: '/management/lifecycle',
+      acl: ['/management/lifecycle'],
     },
     {
       icon: 'mdi-clipboard-text-clock',
@@ -56,7 +56,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       color: 'lime-8',
       hideInMenuBar: false,
       part: MenuPart.DONNEES,
-      _acl: '/core/audits',
+      acl: ['/core/audits'],
     },
     {
       icon: 'mdi-set-merge',
@@ -66,7 +66,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       color: 'positive',
       part: MenuPart.DONNEES,
       hideInMenuBar: true,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-trash-can',
@@ -76,7 +76,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       color: 'grey-10',
       hideInMenuBar: true,
       part: MenuPart.DONNEES,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-account-check',
@@ -88,7 +88,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       badge: getStateBadge(IdentityState.TO_VALIDATE),
       part: MenuPart.ETATS,
       hideInMenuBar: false,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-account-alert',
@@ -100,7 +100,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       badge: getStateBadge(IdentityState.TO_COMPLETE),
       part: MenuPart.ETATS,
       hideInMenuBar: false,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-sync',
@@ -111,7 +111,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       badge: getStateBadge(IdentityState.TO_SYNC),
       part: MenuPart.ETATS,
       hideInMenuBar: false,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-loading',
@@ -122,7 +122,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       badge: getStateBadge(IdentityState.PROCESSING),
       part: MenuPart.ETATS,
       hideInMenuBar: false,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-check',
@@ -133,7 +133,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       color: 'positive',
       part: MenuPart.ETATS,
       hideInMenuBar: false,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-account-switch-outline',
@@ -148,7 +148,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       },
       part: MenuPart.ETATS,
       hideInMenuBar: false,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-account-remove',
@@ -159,7 +159,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       badge: getStateBadge(IdentityState.ON_ERROR),
       part: MenuPart.ETATS,
       hideInMenuBar: false,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-publish-off',
@@ -170,7 +170,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       badge: getStateBadge(IdentityState.DONT_SYNC),
       part: MenuPart.ETATS,
       hideInMenuBar: false,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-email-alert',
@@ -181,7 +181,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       part: MenuPart.ACTIVATION,
       badge: { color: 'negative' },
       hideInMenuBar: false,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-email-fast',
@@ -193,7 +193,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       part: MenuPart.ACTIVATION,
       badge: { color: 'warning', textColor: 'black' },
       hideInMenuBar: false,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-email-open',
@@ -205,7 +205,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       part: MenuPart.ACTIVATION,
       badge: { color: 'positive' },
       hideInMenuBar: false,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
     {
       icon: 'mdi-email-remove',
@@ -215,7 +215,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       color: 'accent',
       part: MenuPart.ACTIVATION,
       hideInMenuBar: false,
-      _acl: '/management/identities',
+      acl: ['/management/identities'],
     },
   ]
 }

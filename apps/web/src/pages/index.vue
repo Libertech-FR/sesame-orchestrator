@@ -29,32 +29,69 @@ q-page.container(padding)
               v-text="item?.badge?.value"
               floating
             )
+            q-menu(context-menu)
+              q-list(dense)
+                q-item(clickable v-ripple @click="openItem(item)")
+                  q-item-section(avatar)
+                    q-icon(name="mdi-open-in-app" color="primary")
+                  q-item-section Ouvrir
+                q-item(clickable v-ripple @click="openItemNewTab(item)")
+                  q-item-section(avatar)
+                    q-icon(name="mdi-open-in-new" color="primary")
+                  q-item-section Ouvrir dans un nouvel onglet
+                q-separator(v-if="debug")
+                q-item(clickable v-if="debug" v-ripple @click="openDebugDialog(item)")
+                  q-item-section(avatar)
+                    q-icon(name="mdi-bug" color="orange-8")
+                  q-item-section
+                    q-item-label Debug
       q-separator.q-mt-md.q-mb-sm(
         v-if="i < menuParts.length - 1"
         v-show='getMenuByPart(part.label).filter(i => i.hideInDashboard !== true).length'
       )
+  sesame-core-debug-menu-entry-dialog(
+    v-model="debugDialogOpen"
+    :selected-item="debugSelectedItem"
+    :monaco-options="monacoOptions"
+  )
 </template>
 
 <script lang="ts">
 import { useIdentityStateStore } from '~/stores/identityState'
+import { useDebug } from '~/composables/useDebug'
 
 export default defineNuxtComponent({
   name: 'IndexPage',
   data() {
     return {
       menuParts: [],
+      debugDialogOpen: false,
+      debugSelectedItem: null as any,
     }
   },
   setup() {
     const identityStateStore = useIdentityStateStore()
     const { menuParts, getMenuByPart } = useMenu(identityStateStore)
+    const { debug, monacoOptions } = useDebug()
 
     return {
       menuParts,
       getMenuByPart,
+      debug,
+      monacoOptions,
     }
   },
   methods: {
+    openItem(item: any) {
+      this.$router.push(item.path)
+    },
+    openItemNewTab(item: any) {
+      window.open(item.path, '_blank', 'noopener,noreferrer')
+    },
+    openDebugDialog(item: any) {
+      this.debugSelectedItem = item
+      this.debugDialogOpen = true
+    },
     getBadgeStyle(item) {
       const badgeColor = item.badge?.color?.startsWith('linear-gradient') || item.badge?.color?.startsWith('#') ? item.badge.color : ''
       const badgeTextColor = item.badge?.textColor?.startsWith('linear-gradient') || item.badge?.textColor?.startsWith('#') ? item.badge.textColor : ''

@@ -173,6 +173,14 @@ export class IdentitiesCrudController extends AbstractController {
     validations?: MixedValue;
   }>> {
     const searchFilter = {}
+    // Par défaut, on cache les identités "ne pas synchroniser" dans la recherche.
+    // Si le client fournit déjà un filtre `state`, on ne l'écrase pas.
+    // Le type `FilterSchema` est récursif (valeurs attendues), alors que pour Mongo on injecte parfois
+    // des opérateurs comme `{ $ne: ... }`. On garde un cast `any` ici côté controller.
+    const effectiveSearchFilterSchema: any = { ...searchFilterSchema }
+    if (!Object.prototype.hasOwnProperty.call(effectiveSearchFilterSchema, 'state')) {
+      effectiveSearchFilterSchema.state = { $ne: IdentityState.DONT_SYNC }
+    }
 
     if (search && search.trim().length > 0) {
       const searchRequest = {}
@@ -180,9 +188,9 @@ export class IdentitiesCrudController extends AbstractController {
         return { [key]: { $regex: `^${search}`, $options: 'i' } }
       }).filter(item => item !== undefined)
       searchFilter['$and'] = [searchRequest]
-      searchFilter['$and'].push(searchFilterSchema)
+      searchFilter['$and'].push(effectiveSearchFilterSchema)
     } else {
-      Object.assign(searchFilter, searchFilterSchema)
+      Object.assign(searchFilter, effectiveSearchFilterSchema)
     }
 
     const [data, total] = await this._service.findAndCount(

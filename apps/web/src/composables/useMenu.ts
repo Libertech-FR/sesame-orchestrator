@@ -157,7 +157,12 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
 
       // Si `acl` est fourni, on laisse `getMenu()` gérer l'autorisation exacte.
       if (getRequiredAcls(entry).length > 0) return true
+
+      // Si l'entrée est explicitement restreinte par `roles`, on l'affiche (la page gère ensuite ses propres gardes ACL).
+      if (requiredRoles.length > 0) return true
       if (!entry.path) return false
+      console.log('entry', entry)
+      if (!entry.roles && !entry.acl) return true
 
       const basePath = entry.path.replace(/^\//, '')
       const pathWithoutQuery = basePath.split('?')[0] || ''

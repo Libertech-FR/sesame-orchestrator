@@ -58,6 +58,36 @@ export const useAccessControl = () => {
 
   const accessControl = getInitializedAccessControl(access)
 
+  const resolveEffectiveRoles = (inputRoles: string[]): string[] => {
+    const result = new Set<string>()
+    const visiting = new Set<string>()
+
+    const visit = (role: string) => {
+      if (!role || result.has(role)) return
+      if (visiting.has(role)) return
+      visiting.add(role)
+      result.add(role)
+
+      const grants = access?.[role] as any
+      const extend = grants?.$extend
+      if (Array.isArray(extend)) {
+        for (const parent of extend) {
+          if (typeof parent === 'string') {
+            visit(parent)
+          }
+        }
+      }
+
+      visiting.delete(role)
+    }
+
+    for (const r of inputRoles) {
+      if (typeof r === 'string') visit(r)
+    }
+
+    return [...result]
+  }
+
   function getPermission(
     resource: string,
     action: string,
@@ -128,10 +158,18 @@ export const useAccessControl = () => {
       return true
     }
 
-    for (const role of roles) {
+    const effectiveRoles = resolveEffectiveRoles(roles)
+
+    // Cas "menu public" : si aucun rôle et aucune ACL chargée, on laisse afficher les tuiles non restreintes.
+    if (!effectiveRoles.length && (!access || Object.keys(access).length === 0)) {
+      return true
+    }
+
+    for (const role of effectiveRoles) {
       const actions = access[role] as AccessObjectAction || {}
       for (const action of Object.keys(actions)) {
-        if (Array.isArray(patterns) ? patterns.some(pattern => action.startsWith(pattern)) : action.startsWith(patterns)) {
+        const normalizedKey = action.replace(/^\//, '')
+        if (Array.isArray(patterns) ? patterns.some((pattern) => normalizedKey.startsWith(pattern)) : normalizedKey.startsWith(patterns)) {
           return true
         }
       }

@@ -44,6 +44,11 @@
       outlined
       dense
     )
+      template(#option="scope")
+        q-item(v-bind="scope.itemProps" dense)
+          q-item-section.q-py-xs
+            q-item-label {{ scope.opt?.label ?? scope.opt }}
+            q-item-label.caption.text-grey-7.italic(v-if="scope.opt?.description") {{ scope.opt.description }}
       template(#before)
         field-addons(
           v-if="appliedOptions?.addons?.before && appliedOptions.addons.before.length"
@@ -102,7 +107,9 @@ const controlRenderer = defineComponent({
   },
   setup(props: RendererProps<ControlElement>) {
     const jsonFormsControl = useJsonFormsEnumControl(props)
-    const clearValue = determineClearValue(undefined)
+    const schemaType = jsonFormsControl.control.value.schema?.type
+    const isArraySchema = schemaType === 'array' || (Array.isArray(schemaType) && schemaType.includes('array'))
+    const clearValue = isArraySchema ? [] : determineClearValue(undefined)
     const api = useAutocompleteControl({
       jsonFormsControl,
       clearValue,

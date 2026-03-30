@@ -3,7 +3,7 @@ import { RolesService } from "./roles.service"
 import { ApiParam, ApiTags } from "@nestjs/swagger"
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Query, Res, UseGuards } from "@nestjs/common"
 import { ApiCreateDecorator } from "~/_common/decorators/api-create.decorator"
-import { RolesCreateDto, RolesDto } from "./_dto/roles.dto"
+import { RolesCreateDto, RolesDto, RolesUpdateDto } from "./_dto/roles.dto"
 import { Response } from "express"
 import { ApiPaginatedDecorator } from "~/_common/decorators/api-paginated.decorator"
 import { PickProjectionHelper } from "~/_common/helpers/pick-projection.helper"
@@ -12,10 +12,9 @@ import { FilterOptions, FilterSchema, ObjectIdValidationPipe, SearchFilterOption
 import { ApiReadResponseDecorator } from "~/_common/decorators/api-read-response.decorator"
 import { Types } from "mongoose"
 import { ApiUpdateDecorator } from "~/_common/decorators/api-update.decorator"
-import { AgentsDto, AgentsUpdateDto } from "../agents/_dto/agents.dto"
 import { ApiDeletedResponseDecorator } from "~/_common/decorators/api-deleted-response.decorator"
 import { UseRoles } from "~/_common/decorators/use-roles.decorator"
-import { AC_ACTIONS, AC_ADMIN_ROLE, AC_DEFAULT_POSSESSION, AC_GUEST_ROLE } from "~/_common/types/ac-types"
+import { AC_ACTIONS, AC_ALL_DEFAULT_ROLES, AC_DEFAULT_POSSESSION, AC_GUEST_ROLE } from "~/_common/types/ac-types"
 import { Roles } from "./_schemas/roles.schema"
 import { AclRuntimeService } from "./acl-runtime.service"
 
@@ -48,24 +47,30 @@ export class RolesController extends AbstractController {
   })
   public async list(
     @Res() res: Response,
+    @Query('excludeAdmin') excludeAdmin: string,
+    @Query('excludeGuest') excludeGuest: string,
   ): Promise<Response> {
-    const data = await this._service.find(null, { name: 1, displayName: 1 }) as unknown as Roles[]
+    const data = await this._service.find(null, { name: 1, displayName: 1, description: 1 }) as unknown as Roles[]
+
+    const shouldExcludeAdmin = `${excludeAdmin ?? ''}`.toLowerCase() === 'true'
+    const shouldExcludeGuest = `${excludeGuest ?? ''}`.toLowerCase() === 'true'
+    const filter = (r: { name: string }) =>
+      (!shouldExcludeAdmin || r.name !== 'admin')
+      && (!shouldExcludeGuest || r.name !== 'guest')
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: [
-        {
-          name: AC_ADMIN_ROLE,
-          displayName: AC_ADMIN_ROLE.charAt(0).toUpperCase() + AC_ADMIN_ROLE.slice(1),
-        },
-        {
-          name: AC_GUEST_ROLE,
-          displayName: AC_GUEST_ROLE.charAt(0).toUpperCase() + AC_GUEST_ROLE.slice(1),
-        },
+        ...AC_ALL_DEFAULT_ROLES.map((r) => ({
+          name: r.name,
+          displayName: r.displayName,
+          description: (r as any).description,
+        })).filter(filter),
         ...data.map((role) => ({
           name: role.name,
           displayName: role.displayName || role.name.charAt(0).toUpperCase() + role.name.slice(1),
-        })),
+          description: role.description,
+        })).filter(filter),
       ],
     })
   }
@@ -155,7 +160,9 @@ export class RolesController extends AbstractController {
     @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
     @Res() res: Response,
   ): Promise<Response> {
-    const data = await this._service.findById(_id)
+    const data = await this._service.findById(_id) as unknown as Roles
+    data.inherits = data.inherits.filter((inherit) => inherit !== AC_GUEST_ROLE)
+
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,
@@ -169,14 +176,15 @@ export class RolesController extends AbstractController {
     possession: AC_DEFAULT_POSSESSION,
   })
   @ApiParam({ name: '_id', type: String })
-  @ApiUpdateDecorator(AgentsUpdateDto, AgentsDto)
+  @ApiUpdateDecorator(RolesUpdateDto, RolesDto)
   public async update(
     @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
-    @Body() body: AgentsUpdateDto,
+    @Body() body: RolesUpdateDto,
     @Res() res: Response,
   ): Promise<Response> {
     const data = await this._service.update(_id, body)
     await this._aclRuntimeService.refresh()
+
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,
@@ -190,7 +198,7 @@ export class RolesController extends AbstractController {
     possession: AC_DEFAULT_POSSESSION,
   })
   @ApiParam({ name: '_id', type: String })
-  @ApiDeletedResponseDecorator(AgentsDto)
+  @ApiDeletedResponseDecorator(RolesDto)
   public async remove(
     @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
     @Res() res: Response,

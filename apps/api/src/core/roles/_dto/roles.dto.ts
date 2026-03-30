@@ -1,8 +1,10 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger"
 import { Type } from "class-transformer"
-import { IsArray, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator"
+import { IsArray, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches, ValidateNested } from "class-validator"
 import { CustomFieldsDto } from "~/_common/abstracts/dto/custom-fields.dto"
 import { AccessPartDTO } from "./parts/access.part.dto"
+
+import { AC_INTERNAL_ROLE_PREFIX } from "~/_common/types/ac-types"
 
 export class RolesCreateDto extends CustomFieldsDto {
   /**
@@ -13,6 +15,9 @@ export class RolesCreateDto extends CustomFieldsDto {
    */
   @IsString()
   @IsNotEmpty()
+  @Matches(new RegExp(`^(?!${AC_INTERNAL_ROLE_PREFIX}).+$`), {
+    message: `Le nom ne peut pas commencer par "${AC_INTERNAL_ROLE_PREFIX}" (préfixe réservé)`,
+  })
   @ApiProperty()
   public name: string
 

@@ -28,6 +28,14 @@ export default function useRolesSchema() {
         "type": "string",
         "description": "Description"
       },
+      "inherits": {
+        "type": "array",
+        "description": "Hérite des permissions de",
+        "default": ["guest"],
+        "items": {
+          "type": "string"
+        }
+      },
       "access": {
         "type": "array",
         "description": "Accès aux ressources",
@@ -84,6 +92,31 @@ export default function useRolesSchema() {
             "type": "Control",
             "label": "Description",
             "scope": "#/properties/description"
+          },
+        ]
+      },
+      {
+        "type": "HorizontalLayout",
+        "elements": [
+          {
+            "type": "Control",
+            "label": "Héritage",
+            "scope": "#/properties/inherits",
+            "options": {
+              api: {
+                url: '/core/roles/list',
+                itemsPath: 'data',
+                labelKey: 'displayName',
+                valueKey: 'name',
+                params: {
+                  excludeAdmin: 'true',
+                  excludeGuest: 'true',
+                },
+                headers: {
+                  accept: 'application/json',
+                },
+              },
+            }
           },
         ]
       },

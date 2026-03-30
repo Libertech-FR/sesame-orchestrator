@@ -42,7 +42,7 @@ export default defineNuxtComponent({
     if (NewTargetId === $route.params._id) {
       return {
         navigateToTab,
-        role: {} as Role,
+        role: { inherits: ['guest'] } as Role,
         debug,
       }
     }

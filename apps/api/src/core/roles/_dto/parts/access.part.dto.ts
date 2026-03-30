@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsString, IsNotEmpty, IsNumber, IsDate, IsOptional, IsArray, IsEnum, IsUrl, IsDataURI } from 'class-validator'
+import { IsString, IsNotEmpty, IsOptional, IsArray, IsEnum, Matches } from 'class-validator'
 import { AC_ACTIONS, AC_POSSESSIONS } from '~/_common/types/ac-types'
 
 export class AccessPartDTO {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  @IsDataURI()
+  @Matches(/^\/(?!.*\/$).+$/, {
+    message: 'Le champ resource doit correspondre au chemin d\'accès d\'une route NestJS ex: "/core/roles" (doit commencer par / et ne pas finir par /)',
+  })
   public resource: string
 
   @IsArray()
@@ -14,7 +16,7 @@ export class AccessPartDTO {
   @IsNotEmpty()
   @IsEnum(AC_ACTIONS, { each: true })
   @ApiProperty({ enum: AC_ACTIONS })
-  public actions: AC_ACTIONS[]
+  public action: AC_ACTIONS[]
 
   @IsString()
   @IsOptional()

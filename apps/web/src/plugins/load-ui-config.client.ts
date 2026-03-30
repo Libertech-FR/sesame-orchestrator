@@ -2,6 +2,7 @@ type UiConfigPayload = {
   menus?: {
     entries?: Record<string, unknown>[]
     parts?: Record<string, unknown>[]
+    useDefaultEntries?: boolean
   }
   identitiesColumns?: {
     entries?: Record<string, unknown>[]
@@ -18,6 +19,7 @@ export default defineNuxtPlugin(async () => {
     mutableAppConfig.menus = {
       entries: payload?.menus?.entries || [],
       parts: payload?.menus?.parts || [],
+      useDefaultEntries: payload?.menus?.useDefaultEntries,
     }
 
     mutableAppConfig.identitiesColumns = {

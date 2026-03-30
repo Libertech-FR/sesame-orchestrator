@@ -8,6 +8,7 @@ export type BadgeItem = {
 export type MenuItem = {
   icon: string
   label: string
+  name?: string
   path: string
   part: string
   color: string
@@ -15,5 +16,6 @@ export type MenuItem = {
   drawerColor?: string
   badge?: BadgeItem
   hideInMenuBar?: boolean
+  hideInDashboard?: boolean
   _acl?: string
 }

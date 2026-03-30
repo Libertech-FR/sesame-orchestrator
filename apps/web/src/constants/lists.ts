@@ -60,8 +60,8 @@ export const IdentityStateList = [
     display: true,
   },
   {
-    value: IdentityState.NO_SYNC,
-    text: 'A ne pas synchroniser',
+    value: IdentityState.DONT_SYNC,
+    text: 'À ne pas synchroniser',
     color: 'black',
     icon: 'mdi-publish-off',
     display: true,

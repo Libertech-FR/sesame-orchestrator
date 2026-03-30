@@ -182,6 +182,16 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       _acl: '/management/identities',
     },
     {
+      icon: 'mdi-publish-off',
+      label: 'À ne pas synchroniser',
+      path: `/identities/table?sort[metadata.lastUpdatedAt]=desc&skip=0&filters[%23state]=${IdentityState.DONT_SYNC}`,
+      color: 'black',
+      badge: getStateBadge(IdentityState.DONT_SYNC),
+      part: MenuPart.ETATS,
+      hideInMenuBar: false,
+      _acl: '/management/identities',
+    },
+    {
       icon: 'mdi-email-alert',
       label: 'Invitations non envoyées',
       path: '/identities/table?limit=10&skip=0&filters[%23initState]=0&sort[metadata.lastUpdatedAt]=desc',

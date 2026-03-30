@@ -7,7 +7,7 @@ export enum IdentityState {
   TO_CREATE = -1,
   TO_COMPLETE = -2,
   ON_ERROR = -3,
-  NO_SYNC = -99,
+  DONT_SYNC = -99,
 }
 
 export enum IdentityLifecycle {

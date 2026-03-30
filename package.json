@@ -1,6 +1,6 @@
 {
   "name": "@libertech-fr/sesame-orchestrator",
-  "version": "2.1.16",
+  "version": "2.1.17",
   "description": "Synchronisation d'Identités Multi-sources",
   "private": true,
   "contributors": [

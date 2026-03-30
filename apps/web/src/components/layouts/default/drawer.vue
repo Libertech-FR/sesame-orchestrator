@@ -18,7 +18,7 @@ div
                     q-icon(name="mdi-open-in-new" color="primary")
                   q-item-section Ouvrir dans un nouvel onglet
           q-separator
-        q-list(v-for="(part, i) in visibleMenuParts" :key="part.label")
+        q-list(v-for="(part, i) in visibleMenuParts" :key="part.name")
           div(v-for="menu in part.menus" :key="menu.path")
             q-item(
               clickable
@@ -99,7 +99,7 @@ export default defineNuxtComponent({
     const visibleMenuParts = computed(() => menuParts.value
       .map(part => ({
         ...part,
-        menus: getMenuByPart(part.label).filter(menu => menu.hideInMenuBar !== true),
+        menus: getMenuByPart(part.name!).filter(menu => menu.hideInMenuBar !== true),
       }))
       .filter(part => part.menus.length > 0))
 

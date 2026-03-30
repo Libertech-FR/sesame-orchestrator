@@ -3,13 +3,13 @@ q-page.container(padding)
   .column.no-wrap
     div(v-for="(part, i) in menuParts", :key="i")
       q-bar.q-pa-lg.q-mb-sm.transparent(
-        v-show='getMenuByPart(part.label).filter(i => i.hideInDashboard !== true).length' dense
+        v-show='getMenuByPart(part.name).filter(i => i.hideInDashboard !== true).length' dense
       )
         .text-h5 {{ part.label }}
 
       .row.q-col-gutter-md
         .col.col-12.col-sm-6.col-md-4.col-lg-3(
-          v-for="item in getMenuByPart(part.label).filter(i => i.hideInDashboard !== true)" :key="item.label"
+          v-for="item in getMenuByPart(part.name).filter(i => i.hideInDashboard !== true)" :key="item.label"
         )
           q-btn.q-py-md.fit(
             :style='getButtonStyle(item)'
@@ -47,7 +47,7 @@ q-page.container(padding)
                     q-item-label Debug
       q-separator.q-mt-md.q-mb-sm(
         v-if="i < menuParts.length - 1"
-        v-show='getMenuByPart(part.label).filter(i => i.hideInDashboard !== true).length'
+        v-show='getMenuByPart(part.name).filter(i => i.hideInDashboard !== true).length'
       )
   sesame-core-debug-menu-entry-dialog(
     v-model="debugDialogOpen"

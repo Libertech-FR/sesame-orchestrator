@@ -17,6 +17,7 @@ type useMenuReturnType = {
 
 type MenuPartItem = {
   label: string
+  name?: string
   position: number
 }
 
@@ -54,14 +55,23 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       const overrideLabel = typeof overridePart?.label === 'string' ? overridePart.label : ''
       if (!overrideLabel) continue
 
-      const matchIndex = mergedParts.findIndex((part) => part.label === overrideLabel)
+      const overrideRawName = typeof overridePart?.name === 'string' ? overridePart.name : ''
+      const overrideName = overrideRawName.trim() ? normalizeNameFromLabel(overrideRawName) : normalizeNameFromLabel(overrideLabel)
+
+      const matchIndex = mergedParts.findIndex((part) => normalizeNameFromLabel(part.name || part.label) === overrideName)
       if (matchIndex >= 0) {
         mergedParts[matchIndex] = {
           ...mergedParts[matchIndex],
           ...(overridePart as any),
+          label: overrideLabel,
+          name: overrideName,
         }
       } else {
-        mergedParts.push(overridePart as any)
+        mergedParts.push({
+          ...(overridePart as any),
+          label: overrideLabel,
+          name: overrideName,
+        })
       }
     }
 
@@ -190,7 +200,8 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
   }
 
   function getMenuByPart(part: string): MenuItem[] {
-    return getMenu().filter((menu) => menu.part === part)
+    const normalizedPart = normalizeNameFromLabel(part)
+    return getMenu().filter((menu) => normalizeNameFromLabel(menu.part) === normalizedPart)
   }
 
   async function initialize(): Promise<void> {

@@ -7,6 +7,16 @@ div
           q-item(to="/" clickable v-ripple)
             q-item-section(avatar)
               q-icon(name="mdi-home")
+            q-popup-proxy(context-menu :offset="[0, 10]")
+              q-list(dense)
+                q-item(clickable v-ripple @click.stop.prevent="openMenu({ path: '/' })")
+                  q-item-section(avatar)
+                    q-icon(name="mdi-open-in-app" color="primary")
+                  q-item-section Ouvrir
+                q-item(clickable v-ripple @click.stop.prevent="openMenuNewTab({ path: '/' })")
+                  q-item-section(avatar)
+                    q-icon(name="mdi-open-in-new" color="primary")
+                  q-item-section Ouvrir dans un nouvel onglet
           q-separator
         q-list(v-for="(part, i) in visibleMenuParts" :key="part.label")
           div(v-for="menu in part.menus" :key="menu.path")

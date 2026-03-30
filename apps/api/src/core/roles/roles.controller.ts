@@ -14,7 +14,7 @@ import { Types } from "mongoose"
 import { ApiUpdateDecorator } from "~/_common/decorators/api-update.decorator"
 import { ApiDeletedResponseDecorator } from "~/_common/decorators/api-deleted-response.decorator"
 import { UseRoles } from "~/_common/decorators/use-roles.decorator"
-import { AC_ACTIONS, AC_ALL_DEFAULT_ROLES, AC_DEFAULT_POSSESSION, AC_GUEST_ROLE } from "~/_common/types/ac-types"
+import { AC_ACTIONS, AC_ALL_DEFAULT_ROLES, AC_DEFAULT_POSSESSION, AC_GUEST_ROLE, AC_INTERNAL_ROLE_PREFIX } from "~/_common/types/ac-types"
 import { Roles } from "./_schemas/roles.schema"
 import { AclRuntimeService } from "./acl-runtime.service"
 
@@ -49,14 +49,17 @@ export class RolesController extends AbstractController {
     @Res() res: Response,
     @Query('excludeAdmin') excludeAdmin: string,
     @Query('excludeGuest') excludeGuest: string,
+    @Query('excludeInternal') excludeInternal: string,
   ): Promise<Response> {
     const data = await this._service.find(null, { name: 1, displayName: 1, description: 1 }) as unknown as Roles[]
 
     const shouldExcludeAdmin = `${excludeAdmin ?? ''}`.toLowerCase() === 'true'
     const shouldExcludeGuest = `${excludeGuest ?? ''}`.toLowerCase() === 'true'
+    const shouldExcludeInternal = `${excludeInternal ?? ''}`.toLowerCase() === 'true'
     const filter = (r: { name: string }) =>
       (!shouldExcludeAdmin || r.name !== 'admin')
       && (!shouldExcludeGuest || r.name !== 'guest')
+      && (!shouldExcludeInternal || !r.name.startsWith(AC_INTERNAL_ROLE_PREFIX))
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

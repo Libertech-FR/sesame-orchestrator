@@ -123,6 +123,9 @@ export default function useAgentsSchema() {
                 itemsPath: 'data',
                 labelKey: 'displayName',
                 valueKey: 'name',
+                params: {
+                  excludeInternal: 'true',
+                },
                 headers: {
                   accept: 'application/json',
                 },

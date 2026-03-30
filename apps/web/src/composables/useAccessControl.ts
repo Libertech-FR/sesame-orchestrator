@@ -68,7 +68,7 @@ export const useAccessControl = () => {
       visiting.add(role)
       result.add(role)
 
-      const grants = access?.[role] as any
+      const grants = access?.[role] as (AccessObjectAction & { $extend?: string[] }) | undefined
       const extend = grants?.$extend
       if (Array.isArray(extend)) {
         for (const parent of extend) {
@@ -159,6 +159,7 @@ export const useAccessControl = () => {
     }
 
     const effectiveRoles = resolveEffectiveRoles(roles)
+    const normalizedPatterns = (Array.isArray(patterns) ? patterns : [patterns]).map((pattern) => pattern.replace(/^\//, ''))
 
     // Cas "menu public" : si aucun rôle et aucune ACL chargée, on laisse afficher les tuiles non restreintes.
     if (!effectiveRoles.length && (!access || Object.keys(access).length === 0)) {
@@ -168,8 +169,11 @@ export const useAccessControl = () => {
     for (const role of effectiveRoles) {
       const actions = access[role] as AccessObjectAction || {}
       for (const action of Object.keys(actions)) {
+        if (action.startsWith('$')) {
+          continue
+        }
         const normalizedKey = action.replace(/^\//, '')
-        if (Array.isArray(patterns) ? patterns.some((pattern) => normalizedKey.startsWith(pattern)) : normalizedKey.startsWith(patterns)) {
+        if (normalizedPatterns.some((pattern) => normalizedKey.startsWith(pattern))) {
           return true
         }
       }

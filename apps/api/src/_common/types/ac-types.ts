@@ -69,6 +69,16 @@ export const AC_INTERNAL_DEFAULT_ROLES_GRANTS: IAccessInfo[] = [
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.UPDATE, resource: '/core/cron' },
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.DELETE, resource: '/core/cron' },
 
+  { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.READ, resource: '/core/roles' },
+  { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.CREATE, resource: '/core/roles' },
+  { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.UPDATE, resource: '/core/roles' },
+  { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.DELETE, resource: '/core/roles' },
+
+  { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.READ, resource: '/core/keyrings' },
+  { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.CREATE, resource: '/core/keyrings' },
+  { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.UPDATE, resource: '/core/keyrings' },
+  { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.DELETE, resource: '/core/keyrings' },
+
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.READ, resource: '/core/jobs' },
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.CREATE, resource: '/core/jobs' },
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.UPDATE, resource: '/core/jobs' },

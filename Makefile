@@ -15,6 +15,10 @@ PLATFORM = "linux/amd64"
 
 include .env
 
+GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)
+GIT_COMMIT ?= $(shell git rev-parse HEAD 2>/dev/null || echo unknown)
+DOCKER_TAG ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo unknown)
+
 CERT_DIR = ./certificates
 COMMON_NAME = localhost
 DAYS_VALID = 365
@@ -31,12 +35,20 @@ help:
 		| sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-15s\033[0m %s\n", $$1, $$2}'
 
 build: ## Build the container
-	@docker build --platform $(PLATFORM) -t $(IMG_NAME) --no-cache --progress=plain .
+	@docker build --platform $(PLATFORM) -t $(IMG_NAME) --no-cache --progress=plain \
+		--build-arg BUILD_VERSION=$(DOCKER_TAG) \
+		--build-arg GIT_BRANCH=$(GIT_BRANCH) \
+		--build-arg GIT_COMMIT=$(GIT_COMMIT) \
+		--build-arg DOCKER_TAG=$(DOCKER_TAG) \
+		.
 
 simulation: ## Start production environment in simulation mode
 	@docker run --rm -it \
 		-e NODE_ENV=production \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		-e GIT_BRANCH=$(GIT_BRANCH) \
+		-e GIT_COMMIT=$(GIT_COMMIT) \
+		-e DOCKER_TAG=$(DOCKER_TAG) \
 		--add-host host.docker.internal:host-gateway \
 		--platform $(PLATFORM) \
 		--network dev \
@@ -62,6 +74,9 @@ prod: ## Start production environment
 	@docker run --rm -it \
 		-e NODE_ENV=production \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		-e GIT_BRANCH=$(GIT_BRANCH) \
+		-e GIT_COMMIT=$(GIT_COMMIT) \
+		-e DOCKER_TAG=$(DOCKER_TAG) \
 		--add-host host.docker.internal:host-gateway \
 		--platform $(PLATFORM) \
 		--network dev \
@@ -79,6 +94,9 @@ dev: ## Start development environment
 	@docker run --rm -it \
 		-e NODE_ENV=development \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		-e GIT_BRANCH=$(GIT_BRANCH) \
+		-e GIT_COMMIT=$(GIT_COMMIT) \
+		-e DOCKER_TAG=$(DOCKER_TAG) \
 		--add-host host.docker.internal:host-gateway \
 		--platform $(PLATFORM) \
 		--network dev \
@@ -97,6 +115,9 @@ debug: ## Start debug environment
 	@docker run --rm -it \
 		-e NODE_ENV=development \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		-e GIT_BRANCH=$(GIT_BRANCH) \
+		-e GIT_COMMIT=$(GIT_COMMIT) \
+		-e DOCKER_TAG=$(DOCKER_TAG) \
 		--add-host host.docker.internal:host-gateway \
 		--platform $(PLATFORM) \
 		--network dev \

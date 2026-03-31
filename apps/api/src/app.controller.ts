@@ -60,6 +60,13 @@ export class AppController extends AbstractController {
   public getInfo(@Res() res: Response): Response {
     return res.json({
       ...this.appService.getInfo(),
+      git: {
+        branch: process.env.GIT_BRANCH || process.env.GITHUB_REF_NAME || 'unknown',
+        commit: process.env.GIT_COMMIT || process.env.GIT_SHA || process.env.GITHUB_SHA || 'unknown',
+      },
+      docker: {
+        tag: process.env.DOCKER_TAG || process.env.IMAGE_TAG || 'unknown',
+      },
     });
   }
 

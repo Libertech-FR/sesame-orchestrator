@@ -56,3 +56,6 @@ jobs:
           platforms: linux/amd64
           build-args: |
             BUILD_VERSION=${{ steps.version.outputs.version }}-${{ steps.version.outputs.build_id }}
+            GIT_BRANCH=${{ github.ref_name }}
+            GIT_COMMIT=${{ github.sha }}
+            DOCKER_TAG=${{ steps.version.outputs.version }}-${{ steps.version.outputs.build_id }}

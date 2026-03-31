@@ -58,4 +58,6 @@ jobs:
             BUILD_VERSION=${{ steps.version.outputs.version }}-${{ steps.version.outputs.build_id }}
             GIT_BRANCH=${{ github.ref_name }}
             GIT_COMMIT=${{ github.sha }}
+            GIT_SHA=${{ github.sha }}
             DOCKER_TAG=${{ steps.version.outputs.version }}-${{ steps.version.outputs.build_id }}
+            IMAGE_TAG=${{ steps.version.outputs.version }}-${{ steps.version.outputs.build_id }}

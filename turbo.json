@@ -7,7 +7,14 @@
     "NODE_ENV"
   ],
   "globalPassThroughEnv": [
-    "SESAME_*"
+    "SESAME_*",
+    "GIT_BRANCH",
+    "GIT_COMMIT",
+    "GIT_SHA",
+    "GITHUB_REF_NAME",
+    "GITHUB_SHA",
+    "DOCKER_TAG",
+    "IMAGE_TAG"
   ],
   "tasks": {
     "build": {

@@ -45,13 +45,13 @@ export default defineNuxtComponent({
       eventSeamlessCurrent: 0,
       eventSeamlessCurrentJobs: {},
       orchestratorVersion: {
-        currentVersion: '0.0.0',
-        lastVersion: '0.0.0',
+        currentVersion: null,
+        lastVersion: null,
         updateAvailable: false,
       },
       daemonVersion: {
-        currentVersion: '0.0.0',
-        lastVersion: '0.0.0',
+        currentVersion: null,
+        lastVersion: null,
         updateAvailable: false,
       },
     }

@@ -81,7 +81,7 @@
           color="black"
           label="Vérifier les mots de passe compromis"
         )
-          q-tooltip.text-body2(anchor="top middle" self="bottom middle")
+          q-tooltip.text-body2(anchor="center right" self="center left" :offset="[12, 0]")
             | Utilise l'API HIBP (Pwned Passwords) pour vérifier si le mot de passe a été compromis dans une fuite de données.
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
           :disable='!hasPermission("/settings/passwdadm", "update") || !payload.checkPwned || !hibpKeyStatus.valid'
@@ -90,11 +90,11 @@
           color="teal"
           label="Stockage des empreintes HIBP (Pwned Passwords)"
         )
-          q-tooltip.text-body2(anchor="top middle" self="bottom middle" v-if="!payload.checkPwned")
+          q-tooltip.text-body2(anchor="center right" self="center left" :offset="[12, 0]" v-if="!payload.checkPwned")
             | Activer d’abord « Vérifier les mots de passe compromis ».
-          q-tooltip.text-body2(anchor="top middle" self="bottom middle" v-else-if="!hibpKeyStatus.valid")
+          q-tooltip.text-body2(anchor="center right" self="center left" :offset="[12, 0]" v-else-if="!hibpKeyStatus.valid")
             span(v-text="hibpKeyStatus.reason || 'Clé SESAME_PASSWORD_HISTORY_HIBP_KEY invalide'")
-          q-tooltip.text-body2(anchor="top middle" self="bottom middle" v-else)
+          q-tooltip.text-body2(anchor="center right" self="center left" :offset="[12, 0]" v-else)
             | Active le stockage des empreintes SHA-1 chiffrées (non réversibles) dans l'historique des mots de passe pour permettre le re-check planifié.
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
           :disable='!hasPermission("/settings/passwdadm", "update")'

@@ -75,7 +75,7 @@ export default defineNuxtComponent({
           state: IdentityState.TO_CREATE,
           inetOrgPerson: {
             mail: '',
-            employeeType: 'local',
+            employeeType: 'LOCAL',
           },
           additionalFields: {
             attributes: {},

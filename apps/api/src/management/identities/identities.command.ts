@@ -9,6 +9,11 @@ import { Types } from "mongoose";
 import axios from 'axios'
 import { PasswordHistoryService } from '~/management/password-history/password-history.service'
 import { PasswdadmService } from '~/settings/passwdadm.service'
+import { IdentitiesForcepasswordService } from '~/management/identities/identities-forcepassword.service'
+import { IdentitiesCrudService } from '~/management/identities/identities-crud.service'
+import { MailerService } from '@nestjs-modules/mailer'
+import { MailadmService } from '~/settings/mailadm.service'
+import { get } from 'radash'
 
 
 @SubCommand({ name: 'fingerprint' })
@@ -113,6 +118,10 @@ export class IdentitiesPwnedCommand extends CommandRunner {
     // Ici on a des services singleton, on utilise donc `get()`.
     const passwordHistory = this.moduleRef.get(PasswordHistoryService, { strict: false })
     const passwdadm = this.moduleRef.get(PasswdadmService, { strict: false })
+    const identities = this.moduleRef.get(IdentitiesCrudService, { strict: false })
+    const forcePwd = this.moduleRef.get(IdentitiesForcepasswordService, { strict: false })
+    const mailer = this.moduleRef.get(MailerService, { strict: false })
+    const mailadm = this.moduleRef.get(MailadmService, { strict: false })
 
     const policies: any = await passwdadm.getPolicies()
     if (!policies?.pwnedRecheckEnabled) {
@@ -194,6 +203,43 @@ export class IdentitiesPwnedCommand extends CommandRunner {
 
         if (pwnCount > 0) {
           this.logger.warn(`PWNED password detected: history=<${entry._id}> identityId=<${entry.identityId}> count=${pwnCount}`)
+
+          const action = (policies?.pwnedRecheckAction || 'none') as 'none' | 'notify' | 'expire'
+          if (action === 'expire') {
+            try {
+              await forcePwd.needToChangePassword(String(entry.identityId))
+              this.logger.warn(`PWNED action applied: expire password identityId=<${entry.identityId}>`)
+            } catch (e) {
+              this.logger.warn(`PWNED action failed (expire) for identityId=<${entry.identityId}>: ${e?.message || e}`)
+            }
+          } else if (action === 'notify') {
+            try {
+              const identity = await identities.model.findById(entry.identityId).lean()
+              const mailAttribute = String(policies?.emailAttribute || '')
+              const email = mailAttribute ? (get(identity as any, mailAttribute) as string) : null
+              if (!email) {
+                this.logger.warn(`PWNED notify skipped: no email (attribute=<${mailAttribute || 'n/a'}>) for identityId=<${entry.identityId}>`)
+              } else {
+                const smtpParams = await mailadm.getParams()
+                const subject = 'Alerte sécurité : mot de passe compromis'
+                const text =
+                  `Bonjour,\n\n` +
+                  `Un re-check de sécurité (HIBP) indique que votre mot de passe apparaît dans des fuites connues (occurrences: ${pwnCount}).\n` +
+                  `Nous vous recommandons de le changer dès que possible.\n\n` +
+                  `Ceci est une notification : votre accès n'est pas bloqué.\n`
+
+                await mailer.sendMail({
+                  from: smtpParams?.sender,
+                  to: email,
+                  subject,
+                  text,
+                })
+                this.logger.warn(`PWNED action applied: notified user identityId=<${entry.identityId}>`)
+              }
+            } catch (e) {
+              this.logger.warn(`PWNED action failed (notify) for identityId=<${entry.identityId}>: ${e?.message || e}`)
+            }
+          }
         }
       } catch (e) {
         this.logger.warn(`HIBP range call failed for history <${entry._id}>: ${e?.message || e}`)

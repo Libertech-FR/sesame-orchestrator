@@ -83,13 +83,15 @@
           hint="Utilise l'API de pwned pour vérifier si le mot de passe a été compromis dans une fuite de données"
         )
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
-          :disable='!hasPermission("/settings/passwdadm", "update")'
+          :disable='!hasPermission("/settings/passwdadm", "update") || !hibpKeyStatus.valid'
           dense
           v-model="payload.pwnedRecheckEnabled"
           color="teal"
-          label="Re-check HIBP (tâche planifiée)"
-          hint="Active le re-check HIBP (cron) via une empreinte SHA-1 chiffrée stockée dans l'historique des mots de passe"
+          label="Stockage des empreintes HIBP (Pwned Passwords)"
+          hint="Active le stockage des empreintes SHA-1 chiffrées dans l'historique des mots de passe"
         )
+          q-tooltip.text-body2(anchor="top middle" self="bottom middle" v-if="!hibpKeyStatus.valid")
+            span(v-text="hibpKeyStatus.reason || 'Clé SESAME_PASSWORD_HISTORY_HIBP_KEY invalide'")
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
           :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
@@ -136,6 +138,17 @@
           label="Âge max avant re-check HIBP (secondes)"
           hint="Re-check uniquement si la dernière vérification est plus ancienne que ce délai"
           dense
+        )
+        q-select.col-12.col-sm-6.col-md-5.col-lg-4(
+          :disable='!hasPermission("/settings/passwdadm", "update")'
+          outlined
+          dense
+          emit-value
+          map-options
+          v-model="payload.pwnedRecheckAction"
+          :options="pwnedActions"
+          label="Action si mot de passe compromis lors du re-check HIBP"
+          hint="« Notifier » avertit l'utilisateur sans le bloquer. « Expirer » force un changement au prochain usage."
         )
       q-separator.q-my-lg
       .row.q-col-gutter-md
@@ -185,6 +198,7 @@ type PasswordPolicySettings = {
   checkPwned: boolean
   pwnedRecheckEnabled: boolean
   pwnedRecheckMaxAgeSeconds: number
+  pwnedRecheckAction: 'none' | 'notify' | 'expire'
   resetBySms: boolean
   emailAttribute: string
   mobileAttribute: string
@@ -204,6 +218,12 @@ export default defineComponent({
     const { handleError } = useErrorHandling()
     const { hasPermission } = useAccessControl()
 
+    const pwnedActions = [
+      { label: 'Ne rien faire', value: 'none' },
+      { label: "Notifier l'utilisateur", value: 'notify' },
+      { label: 'Expirer le mot de passe', value: 'expire' },
+    ] as const
+
     const payload = ref({
       len: 8,
       hasUpperCase: 0,
@@ -213,6 +233,7 @@ export default defineComponent({
       checkPwned: false,
       pwnedRecheckEnabled: false,
       pwnedRecheckMaxAgeSeconds: 60 * 60 * 24 * 7,
+      pwnedRecheckAction: 'none',
       resetBySms: false,
       emailAttribute: '',
       mobileAttribute: '',
@@ -223,6 +244,7 @@ export default defineComponent({
       initTokenTTL: 0,
     })
     const validations = ref({} as Record<string, any>)
+    const hibpKeyStatus = ref<{ valid: boolean; reason: string | null }>({ valid: true, reason: null })
 
     const {
       data: result,
@@ -232,6 +254,13 @@ export default defineComponent({
     } = await useHttp<{ data: PasswordPolicySettings }>(`/settings/passwdadm/getpolicies`, {
       method: 'GET',
     })
+
+    const { data: keyStatusResult } = await useHttp<{ data: { valid: boolean; reason: string | null } }>(`/settings/passwdadm/hibp-keystatus`, {
+      method: 'GET',
+    })
+    if (keyStatusResult.value?.data) {
+      hibpKeyStatus.value = keyStatusResult.value.data
+    }
     if (error.value) {
       handleError({
         error: error.value,
@@ -242,8 +271,14 @@ export default defineComponent({
       validations.value = {}
     }
 
+    if (!hibpKeyStatus.value.valid) {
+      payload.value.pwnedRecheckEnabled = false
+    }
+
     return {
       payload,
+      pwnedActions,
+      hibpKeyStatus,
       handleError,
       pending,
       refresh,

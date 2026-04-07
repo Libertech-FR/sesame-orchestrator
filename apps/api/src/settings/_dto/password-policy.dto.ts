@@ -62,6 +62,14 @@ export class PasswordPoliciesDto {
   @ApiProperty({ example: 604800, description: 'Age max (secondes) avant re-check HIBP en cron', type: Number })
   public pwnedRecheckMaxAgeSeconds: number = 60 * 60 * 24 * 7;
 
+  @IsString()
+  @ApiProperty({
+    example: 'none',
+    description: "Action à effectuer si un mot de passe est détecté comme compromis via le re-check HIBP ('none' | 'notify' | 'expire')",
+    type: String,
+  })
+  public pwnedRecheckAction: 'none' | 'notify' | 'expire' = 'none';
+
   @IsBoolean()
   @ApiProperty({ example: true, description: 'Mote de passe peut etre reinitialisé par sms', type: Boolean })
   public resetBySms: boolean = false;

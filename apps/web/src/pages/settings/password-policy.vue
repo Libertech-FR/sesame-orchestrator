@@ -85,6 +85,14 @@
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
           :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
+          v-model="payload.pwnedRecheckEnabled"
+          color="teal"
+          label="Re-check HIBP (tâche planifiée)"
+          hint="Active le re-check HIBP (cron) via une empreinte SHA-1 chiffrée stockée dans l'historique des mots de passe"
+        )
+        q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
+          :disable='!hasPermission("/settings/passwdadm", "update")'
+          dense
           v-model="payload.resetBySms"
           color="red"
           label="Réinitialisation par SMS active"
@@ -116,6 +124,17 @@
           v-model="payload.redirectUrl"
           label="URL de redirection après changement de mot de passe"
           hint="URL de redirection après un changement de mot de passe réussi"
+          dense
+        )
+      .row.q-col-gutter-md.q-mt-md
+        q-input.col-12.col-sm-6.col-md-5.col-lg-4(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
+          type="number"
+          outlined
+          v-model="payload.pwnedRecheckMaxAgeSeconds"
+          input-class="text-right"
+          label="Âge max avant re-check HIBP (secondes)"
+          hint="Re-check uniquement si la dernière vérification est plus ancienne que ce délai"
           dense
         )
       q-separator.q-my-lg
@@ -164,6 +183,8 @@ type PasswordPolicySettings = {
   hasNumbers: 0 | 1
   hasSpecialChars: 0 | 1
   checkPwned: boolean
+  pwnedRecheckEnabled: boolean
+  pwnedRecheckMaxAgeSeconds: number
   resetBySms: boolean
   emailAttribute: string
   mobileAttribute: string
@@ -190,6 +211,8 @@ export default defineComponent({
       hasNumbers: 0,
       hasSpecialChars: 0,
       checkPwned: false,
+      pwnedRecheckEnabled: false,
+      pwnedRecheckMaxAgeSeconds: 60 * 60 * 24 * 7,
       resetBySms: false,
       emailAttribute: '',
       mobileAttribute: '',

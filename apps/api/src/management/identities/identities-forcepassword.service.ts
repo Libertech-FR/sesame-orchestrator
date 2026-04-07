@@ -1,12 +1,15 @@
 import {AbstractIdentitiesService} from '~/management/identities/abstract-identities.service';
 import {Identities} from '~/management/identities/_schemas/identities.schema';
-import {BadRequestException, HttpException, Injectable} from '@nestjs/common';
+import { BadRequestException, HttpException, Inject, Injectable } from '@nestjs/common';
 import {DataStatusEnum} from '~/management/identities/_enums/data-status';
 import {ActionType} from "~/core/backends/_enum/action-type.enum";
+import { PasswordHistoryService } from '~/management/password-history/password-history.service'
 
 
 @Injectable()
 export class IdentitiesForcepasswordService extends AbstractIdentitiesService {
+  @Inject(PasswordHistoryService)
+  private readonly passwordHistory: PasswordHistoryService
 
   public async forcePassword(id: string, newPassword: string) {
     //recherche de l'identité
@@ -30,6 +33,7 @@ export class IdentitiesForcepasswordService extends AbstractIdentitiesService {
         statusCode: 400,
       });
     }
+    await this.passwordHistory.assertNotReused(identity._id, newPassword)
      //ok on envoie le changement de mdp
       try{
         const [_, response] = await this.backends.executeJob(
@@ -45,6 +49,7 @@ export class IdentitiesForcepasswordService extends AbstractIdentitiesService {
           },
         );
         if (response?.status === 0) {
+          await this.passwordHistory.recordPassword(identity._id, newPassword, 'force')
           //activation de l'identité
           await this.activation(id,DataStatusEnum.ACTIVE)
           return [_, response];

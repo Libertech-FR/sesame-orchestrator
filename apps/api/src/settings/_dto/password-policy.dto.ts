@@ -43,6 +43,26 @@ export class PasswordPoliciesDto {
   public checkPwned: boolean = true;
 
   @IsBoolean()
+  @ApiProperty({ example: true, description: 'Active l’historique des mots de passe (anti-réutilisation)', type: Boolean })
+  public passwordHistoryEnabled: boolean = true;
+
+  @IsNumber()
+  @ApiProperty({ example: 5, description: 'Nombre de mots de passe à conserver pour empêcher la réutilisation', type: Number })
+  public passwordHistoryCount: number = 5;
+
+  @IsNumber()
+  @ApiProperty({ example: 7776000, description: 'TTL de l’historique des mots de passe (en secondes)', type: Number })
+  public passwordHistoryTtlSeconds: number = 60 * 60 * 24 * 90;
+
+  @IsBoolean()
+  @ApiProperty({ example: false, description: 'Active le re-check HIBP en cron à partir d’une empreinte chiffrée', type: Boolean })
+  public pwnedRecheckEnabled: boolean = false;
+
+  @IsNumber()
+  @ApiProperty({ example: 604800, description: 'Age max (secondes) avant re-check HIBP en cron', type: Number })
+  public pwnedRecheckMaxAgeSeconds: number = 60 * 60 * 24 * 7;
+
+  @IsBoolean()
   @ApiProperty({ example: true, description: 'Mote de passe peut etre reinitialisé par sms', type: Boolean })
   public resetBySms: boolean = false;
 

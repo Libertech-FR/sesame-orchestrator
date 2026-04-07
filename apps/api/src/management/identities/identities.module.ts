@@ -25,6 +25,7 @@ import { EnsureIdentitiesIndexMiddleware } from './_middlewares/ensure-identitie
 import { AgentsModule } from '~/core/agents/agents.module';
 import { useOnCli } from '~/_common/functions/is-cli';
 import { IdentitiesCommand } from '~/management/identities/identities.command';
+import { PasswordHistoryModule } from '~/management/password-history/password-history.module';
 
 
 @Module({
@@ -40,6 +41,7 @@ import { IdentitiesCommand } from '~/management/identities/identities.command';
     FilestorageModule,
     forwardRef(() => BackendsModule),
     SettingsModule,
+    PasswordHistoryModule,
     AgentsModule,
   ],
   providers: [

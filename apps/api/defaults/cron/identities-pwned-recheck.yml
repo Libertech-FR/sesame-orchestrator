@@ -1,0 +1,9 @@
+tasks:
+  - name: "identities-pwned-recheck"
+    description: "Re-check HIBP (pwned passwords) for stored password history fingerprints"
+    enabled: false
+    schedule: "0 3 * * *"  # Tous les jours à 03:00
+    handler: "identities-pwned-recheck"
+    options:
+      limit: 500
+

@@ -199,6 +199,15 @@ export default defineNuxtComponent({
           condition: () => hasPermission('/management/identities', 'read'),
         },
         {
+          name: 'password-history',
+          icon: 'mdi-wrench-clock',
+          label: 'Historique des mots de passe',
+          bgColor: 'teal-7',
+          textColor: 'teal-7',
+          action: (i) => navigateToTab(`/identities/table/${i._id}/password-history`),
+          condition: () => hasPermission('/management/identities', 'read'),
+        },
+        {
           name: 'audits',
           icon: 'mdi-clipboard-text-clock',
           label: 'Historique des changements',

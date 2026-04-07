@@ -5,9 +5,10 @@ import { RouterModule } from '@nestjs/core';
 import { IdentitiesModule } from './identities/identities.module';
 import { PasswdModule } from './passwd/passwd.module';
 import { LifecycleModule } from './lifecycle/lifecycle.module';
+import { PasswordHistoryModule } from './password-history/password-history.module';
 
 @Module({
-  imports: [IdentitiesModule, PasswdModule, LifecycleModule],
+  imports: [IdentitiesModule, PasswdModule, LifecycleModule, PasswordHistoryModule],
   providers: [ManagementService],
   controllers: [ManagementController],
 })

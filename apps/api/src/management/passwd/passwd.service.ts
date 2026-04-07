@@ -33,6 +33,7 @@ import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
 import { MailadmService } from '~/settings/mailadm.service';
 import { DataStatusEnum } from "~/management/identities/_enums/data-status";
 import { SentMessageInfo } from 'nodemailer';
+import { PasswordHistoryService } from '~/management/password-history/password-history.service';
 
 interface TokenData {
   k: string;
@@ -60,6 +61,7 @@ export class PasswdService extends AbstractService {
     private passwdadmService: PasswdadmService,
     private smsadmService: SmsadmService,
     private mailadmService: MailadmService,
+    private readonly passwordHistory: PasswordHistoryService,
     @InjectRedis() private readonly redis: Redis,
   ) {
     super();
@@ -232,6 +234,7 @@ export class PasswdService extends AbstractService {
           statusCode: 400,
         });
       }
+      await this.passwordHistory.assertNotReused(identity._id, passwdDto.newPassword)
       //tout est ok en envoie au backend
       const result = await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_CHANGE,
@@ -252,6 +255,7 @@ export class PasswdService extends AbstractService {
       );
       // on met actif l'identité
       await this.identities.model.updateOne({ _id: identity._id }, { dataStatus: DataStatusEnum.ACTIVE })
+      await this.passwordHistory.recordPassword(identity._id, passwdDto.newPassword, 'change')
       return result;
     } catch (e) {
       let job = undefined;
@@ -375,6 +379,7 @@ export class PasswdService extends AbstractService {
     this.logger.log('dataToken :' + tokenData);
     try {
       const identity = (await this.identities.findOne({ 'inetOrgPerson.uid': tokenData.uid })) as Identities;
+      await this.passwordHistory.assertNotReused(identity._id, data.newpassword)
       const [_, response] = await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_RESET,
         identity._id,
@@ -395,6 +400,7 @@ export class PasswdService extends AbstractService {
         // on met actif l'identité
         identity.dataStatus = DataStatusEnum.ACTIVE;
         await identity.save()
+        await this.passwordHistory.recordPassword(identity._id, data.newpassword, 'reset')
         return [_, response];
       }
       this.logger.error('Error from backend while reseting password by code');
@@ -417,6 +423,7 @@ export class PasswdService extends AbstractService {
         state: IdentityState.SYNCED,
       })) as Identities;
 
+      await this.passwordHistory.assertNotReused(identity._id, data.newPassword)
       const [_, response] = await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_RESET,
         identity._id,
@@ -433,6 +440,7 @@ export class PasswdService extends AbstractService {
       if (response?.status === 0) {
         await this.redis.del(data.token);
         await this.setInitState(identity, InitStatesEnum.INITIALIZED);
+        await this.passwordHistory.recordPassword(identity._id, data.newPassword, 'reset')
         return [_, response];
       }
 

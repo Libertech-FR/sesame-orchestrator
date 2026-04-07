@@ -261,4 +261,60 @@ export class MigrationsService implements OnModuleInit {
       throw new Error('Error while updating migration lock file !')
     }
   }
+
+  /**
+   * Exécute une migration spécifique en la forçant, même si le lock est au-dessus.
+   *
+   * @param selector Timestamp (ex: "1775547941") ou nom de fichier (ex: "jobs/1775547941-foo.js")
+   */
+  public async forceRun(selector: string): Promise<void> {
+    if (!selector || typeof selector !== 'string') {
+      throw new Error('Missing migration selector (timestamp or filename)')
+    }
+
+    let files = await glob(`./jobs/*.js`, {
+      cwd: __dirname,
+      root: __dirname,
+    })
+
+    const normalizedSelector = selector.trim()
+    const selectorTimestamp = (normalizedSelector.match(/\d{10,}/) || [])[0]
+
+    const matches = files.filter((file) => {
+      if (normalizedSelector.includes('/') || normalizedSelector.includes('.js')) {
+        return file.endsWith(normalizedSelector.replace(/^.*jobs\//, 'jobs/'))
+      }
+      if (selectorTimestamp) {
+        return file.includes(selectorTimestamp)
+      }
+      return false
+    })
+
+    if (matches.length === 0) {
+      throw new Error(`No migration file found for selector <${selector}>`)
+    }
+    if (matches.length > 1) {
+      throw new Error(`Multiple migrations match selector <${selector}>: ${matches.join(', ')}`)
+    }
+
+    const key = matches[0]
+    const [migrationTimestamp] = key.match(/\d{10,}/) || []
+    if (!migrationTimestamp) {
+      throw new Error(`Selected migration <${key}> has no timestamp in filename`)
+    }
+
+    const migration = await import(`${__dirname}/${key}`)
+    if (!migration?.default) {
+      throw new Error(`Migration <${key}> does not have a default export`)
+    }
+
+    const instance = await this.moduleRef.create(migration.default)
+    if (typeof instance.up !== 'function') {
+      throw new Error(`Migration <${key}> does not have an up method`)
+    }
+
+    this.logger.warn(chalk.yellow(`Forcing migration ${chalk.bold('<' + key + '>')}...`))
+    await instance.up()
+    await this._writeMigrationLockFile(key, migrationTimestamp)
+  }
 }

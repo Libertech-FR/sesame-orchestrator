@@ -55,6 +55,8 @@
             text-color="white"
             :label="getHibpLabel(props.row)"
           )
+            q-tooltip.text-body2(anchor="top middle" self="bottom middle")
+              span(v-text="getHibpTooltip(props.row)")
           span.text-caption.text-grey-7(v-if="props.row?.hibpLastCheckAt")
             | ({{ $dayjs(props.row.hibpLastCheckAt).format('DD/MM/YYYY HH:mm').toString() }})
 </template>
@@ -171,6 +173,26 @@ export default defineNuxtComponent({
         return row.hibpPwnCount > 0 ? 'negative' : 'positive'
       }
       return 'grey-7'
+    },
+    getHibpTooltip(row: any): string {
+      // `hibpPwnCount` est le nombre d'occurrences retourné par l'API HIBP "Pwned Passwords".
+      // Plus le nombre est élevé, plus le mot de passe est commun/compromis.
+      if (row?.hasHibpFingerprint === false) {
+        return "Empreinte HIBP non stockée au moment de l'enregistrement du mot de passe, le re-check n'est pas possible pour cette entrée."
+      }
+
+      if (!row?.hibpLastCheckAt) {
+        return "En attente de vérification HIBP (re-check planifié)."
+      }
+
+      if (typeof row?.hibpPwnCount === 'number') {
+        if (row.hibpPwnCount > 0) {
+          return `Compromis : ce mot de passe apparaît ${row.hibpPwnCount} fois dans la base HIBP (Pwned Passwords).`
+        }
+        return 'OK : ce mot de passe n’apparaît pas dans la base HIBP (Pwned Passwords).'
+      }
+
+      return 'Vérifié (résultat non disponible).'
     },
     async fetchHistory() {
       const loadingStartedAt = Date.now()

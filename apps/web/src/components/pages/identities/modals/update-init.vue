@@ -53,7 +53,7 @@ const mainText = computed(
 )
 
 const checkboxLabel = computed(() => {
-  return `Envoyer l\'invitation à toutes les identités  (${props.allIdentitiesCount})`
+  return `Envoyer l\'invitation à toutes les identités synchronisées (${props.allIdentitiesCount})`
 })
 
 const initAllIdentities = ref(false)

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bienvenue</title>
+  </head>
+  <body style="margin:0;padding:0;background:#f6f7fb;font-family:Arial,Helvetica,sans-serif;color:#111;">
+    <div style="max-width:640px;margin:0 auto;padding:24px;">
+      <div style="background:#ffffff;border:1px solid #e6e8ef;border-radius:10px;padding:22px;">
+        <div style="font-size:18px;font-weight:700;margin-bottom:12px;">
+          Bienvenue{{#if identity.inetOrgPerson.displayName}}, {{identity.inetOrgPerson.displayName}}{{/if}}
+        </div>
+
+        <div style="font-size:14px;line-height:1.5;color:#333;">
+          Votre compte <b>{{identity.inetOrgPerson.uid}}</b> est prêt.
+          {{#if appName}}Vous pouvez maintenant accéder à <b>{{appName}}</b>.{{/if}}
+        </div>
+
+        <div style="margin-top:18px;">
+          <a href="{{url}}" style="display:inline-block;background:#2b6ef2;color:#fff;text-decoration:none;padding:10px 14px;border-radius:8px;font-size:14px;">
+            Accéder {{ appName }}
+          </a>
+        </div>
+
+        <div style="margin-top:18px;font-size:12px;color:#666;">
+          Si le bouton ne fonctionne pas, copiez/collez ce lien :
+          <div style="margin-top:6px;word-break:break-all;color:#2b6ef2;">{{url}}</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:#80808a;text-align:center;">
+        Ceci est un message automatique.
+      </div>
+    </div>
+  </body>
+</html>
+

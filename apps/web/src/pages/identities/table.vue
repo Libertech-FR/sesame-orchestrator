@@ -35,8 +35,14 @@ q-page.grid
       q-btn-group(rounded flat)
         q-btn(flat icon="mdi-sync" color="orange-8" rounded @click="openUpdateModal(selected)" size="md" :disable="selected.length === 0" dense)
           q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Mettre à synchroniser les identités sélectionnées
-        q-btn(flat icon="mdi-email-arrow-right" color="primary" rounded @click="openInitModal(selected)" size="md" :disable="selected.length === 0" dense)
-          q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Envoyer le mail d'invitation
+        q-btn(flat icon="mdi-email-arrow-right" color="primary" rounded @click="openInitModal(selected)" size="md" :disable="selected.length === 0 || !areAllSelectedSynced(selected)" dense)
+          q-tooltip.text-body2(transition-show="scale" transition-hide="scale")
+            span(v-if="areAllSelectedSynced(selected)") Envoyer le mail d'invitation
+            span(v-else) Action disponible uniquement pour des identités synchronisées
+        q-btn(flat icon="mdi-email" color="teal-7" rounded @click="openMailTemplateModal(selected)" size="md" :disable="selected.length === 0 || !areAllSelectedSynced(selected)" dense)
+          q-tooltip.text-body2(transition-show="scale" transition-hide="scale")
+            span(v-if="areAllSelectedSynced(selected)") Envoyer un mail (template)
+            span(v-else) Action disponible uniquement pour des identités synchronisées
         q-btn(flat icon="mdi-delete" color="negative" rounded @click="openTrashModal(selected)" size="md" :disable="selected.length === 0" dense)
           q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer en masse
         q-separator(vertical v-if="selected.length !== 0")
@@ -81,6 +87,7 @@ import { IdentityState } from '~/constants/enums'
 import Page from './table/[_id].vue'
 import type { LocationQueryValue } from 'vue-router'
 import updateInitModal from '~/components/pages/identities/modals/update-init.vue'
+import mailTemplateModal from '~/components/pages/identities/modals/mail-template.vue'
 import updateIdentityModal from '~/components/pages/identities/modals/update-identity.vue'
 import deleteManyModal from '~/components/pages/identities/modals/delete-many.vue'
 import { useIdentityStateStore } from '~/stores/identityState'
@@ -253,6 +260,21 @@ export default defineNuxtComponent({
     },
   },
   methods: {
+    async fetchSyncedTotalCount(): Promise<number> {
+      try {
+        const { data: identities } = await useHttp<any>(`/management/identities?limit=1&&filters[@state][]=${IdentityState.SYNCED}`, {
+          method: 'get',
+        })
+        const total = Number((identities?.value as any)?.total ?? 0)
+        return Number.isFinite(total) ? total : 0
+      } catch {
+        return 0
+      }
+    },
+    areAllSelectedSynced(selected): boolean {
+      if (!Array.isArray(selected) || selected.length === 0) return false
+      return selected.every((i) => i?.state === IdentityState.SYNCED)
+    },
     openUpdateModal(selected) {
       const identityState: IdentityState = selected[0].state
 
@@ -282,6 +304,13 @@ export default defineNuxtComponent({
     },
 
     openInitModal(selected) {
+      if (!this.areAllSelectedSynced(selected)) {
+        this.$q.notify({
+          message: "L'envoi de l'invitation est disponible uniquement pour des identités synchronisées",
+          color: 'warning',
+        })
+        return
+      }
       const identityState: IdentityState = selected[0].state
 
       if (typeof identityState !== 'number') {
@@ -291,13 +320,14 @@ export default defineNuxtComponent({
 
       const name = this.getStateName(identityState)
 
-      this.$q
+      this.fetchSyncedTotalCount().then((syncedTotal) => {
+        this.$q
         .dialog({
           component: updateInitModal,
           componentProps: {
             selectedIdentities: selected,
             identityTypesName: name,
-            allIdentitiesCount: this.identities?.total,
+            allIdentitiesCount: syncedTotal,
           },
         })
         .onOk(async (data) => {
@@ -307,6 +337,49 @@ export default defineNuxtComponent({
             await this.sendInitToIdentity(selected)
           }
         })
+      })
+    },
+
+    openMailTemplateModal(selected) {
+      if (!this.areAllSelectedSynced(selected)) {
+        this.$q.notify({
+          message: "L'envoi de mail (template) est disponible uniquement pour des identités synchronisées",
+          color: 'warning',
+        })
+        return
+      }
+      const identityState: IdentityState = selected[0].state
+
+      if (typeof identityState !== 'number') {
+        console.error('Invalid state', identityState)
+        return
+      }
+
+      const name = this.getStateName(identityState)
+
+      this.fetchSyncedTotalCount().then((syncedTotal) => {
+        this.$q
+        .dialog({
+          component: mailTemplateModal,
+          componentProps: {
+            selectedIdentities: selected,
+            identityTypesName: name,
+            allIdentitiesCount: syncedTotal,
+          },
+        })
+        .onOk(async (data) => {
+          if (data.initAllIdentities === true) {
+            const { data: identities } = await useHttp<any>('/management/identities?limit=99999', {
+              method: 'get',
+              query: this.returnFilter(),
+            })
+            if (!identities) return
+            await this.sendTemplateMailToIdentities(identities.value.data, data)
+          } else {
+            await this.sendTemplateMailToIdentities(selected, data)
+          }
+        })
+      })
     },
 
     openTrashModal(selected) {
@@ -399,6 +472,33 @@ export default defineNuxtComponent({
       await this.fetchAllStateCount()
       this.refresh()
       ;(this.$refs.twoPan as any).clearSelection()
+    },
+
+    async sendTemplateMailToIdentities(identities, data: { template?: string; variables?: Record<string, string> }) {
+      const ids = identities.map((identity) => identity._id)
+      const { data: result, error } = await useHttp(`/management/mail/sendmany`, {
+        method: 'post',
+        body: {
+          ids,
+          template: data?.template,
+          variables: data?.variables,
+        },
+      })
+
+      if (error.value) {
+        this.$q.notify({
+          message: error.value.data.message,
+          color: 'negative',
+        })
+        return
+      }
+
+      const sent = (result.value as any)?.data?.sent ?? 0
+      const skipped = (result.value as any)?.data?.skipped ?? 0
+      this.$q.notify({
+        message: `Mail envoyé (${sent} envoyé${sent > 1 ? 's' : ''}, ${skipped} ignoré${skipped > 1 ? 's' : ''})`,
+        color: skipped > 0 ? 'warning' : 'positive',
+      })
     },
 
     async trashManySelected(identities) {

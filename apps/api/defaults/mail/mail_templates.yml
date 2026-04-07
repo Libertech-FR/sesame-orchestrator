@@ -1,0 +1,28 @@
+mailTemplates:
+  # Déclare les variables disponibles côté UI pour construire le payload `variables`.
+  # Les valeurs peuvent contenir des placeholders Liquid `{{ ... }}` résolus via `resolveConfigVariables`.
+  variables:
+    - key: subject
+      label: Sujet du mail
+      description: Sujet affiché par le client mail.
+      example: "Bienvenue sur Sesame"
+      defaultValue: "Notification"
+
+    - key: appName
+      label: Nom de l'application
+      description: Nom affiché dans certains templates.
+      example: "Sesame"
+      defaultValue: "Sesame"
+
+    - key: url
+      label: URL principale
+      description: Lien principal utilisé dans le template.
+      example: "https://example.com"
+      defaultValue: "https://example.com"
+
+    - key: footerDate
+      label: Date (exemple dynamique)
+      description: Exemple de valeur dynamique basée sur la date.
+      example: "{{ date.today }}"
+      defaultValue: "{{ date.today }}"
+

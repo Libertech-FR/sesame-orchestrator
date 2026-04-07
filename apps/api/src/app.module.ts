@@ -18,6 +18,7 @@ import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe';
 import { SettingsModule } from '~/settings/settings.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import path from 'node:path';
 import { MailadmService } from '~/settings/mailadm.service';
 import { FactorydriveModule } from '~/_common/factorydrive';
 import { MigrationsModule } from './migrations/migrations.module';
@@ -77,7 +78,7 @@ import { AclRuntimeService } from './core/roles/acl-runtime.service';
             from: params.sender,
           },
           template: {
-            dir: __dirname + '/../templates',
+            dir: path.join(process.cwd(), 'templates'),
             adapter: new HandlebarsAdapter(undefined, {
               inlineCssEnabled: false,
             }),

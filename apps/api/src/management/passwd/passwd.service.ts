@@ -150,7 +150,10 @@ export class PasswdService extends AbstractService {
 
   //Initialisation du compte. Envoi d' un mail avec un token pour l'init du compte
   public async initAccount(initDto: InitAccountDto): Promise<SentMessageInfo> {
-    const identity = (await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid })) as Identities;
+    const identity = (await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid, state: IdentityState.SYNCED })) as Identities;
+    if (!identity) {
+      throw new BadRequestException('Une erreur est survenue : Identité non synchronisée ou inconnue')
+    }
     //test si on peu reninitialiser le compte
     if (identity.dataStatus === DataStatusEnum.INACTIVE || identity.dataStatus === DataStatusEnum.DELETED) {
       throw new BadRequestException(
@@ -188,16 +191,19 @@ export class PasswdService extends AbstractService {
     //envoi du token
 
     try {
+      const template = (initDto?.template || 'initaccount').trim() || 'initaccount'
+      const variables = (initDto?.variables && typeof initDto.variables === 'object' ? initDto.variables : {}) as Record<string, any>
       const send = await this.mailer.sendMail({
         from: smtpParams.sender,
         to: mail,
         subject: 'Activation de votre compte',
-        template: 'initaccount',
+        template,
         context: {
           displayName: identity.inetOrgPerson.displayName,
           uid: initDto.uid,
           url: this.config.get('frontPwd.url') + '/initaccount/' + token,
-          mail: identity.inetOrgPerson.mail
+          mail: identity.inetOrgPerson.mail,
+          ...variables,
         },
       })
       this.logger.log('Init compte envoyé pour uid ' + initDto.uid + ' à ' + mail);
@@ -455,16 +461,20 @@ export class PasswdService extends AbstractService {
 
   //Envoi le message d init à plusieurs identités
   public async initMany(ids: InitManyDto): Promise<any> {
-    const identities = await this.identities.find({ _id: { $in: ids.ids } });
+    const identities = await this.identities.find({ _id: { $in: ids.ids }, state: IdentityState.SYNCED });
     if (identities.length === 0) {
-      throw new HttpException('Aucune identité trouvée.', 404);
+      throw new HttpException('Aucune identité synchronisée trouvée.', 404);
     }
 
     const updated = await Promise.all(
       identities.map(async (identity) => {
         this.logger.verbose('send To :' + identity.get('inetOrgPerson.uid'));
         try {
-          return await this.initAccount({ uid: identity.get('inetOrgPerson.uid') });
+          return await this.initAccount({
+            uid: identity.get('inetOrgPerson.uid'),
+            template: ids?.template,
+            variables: ids?.variables,
+          });
         } catch (e) {
           this.logger.error('Error while init account for ' + identity.get('inetOrgPerson.uid') + ': ' + e);
           return null;

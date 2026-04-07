@@ -87,6 +87,20 @@
             self="center middle"
           ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
           q-tooltip.text-body2(slot="trigger" v-else) Envoyer le mail d'invitation
+        q-btn.q-px-sm(
+          v-if="identity?._id"
+          @click="openMailTemplateModal()"
+          :color="identity.state != IdentityState.SYNCED ? 'grey-7' : 'teal-7'"
+          :disabled="identity.state != IdentityState.SYNCED || !hasPermission('/management/identities', 'update')"
+          icon="mdi-email"
+          flat dense
+        )
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/management/identities', 'update')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
+          q-tooltip.text-body2(slot="trigger" v-else) Envoyer un mail (template)
         q-separator(v-if="identity?._id" v-for='_ in 2' :key='_' vertical)
         q-btn.q-px-sm.text-positive(
           :disable="!hasPermission('/management/identities', 'update')"
@@ -210,6 +224,7 @@
 <script lang="ts">
 import { IdentityState, DataStatus } from '~/constants/enums'
 import { NewTargetId } from '~/constants/variables'
+import mailTemplateModal from '~/components/pages/identities/modals/mail-template.vue'
 
 export default defineNuxtComponent({
   name: 'IdentitiesTableIdIndexPage',
@@ -290,7 +305,7 @@ export default defineNuxtComponent({
           position: 'top-right',
           icon: 'mdi-check-circle-outline',
         })
-        this.refresh()
+        ;(this as any).refresh()
       } catch (error: any) {
         this.$q.notify({
           message: 'Impossible de modifier le cycle de vie : ' + error.response._data.message,
@@ -313,7 +328,7 @@ export default defineNuxtComponent({
           position: 'top-right',
           icon: 'mdi-check-circle-outline',
         })
-        this.refresh()
+        ;(this as any).refresh()
       } catch (error: any) {
         this.$q.notify({
           message: 'Impossible de modifier le mot de passe : ' + error.response._data.message,
@@ -352,7 +367,7 @@ export default defineNuxtComponent({
               position: 'top-right',
               icon: 'mdi-check-circle-outline',
             })
-            this.refresh()
+            ;(this as any).refresh()
           } catch (error: any) {
             this.$q.notify({
               message: 'Impossible de forcer le changement de mot de passe : ' + error.response._data.message,
@@ -392,10 +407,49 @@ export default defineNuxtComponent({
               position: 'top-right',
               icon: 'mdi-check-circle-outline',
             })
-            this.refresh()
+            ;(this as any).refresh()
           } catch (e: any) {
             this.$q.notify({
               message: "Erreur lors de l'envoi du mail : " + e.response._data.message,
+              color: 'negative',
+              position: 'top-right',
+              icon: 'mdi-alert-circle-outline',
+            })
+          }
+        })
+    },
+
+    openMailTemplateModal() {
+      if (!this.identity?._id) return
+      if (!this.hasPermission('/management/identities', 'update')) return
+
+      this.$q
+        .dialog({
+          component: mailTemplateModal,
+          componentProps: {
+            selectedIdentities: [this.identity],
+            identityTypesName: this.identity?.inetOrgPerson?.employeeType || 'Identité',
+            allIdentitiesCount: 1,
+          },
+        })
+        .onOk(async (data) => {
+          try {
+            await this.$http.post(`/management/mail/sendmany`, {
+              body: {
+                ids: [this.identity._id],
+                template: data?.template,
+                variables: data?.variables,
+              },
+            })
+            this.$q.notify({
+              message: 'Mail envoyé',
+              color: 'positive',
+              position: 'top-right',
+              icon: 'mdi-check-circle-outline',
+            })
+          } catch (error: any) {
+            this.$q.notify({
+              message: error?.response?._data?.message || "Erreur lors de l'envoi du mail",
               color: 'negative',
               position: 'top-right',
               icon: 'mdi-alert-circle-outline',
@@ -463,7 +517,7 @@ export default defineNuxtComponent({
                 status,
               }),
             })
-            this.refresh()
+            ;(this as any).refresh()
 
             this.$q.notify({
               message: 'Le statut a été mis à jour : ' + data._data.message,

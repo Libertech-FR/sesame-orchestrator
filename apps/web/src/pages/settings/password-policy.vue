@@ -80,18 +80,22 @@
           v-model="payload.checkPwned"
           color="black"
           label="Vérifier les mots de passe compromis"
-          hint="Utilise l'API de pwned pour vérifier si le mot de passe a été compromis dans une fuite de données"
         )
+          q-tooltip.text-body2(anchor="top middle" self="bottom middle")
+            | Utilise l'API HIBP (Pwned Passwords) pour vérifier si le mot de passe a été compromis dans une fuite de données.
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
-          :disable='!hasPermission("/settings/passwdadm", "update") || !hibpKeyStatus.valid'
+          :disable='!hasPermission("/settings/passwdadm", "update") || !payload.checkPwned || !hibpKeyStatus.valid'
           dense
           v-model="payload.pwnedRecheckEnabled"
           color="teal"
           label="Stockage des empreintes HIBP (Pwned Passwords)"
-          hint="Active le stockage des empreintes SHA-1 chiffrées dans l'historique des mots de passe"
         )
-          q-tooltip.text-body2(anchor="top middle" self="bottom middle" v-if="!hibpKeyStatus.valid")
+          q-tooltip.text-body2(anchor="top middle" self="bottom middle" v-if="!payload.checkPwned")
+            | Activer d’abord « Vérifier les mots de passe compromis ».
+          q-tooltip.text-body2(anchor="top middle" self="bottom middle" v-else-if="!hibpKeyStatus.valid")
             span(v-text="hibpKeyStatus.reason || 'Clé SESAME_PASSWORD_HISTORY_HIBP_KEY invalide'")
+          q-tooltip.text-body2(anchor="top middle" self="bottom middle" v-else)
+            | Active le stockage des empreintes SHA-1 chiffrées (non réversibles) dans l'historique des mots de passe pour permettre le re-check planifié.
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
           :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
@@ -140,7 +144,7 @@
           dense
         )
         q-select.col-12.col-sm-6.col-md-5.col-lg-4(
-          :disable='!hasPermission("/settings/passwdadm", "update")'
+          :disable='!hasPermission("/settings/passwdadm", "update") || !payload.pwnedRecheckEnabled || !hibpKeyStatus.valid'
           outlined
           dense
           emit-value
@@ -187,7 +191,7 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 type PasswordPolicySettings = {
   len: number
@@ -274,6 +278,16 @@ export default defineComponent({
     if (!hibpKeyStatus.value.valid) {
       payload.value.pwnedRecheckEnabled = false
     }
+
+    watch(
+      () => payload.value.checkPwned,
+      (enabled) => {
+        if (!enabled) {
+          payload.value.pwnedRecheckEnabled = false
+          payload.value.pwnedRecheckAction = 'none'
+        }
+      },
+    )
 
     return {
       payload,

@@ -47,6 +47,8 @@
           :true-value="1"
           :false-value="0"
         )
+          q-tooltip.text-body2(anchor="bottom middle" self="top middle" :offset="[0, 8]")
+            | Imposer au moins une lettre en majuscule dans le mot de passe.
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
           :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
@@ -56,6 +58,8 @@
           :true-value="1"
           :false-value="0"
         )
+          q-tooltip.text-body2(anchor="bottom middle" self="top middle" :offset="[0, 8]")
+            | Imposer au moins une lettre en minuscule dans le mot de passe.
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
           :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
@@ -65,6 +69,8 @@
           :true-value="1"
           :false-value="0"
         )
+          q-tooltip.text-body2(anchor="bottom middle" self="top middle" :offset="[0, 8]")
+            | Imposer au moins un chiffre dans le mot de passe.
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
           :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
@@ -74,6 +80,8 @@
           :true-value="1"
           :false-value="0"
         )
+          q-tooltip.text-body2(anchor="bottom middle" self="top middle" :offset="[0, 8]")
+            | Imposer au moins un caractère spécial (ex: ! @ # ...) dans le mot de passe.
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
           :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
@@ -81,7 +89,7 @@
           color="black"
           label="Vérifier les mots de passe compromis"
         )
-          q-tooltip.text-body2(anchor="center right" self="center left" :offset="[12, 0]")
+          q-tooltip.text-body2(anchor="bottom middle" self="top middle" :offset="[0, 8]")
             | Utilise l'API HIBP (Pwned Passwords) pour vérifier si le mot de passe a été compromis dans une fuite de données.
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
           :disable='!hasPermission("/settings/passwdadm", "update") || !payload.checkPwned || !hibpKeyStatus.valid'
@@ -90,11 +98,11 @@
           color="teal"
           label="Stockage des empreintes HIBP (Pwned Passwords)"
         )
-          q-tooltip.text-body2(anchor="center right" self="center left" :offset="[12, 0]" v-if="!payload.checkPwned")
+          q-tooltip.text-body2(anchor="bottom middle" self="top middle" :offset="[0, 8]" v-if="!payload.checkPwned")
             | Activer d’abord « Vérifier les mots de passe compromis ».
-          q-tooltip.text-body2(anchor="center right" self="center left" :offset="[12, 0]" v-else-if="!hibpKeyStatus.valid")
+          q-tooltip.text-body2(anchor="bottom middle" self="top middle" :offset="[0, 8]" v-else-if="!hibpKeyStatus.valid")
             span(v-text="hibpKeyStatus.reason || 'Clé SESAME_PASSWORD_HISTORY_HIBP_KEY invalide'")
-          q-tooltip.text-body2(anchor="center right" self="center left" :offset="[12, 0]" v-else)
+          q-tooltip.text-body2(anchor="bottom middle" self="top middle" :offset="[0, 8]" v-else)
             | Active le stockage des empreintes SHA-1 chiffrées (non réversibles) dans l'historique des mots de passe pour permettre le re-check planifié.
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
           :disable='!hasPermission("/settings/passwdadm", "update")'
@@ -103,6 +111,8 @@
           color="red"
           label="Réinitialisation par SMS active"
         )
+          q-tooltip.text-body2(anchor="bottom middle" self="top middle" :offset="[0, 8]")
+            | Autorise la réinitialisation du mot de passe via un code envoyé par SMS (si configuré).
       q-separator.q-mt-lg
       .row.q-col-gutter-md.q-mt-md
         q-input.col-12.col-sm-6.col-md-5.col-lg-4(

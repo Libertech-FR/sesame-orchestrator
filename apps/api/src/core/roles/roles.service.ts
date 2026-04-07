@@ -167,7 +167,7 @@ export class RolesService extends AbstractServiceSchema<Roles> {
     for (const role of await this._model.find().exec()) {
       // Tous les rôles custom héritent au minimum de guest (même si des anciens documents ne l'ont pas stocké)
       const normalizedInherits = this.normalizeInherits(role.inherits)
-      console.log('role', role.name, role.inherits, normalizedInherits)
+      // console.log('role', role.name, role.inherits, normalizedInherits)
       inherits.set(role.name, normalizedInherits)
 
       for (const access of role.access) {

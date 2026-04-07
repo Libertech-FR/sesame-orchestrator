@@ -31,7 +31,7 @@ $(shell mkdir -p $(CERT_DIR))
 .DEFAULT_GOAL := help
 help:
 	@printf "\033[33mUsage:\033[0m\n  make [target] [arg=\"val\"...]\n\n\033[33mTargets:\033[0m\n"
-	@grep -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) \
+	@grep -h -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) \
 		| sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-15s\033[0m %s\n", $$1, $$2}'
 
 build: ## Build the container
@@ -253,3 +253,9 @@ clean-ssl-cert: ## Nettoyer les certificats HTTPS
 
 show-cert-info: ## Afficher les informations du certificat
 	@openssl x509 -in $(CERT_DIR)/server.crt -text -noout
+
+hibp-key-hex: ## Génère une clé 32 bytes (64 hex chars)
+	@printf "SESAME_PASSWORD_HISTORY_HIBP_KEY=%s\n" "$$(openssl rand -hex 32)"
+
+hibp-key-b64: ## Génère une clé 32 bytes (base64)
+	@printf "SESAME_PASSWORD_HISTORY_HIBP_KEY=%s\n" "$$(openssl rand -base64 32)"

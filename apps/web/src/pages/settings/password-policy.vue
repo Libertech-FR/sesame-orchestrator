@@ -153,6 +153,9 @@
           hint="Re-check uniquement si la dernière vérification est plus ancienne que ce délai"
           dense
         )
+          template(#append)
+            q-chip(dense size="sm" color="grey-3" text-color="dark")
+              span(v-text="pwnedRecheckMaxAgeHuman")
         q-select.col-12.col-sm-6.col-md-5.col-lg-4(
           :disable='!hasPermission("/settings/passwdadm", "update") || !payload.pwnedRecheckEnabled || !hibpKeyStatus.valid'
           outlined
@@ -201,7 +204,7 @@
 </template>
 
 <script lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 type PasswordPolicySettings = {
   len: number
@@ -260,6 +263,27 @@ export default defineComponent({
     const validations = ref({} as Record<string, any>)
     const hibpKeyStatus = ref<{ valid: boolean; reason: string | null }>({ valid: true, reason: null })
 
+    const pwnedRecheckMaxAgeHuman = computed(() => {
+      const secondsRaw = Number(payload.value.pwnedRecheckMaxAgeSeconds || 0)
+      if (!Number.isFinite(secondsRaw) || secondsRaw <= 0) return '0 minute'
+
+      let seconds = Math.floor(secondsRaw)
+      const days = Math.floor(seconds / 86400)
+      seconds -= days * 86400
+      const hours = Math.floor(seconds / 3600)
+      seconds -= hours * 3600
+      const minutes = Math.floor(seconds / 60)
+      seconds -= minutes * 60
+      const secs = Math.floor(seconds)
+
+      const parts: string[] = []
+      if (days) parts.push(`${days} jour${days > 1 ? 's' : ''}`)
+      if (hours) parts.push(`${hours} heure${hours > 1 ? 's' : ''}`)
+      if (minutes || parts.length === 0) parts.push(`${minutes} minute${minutes > 1 ? 's' : ''}`)
+      if (secs) parts.push(`${secs} seconde${secs > 1 ? 's' : ''}`)
+      return parts.join(' ')
+    })
+
     const {
       data: result,
       pending,
@@ -303,6 +327,7 @@ export default defineComponent({
       payload,
       pwnedActions,
       hibpKeyStatus,
+      pwnedRecheckMaxAgeHuman,
       handleError,
       pending,
       refresh,

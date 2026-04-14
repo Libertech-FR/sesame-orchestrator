@@ -14,6 +14,9 @@ q-page.grid
     :targetId='targetId'
     row-key='_id'
   )
+    template(#top-table)
+      sesame-core-pan-filters(:columns='columns' :columnsType='columnsType' mode='complex' :placeholder='"Rechercher par nom, prénom, email, ..."')
+
     template(#body-cell-states="props")
       q-td
         sesame-pages-identities-states-info(:identity='props.row')

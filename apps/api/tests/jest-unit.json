@@ -9,6 +9,7 @@
   "collectCoverageFrom": ["src/**/*.(t|j)s", "!src/main.ts", "!src/console.ts"],
   "coverageDirectory": "<rootDir>/coverage",
   "testEnvironment": "node",
+  "maxWorkers": "50%",
   "setupFilesAfterEnv": ["<rootDir>/tests/setup-unit.ts"],
   "moduleNameMapper": {
     "^src/(.*)$": "<rootDir>/src/$1",

@@ -1,105 +1,188 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsBoolean, IsString } from 'class-validator';
+import { IsNumber, IsBoolean, IsString, IsArray, ArrayMinSize, IsObject } from 'class-validator';
 
 export class PasswordPoliciesDto {
+  // Complexité du mot de passe
   @IsNumber()
-  @ApiProperty({ example: '8', description: 'Password minimal Length', type: Number })
+  @ApiProperty({ example: 10, description: 'Longueur minimale du mot de passe', type: Number })
   public len: number = 10;
 
   @IsNumber()
-  @ApiProperty({ example: '1', description: 'Minimal amount of letters in uppercase', type: Number })
+  @ApiProperty({ example: 1, description: 'Nombre minimal de caractères majuscules', type: Number })
   public hasUpperCase: number = 1;
 
   @IsNumber()
-  @ApiProperty({ example: '1', description: 'Minimal amount of letters in lowercase', type: Number })
+  @ApiProperty({ example: 1, description: 'Nombre minimal de caractères minuscules', type: Number })
   public hasLowerCase: number = 1;
 
   @IsNumber()
-  @ApiProperty({ example: '1', description: 'Minimal amount of numbers', type: Number })
+  @ApiProperty({ example: 1, description: 'Nombre minimal de chiffres', type: Number })
   public hasNumbers: number = 1;
 
   @IsNumber()
-  @ApiProperty({ example: '1', description: 'Minimal amount of special characters', type: Number })
+  @ApiProperty({ example: 1, description: 'Nombre minimal de caractères spéciaux', type: Number })
   public hasSpecialChars: number = 1;
 
   @IsNumber()
   @ApiProperty({
-    example: '30',
-    description: 'Minimal complexity (entropy), Below this number the password wont be accepted',
+    example: 30,
+    description: 'Complexité minimale (entropie). En dessous, le mot de passe est refusé.',
     type: Number,
   })
   public minComplexity: number = 30;
 
   @IsNumber()
   @ApiProperty({
-    example: '70',
-    description: 'Good complexity (entropy), Upper this number the password is considered  good',
+    example: 70,
+    description: 'Complexité (entropie) considérée comme bonne',
     type: Number,
   })
   public goodComplexity: number = 70;
 
   @IsBoolean()
-  @ApiProperty({ example: true, description: 'Teh password will be checked on Pwned', type: Boolean })
+  @ApiProperty({ example: true, description: 'Vérifie le mot de passe via Have I Been Pwned', type: Boolean })
   public checkPwned: boolean = true;
 
+  // Historique des mots de passe
   @IsBoolean()
-  @ApiProperty({ example: true, description: 'Active l’historique des mots de passe (anti-réutilisation)', type: Boolean })
+  @ApiProperty({
+    example: true,
+    description: 'Active l’historique des mots de passe (anti-réutilisation)',
+    type: Boolean,
+  })
   public passwordHistoryEnabled: boolean = true;
 
   @IsNumber()
-  @ApiProperty({ example: 5, description: 'Nombre de mots de passe à conserver pour empêcher la réutilisation', type: Number })
+  @ApiProperty({
+    example: 5,
+    description: 'Nombre de mots de passe à conserver pour empêcher la réutilisation',
+    type: Number,
+  })
   public passwordHistoryCount: number = 5;
 
   @IsNumber()
   @ApiProperty({ example: 7776000, description: 'TTL de l’historique des mots de passe (en secondes)', type: Number })
   public passwordHistoryTtlSeconds: number = 60 * 60 * 24 * 90;
 
+  // Rappels d'expiration mot de passe
+  @IsNumber()
+  @ApiProperty({
+    example: 7,
+    description: 'Legacy: nombre de jours avant expiration pour envoyer un seul rappel (J-X)',
+    type: Number,
+    deprecated: true,
+  })
+  public passwordExpirationReminderDaysBefore: number = 7;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @ApiProperty({
+    example: [30, 7, 1, 0],
+    description: "Liste des jalons (en jours) avant expiration pour envoyer des rappels. 0 = à l'expiration",
+    type: [Number],
+  })
+  public passwordExpirationReminderDaysBeforeList: number[] = [30, 7, 1, 0];
+
+  @IsString()
+  @ApiProperty({
+    example: 'mail_security_alert',
+    description: 'Template mailer par défaut utilisé pour les rappels (fallback)',
+    type: String,
+  })
+  public passwordExpirationReminderTemplate: string = 'mail_security_alert';
+
+  @IsObject()
+  @ApiProperty({
+    example: {
+      '30': 'mail_pwd_expire_30d',
+      '7': 'mail_pwd_expire_7d',
+      '1': 'mail_pwd_expire_1d',
+      '0': 'mail_pwd_expired',
+    },
+    description:
+      'Mapping des templates par jalon (clé = nombre de jours avant expiration). Prioritaire sur passwordExpirationReminderTemplate',
+    type: Object,
+  })
+  public passwordExpirationReminderTemplatesByDays: Record<string, string> = {};
+
+  @IsString()
+  @ApiProperty({
+    example: 'Votre mot de passe expire bientôt',
+    description: 'Sujet par défaut du mail de rappel (fallback)',
+    type: String,
+  })
+  public passwordExpirationReminderSubject: string = 'Votre mot de passe expire bientôt';
+
+  @IsObject()
+  @ApiProperty({
+    example: {
+      '30': 'Votre mot de passe expirera dans 1 mois',
+      '7': 'Votre mot de passe expirera dans 7 jours',
+      '1': 'Votre mot de passe expire demain',
+      '0': 'Votre mot de passe a expiré',
+    },
+    description:
+      'Mapping des sujets par jalon (clé = nombre de jours avant expiration). Prioritaire sur passwordExpirationReminderSubject',
+    type: Object,
+  })
+  public passwordExpirationReminderSubjectsByDays: Record<string, string> = {};
+
+  // Re-check HIBP
   @IsBoolean()
-  @ApiProperty({ example: false, description: 'Active le re-check HIBP en cron à partir d’une empreinte chiffrée', type: Boolean })
+  @ApiProperty({
+    example: false,
+    description: 'Active le re-check HIBP en cron à partir d’une empreinte chiffrée',
+    type: Boolean,
+  })
   public pwnedRecheckEnabled: boolean = false;
 
   @IsNumber()
-  @ApiProperty({ example: 604800, description: 'Age max (secondes) avant re-check HIBP en cron', type: Number })
+  @ApiProperty({ example: 604800, description: 'Âge max (secondes) avant re-check HIBP en cron', type: Number })
   public pwnedRecheckMaxAgeSeconds: number = 60 * 60 * 24 * 7;
 
   @IsString()
   @ApiProperty({
     example: 'none',
-    description: "Action à effectuer si un mot de passe est détecté comme compromis via le re-check HIBP ('none' | 'notify' | 'expire')",
+    description:
+      "Action à effectuer si un mot de passe est détecté comme compromis via le re-check HIBP ('none' | 'notify' | 'expire')",
     type: String,
   })
   public pwnedRecheckAction: 'none' | 'notify' | 'expire' = 'none';
 
+  // Canaux et reset/init
   @IsBoolean()
-  @ApiProperty({ example: true, description: 'Mote de passe peut etre reinitialisé par sms', type: Boolean })
+  @ApiProperty({ example: false, description: 'Le mot de passe peut être réinitialisé par SMS', type: Boolean })
   public resetBySms: boolean = false;
 
   @IsString()
   @ApiProperty({
     example: 'https://monsite.com',
-    description: 'Après un changement ou reset reussi le navigateur sera redirigé',
-    type: Number,
+    description: 'URL de redirection après un changement/réinitialisation réussi',
+    type: String,
   })
   public redirectUrl: string = '';
+
   @IsString()
   @ApiProperty({
-    example: 'interOrgPerson.mail',
-    description: 'Attribut de l email alternatif pour envoi message',
+    example: 'inetOrgPerson.mail',
+    description: "Attribut identité contenant l'adresse mail de destination",
     type: String,
   })
   public emailAttribute: string = '';
+
+  @IsString()
   @ApiProperty({
-    example: 'interOrgPerson.mobile',
-    description: 'Attribut de l email alternatif pour envoi message',
+    example: 'inetOrgPerson.mobile',
+    description: 'Attribut identité contenant le numéro mobile de destination',
     type: String,
   })
   public mobileAttribute: string = '';
 
   @IsNumber()
-  @ApiProperty({ example: '900', description: 'TTL du code de reset ( en secondes)', type: Number })
+  @ApiProperty({ example: 900, description: 'TTL du code de reset (en secondes)', type: Number })
   public resetCodeTTL: number = 900;
 
   @IsNumber()
-  @ApiProperty({ example: '604800', description: "TTL du jeton d'initialisation ( en secondes)", type: Number })
+  @ApiProperty({ example: 604800, description: "TTL du jeton d'initialisation (en secondes)", type: Number })
   public initTokenTTL: number = 604800;
 }

@@ -1,7 +1,8 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ModuleRef } from '@nestjs/core';
 import { InjectModel } from '@nestjs/mongoose';
-import { FactorydriveService } from '~/_common/factorydrive';
+import { FactorydriveService } from '@tacxou/nestjs_module_factorydrive';
 import {
   Document,
   FilterQuery,
@@ -15,6 +16,8 @@ import {
   UpdateQuery,
 } from 'mongoose';
 import { createHash } from 'node:crypto';
+import { createReadStream } from 'node:fs';
+import path from 'node:path';
 import { omit } from 'radash';
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
@@ -33,10 +36,41 @@ function hasFileExtension(path: string): boolean {
 export class FilestorageService extends AbstractServiceSchema<Filestorage> {
   protected readonly reservedChars = ['\\', '?', '%', '*', ':', '|', '"', '<', '>', '#'];
 
+  private resolveLocalDiskFilePath(namespace: string, location: string): string | null {
+    const diskRoot = this.config.get<string>(`factorydrive.options.disks.${namespace}.config.root`)
+    if (!diskRoot) return null
+
+    const absoluteRoot = path.resolve(diskRoot)
+    const normalizedLocation = path.posix.normalize(`/${location}`).replace(/^\/+/, '')
+    const absoluteFilePath = path.resolve(absoluteRoot, normalizedLocation)
+
+    if (absoluteFilePath !== absoluteRoot && !absoluteFilePath.startsWith(`${absoluteRoot}${path.sep}`)) {
+      throw new BadRequestException(`Invalid file path outside of disk root: ${location}`)
+    }
+
+    return absoluteFilePath
+  }
+
+  private async getDiskStreamWithFallback(namespace: string, path: string): Promise<NodeJS.ReadableStream> {
+    try {
+      return await this.storage.getDisk(namespace).getStream(path)
+    } catch (e) {
+      // Workaround for @tacxou/nestjs_module_factorydrive + fs-extra ESM interop bug.
+      const message = e instanceof Error ? e.message : `${e}`
+      if (message.includes('createReadStream is not a function') || message.includes('readFile is not a function')) {
+        const absoluteFilePath = this.resolveLocalDiskFilePath(namespace, path)
+        if (!absoluteFilePath) throw e
+        return createReadStream(absoluteFilePath)
+      }
+      throw e
+    }
+  }
+
   public constructor(
     protected readonly moduleRef: ModuleRef,
     @InjectModel(Filestorage.name) protected _model: Model<Filestorage & Document>,
     protected readonly storage: FactorydriveService,
+    protected readonly config: ConfigService,
   ) {
     // @Inject(REQUEST) protected req?: Request & { user?: Express.User },
     super({ moduleRef /*, req*/ });
@@ -110,7 +144,7 @@ export class FilestorageService extends AbstractServiceSchema<Filestorage> {
   ): Promise<[Document<any, any, Filestorage> & Filestorage, NodeJS.ReadableStream | null, (Document<any, any, Filestorage> & Filestorage) | null]> {
     const data = await super.findById<Document<any, any, Filestorage> & Filestorage>(_id, projection, options)
     if (data.type === FsType.FILE) {
-      const stream = await this.storage.getDisk(data.namespace).getStream(data.path)
+      const stream = await this.getDiskStreamWithFallback(data.namespace, data.path)
       return [data, stream, null]
     }
     return [data, null, null]
@@ -145,7 +179,7 @@ export class FilestorageService extends AbstractServiceSchema<Filestorage> {
         this.logger.warn(`Filestorage ${data._id} not found in storage`)
         throw new NotFoundException(`Filestorage ${data._id} not found in storage`)
       }
-      const stream = await this.storage.getDisk(data.namespace).getStream(data.path)
+      const stream = await this.getDiskStreamWithFallback(data.namespace, data.path)
       return [data, stream, null]
     }
     return [data, null, null]

@@ -18,15 +18,15 @@ import { IdentitiesPhotoController } from '~/management/identities/identities-ph
 import { IdentitiesActivationController } from '~/management/identities/identities-activation.controller';
 import { IdentitiesActivationService } from '~/management/identities/identities-activation.service';
 import { IdentitiesDoublonController } from '~/management/identities/identities-doublon.controller';
-import { IdentitiesForcePasswordController } from "~/management/identities/identities-forcepassword.controller";
-import { IdentitiesForcepasswordService } from "~/management/identities/identities-forcepassword.service";
-import { SettingsModule } from "~/settings/settings.module";
+import { IdentitiesForcePasswordController } from '~/management/identities/identities-forcepassword.controller';
+import { IdentitiesForcepasswordService } from '~/management/identities/identities-forcepassword.service';
+import { SettingsModule } from '~/settings/settings.module';
 import { EnsureIdentitiesIndexMiddleware } from './_middlewares/ensure-identities-index.middleware';
 import { AgentsModule } from '~/core/agents/agents.module';
 import { useOnCli } from '~/_common/functions/is-cli';
 import { IdentitiesCommand } from '~/management/identities/identities.command';
 import { PasswordHistoryModule } from '~/management/password-history/password-history.module';
-
+import { IdentitiesPasswordExpirationReminderService } from '~/management/identities/identities-password-expiration-reminder.service';
 
 @Module({
   imports: [
@@ -56,6 +56,7 @@ import { PasswordHistoryModule } from '~/management/password-history/password-hi
     },
     IdentitiesJsonformsService,
     IdentitiesForcepasswordService,
+    IdentitiesPasswordExpirationReminderService,
     ...useOnCli(IdentitiesCommand.registerWithSubCommands()),
   ],
   controllers: [
@@ -64,7 +65,7 @@ import { PasswordHistoryModule } from '~/management/password-history/password-hi
     IdentitiesPhotoController,
     IdentitiesDoublonController,
     IdentitiesActivationController,
-    IdentitiesForcePasswordController
+    IdentitiesForcePasswordController,
   ],
   exports: [IdentitiesCrudService, IdentitiesUpsertService],
 })

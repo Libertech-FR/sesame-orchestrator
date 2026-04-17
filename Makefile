@@ -153,6 +153,17 @@ exec: ## Run a shell in the container
 		-v $(CURDIR):/data \
 		$(IMG_NAME) bash
 
+test: ## Run API unit tests in container
+	@docker run -it --rm \
+		-e NODE_ENV=development \
+		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		--add-host host.docker.internal:host-gateway \
+		--platform $(PLATFORM) \
+		--network dev \
+		-e SESAME_SENTRY_DSN=$(SESAME_SENTRY_DSN) \
+		-v $(CURDIR):/data \
+		$(IMG_NAME) yarn workspace @libertech-fr/sesame-orchestrator_api test
+
 dbs: ## Start databases
 	@docker volume create $(BASE_NAME)-mongodb
 	@docker run -d --rm \

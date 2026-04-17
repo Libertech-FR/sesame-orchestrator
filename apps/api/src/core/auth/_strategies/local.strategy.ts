@@ -25,7 +25,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     Logger.verbose(`Try to authenticate user : ${username}`, LocalStrategy.name);
     const user = await this.auth.authenticateWithLocal(username, password);
     // console.log(user);
-    if (!user) done(new UnauthorizedException(), false);
+    if (!user) {
+      done(new UnauthorizedException(), false);
+      return;
+    }
     // if (user.state.current !== IdentityState.ACTIVE) done(new ForbiddenException(), false)
     done(null, omit(user.toObject(), ExcludeAgentType) as AgentType);
   }

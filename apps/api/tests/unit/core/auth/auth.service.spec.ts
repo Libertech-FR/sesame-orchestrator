@@ -122,4 +122,78 @@ describe('AuthService', () => {
 
     expect(result).toEqual({ _id: 'k1' })
   })
+
+  it('should return offline identity as-is for offline scope', async () => {
+    const identity = { _id: 'console-1', username: 'console' }
+
+    const result = await service.verifyIdentity({
+      scopes: ['offline'],
+      identity,
+    } as any)
+
+    expect(result).toBe(identity)
+  })
+
+  it('should return null for api scope when keyring is not found', async () => {
+    keyringsFindOne.mockRejectedValue(new Error('not found'))
+
+    const result = await service.verifyIdentity({
+      scopes: ['api'],
+      identity: { _id: 'k1', token: 'missing' },
+    } as any)
+
+    expect(result).toBeNull()
+  })
+
+  it('should verify jwt session scope with redis-backed session and matching secret key', async () => {
+    redisGet.mockResolvedValue(
+      JSON.stringify({
+        identity: {
+          security: {
+            secretKey: 's3cr3t',
+          },
+        },
+      }),
+    )
+    ;(agentsService.model.countDocuments as jest.Mock).mockResolvedValue(1)
+
+    const result = await service.verifyIdentity({
+      jti: 'jwt-id',
+      scopes: ['sesame'],
+      identity: { _id: 'a1' },
+    } as any)
+
+    expect(redisGet).toHaveBeenCalledWith('access_token:jwt-id')
+    expect(agentsService.model.countDocuments).toHaveBeenCalledWith({
+      _id: 'a1',
+      'security.secretKey': 's3cr3t',
+    })
+    expect(result).toEqual({
+      identity: {
+        security: {
+          secretKey: 's3cr3t',
+        },
+      },
+    })
+  })
+
+  it('should return null for jwt session scope when no redis session exists', async () => {
+    redisGet.mockResolvedValue(null)
+
+    const result = await service.verifyIdentity({
+      jti: 'missing-jti',
+      scopes: ['sesame'],
+      identity: { _id: 'a1' },
+    } as any)
+
+    expect(result).toBeNull()
+  })
+
+  it('should not delete anything when clearSession cannot decode jwt', async () => {
+    jwtDecode.mockReturnValue(null)
+
+    await service.clearSession('invalid-token')
+
+    expect(redisDel).not.toHaveBeenCalled()
+  })
 })

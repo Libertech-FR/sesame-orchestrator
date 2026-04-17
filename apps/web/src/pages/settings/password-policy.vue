@@ -221,7 +221,7 @@
           placeholder="Laisser vide pour utiliser le sujet par défaut"
           dense
         )
-        .col-12.col-sm-1.flex.items-center.justify-end
+        .col-12.col-sm-1.flex.items-center.justify-end.q-pa-none
           q-btn(
             v-if='hasPermission("/settings/passwdadm", "update")'
             flat

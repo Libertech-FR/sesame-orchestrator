@@ -31,6 +31,21 @@ jobs:
       packages: write
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run API unit tests
+        run: yarn workspace @libertech-fr/sesame-orchestrator_api test
+
       - name: Build docker
         uses: Libertech-FR/lt-actions/release@main
         with:

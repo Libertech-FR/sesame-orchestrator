@@ -1,5 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsBoolean, IsString, IsArray, ArrayMinSize, IsObject } from 'class-validator';
+import { IsNumber, IsBoolean, IsString, IsArray, IsObject, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class PasswordExpirationReminderStepDto {
+  @IsNumber()
+  @ApiProperty({ example: 30, description: 'Nombre de jours avant expiration (0 = à expiration)', type: Number })
+  public daysBefore: number = 0;
+
+  @IsString()
+  @ApiProperty({
+    example: 'password_reminder_30d',
+    description: 'Template pour ce jalon (fallback implicite: password_reminder)',
+    type: String,
+  })
+  public template: string = '';
+
+  @IsString()
+  @ApiProperty({
+    example: 'Votre mot de passe expirera dans 30 jours',
+    description: 'Sujet pour ce jalon (fallback: passwordExpirationReminderSubject)',
+    type: String,
+  })
+  public subject: string = '';
+}
 
 export class PasswordPoliciesDto {
   // Complexité du mot de passe
@@ -65,31 +88,15 @@ export class PasswordPoliciesDto {
   public passwordHistoryTtlSeconds: number = 60 * 60 * 24 * 90;
 
   // Rappels d'expiration mot de passe
-  @IsNumber()
-  @ApiProperty({
-    example: 7,
-    description: 'Legacy: nombre de jours avant expiration pour envoyer un seul rappel (J-X)',
-    type: Number,
-    deprecated: true,
-  })
-  public passwordExpirationReminderDaysBefore: number = 7;
-
   @IsArray()
-  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => PasswordExpirationReminderStepDto)
   @ApiProperty({
-    example: [30, 7, 1, 0],
-    description: "Liste des jalons (en jours) avant expiration pour envoyer des rappels. 0 = à l'expiration",
-    type: [Number],
+    example: [],
+    description: 'Configuration des jalons de rappel (recommandée)',
+    type: [PasswordExpirationReminderStepDto],
   })
-  public passwordExpirationReminderDaysBeforeList: number[] = [30, 7, 1, 0];
-
-  @IsString()
-  @ApiProperty({
-    example: 'mail_security_alert',
-    description: 'Template mailer par défaut utilisé pour les rappels (fallback)',
-    type: String,
-  })
-  public passwordExpirationReminderTemplate: string = 'mail_security_alert';
+  public passwordExpirationReminderSteps: PasswordExpirationReminderStepDto[] = [];
 
   @IsObject()
   @ApiProperty({
@@ -108,7 +115,7 @@ export class PasswordPoliciesDto {
   @IsString()
   @ApiProperty({
     example: 'Votre mot de passe expire bientôt',
-    description: 'Sujet par défaut du mail de rappel (fallback)',
+    description: 'Sujet par défaut du mail de rappel',
     type: String,
   })
   public passwordExpirationReminderSubject: string = 'Votre mot de passe expire bientôt';

@@ -169,6 +169,81 @@
         )
       q-separator.q-my-lg
       .row.q-col-gutter-md
+        .col-12
+          .text-subtitle1.text-weight-medium Rappels d'expiration du mot de passe
+          .text-caption.text-grey-7
+            | Configurez les jalons (J-30, J-7, J-1, J0...) avec template et sujet spécifiques.
+      .row.q-col-gutter-md.q-mt-sm
+        q-input.col-12.col-md-6(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
+          type="text"
+          outlined
+          v-model="payload.passwordExpirationReminderSubject"
+          label="Sujet par défaut"
+          hint="Utilisé si aucun sujet n'est défini pour un jalon"
+          dense
+        )
+        q-input.col-12.col-md-6(
+          readonly
+          type="text"
+          outlined
+          v-model="defaultReminderTemplate"
+          label="Template par défaut"
+          hint="Valeur fixe: password_reminder"
+          dense
+        )
+      .row.q-col-gutter-md.q-mt-sm(v-for="(item, idx) in payload.passwordExpirationRemindersByDay" :key="`reminder-${idx}`")
+        q-input.col-12.col-sm-2(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
+          type="number"
+          outlined
+          v-model.number="item.daysBefore"
+          label="Jours (J-x)"
+          dense
+        )
+        q-select.col-12.col-sm-4(
+          :disable='!hasPermission("/settings/passwdadm", "update")'
+          outlined
+          dense
+          emit-value
+          map-options
+          v-model="item.template"
+          :options="mailTemplateOptions"
+          label="Template"
+          hint="Laisser vide pour utiliser password_reminder"
+        )
+        q-input.col-12.col-sm-5(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
+          type="text"
+          outlined
+          v-model="item.subject"
+          label="Sujet"
+          placeholder="Laisser vide pour utiliser le sujet par défaut"
+          dense
+        )
+        .col-12.col-sm-1.flex.items-center.justify-end
+          q-btn(
+            v-if='hasPermission("/settings/passwdadm", "update")'
+            flat
+            round
+            dense
+            color="negative"
+            icon="mdi-delete-outline"
+            @click="removeReminderRow(idx)"
+          )
+      .row.q-mt-sm
+        .col-12
+          q-btn(
+            v-if='hasPermission("/settings/passwdadm", "update")'
+            flat
+            dense
+            color="primary"
+            icon="mdi-plus"
+            label="Ajouter un jalon"
+            @click="addReminderRow"
+          )
+      q-separator.q-my-lg
+      .row.q-col-gutter-md
         q-input.col-12.col-md-6(
           :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="number"
@@ -224,13 +299,22 @@ type PasswordPolicySettings = {
   minComplexity: number
   resetCodeTTL: number
   initTokenTTL: number
+  passwordExpirationReminderDaysBefore?: number
+  passwordExpirationReminderDaysBeforeList?: number[]
+  passwordExpirationReminderSteps?: PasswordExpirationReminderRow[]
+  passwordExpirationReminderTemplatesByDays?: Record<string, string>
+  passwordExpirationReminderSubject?: string
+  passwordExpirationReminderSubjectsByDays?: Record<string, string>
+}
+
+type PasswordExpirationReminderRow = {
+  daysBefore: number
+  template: string
+  subject: string
 }
 
 export default defineComponent({
   name: 'SettingsPasswordPolicyPage',
-  data() {
-    return {}
-  },
   async setup() {
     const { handleError } = useErrorHandling()
     const { hasPermission } = useAccessControl()
@@ -240,6 +324,7 @@ export default defineComponent({
       { label: "Notifier l'utilisateur", value: 'notify' },
       { label: 'Expirer le mot de passe', value: 'expire' },
     ] as const
+    const mailTemplateOptions = ref<{ label: string; value: string }[]>([])
 
     const payload = ref({
       len: 8,
@@ -259,8 +344,15 @@ export default defineComponent({
       minComplexity: 0,
       resetCodeTTL: 0,
       initTokenTTL: 0,
+      passwordExpirationReminderDaysBefore: -1,
+      passwordExpirationReminderDaysBeforeList: [] as number[],
+      passwordExpirationReminderSteps: [] as PasswordExpirationReminderRow[],
+      passwordExpirationReminderTemplatesByDays: {} as Record<string, string>,
+      passwordExpirationReminderSubject: 'Votre mot de passe expire bientôt',
+      passwordExpirationReminderSubjectsByDays: {} as Record<string, string>,
+      passwordExpirationRemindersByDay: [] as PasswordExpirationReminderRow[],
     })
-    const validations = ref({} as Record<string, any>)
+    const validations = ref({} as Record<string, unknown>)
     const hibpKeyStatus = ref<{ valid: boolean; reason: string | null }>({ valid: true, reason: null })
 
     const pwnedRecheckMaxAgeHuman = computed(() => {
@@ -284,6 +376,16 @@ export default defineComponent({
       return parts.join(' ')
     })
 
+    watch(
+      () => payload.value.checkPwned,
+      (enabled) => {
+        if (!enabled) {
+          payload.value.pwnedRecheckEnabled = false
+          payload.value.pwnedRecheckAction = 'none'
+        }
+      },
+    )
+
     const {
       data: result,
       pending,
@@ -299,13 +401,24 @@ export default defineComponent({
     if (keyStatusResult.value?.data) {
       hibpKeyStatus.value = keyStatusResult.value.data
     }
+
+    try {
+      const res = await (useNuxtApp() as unknown as { $http: { get: (url: string, args: { method: 'GET' }) => Promise<{ _data?: { data?: unknown } }> } })
+        .$http.get('/management/mail/templates', { method: 'GET' })
+      const list = Array.isArray(res?._data?.data) ? (res._data?.data as string[]) : []
+      mailTemplateOptions.value = [{ label: '(Par défaut) password_reminder', value: '' }, ...list
+        .filter((name) => String(name || '').startsWith('mail_'))
+        .map((name) => ({ label: name, value: name }))]
+    } catch {
+      mailTemplateOptions.value = []
+    }
     if (error.value) {
       handleError({
         error: error.value,
         message: 'Erreur lors de de la lecture des paramètres',
       })
     } else {
-      payload.value = result.value?.data || payload.value
+      payload.value = normalizePasswordPolicy(result.value?.data || payload.value)
       validations.value = {}
     }
 
@@ -313,33 +426,77 @@ export default defineComponent({
       payload.value.pwnedRecheckEnabled = false
     }
 
-    watch(
-      () => payload.value.checkPwned,
-      (enabled) => {
-        if (!enabled) {
-          payload.value.pwnedRecheckEnabled = false
-          payload.value.pwnedRecheckAction = 'none'
-        }
-      },
-    )
-
     return {
       payload,
       pwnedActions,
       hibpKeyStatus,
       pwnedRecheckMaxAgeHuman,
+      defaultReminderTemplate: 'password_reminder',
       handleError,
       pending,
       refresh,
       validations,
       hasPermission,
+      mailTemplateOptions,
     }
   },
+  data() {
+    return {}
+  },
   methods: {
+    normalizeReminderPayload() {
+      const listFromRows = (this.payload.passwordExpirationRemindersByDay || [])
+        .map((row: PasswordExpirationReminderRow) => Number(row.daysBefore))
+        .filter((v: number) => Number.isFinite(v) && v >= 0)
+
+      const list = Array.from(new Set([...listFromRows]))
+        .sort((a, b) => b - a)
+
+      const templatesByDays: Record<string, string> = {}
+      const subjectsByDays: Record<string, string> = {}
+      for (const row of this.payload.passwordExpirationRemindersByDay || []) {
+        const day = Math.floor(Number(row.daysBefore))
+        if (!Number.isFinite(day) || day < 0) continue
+        const template = String(row.template || '').trim()
+        const subject = String(row.subject || '').trim()
+        if (template) {
+          templatesByDays[String(day)] = template
+        }
+        if (subject) subjectsByDays[String(day)] = subject
+      }
+
+      this.payload.passwordExpirationReminderDaysBeforeList = list
+      this.payload.passwordExpirationReminderTemplatesByDays = templatesByDays
+      this.payload.passwordExpirationReminderSubjectsByDays = subjectsByDays
+      this.payload.passwordExpirationReminderSteps = (this.payload.passwordExpirationRemindersByDay || [])
+        .map((row: PasswordExpirationReminderRow) => ({
+          daysBefore: Math.floor(Number(row.daysBefore)),
+          template: String(row.template || '').trim(),
+          subject: String(row.subject || '').trim(),
+        }))
+        .filter((row: PasswordExpirationReminderRow) => Number.isFinite(row.daysBefore) && row.daysBefore >= 0)
+        .sort((a: PasswordExpirationReminderRow, b: PasswordExpirationReminderRow) => b.daysBefore - a.daysBefore)
+    },
+    addReminderRow() {
+      this.payload.passwordExpirationRemindersByDay.push({
+        daysBefore: 0,
+        template: '',
+        subject: '',
+      })
+    },
+    removeReminderRow(idx: number) {
+      this.payload.passwordExpirationRemindersByDay.splice(idx, 1)
+    },
     async saveParams() {
       try {
+        this.normalizeReminderPayload()
+        const body: PasswordPolicyUiState = {
+          ...this.payload,
+        }
+        delete body.passwordExpirationRemindersByDay
+
         await this.$http.post(`/settings/passwdadm/setpolicies`, {
-          body: this.payload,
+          body,
         })
 
         this.$q.notify({
@@ -349,15 +506,91 @@ export default defineComponent({
           icon: 'mdi-check-circle-outline',
         })
         this.validations = {}
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const normalizedError = error as {
+          response?: {
+            _data?: {
+              message?: string
+              validations?: Record<string, unknown>
+            }
+          }
+        }
         this.handleError({
-          error,
-          message: error?.response?._data?.message || 'Erreur lors de la sauvegarde des paramètres',
+          error: normalizedError,
+          message: normalizedError?.response?._data?.message || 'Erreur lors de la sauvegarde des paramètres',
           notify: true,
         })
-        this.validations = error?.response?._data?.validations || {}
+        this.validations = normalizedError?.response?._data?.validations || {}
       }
     },
   },
 })
+
+type PasswordPolicyUiState = PasswordPolicySettings & {
+  passwordExpirationRemindersByDay?: PasswordExpirationReminderRow[]
+}
+
+function normalizePasswordPolicy(raw: PasswordPolicyUiState) {
+  const payload = { ...raw } as PasswordPolicyUiState
+  const steps = Array.isArray(payload.passwordExpirationReminderSteps) ? payload.passwordExpirationReminderSteps : []
+  const stepDays = steps
+    .map((step) => Math.floor(Number(step?.daysBefore)))
+    .filter((v) => Number.isFinite(v) && v >= 0)
+  const daysBeforeList = stepDays.length
+    ? stepDays
+    : Array.isArray(payload.passwordExpirationReminderDaysBeforeList)
+      ? payload.passwordExpirationReminderDaysBeforeList
+      : Number.isFinite(Number(payload.passwordExpirationReminderDaysBefore)) && Number(payload.passwordExpirationReminderDaysBefore) >= 0
+        ? [Math.floor(Number(payload.passwordExpirationReminderDaysBefore))]
+        : []
+
+  const normalizedDays = Array.from(
+    new Set(
+      daysBeforeList
+        .map((v) => Math.floor(Number(v)))
+        .filter((v) => Number.isFinite(v) && v >= 0),
+    ),
+  ).sort((a, b) => b - a)
+
+  const templatesByDays =
+    payload.passwordExpirationReminderTemplatesByDays && typeof payload.passwordExpirationReminderTemplatesByDays === 'object'
+      ? payload.passwordExpirationReminderTemplatesByDays
+      : {}
+  const subjectsByDays =
+    payload.passwordExpirationReminderSubjectsByDays && typeof payload.passwordExpirationReminderSubjectsByDays === 'object'
+      ? payload.passwordExpirationReminderSubjectsByDays
+      : {}
+
+  const stepByDay = new Map<number, PasswordExpirationReminderRow>()
+  for (const step of steps) {
+    const day = Math.floor(Number(step?.daysBefore))
+    if (!Number.isFinite(day) || day < 0) continue
+    if (!stepByDay.has(day)) {
+      stepByDay.set(day, {
+        daysBefore: day,
+        template: String(step?.template || ''),
+        subject: String(step?.subject || ''),
+      })
+    }
+  }
+
+  const rows: PasswordExpirationReminderRow[] = normalizedDays.map((day) => {
+    const step = stepByDay.get(day)
+    return {
+      daysBefore: day,
+      template: String(step?.template || templatesByDays[String(day)] || ''),
+      subject: String(step?.subject || subjectsByDays[String(day)] || ''),
+    }
+  })
+
+  return {
+    ...payload,
+    passwordExpirationReminderDaysBeforeList: normalizedDays,
+    passwordExpirationReminderSteps: rows,
+    passwordExpirationReminderSubject: String(payload.passwordExpirationReminderSubject || 'Votre mot de passe expire bientôt'),
+    passwordExpirationReminderTemplatesByDays: templatesByDays,
+    passwordExpirationReminderSubjectsByDays: subjectsByDays,
+    passwordExpirationRemindersByDay: rows,
+  }
+}
 </script>

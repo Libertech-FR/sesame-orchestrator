@@ -11,6 +11,7 @@ import { IdentitiesCrudService } from './identities-crud.service';
 @Injectable()
 export class IdentitiesPasswordExpirationReminderService {
   private readonly logger = new Logger(IdentitiesPasswordExpirationReminderService.name);
+  private readonly defaultTemplate = 'password_reminder';
 
   public constructor(
     private readonly passwordHistory: PasswordHistoryService,
@@ -25,7 +26,8 @@ export class IdentitiesPasswordExpirationReminderService {
     }
 
     const policies: any = await this.passwdadmService.getPolicies();
-    const reminderOffsets = this.getReminderOffsets(policies);
+    const reminderSteps = this.getReminderSteps(policies);
+    const reminderOffsets = reminderSteps.map((step) => step.daysBefore);
     if (!reminderOffsets.length) {
       this.logger.warn('Password expiration reminder skipped: no valid reminder offsets configured');
       return;
@@ -40,13 +42,12 @@ export class IdentitiesPasswordExpirationReminderService {
     let totalSent = 0;
     let totalSkipped = 0;
 
-    for (const daysBefore of reminderOffsets) {
-      const template = this.resolveTemplateForOffset(daysBefore, policies);
-      const subject = this.resolveSubjectForOffset(daysBefore, policies);
+    for (const step of reminderSteps) {
+      const daysBefore = step.daysBefore;
+      const template = this.resolveTemplateForOffset(daysBefore, policies, step);
+      const subject = this.resolveSubjectForOffset(daysBefore, policies, step);
       if (!template) {
-        this.logger.warn(
-          `Password expiration reminder skipped for J-${daysBefore}: missing template in passwordExpirationReminderTemplatesByDays and fallback`,
-        );
+        this.logger.warn(`Password expiration reminder skipped for J-${daysBefore}: missing template`);
         continue;
       }
 
@@ -116,7 +117,30 @@ export class IdentitiesPasswordExpirationReminderService {
     );
   }
 
-  private getReminderOffsets(policies: any): number[] {
+  private getReminderSteps(policies: any): Array<{ daysBefore: number; template?: string; subject?: string }> {
+    const stepsRaw = Array.isArray(policies?.passwordExpirationReminderSteps)
+      ? policies.passwordExpirationReminderSteps
+      : [];
+    const normalizedSteps = stepsRaw
+      .map((step: any) => ({
+        daysBefore: Math.floor(Number(step?.daysBefore)),
+        template: String(step?.template || '').trim(),
+        subject: String(step?.subject || '').trim(),
+      }))
+      .filter((step: { daysBefore: number }) => Number.isFinite(step.daysBefore) && step.daysBefore >= 0)
+      .sort((a: { daysBefore: number }, b: { daysBefore: number }) => b.daysBefore - a.daysBefore);
+
+    if (normalizedSteps.length) {
+      const uniqByDay = new Map<number, { daysBefore: number; template?: string; subject?: string }>();
+      for (const step of normalizedSteps) {
+        if (!uniqByDay.has(step.daysBefore)) {
+          uniqByDay.set(step.daysBefore, step);
+        }
+      }
+      return Array.from(uniqByDay.values());
+    }
+
+    // Legacy fallback support
     const listRaw = Array.isArray(policies?.passwordExpirationReminderDaysBeforeList)
       ? policies.passwordExpirationReminderDaysBeforeList
       : [];
@@ -124,13 +148,13 @@ export class IdentitiesPasswordExpirationReminderService {
 
     const offsets = [
       ...listRaw.map((value) => Math.floor(Number(value))),
-      ...(Number.isFinite(singleRaw) ? [Math.floor(singleRaw)] : []),
+      ...(Number.isFinite(singleRaw) && singleRaw >= 0 ? [Math.floor(singleRaw)] : []),
     ]
       .filter((value) => Number.isFinite(value) && value >= 0)
       .filter((value, index, array) => array.indexOf(value) === index)
       .sort((a, b) => b - a);
 
-    return offsets;
+    return offsets.map((daysBefore) => ({ daysBefore }));
   }
 
   private async getCandidatesForOffset(
@@ -159,7 +183,16 @@ export class IdentitiesPasswordExpirationReminderService {
     ]);
   }
 
-  private resolveTemplateForOffset(daysBefore: number, policies: any): string {
+  private resolveTemplateForOffset(
+    daysBefore: number,
+    policies: any,
+    step?: { daysBefore: number; template?: string; subject?: string },
+  ): string {
+    const stepTemplate = String(step?.template || '').trim();
+    if (stepTemplate) {
+      return stepTemplate;
+    }
+
     const templatesByDays =
       policies?.passwordExpirationReminderTemplatesByDays &&
       typeof policies.passwordExpirationReminderTemplatesByDays === 'object'
@@ -171,10 +204,19 @@ export class IdentitiesPasswordExpirationReminderService {
       return specificTemplate;
     }
 
-    return String(policies?.passwordExpirationReminderTemplate || '').trim();
+    return this.defaultTemplate;
   }
 
-  private resolveSubjectForOffset(daysBefore: number, policies: any): string {
+  private resolveSubjectForOffset(
+    daysBefore: number,
+    policies: any,
+    step?: { daysBefore: number; template?: string; subject?: string },
+  ): string {
+    const stepSubject = String(step?.subject || '').trim();
+    if (stepSubject) {
+      return stepSubject;
+    }
+
     const subjectsByDays =
       policies?.passwordExpirationReminderSubjectsByDays &&
       typeof policies.passwordExpirationReminderSubjectsByDays === 'object'

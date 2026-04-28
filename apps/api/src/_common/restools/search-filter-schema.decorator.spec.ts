@@ -151,6 +151,14 @@ describe('search-filter-schema', () => {
     ).toThrow(Error)
   })
 
+  it('test in string filter with csv', () => {
+    expect(
+      filterSchema({
+        '@patterns': 'rch,ext,sna,ass',
+      }),
+    ).toStrictEqual({ patterns: { $in: ['rch', 'ext', 'sna', 'ass'] } })
+  })
+
   it('test in int filter', () => {
     expect(
       filterSchema({

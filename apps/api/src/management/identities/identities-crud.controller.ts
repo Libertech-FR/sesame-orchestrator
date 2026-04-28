@@ -265,10 +265,15 @@ export class IdentitiesCrudController extends AbstractController {
       [key: string]: number;
     };
   }>> {
-    const filters = Object.entries(body).reduce((acc, [key, value]) => {
-      acc[key] = filterSchema(value);
-      return acc;
-    }, {} as Record<string, FilterSchema>);
+    let filters: Record<string, FilterSchema>
+    try {
+      filters = Object.entries(body).reduce((acc, [key, value]) => {
+        acc[key] = filterSchema(value)
+        return acc
+      }, {} as Record<string, FilterSchema>)
+    } catch (error: any) {
+      throw new BadRequestException(error?.message ?? 'Invalid filters')
+    }
 
     const data = await this._service.countAll(filters, searchFilterOptions);
 

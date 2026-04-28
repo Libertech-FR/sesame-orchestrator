@@ -9,6 +9,7 @@ APP_API_PORT_SECURE = 4443
 APP_API_DEBUG_PORT = 9229
 
 IMG_NAME = "ghcr.io/libertech-fr/sesame-orchestrator"
+TEST_IMG_NAME = "sesame-orchestrator-test-local"
 BASE_NAME = "sesame"
 APP_NAME = "sesame-orchestrator"
 PLATFORM = "linux/amd64"
@@ -153,16 +154,21 @@ exec: ## Run a shell in the container
 		-v $(CURDIR):/data \
 		$(IMG_NAME) bash
 
-test: ## Run API unit tests in container
+build-test-image: ## Build local Docker image dedicated to tests
+	@docker build --platform $(PLATFORM) -f Dockerfile.test -t $(TEST_IMG_NAME) .
+
+test: build-test-image ## Run API unit tests and Web e2e tests in test container
 	@docker run -it --rm \
 		-e NODE_ENV=development \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+		-e PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium \
 		--add-host host.docker.internal:host-gateway \
 		--platform $(PLATFORM) \
 		--network dev \
 		-e SESAME_SENTRY_DSN=$(SESAME_SENTRY_DSN) \
-		-v $(CURDIR):/data \
-		$(IMG_NAME) yarn workspace @libertech-fr/sesame-orchestrator_api test
+		-v $(CURDIR)/apps:/data/apps \
+		-v $(CURDIR)/packages:/data/packages \
+		$(TEST_IMG_NAME) sh -lc "yarn workspace @libertech-fr/sesame-orchestrator_api test && yarn workspace @libertech-fr/sesame-orchestrator_web e2e"
 
 dbs: ## Start databases
 	@docker volume create $(BASE_NAME)-mongodb

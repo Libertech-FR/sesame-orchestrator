@@ -1,5 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 
+// Sur Alpine (musl), le Chromium téléchargé par Playwright (glibc) ne peut pas s'exécuter —
+// utiliser Chromium du paquet système (variable PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH, ex. make test).
+const systemChromiumPath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
@@ -10,6 +14,7 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
+    ...(systemChromiumPath ? { executablePath: systemChromiumPath } : {}),
   },
   projects: [
     {

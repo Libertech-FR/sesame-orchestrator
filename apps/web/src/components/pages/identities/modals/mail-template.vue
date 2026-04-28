@@ -11,7 +11,7 @@ q-dialog(
       q-btn(icon="mdi-close" flat round dense color="white" @click="cancelSync")
     q-separator
     q-splitter.col(
-      v-if="q.screen.gt.sm"
+      v-if="q.screen.gt.md"
       v-model="splitterModel"
       :limits="[25, 70]"
       style="min-height: 0;"
@@ -104,10 +104,11 @@ q-dialog(
               @click="refreshPreview"
             )
           q-card(flat bordered class="col" style="min-height: 0; overflow: hidden;")
-            .col.overflow-auto(style="min-height: 0;")
-              iframe(
-                v-if="previewHtml"
-                :srcdoc="previewHtml"
+            .col(style="min-height: 0; height: 100%;")
+              object(
+                v-if="previewObjectUrl"
+                :data="previewObjectUrl"
+                type="text/html"
                 style="border: 0; width: 100%; height: 100%;"
               )
               .fit.row.items-center.justify-center(v-else)
@@ -115,8 +116,8 @@ q-dialog(
                 q-banner.bg-grey-2.text-grey-9(v-else)
                   | Aucun aperçu disponible.
 
-    .row.col(v-else style="min-height: 0;")
-      .col-12.q-pa-md.overflow-auto
+    .column.col(v-else style="min-height: 0;")
+      .col.q-pa-md.overflow-auto(style="min-height: 0;")
         p {{ mainText }}
         q-select(
           v-model="templateName"
@@ -188,40 +189,25 @@ q-dialog(
           :label="checkboxLabel"
         )
 
-      .col-12.bg-grey-1.column(style="min-height: 320px; overflow: hidden;")
-        q-bar(flat)
-          .text-subtitle2 Aperçu
-          q-space
-          q-btn(
-            icon="mdi-refresh"
-            label="Rafraîchir l’aperçu"
-            color="primary"
-            flat
-            dense
-            :loading="previewLoading"
-            @click="refreshPreview"
-          )
-        q-card(flat bordered class="col" style="min-height: 0; height: 100%; overflow: hidden;")
-          .col.overflow-auto(style="min-height: 0;")
-            iframe(
-              v-if="previewHtml"
-              :srcdoc="previewHtml"
-              style="border: 0; width: 100%; height: 100%;"
-            )
-            .fit.row.items-center.justify-center(v-else)
-              q-spinner-dots(color="primary" size="40px" v-if="previewLoading")
-              q-banner.bg-grey-2.text-grey-9(v-else)
-                | Aucun aperçu disponible.
-
     q-separator
     q-card-actions.bg-white(style="position: sticky; bottom: 0; z-index: 2;")
       q-space
-      q-btn(color="positive" label="Valider" @click="syncIdentities")
-      q-btn(color="negative" label="Annuler" @click="cancelSync")
+      q-btn(
+        color="negative"
+        label="Annuler"
+        @click="cancelSync"
+        push
+      )
+      q-btn(
+        color="positive"
+        label="Envoyer"
+        @click="syncIdentities"
+        push
+      )
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useDialogPluginComponent, useQuasar } from 'quasar'
 
 const props = defineProps({
@@ -272,6 +258,7 @@ const templates = ref<{ label: string; value: string }[]>([])
 const templatesLoading = ref(false)
 const previewHtml = ref('')
 const previewLoading = ref(false)
+const previewObjectUrl = ref('')
 const variablesRows = ref<{ key: string; value: string }[]>([])
 const availableVariables = ref<{ key: string; label?: string; description?: string; example?: string; defaultValue?: unknown }[]>([])
 
@@ -368,6 +355,24 @@ watch(
   { deep: true },
 )
 
+watch(
+  previewHtml,
+  (html) => {
+    if (previewObjectUrl.value) URL.revokeObjectURL(previewObjectUrl.value)
+    if (!html) {
+      previewObjectUrl.value = ''
+      return
+    }
+    const blob = new Blob([html], { type: 'text/html' })
+    previewObjectUrl.value = URL.createObjectURL(blob)
+  },
+  { immediate: true },
+)
+
+onBeforeUnmount(() => {
+  if (previewObjectUrl.value) URL.revokeObjectURL(previewObjectUrl.value)
+})
+
 const syncIdentities = () => {
   onDialogOK({
     initAllIdentities: initAllIdentities.value,
@@ -382,3 +387,10 @@ const cancelSync = () => {
 
 const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
 </script>
+
+<style scoped>
+.preview-scroll {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+</style>

@@ -16,7 +16,8 @@
     "lint:fix": "eslint --ext .ts,.js,.vue --ignore-path .gitignore . --fix",
     "e2e": "playwright test",
     "e2e:headed": "playwright test --headed",
-    "e2e:ui": "playwright test --ui"
+    "e2e:ui": "playwright test --ui",
+    "playwright:install": "playwright install chromium"
   },
   "dependencies": {
     "@jsonforms/core": "^3.7.0",

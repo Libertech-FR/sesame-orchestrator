@@ -87,6 +87,14 @@ export class PasswordPoliciesDto {
   @ApiProperty({ example: 7776000, description: 'TTL de l’historique des mots de passe (en secondes)', type: Number })
   public passwordHistoryTtlSeconds: number = 60 * 60 * 24 * 90;
 
+  @IsNumber()
+  @ApiProperty({
+    example: 7776000,
+    description: "Durée de validité d'usage du mot de passe (en secondes)",
+    type: Number,
+  })
+  public passwordUsageExpirationTtlSeconds: number = 60 * 60 * 24 * 90;
+
   // Rappels d'expiration mot de passe
   @IsArray()
   @ValidateNested({ each: true })
@@ -133,6 +141,51 @@ export class PasswordPoliciesDto {
     type: Object,
   })
   public passwordExpirationReminderSubjectsByDays: Record<string, string> = {};
+
+  // Rappels d'expiration d'usage mot de passe (nouvelle config dédiée)
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PasswordExpirationReminderStepDto)
+  @ApiProperty({
+    example: [],
+    description: "Configuration des jalons de rappel d'usage (recommandée)",
+    type: [PasswordExpirationReminderStepDto],
+  })
+  public passwordUsageReminderSteps: PasswordExpirationReminderStepDto[] = [];
+
+  @IsObject()
+  @ApiProperty({
+    example: {
+      '30': 'mail_pwd_expire_30d',
+      '7': 'mail_pwd_expire_7d',
+      '1': 'mail_pwd_expire_1d',
+      '0': 'mail_pwd_expired',
+    },
+    description: "Mapping des templates de rappel d'usage par jalon (clé = jours avant expiration d'usage)",
+    type: Object,
+  })
+  public passwordUsageReminderTemplatesByDays: Record<string, string> = {};
+
+  @IsString()
+  @ApiProperty({
+    example: 'Votre mot de passe expire bientôt',
+    description: "Sujet par défaut du mail de rappel d'expiration d'usage",
+    type: String,
+  })
+  public passwordUsageReminderSubject: string = 'Votre mot de passe expire bientôt';
+
+  @IsObject()
+  @ApiProperty({
+    example: {
+      '30': 'Votre mot de passe expirera dans 1 mois',
+      '7': 'Votre mot de passe expirera dans 7 jours',
+      '1': 'Votre mot de passe expire demain',
+      '0': 'Votre mot de passe a expiré',
+    },
+    description: "Mapping des sujets de rappel d'usage par jalon (clé = jours avant expiration d'usage)",
+    type: Object,
+  })
+  public passwordUsageReminderSubjectsByDays: Record<string, string> = {};
 
   // Re-check HIBP
   @IsBoolean()

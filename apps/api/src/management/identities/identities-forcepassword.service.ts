@@ -1,22 +1,21 @@
-import {AbstractIdentitiesService} from '~/management/identities/abstract-identities.service';
-import {Identities} from '~/management/identities/_schemas/identities.schema';
+import { AbstractIdentitiesService } from '~/management/identities/abstract-identities.service';
+import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { BadRequestException, HttpException, Inject, Injectable } from '@nestjs/common';
-import {DataStatusEnum} from '~/management/identities/_enums/data-status';
-import {ActionType} from "~/core/backends/_enum/action-type.enum";
-import { PasswordHistoryService } from '~/management/password-history/password-history.service'
-
+import { DataStatusEnum } from '~/management/identities/_enums/data-status';
+import { ActionType } from '~/core/backends/_enum/action-type.enum';
+import { PasswordHistoryService } from '~/management/password-history/password-history.service';
 
 @Injectable()
 export class IdentitiesForcepasswordService extends AbstractIdentitiesService {
   @Inject(PasswordHistoryService)
-  private readonly passwordHistory: PasswordHistoryService
+  private readonly passwordHistory: PasswordHistoryService;
 
   public async forcePassword(id: string, newPassword: string) {
     //recherche de l'identité
     let identity: Identities = null;
     try {
       identity = await this.findById<Identities>(id);
-    } catch (error) {
+    } catch {
       throw new HttpException('Id not found', 400);
     }
     if (identity.lastBackendSync === null) {
@@ -33,39 +32,53 @@ export class IdentitiesForcepasswordService extends AbstractIdentitiesService {
         statusCode: 400,
       });
     }
-    await this.passwordHistory.assertNotReused(identity._id, newPassword)
-     //ok on envoie le changement de mdp
-      try{
-        const [_, response] = await this.backends.executeJob(
-          ActionType.IDENTITY_PASSWORD_RESET,
-          identity._id,
-          { uid: identity.inetOrgPerson.uid, newPassword: newPassword, ...identity.toJSON() },
+    await this.passwordHistory.assertNotReused(identity._id, newPassword);
+    //ok on envoie le changement de mdp
+    try {
+      const [_, response] = await this.backends.executeJob(
+        ActionType.IDENTITY_PASSWORD_RESET,
+        identity._id,
+        { uid: identity.inetOrgPerson.uid, newPassword: newPassword, ...identity.toJSON() },
+        {
+          async: false,
+          timeoutDiscard: true,
+          disableLogs: false,
+          switchToProcessing: false,
+          updateStatus: false,
+        },
+      );
+      if (response?.status === 0) {
+        await this.passwordHistory.recordPassword(identity._id, newPassword, 'force');
+        const policies = await this.passwdAdmService.getPolicies();
+        const ttlSeconds = Number(policies?.passwordUsageExpirationTtlSeconds || 0);
+        const usageExpiresAt =
+          Number.isFinite(ttlSeconds) && ttlSeconds > 0 ? new Date(Date.now() + ttlSeconds * 1000) : null;
+        await this._model.updateOne(
+          { _id: identity._id },
           {
-            async: false,
-            timeoutDiscard: true,
-            disableLogs: false,
-            switchToProcessing: false,
-            updateStatus: false,
+            $set: {
+              passwordUsageExpiresAt: usageExpiresAt,
+              passwordUsageReminderSentDays: [],
+              passwordUsageReminderLastSentAt: null,
+            },
           },
         );
-        if (response?.status === 0) {
-          await this.passwordHistory.recordPassword(identity._id, newPassword, 'force')
-          //activation de l'identité
-          await this.activation(id,DataStatusEnum.ACTIVE)
-          return [_, response];
-        }
-      }catch (e) {
-        this.logger.error('Error while reseting password. ' + e + ` (uid=${identity.inetOrgPerson.uid})`);
-        throw new BadRequestException(
-          'Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible',
-        );
+        //activation de l'identité
+        await this.activation(id, DataStatusEnum.ACTIVE);
+        return [_, response];
       }
+    } catch (e) {
+      this.logger.error('Error while reseting password. ' + e + ` (uid=${identity.inetOrgPerson.uid})`);
+      throw new BadRequestException(
+        'Une erreur est survenue : Tentative de réinitialisation de mot de passe impossible',
+      );
+    }
   }
-  public async needToChangePassword(id: string){
+  public async needToChangePassword(id: string) {
     let identity: Identities = null;
     try {
       identity = await this.findById<Identities>(id);
-    } catch (error) {
+    } catch {
       throw new HttpException('Id not found', 400);
     }
     if (identity.lastBackendSync === null) {
@@ -78,12 +91,10 @@ export class IdentitiesForcepasswordService extends AbstractIdentitiesService {
       throw new BadRequestException('Identity is in status disabled');
     }
     //desactivation du compte
-    try{
-      await this.activation(id,DataStatusEnum.PASSWORDNEEDTOBECHANGED)
-    }catch{
+    try {
+      await this.activation(id, DataStatusEnum.PASSWORDNEEDTOBECHANGED);
+    } catch {
       throw new BadRequestException('Error changing status');
     }
-
   }
-
 }

@@ -15,7 +15,7 @@ import { historyPlugin } from '~/_common/plugins/mongoose/history.plugin';
 
 export type IdentitiesDocument = Identities & Document;
 
-@Schema({ versionKey: false, minimize: false, })
+@Schema({ versionKey: false, minimize: false })
 export class Identities extends AbstractSchema {
   @Prop({ type: Number, enum: IdentityState, default: IdentityState.TO_CREATE })
   public state: IdentityState;
@@ -53,6 +53,15 @@ export class Identities extends AbstractSchema {
   @Prop({ type: Date, default: null })
   public lastLifecycleUpdate: Date;
 
+  @Prop({ type: Date, default: null })
+  public passwordUsageExpiresAt?: Date | null;
+
+  @Prop({ type: [Number], default: [] })
+  public passwordUsageReminderSentDays?: number[];
+
+  @Prop({ type: Date, default: null })
+  public passwordUsageReminderLastSentAt?: Date | null;
+
   @Prop({ type: Number, enum: InitStatesEnum, default: InitStatesEnum.NOSENT })
   public initState: InitStatesEnum;
 
@@ -79,10 +88,7 @@ export class Identities extends AbstractSchema {
 export const IdentitiesSchema = SchemaFactory.createForClass(Identities)
   .plugin(historyPlugin, {
     collectionName: Identities.name,
-    ignoredFields: [
-      'lastSync',
-      'fingerprint',
-    ],
+    ignoredFields: ['lastSync', 'fingerprint'],
   })
   .plugin(AutoIncrementPlugin, <AutoIncrementPluginOptions>{
     incrementBy: 1,
@@ -93,7 +99,4 @@ export const IdentitiesSchema = SchemaFactory.createForClass(Identities)
       return ctx.inetOrgPerson.employeeType === 'LOCAL';
     },
   })
-  .index(
-    { 'inetOrgPerson.employeeNumber': 1, 'inetOrgPerson.employeeType': 1 },
-    { unique: true },
-  )
+  .index({ 'inetOrgPerson.employeeNumber': 1, 'inetOrgPerson.employeeType': 1 }, { unique: true });

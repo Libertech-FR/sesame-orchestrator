@@ -156,17 +156,6 @@
           template(#append)
             q-chip(dense size="sm" color="grey-3" text-color="dark")
               span(v-text="pwnedRecheckMaxAgeHuman")
-        q-select.col-12.col-sm-6.col-md-5.col-lg-4(
-          :disable='!hasPermission("/settings/passwdadm", "update") || !payload.pwnedRecheckEnabled || !hibpKeyStatus.valid'
-          outlined
-          dense
-          emit-value
-          map-options
-          v-model="payload.pwnedRecheckAction"
-          :options="pwnedActions"
-          label="Action si mot de passe compromis lors du re-check HIBP"
-          hint="« Notifier » avertit l'utilisateur sans le bloquer. « Expirer » force un changement au prochain usage."
-        )
       q-separator.q-my-lg
       .row.q-col-gutter-md
         .col-12
@@ -176,9 +165,22 @@
       .row.q-col-gutter-md.q-mt-sm
         q-input.col-12.col-md-6(
           :readonly='!hasPermission("/settings/passwdadm", "update")'
+          type="number"
+          outlined
+          v-model="payload.passwordUsageExpirationTtlSeconds"
+          input-class="text-right"
+          label="Expiration d'usage du mot de passe (secondes)"
+          hint="Durée de validité métier d'un mot de passe avant obligation de renouvellement"
+          dense
+        )
+          template(#append)
+            q-chip(dense size="sm" color="grey-3" text-color="dark")
+              span(v-text="passwordUsageExpirationTtlDaysHuman")
+        q-input.col-12.col-md-6(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="text"
           outlined
-          v-model="payload.passwordExpirationReminderSubject"
+          v-model="payload.passwordUsageReminderSubject"
           label="Sujet par défaut"
           hint="Utilisé si aucun sujet n'est défini pour un jalon"
           dense
@@ -192,7 +194,7 @@
           hint="Valeur fixe: password_reminder"
           dense
         )
-      .row.q-col-gutter-md.q-mt-sm(v-for="(item, idx) in payload.passwordExpirationRemindersByDay" :key="`reminder-${idx}`")
+      .row.q-col-gutter-md.q-mt-sm(v-for="(item, idx) in payload.passwordUsageRemindersByDay" :key="`reminder-${idx}`")
         q-input.col-12.col-sm-2(
           :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="number"
@@ -253,6 +255,9 @@
           hint="Durée pendant laquelle le code de réinitialisation est valide"
           dense
         )
+          template(#append)
+            q-chip(dense size="sm" color="grey-3" text-color="dark")
+              span(v-text="resetCodeTtlDaysHuman")
         q-input.col-12.col-md-6(
           :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="number"
@@ -262,6 +267,9 @@
           hint="Durée pendant laquelle le token d'initialisation envoyé par mail est valide"
           dense
         )
+          template(#append)
+            q-chip(dense size="sm" color="grey-3" text-color="dark")
+              span(v-text="initTokenTtlDaysHuman")
   q-card-actions.sticky-footer.border-top.full-width
     q-space
     q-btn.text-positive(
@@ -283,10 +291,10 @@ import { computed, ref, watch } from 'vue'
 
 type PasswordPolicySettings = {
   len: number
-  hasUpperCase: 0 | 1
-  hasLowerCase: 0 | 1
-  hasNumbers: 0 | 1
-  hasSpecialChars: 0 | 1
+  hasUpperCase: number
+  hasLowerCase: number
+  hasNumbers: number
+  hasSpecialChars: number
   checkPwned: boolean
   pwnedRecheckEnabled: boolean
   pwnedRecheckMaxAgeSeconds: number
@@ -299,6 +307,11 @@ type PasswordPolicySettings = {
   minComplexity: number
   resetCodeTTL: number
   initTokenTTL: number
+      passwordUsageExpirationTtlSeconds?: number
+      passwordUsageReminderSteps?: PasswordExpirationReminderRow[]
+      passwordUsageReminderTemplatesByDays?: Record<string, string>
+      passwordUsageReminderSubject?: string
+      passwordUsageReminderSubjectsByDays?: Record<string, string>
   passwordExpirationReminderDaysBefore?: number
   passwordExpirationReminderDaysBeforeList?: number[]
   passwordExpirationReminderSteps?: PasswordExpirationReminderRow[]
@@ -319,14 +332,9 @@ export default defineComponent({
     const { handleError } = useErrorHandling()
     const { hasPermission } = useAccessControl()
 
-    const pwnedActions = [
-      { label: 'Ne rien faire', value: 'none' },
-      { label: "Notifier l'utilisateur", value: 'notify' },
-      { label: 'Expirer le mot de passe', value: 'expire' },
-    ] as const
     const mailTemplateOptions = ref<{ label: string; value: string }[]>([])
 
-    const payload = ref({
+    const payload = ref<PasswordPolicyUiState>({
       len: 8,
       hasUpperCase: 0,
       hasLowerCase: 0,
@@ -344,29 +352,34 @@ export default defineComponent({
       minComplexity: 0,
       resetCodeTTL: 0,
       initTokenTTL: 0,
+      passwordUsageExpirationTtlSeconds: 60 * 60 * 24 * 90,
+      passwordUsageReminderSteps: [] as PasswordExpirationReminderRow[],
+      passwordUsageReminderTemplatesByDays: {} as Record<string, string>,
+      passwordUsageReminderSubject: 'Votre mot de passe expire bientôt',
+      passwordUsageReminderSubjectsByDays: {} as Record<string, string>,
+      passwordUsageRemindersByDay: [] as PasswordExpirationReminderRow[],
       passwordExpirationReminderDaysBefore: -1,
       passwordExpirationReminderDaysBeforeList: [] as number[],
       passwordExpirationReminderSteps: [] as PasswordExpirationReminderRow[],
       passwordExpirationReminderTemplatesByDays: {} as Record<string, string>,
       passwordExpirationReminderSubject: 'Votre mot de passe expire bientôt',
       passwordExpirationReminderSubjectsByDays: {} as Record<string, string>,
-      passwordExpirationRemindersByDay: [] as PasswordExpirationReminderRow[],
     })
     const validations = ref({} as Record<string, unknown>)
     const hibpKeyStatus = ref<{ valid: boolean; reason: string | null }>({ valid: true, reason: null })
 
-    const pwnedRecheckMaxAgeHuman = computed(() => {
-      const secondsRaw = Number(payload.value.pwnedRecheckMaxAgeSeconds || 0)
-      if (!Number.isFinite(secondsRaw) || secondsRaw <= 0) return '0 minute'
+    const formatSecondsToHuman = (secondsInput: number): string => {
+      const seconds = Number(secondsInput || 0)
+      if (!Number.isFinite(seconds) || seconds <= 0) return '0 minute'
 
-      let seconds = Math.floor(secondsRaw)
-      const days = Math.floor(seconds / 86400)
-      seconds -= days * 86400
-      const hours = Math.floor(seconds / 3600)
-      seconds -= hours * 3600
-      const minutes = Math.floor(seconds / 60)
-      seconds -= minutes * 60
-      const secs = Math.floor(seconds)
+      let remaining = Math.floor(seconds)
+      const days = Math.floor(remaining / 86400)
+      remaining -= days * 86400
+      const hours = Math.floor(remaining / 3600)
+      remaining -= hours * 3600
+      const minutes = Math.floor(remaining / 60)
+      remaining -= minutes * 60
+      const secs = Math.floor(remaining)
 
       const parts: string[] = []
       if (days) parts.push(`${days} jour${days > 1 ? 's' : ''}`)
@@ -374,7 +387,12 @@ export default defineComponent({
       if (minutes || parts.length === 0) parts.push(`${minutes} minute${minutes > 1 ? 's' : ''}`)
       if (secs) parts.push(`${secs} seconde${secs > 1 ? 's' : ''}`)
       return parts.join(' ')
-    })
+    }
+
+    const pwnedRecheckMaxAgeHuman = computed(() => formatSecondsToHuman(payload.value.pwnedRecheckMaxAgeSeconds || 0))
+    const passwordUsageExpirationTtlDaysHuman = computed(() => formatSecondsToHuman(payload.value.passwordUsageExpirationTtlSeconds || 0))
+    const resetCodeTtlDaysHuman = computed(() => formatSecondsToHuman(payload.value.resetCodeTTL))
+    const initTokenTtlDaysHuman = computed(() => formatSecondsToHuman(payload.value.initTokenTTL))
 
     watch(
       () => payload.value.checkPwned,
@@ -428,9 +446,11 @@ export default defineComponent({
 
     return {
       payload,
-      pwnedActions,
       hibpKeyStatus,
       pwnedRecheckMaxAgeHuman,
+      passwordUsageExpirationTtlDaysHuman,
+      resetCodeTtlDaysHuman,
+      initTokenTtlDaysHuman,
       defaultReminderTemplate: 'password_reminder',
       handleError,
       pending,
@@ -445,16 +465,9 @@ export default defineComponent({
   },
   methods: {
     normalizeReminderPayload() {
-      const listFromRows = (this.payload.passwordExpirationRemindersByDay || [])
-        .map((row: PasswordExpirationReminderRow) => Number(row.daysBefore))
-        .filter((v: number) => Number.isFinite(v) && v >= 0)
-
-      const list = Array.from(new Set([...listFromRows]))
-        .sort((a, b) => b - a)
-
       const templatesByDays: Record<string, string> = {}
       const subjectsByDays: Record<string, string> = {}
-      for (const row of this.payload.passwordExpirationRemindersByDay || []) {
+      for (const row of this.payload.passwordUsageRemindersByDay || []) {
         const day = Math.floor(Number(row.daysBefore))
         if (!Number.isFinite(day) || day < 0) continue
         const template = String(row.template || '').trim()
@@ -465,10 +478,9 @@ export default defineComponent({
         if (subject) subjectsByDays[String(day)] = subject
       }
 
-      this.payload.passwordExpirationReminderDaysBeforeList = list
-      this.payload.passwordExpirationReminderTemplatesByDays = templatesByDays
-      this.payload.passwordExpirationReminderSubjectsByDays = subjectsByDays
-      this.payload.passwordExpirationReminderSteps = (this.payload.passwordExpirationRemindersByDay || [])
+      this.payload.passwordUsageReminderTemplatesByDays = templatesByDays
+      this.payload.passwordUsageReminderSubjectsByDays = subjectsByDays
+      this.payload.passwordUsageReminderSteps = (this.payload.passwordUsageRemindersByDay || [])
         .map((row: PasswordExpirationReminderRow) => ({
           daysBefore: Math.floor(Number(row.daysBefore)),
           template: String(row.template || '').trim(),
@@ -478,22 +490,25 @@ export default defineComponent({
         .sort((a: PasswordExpirationReminderRow, b: PasswordExpirationReminderRow) => b.daysBefore - a.daysBefore)
     },
     addReminderRow() {
-      this.payload.passwordExpirationRemindersByDay.push({
+      this.payload.passwordUsageRemindersByDay = this.payload.passwordUsageRemindersByDay || []
+      this.payload.passwordUsageRemindersByDay.push({
         daysBefore: 0,
         template: '',
         subject: '',
       })
     },
     removeReminderRow(idx: number) {
-      this.payload.passwordExpirationRemindersByDay.splice(idx, 1)
+      this.payload.passwordUsageRemindersByDay = this.payload.passwordUsageRemindersByDay || []
+      this.payload.passwordUsageRemindersByDay.splice(idx, 1)
     },
     async saveParams() {
       try {
         this.normalizeReminderPayload()
+        this.payload.pwnedRecheckAction = 'none'
         const body: PasswordPolicyUiState = {
           ...this.payload,
         }
-        delete body.passwordExpirationRemindersByDay
+        delete body.passwordUsageRemindersByDay
 
         await this.$http.post(`/settings/passwdadm/setpolicies`, {
           body,
@@ -527,12 +542,14 @@ export default defineComponent({
 })
 
 type PasswordPolicyUiState = PasswordPolicySettings & {
-  passwordExpirationRemindersByDay?: PasswordExpirationReminderRow[]
+  passwordUsageRemindersByDay?: PasswordExpirationReminderRow[]
 }
 
 function normalizePasswordPolicy(raw: PasswordPolicyUiState) {
   const payload = { ...raw } as PasswordPolicyUiState
-  const steps = Array.isArray(payload.passwordExpirationReminderSteps) ? payload.passwordExpirationReminderSteps : []
+  const usageSteps = Array.isArray(payload.passwordUsageReminderSteps) ? payload.passwordUsageReminderSteps : []
+  const legacySteps = Array.isArray(payload.passwordExpirationReminderSteps) ? payload.passwordExpirationReminderSteps : []
+  const steps = usageSteps.length ? usageSteps : legacySteps
   const stepDays = steps
     .map((step) => Math.floor(Number(step?.daysBefore)))
     .filter((v) => Number.isFinite(v) && v >= 0)
@@ -552,12 +569,14 @@ function normalizePasswordPolicy(raw: PasswordPolicyUiState) {
     ),
   ).sort((a, b) => b - a)
 
-  const templatesByDays =
-    payload.passwordExpirationReminderTemplatesByDays && typeof payload.passwordExpirationReminderTemplatesByDays === 'object'
+  const templatesByDays = payload.passwordUsageReminderTemplatesByDays && typeof payload.passwordUsageReminderTemplatesByDays === 'object'
+    ? payload.passwordUsageReminderTemplatesByDays
+    : payload.passwordExpirationReminderTemplatesByDays && typeof payload.passwordExpirationReminderTemplatesByDays === 'object'
       ? payload.passwordExpirationReminderTemplatesByDays
       : {}
-  const subjectsByDays =
-    payload.passwordExpirationReminderSubjectsByDays && typeof payload.passwordExpirationReminderSubjectsByDays === 'object'
+  const subjectsByDays = payload.passwordUsageReminderSubjectsByDays && typeof payload.passwordUsageReminderSubjectsByDays === 'object'
+    ? payload.passwordUsageReminderSubjectsByDays
+    : payload.passwordExpirationReminderSubjectsByDays && typeof payload.passwordExpirationReminderSubjectsByDays === 'object'
       ? payload.passwordExpirationReminderSubjectsByDays
       : {}
 
@@ -585,12 +604,12 @@ function normalizePasswordPolicy(raw: PasswordPolicyUiState) {
 
   return {
     ...payload,
-    passwordExpirationReminderDaysBeforeList: normalizedDays,
-    passwordExpirationReminderSteps: rows,
-    passwordExpirationReminderSubject: String(payload.passwordExpirationReminderSubject || 'Votre mot de passe expire bientôt'),
-    passwordExpirationReminderTemplatesByDays: templatesByDays,
-    passwordExpirationReminderSubjectsByDays: subjectsByDays,
-    passwordExpirationRemindersByDay: rows,
+    passwordUsageExpirationTtlSeconds: Number(payload.passwordUsageExpirationTtlSeconds || 60 * 60 * 24 * 90),
+    passwordUsageReminderSteps: rows,
+    passwordUsageReminderSubject: String(payload.passwordUsageReminderSubject || payload.passwordExpirationReminderSubject || 'Votre mot de passe expire bientôt'),
+    passwordUsageReminderTemplatesByDays: templatesByDays,
+    passwordUsageReminderSubjectsByDays: subjectsByDays,
+    passwordUsageRemindersByDay: rows,
   }
 }
 </script>

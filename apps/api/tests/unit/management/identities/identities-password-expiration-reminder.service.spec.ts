@@ -1,101 +1,92 @@
-import { IdentitiesPasswordExpirationReminderService } from '~/management/identities/identities-password-expiration-reminder.service'
-import { isConsoleEntrypoint } from '~/_common/functions/is-cli'
+import { IdentitiesPasswordExpirationReminderService } from '~/management/identities/identities-password-expiration-reminder.service';
+import { isConsoleEntrypoint } from '~/_common/functions/is-cli';
 
 jest.mock('~/management/identities/identities-crud.service', () => ({
   IdentitiesCrudService: class IdentitiesCrudServiceMock {},
-}))
+}));
 
 jest.mock('~/_common/functions/is-cli', () => ({
   isConsoleEntrypoint: jest.fn(),
-}))
+}));
 
 describe('IdentitiesPasswordExpirationReminderService', () => {
-  const mockedIsConsoleEntrypoint = isConsoleEntrypoint as jest.MockedFunction<typeof isConsoleEntrypoint>
+  const mockedIsConsoleEntrypoint = isConsoleEntrypoint as jest.MockedFunction<typeof isConsoleEntrypoint>;
 
-  const aggregate = jest.fn()
-  const updateOne = jest.fn()
-  const find = jest.fn()
-  const sendMail = jest.fn()
-  const getPolicies = jest.fn()
-
-  const passwordHistory = {
-    model: {
-      aggregate,
-      updateOne,
-    },
-  }
+  const aggregate = jest.fn();
+  const updateOne = jest.fn();
+  const find = jest.fn();
+  const sendMail = jest.fn();
+  const getPolicies = jest.fn();
 
   const identities = {
     model: {
+      aggregate,
       find,
+      updateOne,
     },
-  }
+  };
 
   const mailer = {
     sendMail,
-  }
+  };
 
   const passwdadmService = {
     getPolicies,
-  }
+  };
 
-  let service: IdentitiesPasswordExpirationReminderService
+  let service: IdentitiesPasswordExpirationReminderService;
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    mockedIsConsoleEntrypoint.mockReturnValue(false)
+    jest.clearAllMocks();
+    mockedIsConsoleEntrypoint.mockReturnValue(false);
 
     service = new IdentitiesPasswordExpirationReminderService(
-      passwordHistory as any,
       identities as any,
       passwdadmService as any,
       mailer as any,
-    )
-  })
+    );
+  });
 
   it('should skip execution in console entrypoint', async () => {
-    mockedIsConsoleEntrypoint.mockReturnValue(true)
+    mockedIsConsoleEntrypoint.mockReturnValue(true);
 
-    await service.sendUpcomingPasswordExpirationReminders()
+    await service.sendUpcomingPasswordExpirationReminders();
 
-    expect(getPolicies).not.toHaveBeenCalled()
-    expect(aggregate).not.toHaveBeenCalled()
-    expect(sendMail).not.toHaveBeenCalled()
-  })
+    expect(getPolicies).not.toHaveBeenCalled();
+    expect(aggregate).not.toHaveBeenCalled();
+    expect(sendMail).not.toHaveBeenCalled();
+  });
 
   it('should skip when no valid offsets are configured', async () => {
     getPolicies.mockResolvedValue({
       emailAttribute: 'inetOrgPerson.mail',
-      passwordExpirationReminderSteps: [],
-    })
+      passwordUsageReminderSteps: [],
+    });
 
-    await service.sendUpcomingPasswordExpirationReminders()
+    await service.sendUpcomingPasswordExpirationReminders();
 
-    expect(aggregate).not.toHaveBeenCalled()
-    expect(sendMail).not.toHaveBeenCalled()
-  })
+    expect(aggregate).not.toHaveBeenCalled();
+    expect(sendMail).not.toHaveBeenCalled();
+  });
 
   it('should send reminders for configured steps and mark sent day', async () => {
     getPolicies.mockResolvedValue({
       emailAttribute: 'inetOrgPerson.mail',
-      passwordExpirationReminderSubject: 'Sujet fallback',
-      passwordExpirationReminderSteps: [
-        { daysBefore: 7, template: 'mail_custom_7d', subject: 'Sujet J-7' },
-      ],
-    })
+      passwordUsageReminderSubject: 'Sujet fallback',
+      passwordUsageReminderSteps: [{ daysBefore: 7, template: 'mail_custom_7d', subject: 'Sujet J-7' }],
+    });
 
     aggregate.mockResolvedValue([
       {
         _id: 'history-1',
-        identityId: 'identity-1',
         expiresAt: new Date('2030-01-01T10:00:00.000Z'),
       },
-    ])
+    ]);
 
     find.mockReturnValue({
       lean: jest.fn().mockResolvedValue([
         {
-          _id: 'identity-1',
+          _id: 'history-1',
           inetOrgPerson: {
             uid: 'john',
             displayName: 'John Doe',
@@ -103,61 +94,108 @@ describe('IdentitiesPasswordExpirationReminderService', () => {
           },
         },
       ]),
-    })
+    });
 
-    sendMail.mockResolvedValue(undefined)
-    updateOne.mockResolvedValue(undefined)
+    sendMail.mockResolvedValue(undefined);
+    updateOne.mockResolvedValue(undefined);
 
-    await service.sendUpcomingPasswordExpirationReminders()
+    await service.sendUpcomingPasswordExpirationReminders();
 
-    expect(sendMail).toHaveBeenCalledTimes(1)
+    expect(aggregate).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          $match: expect.objectContaining({
+            state: expect.any(Number),
+            passwordUsageExpiresAt: expect.any(Object),
+            passwordUsageReminderSentDays: { $nin: [7] },
+          }),
+        }),
+      ]),
+    );
+    expect(sendMail).toHaveBeenCalledTimes(1);
     expect(sendMail).toHaveBeenCalledWith(
       expect.objectContaining({
         to: 'john@example.org',
         subject: 'Sujet J-7',
         template: 'mail_custom_7d',
       }),
-    )
+    );
     expect(updateOne).toHaveBeenCalledWith(
       { _id: 'history-1' },
       expect.objectContaining({
-        $addToSet: { passwordExpiryReminderSentDays: 7 },
+        $addToSet: { passwordUsageReminderSentDays: 7 },
       }),
-    )
-  })
+    );
+  });
 
-  it('should use default template and subject fallback when step values are empty', async () => {
+  it('should fallback to legacy reminder settings when usage settings are missing', async () => {
     getPolicies.mockResolvedValue({
       emailAttribute: 'inetOrgPerson.mail',
-      passwordExpirationReminderSubject: 'Sujet par défaut',
-      passwordExpirationReminderSteps: [
-        { daysBefore: 1, template: '', subject: '' },
-      ],
-    })
+      passwordExpirationReminderSubject: 'Sujet legacy',
+      passwordExpirationReminderSteps: [{ daysBefore: 3, template: 'mail_legacy_3d', subject: 'Legacy J-3' }],
+    });
 
     aggregate.mockResolvedValue([
       {
-        _id: 'history-2',
-        identityId: 'identity-2',
-        expiresAt: new Date('2030-01-02T10:00:00.000Z'),
+        _id: 'history-legacy',
+        expiresAt: new Date('2030-01-03T10:00:00.000Z'),
       },
-    ])
+    ]);
 
     find.mockReturnValue({
       lean: jest.fn().mockResolvedValue([
         {
-          _id: 'identity-2',
+          _id: 'history-legacy',
+          inetOrgPerson: {
+            mail: 'legacy@example.org',
+          },
+        },
+      ]),
+    });
+
+    sendMail.mockResolvedValue(undefined);
+    updateOne.mockResolvedValue(undefined);
+
+    await service.sendUpcomingPasswordExpirationReminders();
+
+    expect(sendMail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: 'legacy@example.org',
+        template: 'mail_legacy_3d',
+        subject: 'Legacy J-3',
+      }),
+    );
+  });
+
+  it('should use default template and subject fallback when step values are empty', async () => {
+    getPolicies.mockResolvedValue({
+      emailAttribute: 'inetOrgPerson.mail',
+      passwordUsageReminderSubject: 'Sujet par défaut',
+      passwordUsageReminderSteps: [{ daysBefore: 1, template: '', subject: '' }],
+    });
+
+    aggregate.mockResolvedValue([
+      {
+        _id: 'history-2',
+        expiresAt: new Date('2030-01-02T10:00:00.000Z'),
+      },
+    ]);
+
+    find.mockReturnValue({
+      lean: jest.fn().mockResolvedValue([
+        {
+          _id: 'history-2',
           inetOrgPerson: {
             mail: 'jane@example.org',
           },
         },
       ]),
-    })
+    });
 
-    sendMail.mockResolvedValue(undefined)
-    updateOne.mockResolvedValue(undefined)
+    sendMail.mockResolvedValue(undefined);
+    updateOne.mockResolvedValue(undefined);
 
-    await service.sendUpcomingPasswordExpirationReminders()
+    await service.sendUpcomingPasswordExpirationReminders();
 
     expect(sendMail).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -165,6 +203,6 @@ describe('IdentitiesPasswordExpirationReminderService', () => {
         template: 'password_reminder',
         subject: 'Sujet par défaut',
       }),
-    )
-  })
-})
+    );
+  });
+});

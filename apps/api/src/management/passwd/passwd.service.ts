@@ -31,9 +31,10 @@ import { SmsadmService } from '~/settings/smsadm.service';
 import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
 import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
 import { MailadmService } from '~/settings/mailadm.service';
-import { DataStatusEnum } from "~/management/identities/_enums/data-status";
+import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 import { SentMessageInfo } from 'nodemailer';
 import { PasswordHistoryService } from '~/management/password-history/password-history.service';
+import { PasswordPoliciesDto } from '~/settings/_dto/password-policy.dto';
 
 interface TokenData {
   k: string;
@@ -150,9 +151,12 @@ export class PasswdService extends AbstractService {
 
   //Initialisation du compte. Envoi d' un mail avec un token pour l'init du compte
   public async initAccount(initDto: InitAccountDto): Promise<SentMessageInfo> {
-    const identity = (await this.identities.findOne({ 'inetOrgPerson.uid': initDto.uid, state: IdentityState.SYNCED })) as Identities;
+    const identity = (await this.identities.findOne({
+      'inetOrgPerson.uid': initDto.uid,
+      state: IdentityState.SYNCED,
+    })) as Identities;
     if (!identity) {
-      throw new BadRequestException('Une erreur est survenue : Identité non synchronisée ou inconnue')
+      throw new BadRequestException('Une erreur est survenue : Identité non synchronisée ou inconnue');
     }
     //test si on peu reninitialiser le compte
     if (identity.dataStatus === DataStatusEnum.INACTIVE || identity.dataStatus === DataStatusEnum.DELETED) {
@@ -178,7 +182,10 @@ export class PasswdService extends AbstractService {
     if (!mail) {
       this.logger.error('Error while initAccount identityMailAttribute not defined');
       throw new BadRequestException({
-        message: "Une erreur est survenue : L'identité <" + (identity.inetOrgPerson?.cn || identity._id) + "> n'a pas d'adresse mail",
+        message:
+          "Une erreur est survenue : L'identité <" +
+          (identity.inetOrgPerson?.cn || identity._id) +
+          "> n'a pas d'adresse mail",
         error: 'Bad Request',
         statusCode: 400,
       });
@@ -191,8 +198,10 @@ export class PasswdService extends AbstractService {
     //envoi du token
 
     try {
-      const template = (initDto?.template || 'initaccount').trim() || 'initaccount'
-      const variables = (initDto?.variables && typeof initDto.variables === 'object' ? initDto.variables : {}) as Record<string, any>
+      const template = (initDto?.template || 'initaccount').trim() || 'initaccount';
+      const variables = (
+        initDto?.variables && typeof initDto.variables === 'object' ? initDto.variables : {}
+      ) as Record<string, any>;
       const send = await this.mailer.sendMail({
         from: smtpParams.sender,
         to: mail,
@@ -205,7 +214,7 @@ export class PasswdService extends AbstractService {
           mail: identity.inetOrgPerson.mail,
           ...variables,
         },
-      })
+      });
       this.logger.log('Init compte envoyé pour uid ' + initDto.uid + ' à ' + mail);
       this.setInitState(identity, InitStatesEnum.SENT);
 
@@ -240,7 +249,7 @@ export class PasswdService extends AbstractService {
           statusCode: 400,
         });
       }
-      await this.passwordHistory.assertNotReused(identity._id, passwdDto.newPassword)
+      await this.passwordHistory.assertNotReused(identity._id, passwdDto.newPassword);
       //tout est ok en envoie au backend
       const result = await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_CHANGE,
@@ -260,8 +269,9 @@ export class PasswdService extends AbstractService {
         },
       );
       // on met actif l'identité
-      await this.identities.model.updateOne({ _id: identity._id }, { dataStatus: DataStatusEnum.ACTIVE })
-      await this.passwordHistory.recordPassword(identity._id, passwdDto.newPassword, 'change')
+      await this.identities.model.updateOne({ _id: identity._id }, { dataStatus: DataStatusEnum.ACTIVE });
+      await this.passwordHistory.recordPassword(identity._id, passwdDto.newPassword, 'change');
+      await this.updatePasswordUsageExpiration(identity._id);
       return result;
     } catch (e) {
       let job = undefined;
@@ -385,7 +395,7 @@ export class PasswdService extends AbstractService {
     this.logger.log('dataToken :' + tokenData);
     try {
       const identity = (await this.identities.findOne({ 'inetOrgPerson.uid': tokenData.uid })) as Identities;
-      await this.passwordHistory.assertNotReused(identity._id, data.newpassword)
+      await this.passwordHistory.assertNotReused(identity._id, data.newpassword);
       const [_, response] = await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_RESET,
         identity._id,
@@ -405,8 +415,9 @@ export class PasswdService extends AbstractService {
         // mise de l indentité active
         // on met actif l'identité
         identity.dataStatus = DataStatusEnum.ACTIVE;
-        await identity.save()
-        await this.passwordHistory.recordPassword(identity._id, data.newpassword, 'reset')
+        await identity.save();
+        await this.passwordHistory.recordPassword(identity._id, data.newpassword, 'reset');
+        await this.updatePasswordUsageExpiration(identity._id);
         return [_, response];
       }
       this.logger.error('Error from backend while reseting password by code');
@@ -429,7 +440,7 @@ export class PasswdService extends AbstractService {
         state: IdentityState.SYNCED,
       })) as Identities;
 
-      await this.passwordHistory.assertNotReused(identity._id, data.newPassword)
+      await this.passwordHistory.assertNotReused(identity._id, data.newPassword);
       const [_, response] = await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_RESET,
         identity._id,
@@ -446,7 +457,8 @@ export class PasswdService extends AbstractService {
       if (response?.status === 0) {
         await this.redis.del(data.token);
         await this.setInitState(identity, InitStatesEnum.INITIALIZED);
-        await this.passwordHistory.recordPassword(identity._id, data.newPassword, 'reset')
+        await this.passwordHistory.recordPassword(identity._id, data.newPassword, 'reset');
+        await this.updatePasswordUsageExpiration(identity._id);
         return [_, response];
       }
 
@@ -498,7 +510,7 @@ export class PasswdService extends AbstractService {
   }
 
   private async setInitState(identity: Identities, state: InitStatesEnum): Promise<Identities> {
-  // on met actif l'identité
+    // on met actif l'identité
     identity.initState = state;
     identity.dataStatus = DataStatusEnum.ACTIVE;
 
@@ -510,6 +522,23 @@ export class PasswdService extends AbstractService {
     }
 
     return await identity.save();
+  }
+
+  private async updatePasswordUsageExpiration(identityId: Identities['_id']): Promise<void> {
+    const policies = (await this.passwdadmService.getPolicies()) as PasswordPoliciesDto;
+    const ttlSeconds = Number(policies?.passwordUsageExpirationTtlSeconds || 0);
+    const expiresAt = Number.isFinite(ttlSeconds) && ttlSeconds > 0 ? new Date(Date.now() + ttlSeconds * 1000) : null;
+
+    await this.identities.model.updateOne(
+      { _id: identityId },
+      {
+        $set: {
+          passwordUsageExpiresAt: expiresAt,
+          passwordUsageReminderSentDays: [],
+          passwordUsageReminderLastSentAt: null,
+        },
+      },
+    );
   }
 
   // sort les identites qui n ont pas repondu dans le delai à l init de leurs comptes

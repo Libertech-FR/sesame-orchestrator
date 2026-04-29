@@ -4,7 +4,6 @@ import { Types } from 'mongoose';
 import { get } from 'radash';
 import { isConsoleEntrypoint } from '~/_common/functions/is-cli';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
-import { PasswordHistoryService } from '~/management/password-history/password-history.service';
 import { PasswdadmService } from '~/settings/passwdadm.service';
 import { IdentitiesCrudService } from './identities-crud.service';
 
@@ -14,7 +13,6 @@ export class IdentitiesPasswordExpirationReminderService {
   private readonly defaultTemplate = 'password_reminder';
 
   public constructor(
-    private readonly passwordHistory: PasswordHistoryService,
     private readonly identities: IdentitiesCrudService,
     private readonly passwdadmService: PasswdadmService,
     private readonly mailer: MailerService,
@@ -58,7 +56,7 @@ export class IdentitiesPasswordExpirationReminderService {
         continue;
       }
 
-      const identityIds = candidates.map((row) => row.identityId);
+      const identityIds = candidates.map((row) => row._id);
       const identities = await this.identities.model
         .find({
           _id: { $in: identityIds },
@@ -69,7 +67,7 @@ export class IdentitiesPasswordExpirationReminderService {
       const identityById = new Map(identities.map((identity) => [String(identity._id), identity]));
 
       for (const row of candidates) {
-        const identity = identityById.get(String(row.identityId));
+        const identity = identityById.get(String(row._id));
         if (!identity) {
           totalSkipped++;
           continue;
@@ -95,17 +93,17 @@ export class IdentitiesPasswordExpirationReminderService {
             },
           });
 
-          await this.passwordHistory.model.updateOne(
+          await this.identities.model.updateOne(
             { _id: row._id },
             {
-              $addToSet: { passwordExpiryReminderSentDays: daysBefore },
-              $set: { passwordExpiryReminderLastSentAt: new Date() },
+              $addToSet: { passwordUsageReminderSentDays: daysBefore },
+              $set: { passwordUsageReminderLastSentAt: new Date() },
             },
           );
           totalSent++;
         } catch (e) {
           this.logger.warn(
-            `Password expiration reminder send failed for identity <${row.identityId}> at J-${daysBefore}: ${e?.message || e}`,
+            `Password expiration reminder send failed for identity <${row._id}> at J-${daysBefore}: ${e?.message || e}`,
           );
           totalSkipped++;
         }
@@ -118,9 +116,14 @@ export class IdentitiesPasswordExpirationReminderService {
   }
 
   private getReminderSteps(policies: any): Array<{ daysBefore: number; template?: string; subject?: string }> {
-    const stepsRaw = Array.isArray(policies?.passwordExpirationReminderSteps)
-      ? policies.passwordExpirationReminderSteps
+    const usageStepsRaw = Array.isArray(policies?.passwordUsageReminderSteps)
+      ? policies.passwordUsageReminderSteps
       : [];
+    const stepsRaw = usageStepsRaw.length
+      ? usageStepsRaw
+      : Array.isArray(policies?.passwordExpirationReminderSteps)
+        ? policies.passwordExpirationReminderSteps
+        : [];
     const normalizedSteps = stepsRaw
       .map((step: any) => ({
         daysBefore: Math.floor(Number(step?.daysBefore)),
@@ -157,29 +160,29 @@ export class IdentitiesPasswordExpirationReminderService {
     return offsets.map((daysBefore) => ({ daysBefore }));
   }
 
-  private async getCandidatesForOffset(
-    daysBefore: number,
-  ): Promise<Array<{ _id: Types.ObjectId; identityId: Types.ObjectId; expiresAt: Date }>> {
+  private async getCandidatesForOffset(daysBefore: number): Promise<Array<{ _id: Types.ObjectId; expiresAt: Date }>> {
     const now = Date.now();
     const dayMs = 24 * 60 * 60 * 1000;
     const targetStart = new Date(now + daysBefore * dayMs);
     const targetEnd = new Date(now + (daysBefore + 1) * dayMs);
 
-    return await this.passwordHistory.model.aggregate<{
+    return await this.identities.model.aggregate<{
       _id: Types.ObjectId;
-      identityId: Types.ObjectId;
       expiresAt: Date;
     }>([
       {
         $match: {
-          expiresAt: { $ne: null, $gte: targetStart, $lt: targetEnd },
-          passwordExpiryReminderSentDays: { $nin: [daysBefore] },
+          state: IdentityState.SYNCED,
+          passwordUsageExpiresAt: { $ne: null, $gte: targetStart, $lt: targetEnd },
+          passwordUsageReminderSentDays: { $nin: [daysBefore] },
         },
       },
-      { $sort: { createdAt: -1 } },
-      { $group: { _id: '$identityId', doc: { $first: '$$ROOT' } } },
-      { $replaceRoot: { newRoot: '$doc' } },
-      { $project: { _id: 1, identityId: 1, expiresAt: 1 } },
+      {
+        $project: {
+          _id: 1,
+          expiresAt: '$passwordUsageExpiresAt',
+        },
+      },
     ]);
   }
 
@@ -194,10 +197,13 @@ export class IdentitiesPasswordExpirationReminderService {
     }
 
     const templatesByDays =
-      policies?.passwordExpirationReminderTemplatesByDays &&
-      typeof policies.passwordExpirationReminderTemplatesByDays === 'object'
-        ? policies.passwordExpirationReminderTemplatesByDays
-        : {};
+      policies?.passwordUsageReminderTemplatesByDays &&
+      typeof policies.passwordUsageReminderTemplatesByDays === 'object'
+        ? policies.passwordUsageReminderTemplatesByDays
+        : policies?.passwordExpirationReminderTemplatesByDays &&
+            typeof policies.passwordExpirationReminderTemplatesByDays === 'object'
+          ? policies.passwordExpirationReminderTemplatesByDays
+          : {};
 
     const specificTemplate = String(templatesByDays?.[String(daysBefore)] || '').trim();
     if (specificTemplate) {
@@ -218,10 +224,12 @@ export class IdentitiesPasswordExpirationReminderService {
     }
 
     const subjectsByDays =
-      policies?.passwordExpirationReminderSubjectsByDays &&
-      typeof policies.passwordExpirationReminderSubjectsByDays === 'object'
-        ? policies.passwordExpirationReminderSubjectsByDays
-        : {};
+      policies?.passwordUsageReminderSubjectsByDays && typeof policies.passwordUsageReminderSubjectsByDays === 'object'
+        ? policies.passwordUsageReminderSubjectsByDays
+        : policies?.passwordExpirationReminderSubjectsByDays &&
+            typeof policies.passwordExpirationReminderSubjectsByDays === 'object'
+          ? policies.passwordExpirationReminderSubjectsByDays
+          : {};
 
     const specificSubject = String(subjectsByDays?.[String(daysBefore)] || '').trim();
     if (specificSubject) {
@@ -229,8 +237,11 @@ export class IdentitiesPasswordExpirationReminderService {
     }
 
     return (
-      String(policies?.passwordExpirationReminderSubject || 'Votre mot de passe expire bientôt').trim() ||
-      'Votre mot de passe expire bientôt'
+      String(
+        policies?.passwordUsageReminderSubject ||
+          policies?.passwordExpirationReminderSubject ||
+          'Votre mot de passe expire bientôt',
+      ).trim() || 'Votre mot de passe expire bientôt'
     );
   }
 }

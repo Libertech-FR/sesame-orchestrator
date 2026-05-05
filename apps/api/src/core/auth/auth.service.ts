@@ -19,6 +19,7 @@ import { ApiSession } from '~/_common/data/api-session';
 import { AuditsService } from '~/core/audits/audits.service';
 import { Types } from 'mongoose';
 import ipRangeCheck from 'ip-range-check';
+import { AgentState } from '~/core/agents/_enum/agent-state.enum';
 
 @Injectable()
 export class AuthService extends AbstractService implements OnModuleInit {
@@ -83,6 +84,17 @@ export class AuthService extends AbstractService implements OnModuleInit {
           ip,
           result: 'failed',
           reason: 'invalid_credentials',
+          agentId: user?._id,
+        });
+        return null;
+      }
+
+      if (user?.state?.current !== AgentState.ACTIVE) {
+        await this.auditAuthenticationAttempt({
+          username,
+          ip,
+          result: 'failed',
+          reason: 'agent_not_active',
           agentId: user?._id,
         });
         return null;

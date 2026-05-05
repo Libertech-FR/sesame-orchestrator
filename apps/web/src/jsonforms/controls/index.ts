@@ -1,5 +1,4 @@
 import {
-  type ControlElement,
   type JsonFormsRendererRegistryEntry,
   rankWith,
   isStringControl,
@@ -21,6 +20,20 @@ import {
   isObjectArrayControl,
   isObjectControl,
 } from '@jsonforms/core'
+import InputControlRendererComponent from './input.vue'
+import BooleanControlRendererComponent from './boolean.vue'
+import DateControlRendererComponent from './date.vue'
+import PasswordControlRendererComponent from './password.vue'
+import SliderControlRendererComponent from './slider.vue'
+import EnumAndSuggestionControlRendererComponent from './enum-and-suggestion.vue'
+import RadioGroupControlRendererComponent from './radio-group.vue'
+import NumericControlRendererComponent from './numeric.vue'
+import TextareaControlRendererComponent from './textarea.vue'
+import AutocompleteControlRendererComponent from './autocomplete.vue'
+import FileUploadControlRendererComponent from './file-upload.vue'
+import PhotoControlRendererComponent from './photo.vue'
+import AclControlRendererComponent from './acl.vue'
+import NetworkListControlRendererComponent from './network-list.vue'
 
 export { default as ControlWrapper } from '../common/control-wrapper.vue'
 export { default as InputControlRenderer } from './input.vue'
@@ -36,20 +49,7 @@ export { default as AutocompleteControlRenderer } from './autocomplete.vue'
 export { default as FileUploadControlRenderer } from './file-upload.vue'
 export { default as PhotoControlRenderer } from './photo.vue'
 export { default as AclControlRenderer } from './acl.vue'
-
-import InputControlRendererComponent from './input.vue'
-import BooleanControlRendererComponent from './boolean.vue'
-import DateControlRendererComponent from './date.vue'
-import PasswordControlRendererComponent from './password.vue'
-import SliderControlRendererComponent from './slider.vue'
-import EnumAndSuggestionControlRendererComponent from './enum-and-suggestion.vue'
-import RadioGroupControlRendererComponent from './radio-group.vue'
-import NumericControlRendererComponent from './numeric.vue'
-import TextareaControlRendererComponent from './textarea.vue'
-import AutocompleteControlRendererComponent from './autocomplete.vue'
-import FileUploadControlRendererComponent from './file-upload.vue'
-import PhotoControlRendererComponent from './photo.vue'
-import AclControlRendererComponent from './acl.vue'
+export { default as NetworkListControlRenderer } from './network-list.vue'
 
 const inputControlRendererEntry: JsonFormsRendererRegistryEntry = {
   renderer: InputControlRendererComponent,
@@ -116,6 +116,11 @@ const aclControlRendererEntry: JsonFormsRendererRegistryEntry = {
   tester: rankWith(30, and(isPrimitiveArrayControl, optionIs('format', 'acl'))),
 }
 
+const networkListControlRendererEntry: JsonFormsRendererRegistryEntry = {
+  renderer: NetworkListControlRendererComponent,
+  tester: rankWith(15, and(isPrimitiveArrayControl, optionIs('format', 'networkList'))),
+}
+
 export const controlsRenderers = [
   inputControlRendererEntry,
   booleanControlRendererEntry,
@@ -129,5 +134,6 @@ export const controlsRenderers = [
   autocompleteControlRendererEntry,
   photoControlRendererEntry,
   fileUploadControlRendererEntry,
+  networkListControlRendererEntry,
   aclControlRendererEntry,
 ]

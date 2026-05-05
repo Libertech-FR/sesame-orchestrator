@@ -18,6 +18,8 @@ export enum AuditOperation {
   DELETE = 'delete',
   /** Remplacement complet d'un enregistrement */
   REPLACE = 'replace',
+  /** Tentative d'authentification */
+  AUTHENTICATION = 'authentication',
 }
 
 /**
@@ -98,7 +100,7 @@ export class Audits extends AbstractSchema {
    * Type d'opération effectuée sur le document.
    * Détermine la nature de la modification auditée.
    *
-   * @type {'insert' | 'update' | 'delete' | 'replace'}
+   * @type {'insert' | 'update' | 'delete' | 'replace' | 'authentication'}
    * @see {AuditOperation}
    */
   @Prop({
@@ -106,7 +108,7 @@ export class Audits extends AbstractSchema {
     required: true,
     enum: AuditOperation,
   })
-  public op!: 'insert' | 'update' | 'delete' | 'replace'
+  public op!: 'insert' | 'update' | 'delete' | 'replace' | 'authentication'
 
   /**
    * Agent (utilisateur ou système) qui a effectué l'opération.
@@ -142,6 +144,17 @@ export class Audits extends AbstractSchema {
    */
   @Prop({ type: Array, of: Object })
   public changes?: ChangesType[]
+
+  /**
+   * Adresse IP source associée à l'action auditée.
+   * Principalement utilisée pour les événements d'authentification,
+   * mais disponible globalement pour tous les audits.
+   *
+   * @type {string}
+   * @optional
+   */
+  @Prop({ type: String })
+  public ip?: string
 }
 
 /**

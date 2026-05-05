@@ -12,6 +12,9 @@ IMG_NAME = "ghcr.io/libertech-fr/sesame-orchestrator"
 TEST_IMG_NAME = "sesame-orchestrator-test-local"
 BASE_NAME = "sesame"
 APP_NAME = "sesame-orchestrator"
+# Volume dédié : évite de monter les node_modules du mac (darwin) dans le conteneur Alpine (linux-*-musl),
+# ce qui casse les binaires optionnels (ex. oxc-parser / Nuxt). Nom sans guillemets (APP_NAME en contient).
+NODE_MODULES_VOLUME = sesame-orchestrator-node-modules
 PLATFORM = "linux/amd64"
 
 include .env
@@ -109,8 +112,9 @@ dev: ## Start development environment
 		-p $(APP_API_PORT):4000 \
 		-p $(APP_API_PORT_SECURE):4443 \
 		-v $(CURDIR):/data \
+		-v $(NODE_MODULES_VOLUME):/data/node_modules \
 		-v $(CURDIR)/etc/supervisor:/etc/supervisor \
-		$(IMG_NAME) yarn start:dev
+		$(IMG_NAME) sh -lc 'test -f node_modules/.yarn-integrity || yarn install --non-interactive; yarn start:dev'
 
 debug: ## Start debug environment
 	@docker run --rm -it \
@@ -131,7 +135,8 @@ debug: ## Start debug environment
 		-p $(APP_API_DEBUG_PORT):9229 \
 		-p $(APP_WEB_DEBUG_PORT):24678 \
 		-v $(CURDIR):/data \
-		$(IMG_NAME) yarn start:debug
+		-v $(NODE_MODULES_VOLUME):/data/node_modules \
+		$(IMG_NAME) sh -lc 'test -f node_modules/.yarn-integrity || yarn install --non-interactive; yarn start:debug'
 
 install: ## Install dependencies
 	@docker run -it --rm \
@@ -141,6 +146,7 @@ install: ## Install dependencies
 		--platform $(PLATFORM) \
 		--network dev \
 		-v $(CURDIR):/data \
+		-v $(NODE_MODULES_VOLUME):/data/node_modules \
 		$(IMG_NAME) yarn install
 
 exec: ## Run a shell in the container
@@ -152,6 +158,7 @@ exec: ## Run a shell in the container
 		--network dev \
 		-e SESAME_SENTRY_DSN=$(SESAME_SENTRY_DSN) \
 		-v $(CURDIR):/data \
+		-v $(NODE_MODULES_VOLUME):/data/node_modules \
 		$(IMG_NAME) bash
 
 build-test-image: ## Build local Docker image dedicated to tests

@@ -44,6 +44,9 @@ div.q-pa-md
     template(#body-cell-author="props")
       q-td(:props="props")
         span(v-text="props.row?.agent?.name || 'system'")
+    template(#body-cell-ip="props")
+      q-td(:props="props")
+        q-chip(size="sm" dense color="blue-1" text-color="dark" :label="props.row?.ip || 'N/A'")
     template(#body-cell-changes="props")
       q-td(:props="props")
         .row.items-center.q-gutter-xs
@@ -165,6 +168,13 @@ export default defineNuxtComponent({
           label: 'Auteur',
           align: 'left',
           field: (row) => row?.agent?.name || 'system',
+          sortable: true,
+        },
+        {
+          name: 'ip',
+          label: 'IP',
+          align: 'left',
+          field: (row) => row?.ip || '',
           sortable: true,
         },
         {

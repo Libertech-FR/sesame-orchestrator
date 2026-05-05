@@ -1,5 +1,10 @@
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common'
 import { AuthService } from '~/core/auth/auth.service'
+import { verify as argon2Verify } from 'argon2'
+
+jest.mock('argon2', () => ({
+  verify: jest.fn(),
+}))
 
 describe('AuthService', () => {
   const redisGet = jest.fn()
@@ -33,11 +38,16 @@ describe('AuthService', () => {
     decode: jwtDecode,
   }
 
+  const createAuthenticationAudit = jest.fn()
+  const auditsService = {
+    createAuthenticationAudit,
+  }
+
   let service: AuthService
 
   beforeEach(() => {
     jest.clearAllMocks()
-    service = new AuthService({} as any, agentsService as any, keyringsService as any, jwtService as any, redis as any)
+    service = new AuthService({} as any, agentsService as any, keyringsService as any, auditsService as any, jwtService as any, redis as any)
   })
 
   it('should create access+refresh tokens and persist redis session', async () => {
@@ -195,5 +205,66 @@ describe('AuthService', () => {
     await service.clearSession('invalid-token')
 
     expect(redisDel).not.toHaveBeenCalled()
+  })
+
+  it('should authenticate when allowedNetworks is empty', async () => {
+    const agent = {
+      _id: 'a1',
+      password: 'hashed',
+      security: { allowedNetworks: [] },
+    }
+    agentsFindOne.mockResolvedValue(agent)
+    ;(argon2Verify as jest.Mock).mockResolvedValue(true)
+
+    const result = await service.authenticateWithLocal('john', 'secret', '203.0.113.10')
+
+    expect(result).toBe(agent)
+    expect(createAuthenticationAudit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        username: 'john',
+        ip: '203.0.113.10',
+        result: 'success',
+      }),
+    )
+  })
+
+  it('should refuse authentication when ip does not match allowedNetworks', async () => {
+    agentsFindOne.mockResolvedValue({
+      _id: 'a1',
+      password: 'hashed',
+      security: { allowedNetworks: ['10.0.0.1-10.0.0.5'] },
+    })
+    ;(argon2Verify as jest.Mock).mockResolvedValue(true)
+
+    const result = await service.authenticateWithLocal('john', 'secret', '10.0.0.25')
+
+    expect(result).toBeNull()
+    expect(createAuthenticationAudit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        username: 'john',
+        ip: '10.0.0.25',
+        result: 'failure',
+        reason: 'network_not_allowed',
+      }),
+    )
+  })
+
+  it('should allow authentication when ip matches CIDR rule', async () => {
+    const agent = {
+      _id: 'a1',
+      password: 'hashed',
+      security: { allowedNetworks: ['192.168.1.0/24'] },
+    }
+    agentsFindOne.mockResolvedValue(agent)
+    ;(argon2Verify as jest.Mock).mockResolvedValue(true)
+
+    const result = await service.authenticateWithLocal('john', 'secret', '192.168.1.42')
+
+    expect(result).toBe(agent)
+    expect(createAuthenticationAudit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        result: 'success',
+      }),
+    )
   })
 })

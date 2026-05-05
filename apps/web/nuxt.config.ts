@@ -252,6 +252,10 @@ export default defineNuxtConfig({
     routeRules: {
       '/api/**': {
         proxy: `${SESAME_APP_API_URL}/**`,
+        headers: {
+          'X-Forwarded-For': '{{ clientIp }}',
+          'X-Real-Ip': '{{ clientIp }}',
+        },
       },
       '/api/core/backends/sse': {
         proxy: `${SESAME_APP_API_URL}/core/backends/sse`,

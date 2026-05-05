@@ -1,11 +1,12 @@
-import { Body, Controller, HttpStatus, Post, Res, UseGuards, Headers, Get } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Res, UseGuards, Headers, Get, Req } from '@nestjs/common';
 import { Public } from '~/_common/decorators/public.decorator';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ModuleRef } from '@nestjs/core';
 import { AuthService } from '~/core/auth/auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { buildClientIpDebugPayload } from '~/_common/functions/resolve-client-ip';
 import { ReqIdentity } from '~/_common/decorators/params/req-identity.decorator';
 import { AgentType } from '~/_common/types/agent.type';
 import { hash } from 'crypto';
@@ -22,6 +23,12 @@ export class AuthController extends AbstractController {
     private readonly rolesService: RolesService,
   ) {
     super();
+  }
+
+  @Get('debug/client-diagnostic')
+  @ApiOperation({ summary: 'Diagnostic IP client (mode debug UI uniquement)' })
+  public debugClientNetwork(@Req() req: Request, @Res() res: Response): Response {
+    return res.status(HttpStatus.OK).json(buildClientIpDebugPayload(req));
   }
 
   @Post('local')
@@ -43,7 +50,7 @@ export class AuthController extends AbstractController {
     const user = await this.service.getSessionData(identity);
     this.logger.debug(`Session data delivered for ${identity._id} (${identity.email}) with ${JSON.stringify(user)}`);
 
-    const ac = await this.rolesService.getRolesBuilder()
+    const ac = await this.rolesService.getRolesBuilder();
     // console.log('ac.getGrants()', ac.getGrants())
 
     return res.status(HttpStatus.OK).json({

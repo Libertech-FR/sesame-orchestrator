@@ -4,6 +4,7 @@ import { Audits } from '~/core/audits/_schemas/audits.schema'
 import * as _ from 'radash'
 import { RequestContext } from "nestjs-request-context"
 import { Logger } from "@nestjs/common"
+import { resolveClientIp } from '~/_common/functions/resolve-client-ip'
 
 export const HISTORY_PLUGIN_BEFORE_KEY = '_auditBefore'
 
@@ -89,6 +90,12 @@ function resolveAgent(): any {
   }
 }
 
+function resolveIp(): string | null {
+  const req = RequestContext.currentContext?.req
+  if (!req) return null
+  return resolveClientIp(req)
+}
+
 export function historyPlugin(schema: Schema, options: HistoryPluginOptions) {
   const defaultOptions = {
     auditsModelName: Audits.name,
@@ -126,11 +133,13 @@ export function historyPlugin(schema: Schema, options: HistoryPluginOptions) {
 
     logger.log(`Creating audit log for ${mergedOptions.collectionName} ${after?._id ?? before?._id}`)
     const agent = resolveAgent()
+    const ip = resolveIp()
     const AuditsModel: Model<any> = this.model(mergedOptions.auditsModelName!)
     await AuditsModel.create({
       coll: mergedOptions.collectionName,
       documentId: after?._id ?? before?._id,
       op: before ? AuditOperation.UPDATE : AuditOperation.INSERT,
+      ip: ip ?? undefined,
       agent,
       data: after,
       changes,
@@ -159,11 +168,13 @@ export function historyPlugin(schema: Schema, options: HistoryPluginOptions) {
 
     logger.log(`Creating audit log for ${mergedOptions.collectionName} ${after?._id ?? before?._id}`)
     const agent = resolveAgent()
+    const ip = resolveIp()
     const AuditsModel: Model<any> = this.model.db.model(mergedOptions.auditsModelName!)
     await AuditsModel.create({
       coll: mergedOptions.collectionName,
       documentId: after?._id ?? before?._id,
       op: before ? AuditOperation.UPDATE : AuditOperation.INSERT,
+      ip: ip ?? undefined,
       agent,
       data: after,
       changes,

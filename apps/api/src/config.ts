@@ -173,6 +173,15 @@ export const validationSchema = Joi.object({
   SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES: Joi
     .string()
     .default(''),
+
+  /**
+   * Active trust proxy Express (1 hop) pour que req.ip / X-Forwarded-For reflètent le client derrière un reverse-proxy.
+   * @see https://expressjs.com/en/guide/behind-proxies.html
+   */
+  SESAME_TRUST_PROXY: Joi
+    .string()
+    .valid('0', '1', 'false', 'true', 'on', 'off', '')
+    .default('0'),
 });
 
 /**
@@ -201,6 +210,8 @@ export interface ConfigInstance {
     lang: string
     logLevel: string
     nameQueue: string
+    /** Si true, Express applique trust proxy (1 hop) pour les adresses IP client derrière un proxy. */
+    trustProxy: boolean
     bodyParser: {
       limit: string
     }
@@ -299,6 +310,7 @@ export default (): ConfigInstance => ({
     lang: process.env['LANG'] || 'en',
     logLevel: process.env['SESAME_LOG_LEVEL'] || 'info',
     nameQueue: process.env['SESAME_NAME_QUEUE'] || 'sesame',
+    trustProxy: /^(1|true|on|yes)$/i.test(process.env['SESAME_TRUST_PROXY'] || ''),
     bodyParser: {
       limit: '500mb',
     },

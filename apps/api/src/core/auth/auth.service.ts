@@ -16,6 +16,9 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { ConsoleSession } from '~/_common/data/console-session';
 import { KeyringsService } from '../keyrings/keyrings.service';
 import { ApiSession } from '~/_common/data/api-session';
+import { AuditsService } from '~/core/audits/audits.service';
+import { Types } from 'mongoose';
+import ipRangeCheck from 'ip-range-check';
 
 @Injectable()
 export class AuthService extends AbstractService implements OnModuleInit {
@@ -32,6 +35,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
     protected moduleRef: ModuleRef,
     protected readonly agentsService: AgentsService,
     protected readonly keyringsService: KeyringsService,
+    protected readonly auditsService: AuditsService,
     private readonly jwtService: JwtService,
     @InjectRedis() private readonly redis: Redis,
   ) {
@@ -68,15 +72,94 @@ export class AuthService extends AbstractService implements OnModuleInit {
     }
   }
 
-  public async authenticateWithLocal(username: string, password: string): Promise<Agents | null> {
+  public async authenticateWithLocal(username: string, password: string, clientIp?: string): Promise<Agents | null> {
+    const ip = this.normalizeClientIp(clientIp);
+    let user: Agents | null = null;
     try {
-      const user = await this.agentsService.findOne<Agents>({ username });
-      if (user && (await argon2Verify(user.password, password))) {
-        return user;
+      user = await this.agentsService.findOne<Agents>({ username });
+      if (!user || !(await argon2Verify(user.password, password))) {
+        await this.auditAuthenticationAttempt({
+          username,
+          ip,
+          result: 'failure',
+          reason: 'invalid_credentials',
+          agentId: user?._id,
+        });
+        return null;
       }
+
+      if (!this.isClientIpAllowed(user?.security?.allowedNetworks, ip)) {
+        await this.auditAuthenticationAttempt({
+          username,
+          ip,
+          result: 'failure',
+          reason: ip ? 'network_not_allowed' : 'ip_unavailable',
+          agentId: user?._id,
+        });
+        return null;
+      }
+
+      await this.auditAuthenticationAttempt({
+        username,
+        ip,
+        result: 'success',
+        reason: 'authenticated',
+        agentId: user?._id,
+      });
+
+      return user;
     } catch (e) {
-      console.log(e);
+      this.logger.error(`Local authentication failed for ${username}`, e instanceof Error ? e.stack : undefined);
+      await this.auditAuthenticationAttempt({
+        username,
+        ip,
+        result: 'failure',
+        reason: 'internal_error',
+        agentId: user?._id,
+      });
       return null;
+    }
+  }
+
+  protected normalizeClientIp(clientIp?: string): string | null {
+    if (!clientIp || typeof clientIp !== 'string') return null;
+    const value = clientIp.trim();
+    if (!value) return null;
+    if (value.startsWith('::ffff:')) return value.slice(7);
+    return value;
+  }
+
+  protected isClientIpAllowed(allowedNetworks?: string[] | null, clientIp?: string | null): boolean {
+    if (!Array.isArray(allowedNetworks) || allowedNetworks.length === 0) return true;
+    if (!clientIp) return false;
+
+    const normalizedRules = allowedNetworks.map((item) => `${item || ''}`.trim()).filter((item) => item.length > 0);
+    if (normalizedRules.length === 0) return true;
+
+    try {
+      return ipRangeCheck(clientIp, normalizedRules);
+    } catch {
+      return false;
+    }
+  }
+
+  protected async auditAuthenticationAttempt(params: {
+    username: string;
+    ip: string | null;
+    result: 'success' | 'failure';
+    reason: string;
+    agentId?: Types.ObjectId | string;
+  }): Promise<void> {
+    try {
+      await this.auditsService.createAuthenticationAudit({
+        username: params.username,
+        ip: params.ip,
+        result: params.result,
+        reason: params.reason,
+        agentId: params.agentId,
+      });
+    } catch (error) {
+      this.logger.warn(`Failed to write authentication audit for ${params.username}`, error instanceof Error ? error.stack : undefined);
     }
   }
 

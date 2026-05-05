@@ -46,10 +46,11 @@ export default function useAgentsSchema() {
       },
       "allowedNetworks": {
         "type": "array",
-        "description": "Réseaux autorisés",
+        "description":
+          "Adresses IPv4, notation CIDR (ex. 192.168.1.0/24) ou plages avec tiret (ex. 10.0.0.1-10.0.0.5). Laisser vide pour autoriser toutes les adresses IP.",
         "items": {
-          "type": "string"
-        }
+          "type": "string",
+        },
       },
     },
     "required": ["username", "email"]
@@ -165,18 +166,19 @@ export default function useAgentsSchema() {
         "elements": [
           {
             "type": "Control",
-            "label": "Base URL",
-            "scope": "#/properties/baseURL"
+            "label": "URL de base",
+            "scope": "#/properties/baseURL",
           },
-          {
-            "type": "Control",
-            "label": "Allowed Networks",
-            "scope": "#/properties/allowedNetworks",
-            "options": {
-              "detail": "List of networks allowed to access the agent"
-            }
-          }
-        ]
+        ],
+      },
+      {
+        "type": "Control",
+        "label": "Réseaux autorisés",
+        "scope": "#/properties/allowedNetworks",
+        "options": {
+          "format": "networkList",
+          "placeholder": "ex. 192.168.1.0/24, 10.0.0.1-10.0.0.5",
+        },
       },
     ]
   })

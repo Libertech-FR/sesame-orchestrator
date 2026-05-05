@@ -9,6 +9,7 @@ import { JwtStrategy } from '~/core/auth/_strategies/jwt.strategy';
 import { LocalStrategy } from '~/core/auth/_strategies/local.strategy';
 import { KeyringsModule } from '../keyrings/keyrings.module';
 import { RolesModule } from '../roles/roles.module';
+import { AuditsModule } from '../audits/audits.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { RolesModule } from '../roles/roles.module';
     }),
     AgentsModule,
     RolesModule,
+    AuditsModule,
     forwardRef(() => KeyringsModule),
   ],
   controllers: [AuthController],

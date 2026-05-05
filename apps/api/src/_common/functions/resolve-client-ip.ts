@@ -1,5 +1,4 @@
 import type { Request } from 'express';
-import requestIp from 'request-ip';
 
 /**
  * Lit une en-tête HTTP (string ou première entrée d'un tableau).
@@ -37,71 +36,9 @@ function normalizeIp(raw: string | undefined | null): string | null {
   return value.startsWith('::ffff:') ? value.slice(7) : value;
 }
 
-function isLoopbackIp(ip: string | null): boolean {
-  return ip === '127.0.0.1' || ip === '::1';
-}
-
-function isPrivateIpv4(ip: string): boolean {
-  const parts = ip.split('.').map((p): number => Number.parseInt(p, 10));
-  if (parts.length !== 4 || parts.some((n) => Number.isNaN(n) || n < 0 || n > 255)) {
-    return false;
-  }
-  const [a, b] = parts;
-  if (a === 10) {
-    return true;
-  }
-  if (a === 172 && b >= 16 && b <= 31) {
-    return true;
-  }
-  if (a === 192 && b === 168) {
-    return true;
-  }
-  return false;
-}
-
-function hasForwardingHeaders(req: Request): boolean {
-  const forwarded = ['x-forwarded-for', 'x-real-ip', 'cf-connecting-ip', 'true-client-ip'] as const;
-  return forwarded.some((name) => Boolean(normalizeIp(firstCsvSegment(headerString(req, name)) ?? headerString(req, name) ?? null)));
-}
-
-function hostLooksLocal(req: Request): boolean {
-  const host = headerString(req, 'host');
-  if (!host) {
-    return false;
-  }
-  const hostname = host.split(':')[0]?.trim().toLowerCase();
-  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
-}
-
-function localDevFallbackIp(req: Request, peerIp: string | null): string | null {
-  if (!hostLooksLocal(req) || hasForwardingHeaders(req) || !peerIp) {
-    return null;
-  }
-  if (isLoopbackIp(peerIp) || isPrivateIpv4(peerIp)) {
-    return null;
-  }
-  return '127.0.0.1';
-}
-
 /** Paire TCP (souvent le dernier proxy / relai), normalisée. */
 function tcpPeerIp(req: Request): string | null {
   return normalizeIp(req.socket?.remoteAddress ?? null);
-}
-
-/**
- * Nitro / certains proxies posent X-Forwarded-For = IP du pair TCP sans ajouter la vraie IP client.
- * Dans ce cas l’en-tête est trompeur : on l’ignore pour request-ip aussi.
- */
-function requestForIpResolution(req: Request): Request {
-  const peer = tcpPeerIp(req);
-  const xffRaw = headerString(req, 'x-forwarded-for');
-  const xffFirst = normalizeIp(firstCsvSegment(xffRaw) ?? (xffRaw?.trim() || null));
-  if (!peer || !xffFirst || xffFirst !== peer) {
-    return req;
-  }
-  const headers = { ...req.headers } as Request['headers'];
-  delete headers['x-forwarded-for'];
-  return { ...req, headers } as Request;
 }
 
 /**
@@ -114,10 +51,6 @@ function requestForIpResolution(req: Request): Request {
  */
 export function resolveClientIp(req: Request): string | null {
   const peerIp = tcpPeerIp(req);
-  const forcedLocalIp = localDevFallbackIp(req, peerIp);
-  if (forcedLocalIp) {
-    return forcedLocalIp;
-  }
   const orderedHeaders = ['cf-connecting-ip', 'true-client-ip', 'x-real-ip', 'x-forwarded-for'] as const;
 
   for (const name of orderedHeaders) {
@@ -132,11 +65,6 @@ export function resolveClientIp(req: Request): string | null {
       continue;
     }
     return ip;
-  }
-
-  const fromLib = normalizeIp(requestIp.getClientIp(requestForIpResolution(req)) ?? null);
-  if (fromLib) {
-    return fromLib;
   }
 
   const expressIp = normalizeIp(req.ip ?? null);

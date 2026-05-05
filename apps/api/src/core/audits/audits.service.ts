@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Audits } from '~/core/audits/_schemas/audits.schema'
+import { Audits, AuditOperation } from '~/core/audits/_schemas/audits.schema'
 import { Model } from 'mongoose'
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema'
+import { Types } from 'mongoose'
 
 /**
  * Service de gestion des audits et de l'historique des enregistrements.
@@ -39,5 +40,45 @@ export class AuditsService extends AbstractServiceSchema<Audits> {
   public async getCollections(): Promise<string[]> {
     const values = await this._model.distinct('coll', { coll: { $exists: true, $ne: null } })
     return values.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).sort()
+  }
+
+  public async createAuthenticationAudit(params: {
+    username: string
+    ip: string | null
+    result: 'success' | 'failure'
+    reason: string
+    agentId?: Types.ObjectId | string
+  }): Promise<Audits> {
+    const agentObjectId =
+      params.agentId instanceof Types.ObjectId
+        ? params.agentId
+        : typeof params.agentId === 'string' && Types.ObjectId.isValid(params.agentId)
+          ? new Types.ObjectId(params.agentId)
+          : new Types.ObjectId()
+
+    const createdAt = new Date()
+
+    return this._model.create({
+      coll: 'auth',
+      documentId: agentObjectId,
+      op: AuditOperation.AUTHENTICATION,
+      ip: params.ip ?? undefined,
+      agent: {
+        $ref: 'agents',
+        id: agentObjectId,
+        name: params.username,
+      },
+      data: {
+        event: 'authentication_attempt',
+        username: params.username,
+        ip: params.ip,
+        result: params.result,
+        reason: params.reason,
+      },
+      metadata: {
+        createdBy: params.username,
+        createdAt,
+      },
+    })
   }
 }

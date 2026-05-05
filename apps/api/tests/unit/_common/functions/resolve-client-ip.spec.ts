@@ -75,12 +75,16 @@ describe('resolveClientIp', () => {
     expect(p.hintFr).toEqual(expect.stringContaining('X-Forwarded-For'));
   });
 
-  it('forces localhost when host is local and peer is unexpected public ip without forwarding headers', () => {
+  it('keeps raw peer fields in debug payload', () => {
     const req = makeReq({
-      headers: { host: '127.0.0.1:4002' },
+      headers: { host: 'host.docker.internal:4002' },
       ip: '140.82.121.5',
       socket: { remoteAddress: '::ffff:140.82.121.5' } as any,
     });
-    expect(resolveClientIp(req)).toBe('127.0.0.1');
+    const p = buildClientIpDebugPayload(req);
+    expect(p.clientIp).toBe('140.82.121.5');
+    expect(p.tcpPeerNormalized).toBe('140.82.121.5');
+    expect(p.remoteAddress).toBe('::ffff:140.82.121.5');
+    expect(p.ip).toBe('140.82.121.5');
   });
 });

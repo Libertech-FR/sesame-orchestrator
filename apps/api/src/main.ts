@@ -47,6 +47,10 @@ declare const module: any;
     logger,
     ...extraOptions,
   })
+
+  if (cfg.application.trustProxy) {
+    app.set('trust proxy', 1)
+  }
   app.use((_: any, res: Response, next: () => void) => {
     res.removeHeader('x-powered-by');
     next();

@@ -47,6 +47,8 @@ export function getAuditOperationLabel(op?: string): string {
       return 'Suppression'
     case 'replace':
       return 'Remplacement'
+    case 'authentication':
+      return 'Authentification'
     default:
       return op || 'Inconnue'
   }
@@ -62,6 +64,8 @@ export function getAuditOperationColor(op?: string): string {
       return 'negative'
     case 'replace':
       return 'warning'
+    case 'authentication':
+      return 'deep-orange'
     default:
       return 'grey-7'
   }
@@ -76,6 +80,7 @@ export function formatAuditChangeLabel(change: any): string {
 export function resolveAuditSortField(sortBy: string, additionalSortFields: Record<string, string> = {}): string {
   if (additionalSortFields[sortBy]) return additionalSortFields[sortBy]
   if (sortBy === 'author') return 'agent.name'
+  if (sortBy === 'ip') return 'ip'
   if (sortBy === 'op') return 'op'
   return 'metadata.createdAt'
 }

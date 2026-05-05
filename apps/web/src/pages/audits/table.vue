@@ -70,7 +70,7 @@ q-page.container.q-pa-sm
     template(#body-cell-document='props')
       q-td(:props='props')
         q-chip.bg-positive.text-white.q-pa-sm(
-          v-if='props.row?.coll === "Identities" && props.row?.documentId'
+          v-if='props.row?.coll === "Identities" && canOpenDocument(props.row)'
           icon='mdi-account'
           clickable
           dense
@@ -80,13 +80,13 @@ q-page.container.q-pa-sm
           q-tooltip.text-body2(anchor='top middle' self='bottom middle')
             span Voir la fiche identité
         q-chip.bg-positive.text-white.q-pa-sm(
-          v-else-if='["Agents", "auth"].includes(props.row?.coll) && props.row?.documentId'
+          v-else-if='["Agents", "auth"].includes(props.row?.coll) && canOpenDocument(props.row)'
           icon='mdi-account'
           clickable
           dense
           @click='openDocument(props.row)'
         )
-          span(v-text='props.row?.documentId')
+          span(v-text='getDocumentLabel(props.row)')
           q-tooltip.text-body2(anchor='top middle' self='bottom middle')
             span Voir la fiche agent
         q-chip(
@@ -95,11 +95,11 @@ q-page.container.q-pa-sm
           dense
           color='grey-4'
           text-color='dark'
-          :label='props.row?.documentId || "N/A"'
+          :label='getDocumentLabel(props.row)'
         )
     template(#body-cell-author='props')
       q-td(:props='props')
-        span(v-text='props.row?.agent?.name || "system"')
+        span(v-text='getAuthorLabel(props.row)')
     template(#body-cell-ip='props')
       q-td(:props='props')
         q-chip(size='sm' dense color='blue-1' text-color='dark' :label='props.row?.ip || "N/A"')
@@ -107,7 +107,23 @@ q-page.container.q-pa-sm
       q-td(:props='props')
         .row.items-center.q-gutter-xs
           q-chip(
-            v-if='!props.row?.changes?.length'
+            v-if='props.row?.op === "authentication"'
+            size='sm'
+            dense
+            color='blue-grey-2'
+            text-color='dark'
+            :label='`IDENTIFIANT: ${props.row?.data?.username || "N/A"}`'
+          )
+          q-chip(
+            v-if='props.row?.op === "authentication"'
+            size='sm'
+            dense
+            color='blue-grey-2'
+            text-color='dark'
+            :label='`RAISON: ${props.row?.data?.reason || "N/A"}`'
+          )
+          q-chip(
+            v-else-if='!props.row?.changes?.length'
             size='sm'
             dense
             color='grey-4'
@@ -289,7 +305,7 @@ export default defineNuxtComponent({
         },
         {
           name: 'changes',
-          label: 'Changements',
+          label: 'Informations',
           align: 'left',
           field: (row) => row?.changes || [],
           sortable: false,
@@ -379,6 +395,21 @@ export default defineNuxtComponent({
           })
           break
       }
+    },
+    isUnknownAuthenticationAgent(row: any): boolean {
+      return row?.coll === 'auth' && `${row?.documentId || ''}` === '000000000000000000000000'
+    },
+    canOpenDocument(row: any): boolean {
+      return !!row?.documentId && !this.isUnknownAuthenticationAgent(row)
+    },
+    getDocumentLabel(row: any): string {
+      if (this.isUnknownAuthenticationAgent(row)) return 'N/A'
+      return row?.documentId || 'N/A'
+    },
+    getAuthorLabel(row: any): string {
+      if (this.isUnknownAuthenticationAgent(row)) return 'N/A'
+      if (row?.coll === 'auth' && row?.agent?.name === 'N/A') return 'N/A'
+      return row?.agent?.name || 'system'
     },
     getOperationLabel(row: any): string {
       return getAuditOperationLabel(row?.op, row?.data?.result)

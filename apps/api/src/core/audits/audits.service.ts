@@ -49,12 +49,12 @@ export class AuditsService extends AbstractServiceSchema<Audits> {
     reason: string
     agentId?: Types.ObjectId | string
   }): Promise<Audits> {
-    const agentObjectId =
-      params.agentId instanceof Types.ObjectId
+    const hasKnownAgentId = params.agentId instanceof Types.ObjectId || (typeof params.agentId === 'string' && Types.ObjectId.isValid(params.agentId))
+    const agentObjectId = hasKnownAgentId
+      ? params.agentId instanceof Types.ObjectId
         ? params.agentId
-        : typeof params.agentId === 'string' && Types.ObjectId.isValid(params.agentId)
-          ? new Types.ObjectId(params.agentId)
-          : new Types.ObjectId()
+        : new Types.ObjectId(params.agentId)
+      : new Types.ObjectId('000000000000000000000000')
 
     const createdAt = new Date()
 
@@ -66,7 +66,7 @@ export class AuditsService extends AbstractServiceSchema<Audits> {
       agent: {
         $ref: 'agents',
         id: agentObjectId,
-        name: params.username,
+        name: hasKnownAgentId ? params.username : 'N/A',
       },
       data: {
         event: 'authentication_attempt',

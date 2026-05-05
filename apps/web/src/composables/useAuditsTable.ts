@@ -37,7 +37,19 @@ export function createDefaultAuditDiffDialogState() {
   }
 }
 
-export function getAuditOperationLabel(op?: string): string {
+export function resolveAuthenticationResult(result?: string): 'success' | 'failed' | null {
+  if (result === 'success') return 'success'
+  if (result === 'failed' || result === 'failure') return 'failed'
+  return null
+}
+
+export function getAuditOperationLabel(op?: string, authenticationResult?: string): string {
+  if (op === 'authentication') {
+    const resolvedResult = resolveAuthenticationResult(authenticationResult)
+    if (resolvedResult === 'success') return 'Succès'
+    if (resolvedResult === 'failed') return 'Fail'
+  }
+
   switch (op) {
     case 'insert':
       return 'Creation'
@@ -47,14 +59,19 @@ export function getAuditOperationLabel(op?: string): string {
       return 'Suppression'
     case 'replace':
       return 'Remplacement'
-    case 'authentication':
-      return 'Authentification'
     default:
       return op || 'Inconnue'
   }
 }
 
-export function getAuditOperationColor(op?: string): string {
+export function getAuditOperationColor(op?: string, authenticationResult?: string): string {
+  if (op === 'authentication') {
+    const resolvedResult = resolveAuthenticationResult(authenticationResult)
+    if (resolvedResult === 'success') return 'positive'
+    if (resolvedResult === 'failed') return 'negative'
+    return 'grey-6'
+  }
+
   switch (op) {
     case 'insert':
       return 'positive'
@@ -64,8 +81,6 @@ export function getAuditOperationColor(op?: string): string {
       return 'negative'
     case 'replace':
       return 'warning'
-    case 'authentication':
-      return 'deep-orange'
     default:
       return 'grey-7'
   }

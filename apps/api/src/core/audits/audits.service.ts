@@ -45,7 +45,7 @@ export class AuditsService extends AbstractServiceSchema<Audits> {
   public async createAuthenticationAudit(params: {
     username: string
     ip: string | null
-    result: 'success' | 'failure'
+    result: 'success' | 'failed'
     reason: string
     agentId?: Types.ObjectId | string
   }): Promise<Audits> {

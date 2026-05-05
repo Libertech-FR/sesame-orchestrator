@@ -60,9 +60,9 @@ q-page.container.q-pa-sm
         q-chip(
           dense
           size='sm'
-          :color='getOperationColor(props.row?.op)'
+          :color='getOperationColor(props.row)'
           text-color='white'
-          :label='getOperationLabel(props.row?.op)'
+          :label='getOperationLabel(props.row)'
         )
     template(#body-cell-coll='props')
       q-td(:props='props')
@@ -80,7 +80,7 @@ q-page.container.q-pa-sm
           q-tooltip.text-body2(anchor='top middle' self='bottom middle')
             span Voir la fiche identité
         q-chip.bg-positive.text-white.q-pa-sm(
-          v-else-if='props.row?.coll === "Agents" && props.row?.documentId'
+          v-else-if='["Agents", "auth"].includes(props.row?.coll) && props.row?.documentId'
           icon='mdi-account'
           clickable
           dense
@@ -106,6 +106,14 @@ q-page.container.q-pa-sm
     template(#body-cell-changes='props')
       q-td(:props='props')
         .row.items-center.q-gutter-xs
+          q-chip(
+            v-if='!props.row?.changes?.length'
+            size='sm'
+            dense
+            color='grey-4'
+            text-color='dark'
+            label='N/A'
+          )
           q-chip(
             v-for='(change, idx) in (props.row?.changes || []).slice(0, 4)'
             :key='`${props.row?._id}-${idx}-${change?.path || ""}`'
@@ -358,6 +366,7 @@ export default defineNuxtComponent({
           window.open(`/identities/table/${row.documentId}`, '_blank')
           break
         case 'Agents':
+        case 'auth':
           window.open(`/settings/agents/${row.documentId}`, '_blank')
           break
 
@@ -371,11 +380,11 @@ export default defineNuxtComponent({
           break
       }
     },
-    getOperationLabel(op: string): string {
-      return getAuditOperationLabel(op)
+    getOperationLabel(row: any): string {
+      return getAuditOperationLabel(row?.op, row?.data?.result)
     },
-    getOperationColor(op: string): string {
-      return getAuditOperationColor(op)
+    getOperationColor(row: any): string {
+      return getAuditOperationColor(row?.op, row?.data?.result)
     },
     formatChangeLabel(change: any): string {
       return formatAuditChangeLabel(change)

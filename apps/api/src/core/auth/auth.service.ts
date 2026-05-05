@@ -81,7 +81,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
         await this.auditAuthenticationAttempt({
           username,
           ip,
-          result: 'failure',
+          result: 'failed',
           reason: 'invalid_credentials',
           agentId: user?._id,
         });
@@ -92,7 +92,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
         await this.auditAuthenticationAttempt({
           username,
           ip,
-          result: 'failure',
+          result: 'failed',
           reason: ip ? 'network_not_allowed' : 'ip_unavailable',
           agentId: user?._id,
         });
@@ -113,7 +113,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
       await this.auditAuthenticationAttempt({
         username,
         ip,
-        result: 'failure',
+        result: 'failed',
         reason: 'internal_error',
         agentId: user?._id,
       });
@@ -146,7 +146,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
   protected async auditAuthenticationAttempt(params: {
     username: string;
     ip: string | null;
-    result: 'success' | 'failure';
+    result: 'success' | 'failed';
     reason: string;
     agentId?: Types.ObjectId | string;
   }): Promise<void> {

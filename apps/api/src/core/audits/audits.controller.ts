@@ -39,6 +39,7 @@ export class AuditsController extends AbstractController {
     op: 1,
     ip: 1,
     agent: 1,
+    'data.result': 1,
     'changes.path': 1,
     'changes.type': 1,
     metadata: 1,

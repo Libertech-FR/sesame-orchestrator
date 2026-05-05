@@ -36,8 +36,10 @@ export class AuthController extends AbstractController {
   @ApiOperation({ summary: 'Authentification interne utilisateur' })
   public async authenticateWithLocal(@Res() res: Response, @ReqIdentity() user: AgentType): Promise<Response> {
     const tokens = await this.service.createTokens(user);
+    const uri = typeof user?.baseURL === 'string' && user.baseURL.trim().length > 0 ? user.baseURL.trim() : '/'
     return res.status(HttpStatus.OK).json({
       ...tokens,
+      uri,
       user,
     });
   }

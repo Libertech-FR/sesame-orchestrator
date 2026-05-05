@@ -66,12 +66,25 @@ export default defineNuxtComponent({
     }
   },
   methods: {
+    normalizeRedirectUri(uri?: string): string {
+      const fallback = '/'
+      if (typeof uri !== 'string') return fallback
+      const value = uri.trim()
+      if (!value) return fallback
+      if (!value.startsWith('/')) return `/${value}`
+      return value
+    },
     async submit() {
       this.pending = true
       try {
-        await useAuth().loginWith('local', {
+        const auth = useAuth()
+        const response: any = await auth.loginWith('local', {
           body: this.formData,
         })
+        await auth.fetchUser()
+        const authUser = (auth as any)?.user?.value || (auth as any)?.user
+        const uri = this.normalizeRedirectUri(authUser?.baseURL || response?.data?.uri)
+        await this.$router.push(uri)
       } catch (error) {
         this.$q.notify({
           type: 'negative',

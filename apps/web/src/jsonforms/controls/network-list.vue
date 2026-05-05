@@ -6,99 +6,73 @@
     :applied-options="appliedOptions"
     v-model:is-hovered="isHovered"
   )
-    q-card.network-list-card.rounded-borders.overflow-hidden(
-      flat
-      bordered
-      :class="styles.control.input"
-    )
-      q-toolbar.network-list-toolbar.q-px-md
-        .row.items-center.no-wrap.full-width.q-py-xs
-          q-avatar.text-white.shadow-1(
-            color="primary"
-            icon="mdi-lan"
-            rounded
-            size="36px"
-          )
-          .column.col.q-pl-sm.min-width-0
-            q-toolbar-title.text-subtitle2.text-weight-medium {{ computedLabel }}
-            .text-caption.text-grey-6.q-mt-xs(v-if="items.length") {{ items.length }} règle{{ items.length > 1 ? 's' : '' }}
-      q-separator
-      q-card-section.q-pa-md
-        .network-list-empty.column.flex-center.text-center.q-pa-lg.rounded-borders(
-          v-if="items.length === 0"
-        )
-          q-icon(name="mdi-shield-check-outline" color="grey-5" size="lg")
-          .text-body2.text-weight-medium.text-grey-7.q-mt-sm Aucune restriction réseau
-          .text-caption.text-grey-6.q-mt-xs.q-px-md {{ emptyMessage }}
-        .network-list-chips.q-mb-md(v-else)
-          .text-caption.text-grey-6.q-mb-sm Règles actives
-          .row.q-col-gutter-sm
-            .col-12(
-              v-for="(item, index) in items"
-              :key="`${index}-${item}`"
-            )
-              .network-list-chip.row.items-center.no-wrap.full-width.rounded-borders.q-px-sm.q-py-xs
-                q-icon.q-mr-sm(name="mdi-ip-network" color="primary" size="xs")
-                span.network-list-chip-label.col.text-body2 {{ item }}
-                q-btn(
-                  color="grey-7"
-                  dense
-                  flat
-                  icon="mdi-close"
-                  round
-                  size="sm"
-                  :disable="!canEdit"
-                  :tabindex="-1"
-                  @click="removeAt(index)"
-                )
-                  q-tooltip Supprimer cette entrée
-        q-separator.q-mb-md(v-if="items.length > 0")
-        .text-caption.text-weight-medium.text-grey-7.q-mb-xs {{ addFieldLabel }}
-        .row.q-col-gutter-sm.items-start
-          q-input.col(
-            v-model="draft"
-            dense
-            :hide-bottom-space="localError === ''"
-            outlined
-            :placeholder="appliedOptions.placeholder || 'Saisir une adresse, un CIDR ou une plage…'"
-            :disable="!canEdit"
-            :readonly="isReadonly"
-            :error="localError !== ''"
-            :error-message="localError"
-            @keyup.enter="addEntry"
-            @update:model-value="localError = ''"
-            :id="elementId + '-draft'"
-            v-bind="quasarProps('q-input')"
-          )
-            template(#prepend)
-              q-icon(name="mdi-plus-network-outline" color="grey-6" size="sm")
-          .col-auto
-            q-btn.network-list-add-btn(
-              color="primary"
-              icon="mdi-plus"
-              :label="addButtonLabel"
-              no-caps
-              padding="sm md"
-              unelevated
-              :disable="!canEdit || draftTrimmed === ''"
-              @click="addEntry"
-            )
-        .text-caption.text-grey-6.q-mt-md.network-list-desc(v-if="control.description") {{ control.description }}
-        q-banner.network-list-banner-error.text-negative.q-mt-sm(
-          v-if="control.errors"
+    .network-list-field(:class="styles.control.input")
+      .text-caption.text-weight-medium.text-grey-7.q-mb-xs {{ addFieldLabel }}
+      .row.q-col-gutter-sm.items-start
+        q-input.col(
+          v-model="draft"
           dense
-          inline-actions
-          rounded
+          :hide-bottom-space="localError === ''"
+          outlined
+          :placeholder="appliedOptions.placeholder || 'Saisir une adresse, un CIDR ou une plage…'"
+          :disable="!canEdit"
+          :readonly="isReadonly"
+          :error="localError !== ''"
+          :error-message="localError"
+          @keyup.enter="addEntry"
+          @update:model-value="localError = ''"
+          :id="elementId + '-draft'"
+          v-bind="quasarProps('q-input')"
         )
-          template(#avatar)
-            q-icon(name="mdi-alert-circle-outline" color="negative")
-          | {{ control.errors }}
+          template(#prepend)
+            q-icon(name="mdi-ip-network-outline" color="grey-6" size="sm")
+        .col-auto
+          q-btn.network-list-add-btn(
+            color="primary"
+            icon="mdi-plus"
+            :label="addButtonLabel"
+            no-caps
+            padding="sm md"
+            unelevated
+            :disable="!canEdit || draftTrimmed === ''"
+            @click="addEntry"
+          )
+
+      .network-list-empty.text-caption.text-grey-6.q-mt-sm(v-if="items.length === 0")
+        q-icon.q-mr-xs(name="mdi-information-outline" size="16px")
+        | {{ emptyMessage }}
+
+      .network-list-chips.row.q-col-gutter-sm.q-mt-sm(v-else)
+        .col-auto(
+          v-for="(item, index) in items"
+          :key="`${index}-${item}`"
+        )
+          q-chip.network-list-chip(
+            dense
+            removable
+            :disable="!canEdit"
+            :tabindex="-1"
+            icon="mdi-ip-network"
+            @remove="removeAt(index)"
+          )
+            span.network-list-chip-label {{ item }}
+
+      .text-caption.text-grey-6.q-mt-sm.network-list-desc(v-if="control.description") {{ control.description }}
+      q-banner.network-list-banner-error.text-negative.q-mt-sm(
+        v-if="control.errors"
+        dense
+        inline-actions
+        rounded
+      )
+        template(#avatar)
+          q-icon(name="mdi-alert-circle-outline" color="negative")
+        | {{ control.errors }}
 </template>
 
 <script lang="ts">
 import type { ControlElement } from '@jsonforms/core'
 import { rendererProps, type RendererProps, useJsonFormsEnumControl } from '@jsonforms/vue'
-import { QAvatar, QBanner, QBtn, QCard, QCardSection, QIcon, QInput, QSeparator, QToolbar, QToolbarTitle, QTooltip } from 'quasar'
+import { QBanner, QBtn, QChip, QIcon, QInput } from 'quasar'
 import { computed, defineComponent, ref } from 'vue'
 import { ControlWrapper } from '../common'
 import { createEnumAdaptTarget } from '../composables'
@@ -134,17 +108,11 @@ export default defineComponent({
   name: 'NetworkListControlRenderer',
   components: {
     ControlWrapper,
-    QAvatar,
     QBanner,
-    QCard,
-    QCardSection,
-    QToolbar,
-    QToolbarTitle,
-    QSeparator,
+    QChip,
     QIcon,
     QBtn,
     QInput,
-    QTooltip,
   },
   props: {
     ...rendererProps<ControlElement>(),
@@ -219,37 +187,12 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-.network-list-card {
-  transition: box-shadow 0.2s ease;
-}
-
-.network-list-toolbar {
-  min-height: 52px;
-  background: rgba(0, 0, 0, 0.02);
-}
-
-.body--dark .network-list-toolbar {
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.network-list-empty {
-  border: 1px dashed rgba(0, 0, 0, 0.12);
-  background: rgba(0, 0, 0, 0.02);
-}
-
-.body--dark .network-list-empty {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
+.network-list-field {
+  width: 100%;
 }
 
 .network-list-chip {
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(25, 118, 210, 0.06);
-}
-
-.body--dark .network-list-chip {
-  border-color: rgba(255, 255, 255, 0.1);
-  background: rgba(100, 181, 246, 0.08);
+  max-width: 100%;
 }
 
 .network-list-chip-label {

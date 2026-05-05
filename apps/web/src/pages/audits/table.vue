@@ -66,7 +66,7 @@ q-page.container.q-pa-sm
         )
     template(#body-cell-coll='props')
       q-td(:props='props')
-        q-chip(size='sm' dense color='blue-grey-2' text-color='dark' :label='props.row?.coll || "N/A"')
+        q-chip(size='sm' dense color='blue-grey-2' text-color='dark' :label='getCollectionLabel(props.row?.coll)')
     template(#body-cell-document='props')
       q-td(:props='props')
         q-chip.bg-positive.text-white.q-pa-sm(
@@ -345,12 +345,23 @@ export default defineNuxtComponent({
     },
   },
   methods: {
+    getCollectionLabel(value?: string): string {
+      const labelsByValue: Record<string, string> = {
+        auth: 'Auth',
+        Agents: 'Agents',
+        Identities: 'Identités',
+      }
+      return labelsByValue[value || ''] || value || 'N/A'
+    },
     async fetchCollections() {
       this.loadingCollections = true
       try {
         const res = await this.$http.get('/core/audits/collections')
         const values: string[] = res?._data?.data || []
-        this.collectionOptions = values.map((value) => ({ label: value, value }))
+        this.collectionOptions = values.map((value) => ({
+          label: this.getCollectionLabel(value),
+          value,
+        }))
       } catch (error: any) {
         this.$q.notify({
           message: "Erreur lors du chargement des collections d'audit",

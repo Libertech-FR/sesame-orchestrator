@@ -34,6 +34,28 @@ import { UseRoles } from '~/_common/decorators/use-roles.decorator'
 @ApiTags('core/agents')
 @Controller('agents')
 export class AgentsController extends AbstractController {
+  protected sanitizeAgentPayload<T = any>(payload: T): T {
+    if (!payload || typeof payload !== 'object') return payload
+
+    if (Array.isArray(payload)) {
+      return payload.map((item) => this.sanitizeAgentPayload(item)) as T
+    }
+
+    const source = typeof (payload as any).toObject === 'function' ? (payload as any).toObject() : payload
+    const cloned: Record<string, any> = { ...(source as Record<string, any>) }
+
+    delete cloned.password
+    if (cloned.security && typeof cloned.security === 'object') {
+      cloned.security = { ...cloned.security }
+      delete cloned.security.oldPasswords
+    }
+    if (cloned.value && typeof cloned.value === 'object') {
+      cloned.value = this.sanitizeAgentPayload(cloned.value)
+    }
+
+    return cloned as T
+  }
+
   /**
    * Projection des champs retournés pour les opérations de recherche
    *
@@ -91,7 +113,7 @@ export class AgentsController extends AbstractController {
     const data = await this._service.create(body)
     return res.status(HttpStatus.CREATED).json({
       statusCode: HttpStatus.CREATED,
-      data,
+      data: this.sanitizeAgentPayload(data),
     })
   }
 
@@ -173,11 +195,11 @@ export class AgentsController extends AbstractController {
   ): Promise<Response> {
     const data = await this._service.findById(_id, {
       password: 0,
-      security: 0,
+      'security.oldPasswords': 0,
     })
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
-      data,
+      data: this.sanitizeAgentPayload(data),
     })
   }
 
@@ -211,7 +233,7 @@ export class AgentsController extends AbstractController {
     const data = await this._service.update(_id, body)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
-      data,
+      data: this.sanitizeAgentPayload(data),
     })
   }
 
@@ -241,7 +263,7 @@ export class AgentsController extends AbstractController {
     const data = await this._service.delete(_id)
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
-      data,
+      data: this.sanitizeAgentPayload(data),
     })
   }
 }

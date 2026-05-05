@@ -41,8 +41,7 @@ export class SecurityPartDTO {
    * @readonly En pratique, ne devrait pas être modifiée manuellement
    * @optional
    */
-  @IsArray()
-  @IsString({ each: true })
+  @IsOptional()
   @ApiProperty({ type: [String] })
   public oldPasswords?: string[]
 

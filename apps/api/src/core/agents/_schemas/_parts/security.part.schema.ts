@@ -88,6 +88,11 @@ export class SecurityPart extends Document {
    */
   @Prop({
     type: [String],
+    set: (value: string[] | string | null | undefined): string[] | undefined => {
+      if (value === null || value === undefined) return undefined
+      const values = Array.isArray(value) ? value : [value]
+      return values.map((item) => `${item || ''}`.trim()).filter((item) => item.length > 0)
+    },
   })
   public allowedNetworks?: string[]
 

@@ -87,6 +87,19 @@ export default defineNuxtComponent({
       const sanitizedAgent: Agent & Record<string, unknown> = { ...this.data.agent }
       delete sanitizedAgent.metadata
 
+      const allowedNetworks = Array.isArray(sanitizedAgent.allowedNetworks)
+        ? sanitizedAgent.allowedNetworks
+        : undefined
+      const security = typeof sanitizedAgent.security === 'object' && sanitizedAgent.security !== null ? { ...(sanitizedAgent.security as Record<string, unknown>) } : {}
+      delete security.oldPasswords
+
+      if (allowedNetworks) {
+        security.allowedNetworks = allowedNetworks
+      }
+
+      sanitizedAgent.security = security
+      delete sanitizedAgent.allowedNetworks
+
       try {
         await this.$http[method](path, {
           body: sanitizedAgent,

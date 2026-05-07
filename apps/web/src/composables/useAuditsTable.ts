@@ -16,6 +16,25 @@ type AuditDiffResult = {
   truncated: boolean
 }
 
+const MASKED_AUDIT_VALUE = '***'
+
+function isSensitiveAuditPath(path: string): boolean {
+  const normalized = path.trim()
+  if (!normalized) return false
+
+  // Champs sensibles: on veut montrer "ça a changé" sans révéler la valeur.
+  // Exemples possibles: "password", "user.password", "security.secretKey", "security.u2fKey", etc.
+  const lowered = normalized.toLowerCase()
+
+  if (lowered === 'password' || lowered.endsWith('.password')) return true
+  if (lowered === 'oldpasswords' || lowered.endsWith('.oldpasswords')) return true
+  if (lowered === 'u2fkey' || lowered.endsWith('.u2fkey')) return true
+  if (lowered === 'otpkey' || lowered.endsWith('.otpkey')) return true
+  if (lowered === 'security.secretkey' || lowered.endsWith('.secretkey')) return true
+
+  return false
+}
+
 const AUDIT_DIFF_LIMITS = {
   maxChangesForDiff: 250,
   maxStringLength: 2000,
@@ -195,32 +214,33 @@ export function buildAuditDiffFromChanges(changes: any[]): AuditDiffResult {
   for (const change of selectedChanges) {
     const path = Array.isArray(change?.path) ? change.path.join('.') : `${change?.path || ''}`
     if (!path) continue
+    const isSensitive = isSensitiveAuditPath(path)
 
     switch (change?.type) {
       case 'CHANGE':
         if (Object.prototype.hasOwnProperty.call(change, 'oldValue')) {
-          originalObject[path] = sanitizeDetailedValue(change.oldValue)
+          originalObject[path] = isSensitive ? MASKED_AUDIT_VALUE : sanitizeDetailedValue(change.oldValue)
         }
         if (Object.prototype.hasOwnProperty.call(change, 'value')) {
-          modifiedObject[path] = sanitizeDetailedValue(change.value)
+          modifiedObject[path] = isSensitive ? MASKED_AUDIT_VALUE : sanitizeDetailedValue(change.value)
         }
         break
       case 'CREATE':
         if (Object.prototype.hasOwnProperty.call(change, 'value')) {
-          modifiedObject[path] = sanitizeDetailedValue(change.value)
+          modifiedObject[path] = isSensitive ? MASKED_AUDIT_VALUE : sanitizeDetailedValue(change.value)
         }
         break
       case 'REMOVE':
         if (Object.prototype.hasOwnProperty.call(change, 'oldValue')) {
-          originalObject[path] = sanitizeDetailedValue(change.oldValue)
+          originalObject[path] = isSensitive ? MASKED_AUDIT_VALUE : sanitizeDetailedValue(change.oldValue)
         }
         break
       default:
         if (Object.prototype.hasOwnProperty.call(change, 'oldValue')) {
-          originalObject[path] = sanitizeDetailedValue(change.oldValue)
+          originalObject[path] = isSensitive ? MASKED_AUDIT_VALUE : sanitizeDetailedValue(change.oldValue)
         }
         if (Object.prototype.hasOwnProperty.call(change, 'value')) {
-          modifiedObject[path] = sanitizeDetailedValue(change.value)
+          modifiedObject[path] = isSensitive ? MASKED_AUDIT_VALUE : sanitizeDetailedValue(change.value)
         }
     }
   }

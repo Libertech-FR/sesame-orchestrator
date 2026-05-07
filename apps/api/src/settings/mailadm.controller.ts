@@ -5,6 +5,7 @@ import { MailadmService } from '~/settings/mailadm.service';
 import { MailSettingsDto } from '~/settings/_dto/mail.settings.dto';
 import { UseRoles } from '~/_common/decorators/use-roles.decorator';
 import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
+import { RequireMfa } from '~/_common/decorators/require-mfa.decorator';
 
 @Controller('settings/mail')
 @ApiTags('settings')
@@ -26,6 +27,7 @@ export class MailadmController {
   }
 
   @Post('set')
+  @RequireMfa()
   @UseRoles({
     resource: '/settings/mailadm',
     action: AC_ACTIONS.UPDATE,

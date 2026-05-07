@@ -32,6 +32,7 @@ import { isConsoleEntrypoint } from './_common/functions/is-cli';
 import { AccessControlModule, ACGuard, RolesBuilder } from 'nest-access-control';
 import { AcGuard } from './_common/guards/ac.guard';
 import { AclRuntimeService } from './core/roles/acl-runtime.service';
+import { MfaGuard } from './_common/guards/mfa.guard';
 
 @Module({
   imports: [
@@ -128,7 +129,7 @@ import { AclRuntimeService } from './core/roles/acl-runtime.service';
       imports: [CoreModule],
       inject: [AclRuntimeService],
       useFactory: async (service: AclRuntimeService): Promise<RolesBuilder> => {
-        return await service.getGuardRolesBuilder()
+        return await service.getGuardRolesBuilder();
       },
     }),
     FactorydriveModule.forRootAsync({
@@ -165,6 +166,10 @@ import { AclRuntimeService } from './core/roles/acl-runtime.service';
       provide: APP_GUARD,
       useClass: AcGuard(),
     },
+    {
+      provide: APP_GUARD,
+      useClass: MfaGuard,
+    },
     // {
     //   provide: APP_FILTER,
     //   useClass: AllExceptionFilter,
@@ -183,4 +188,4 @@ import { AclRuntimeService } from './core/roles/acl-runtime.service';
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

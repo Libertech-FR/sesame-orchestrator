@@ -48,7 +48,7 @@ q-page.container.q-pa-sm
     v-model:pagination='pagination'
     :loading='loading'
     :filter='search'
-    :rows-per-page-options='[16, 32, 64, 100]'
+    :rows-per-page-options='[15, 30, 60, 100]'
     :pagination-label='(firstRowIndex, endRowIndex, totalRowsNumber) => `${firstRowIndex}-${endRowIndex} sur ${totalRowsNumber} lignes`'
     @request='onRequest'
   )
@@ -151,12 +151,15 @@ q-page.container.q-pa-sm
       q-td(:props='props' auto-width)
         q-btn(
           icon='mdi-magnify'
-          color='primary'
+          :color='canOpenDiff(props.row) ? "primary" : "grey-6"'
           flat
           round
           dense
+          :disable='!canOpenDiff(props.row)'
           @click='openDiffModal(props.row)'
         )
+          q-tooltip.text-body2(anchor='top middle' self='bottom middle' v-if='!canOpenDiff(props.row)')
+            span Aucun diff disponible pour cette entrée
 
   q-dialog(v-model='diffDialog.open' maximized)
     q-card.audit-diff-card
@@ -209,7 +212,7 @@ export default defineNuxtComponent({
         sortBy: 'date',
         descending: true,
         page: 1,
-        rowsPerPage: 16,
+        rowsPerPage: 15,
         rowsNumber: 0,
       },
       diffDialog: createDefaultAuditDiffDialogState(),
@@ -345,6 +348,11 @@ export default defineNuxtComponent({
     },
   },
   methods: {
+    canOpenDiff(row: any): boolean {
+      if (!row) return false
+      if (row?.op === 'authentication') return false
+      return (row?.changes?.length || 0) > 0
+    },
     getCollectionLabel(value?: string): string {
       const labelsByValue: Record<string, string> = {
         auth: 'Auth',
@@ -375,7 +383,7 @@ export default defineNuxtComponent({
     },
     syncPaginationFromRoute() {
       const nextPage = parseInt(`${this.$route.query.page || '1'}`, 10) || 1
-      const nextLimit = parseInt(`${this.$route.query.limit || '16'}`, 10) || 16
+      const nextLimit = parseInt(`${this.$route.query.limit || '15'}`, 10) || 15
       this.pagination.page = nextPage
       this.pagination.rowsPerPage = nextLimit
     },

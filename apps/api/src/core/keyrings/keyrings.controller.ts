@@ -6,12 +6,7 @@ import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-re
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
 import { Response } from 'express';
 import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper';
-import {
-  FilterOptions,
-  FilterSchema,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '~/_common/restools';
+import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '~/_common/restools';
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator';
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
 import { PartialProjectionType } from '~/_common/types/partial-projection.type';
@@ -19,6 +14,7 @@ import { KeyringsService } from '~/core/keyrings/keyrings.service';
 import { KeyringsCreateDto, KeyringsDto } from '~/core/keyrings/_dto/keyrings.dto';
 import { UseRoles } from '~/_common/decorators/use-roles.decorator';
 import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
+import { RequireMfa } from '~/_common/decorators/require-mfa.decorator';
 
 @ApiTags('core/keyrings')
 @Controller('keyrings')
@@ -39,6 +35,7 @@ export class KeyringsController extends AbstractController {
   }
 
   @Post()
+  @RequireMfa()
   @UseRoles({
     resource: '/core/keyrings',
     action: AC_ACTIONS.CREATE,
@@ -66,12 +63,14 @@ export class KeyringsController extends AbstractController {
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
     @Query('search') search: string,
   ): Promise<Response> {
-    const searchFilter = {}
+    const searchFilter = {};
 
     if (search && search.trim().length > 0) {
-      searchFilter['$or'] = Object.keys(KeyringsController.searchFields).map((key) => {
-        return { [key]: { $regex: `^${search}`, $options: 'i' } }
-      }).filter(item => item !== undefined)
+      searchFilter['$or'] = Object.keys(KeyringsController.searchFields)
+        .map((key) => {
+          return { [key]: { $regex: `^${search}`, $options: 'i' } };
+        })
+        .filter((item) => item !== undefined);
     }
 
     const [data, total] = await this._service.findAndCount(
@@ -87,6 +86,7 @@ export class KeyringsController extends AbstractController {
   }
 
   @Delete(':_id([0-9a-fA-F]{24})')
+  @RequireMfa()
   @UseRoles({
     resource: '/core/keyrings',
     action: AC_ACTIONS.DELETE,

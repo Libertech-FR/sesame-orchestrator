@@ -62,20 +62,27 @@ export default defineNuxtComponent({
     })
 
     const $auth = useAuth()
-    const roles = $auth.user?.roles as string[] || []
+    const roles = ($auth.user?.roles as string[]) || []
 
     const buttons = computed(() => [
-      ...(roles.includes(AC_ADMIN_ROLE) ? [
-        {
-          icon: 'mdi-bug',
-          name: 'Debug',
-          color: 'warning',
-          action: () => {
-            const { debug } = useDebug()
-            debug.value = !debug.value
-          },
-        },
-      ] : []),
+      ...(roles.includes(AC_ADMIN_ROLE)
+        ? [
+            {
+              icon: 'mdi-bug',
+              name: 'Debug',
+              color: 'warning',
+              action: () => {
+                const { debug } = useDebug()
+                debug.value = !debug.value
+              },
+            },
+          ]
+        : []),
+      {
+        icon: 'mdi-account-edit-outline',
+        name: 'Mon profil',
+        to: '/profile',
+      },
       {
         icon: 'mdi-logout',
         name: 'Déconnexion',

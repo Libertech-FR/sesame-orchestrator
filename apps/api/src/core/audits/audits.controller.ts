@@ -119,6 +119,14 @@ export class AuditsController extends AbstractController {
 
     if (coll && coll.trim().length > 0) {
       searchFilter['coll'] = coll.trim()
+    } else {
+      // Par défaut (aucun filtre "coll"), on masque les audits d'authentification.
+      // Ils restent accessibles dès qu'on filtre explicitement sur coll=auth.
+      if (Array.isArray(searchFilter['$and'])) {
+        searchFilter['$and'].push({ coll: { $ne: 'auth' } })
+      } else if (!('coll' in searchFilter)) {
+        searchFilter['coll'] = { $ne: 'auth' }
+      }
     }
 
     const [data, total] = await this._service.findAndCount(searchFilter, AuditsController.projection, searchFilterOptions)

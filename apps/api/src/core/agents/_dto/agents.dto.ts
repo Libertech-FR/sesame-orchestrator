@@ -1,9 +1,9 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger'
-import { IsString, IsNotEmpty, ValidateNested, IsEmail, IsBoolean, IsMongoId, IsOptional } from 'class-validator'
-import { Type } from 'class-transformer'
-import { StatePartDTO } from './parts/state.part.dto'
-import { SecurityPartDTO } from './parts/security.part.dto'
-import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto'
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, ValidateNested, IsEmail, IsBoolean, IsMongoId, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { StatePartDTO } from './parts/state.part.dto';
+import { SecurityPartDTO } from './parts/security.part.dto';
+import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto';
 
 /**
  * DTO pour la création d'un agent.
@@ -56,7 +56,7 @@ export class AgentsCreateDto extends CustomFieldsDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  public username: string
+  public username: string;
 
   /**
    * Nom d'affichage de l'agent.
@@ -67,7 +67,7 @@ export class AgentsCreateDto extends CustomFieldsDto {
   @IsString()
   @IsOptional()
   @ApiProperty()
-  public displayName?: string
+  public displayName?: string;
 
   /**
    * Adresse email unique de l'agent.
@@ -79,7 +79,7 @@ export class AgentsCreateDto extends CustomFieldsDto {
   @IsEmail()
   @IsNotEmpty()
   @ApiProperty()
-  public email: string
+  public email: string;
 
   /**
    * Mot de passe de l'agent.
@@ -91,7 +91,7 @@ export class AgentsCreateDto extends CustomFieldsDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  public password: string
+  public password: string;
 
   /**
    * Méthode d'authentification tierce.
@@ -104,7 +104,7 @@ export class AgentsCreateDto extends CustomFieldsDto {
   @IsString()
   @IsOptional()
   @ApiProperty()
-  public thirdPartyAuth?: string
+  public thirdPartyAuth?: string;
 
   /**
    * État de lifecycle de l'agent.
@@ -116,7 +116,7 @@ export class AgentsCreateDto extends CustomFieldsDto {
   @Type(() => StatePartDTO)
   @IsNotEmpty()
   @ApiProperty({ type: StatePartDTO })
-  public state: StatePartDTO
+  public state: StatePartDTO;
 
   /**
    * URL de base pour l'agent.
@@ -128,7 +128,7 @@ export class AgentsCreateDto extends CustomFieldsDto {
   @IsString()
   @IsOptional()
   @ApiProperty()
-  public baseURL?: string
+  public baseURL?: string;
 
   /**
    * Rôles de l'agent.
@@ -140,7 +140,7 @@ export class AgentsCreateDto extends CustomFieldsDto {
   @IsString({ each: true })
   @IsOptional()
   @ApiProperty()
-  public roles?: string[]
+  public roles?: string[];
 
   /**
    * Configuration de sécurité de l'agent.
@@ -151,7 +151,7 @@ export class AgentsCreateDto extends CustomFieldsDto {
   @ValidateNested()
   @Type(() => SecurityPartDTO)
   @ApiProperty({ type: SecurityPartDTO })
-  public security: SecurityPartDTO
+  public security: SecurityPartDTO;
 
   /**
    * Indicateur de visibilité de l'agent.
@@ -163,7 +163,7 @@ export class AgentsCreateDto extends CustomFieldsDto {
   @IsBoolean()
   @IsOptional()
   @ApiProperty()
-  public hidden: boolean
+  public hidden: boolean;
 }
 
 /**
@@ -194,7 +194,7 @@ export class AgentsDto extends AgentsCreateDto {
    */
   @IsMongoId()
   @ApiProperty({ type: String })
-  public _id: string
+  public _id: string;
 }
 
 /**
@@ -225,4 +225,11 @@ export class AgentsDto extends AgentsCreateDto {
  * };
  * ```
  */
-export class AgentsUpdateDto extends PartialType(AgentsCreateDto) { }
+export class AgentsUpdateDto extends PartialType(AgentsCreateDto) {}
+
+export class AgentsSelfUpdateDto extends AgentsUpdateDto {
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  public currentPassword?: string;
+}

@@ -20,6 +20,22 @@
       q-separator(v-if="data.agent?._id" v-for='_ in 2' :key='_' vertical)
       q-btn-dropdown(v-if="data.agent?._id" :class="[$q.dark.isActive ? 'text-white' : 'text-black']" dropdown-icon="mdi-dots-vertical" unelevated dense)
         q-list(dense)
+          q-item(
+            v-if="hasTotpEnabled"
+            :disable='!hasPermission("/core/agents", "update")'
+            clickable
+            v-close-popup
+            @click="removeTotp()"
+          )
+            q-item-section(avatar)
+              q-icon(name="mdi-shield-off-outline" color="warning")
+            q-item-section
+              q-item-label Supprimer le TOTP (MFA)
+              q-tooltip.text-body2.bg-negative.text-white(
+                v-if="!hasPermission('/core/agents', 'update')"
+                anchor="top middle"
+                self="center middle"
+              ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
           q-item(v-if="data.agent?._id" :disable='!hasPermission("/core/agents", "delete")' clickable v-close-popup @click="deleteAgent(data.agent)")
             q-item-section(avatar)
               q-icon(name="mdi-delete" color="negative")
@@ -59,12 +75,17 @@ export default defineNuxtComponent({
     },
   },
   inject: ['refresh', 'deleteAgent'],
-  setup() {
+  setup(props) {
     const validations = ref({} as Record<string, any>)
     const { hasPermission } = useAccessControl()
 
     const { schema, uischema } = useAgentsSchema()
     const { handleErrorReq } = useErrorHandling()
+
+    const initialOtpKey = ref<string>('')
+    onMounted(() => {
+      initialOtpKey.value = typeof props.data?.agent?.otpKey === 'string' ? props.data.agent.otpKey : ''
+    })
 
     return {
       validations,
@@ -72,14 +93,25 @@ export default defineNuxtComponent({
       uischema,
       handleErrorReq,
       hasPermission,
+      initialOtpKey,
     }
   },
   computed: {
     isNew() {
       return this.$route.params._id === NewTargetId
     },
+    hasTotpEnabled(): boolean {
+      return typeof this.initialOtpKey === 'string' && this.initialOtpKey.length > 0
+    },
   },
   methods: {
+    async removeTotp() {
+      if (!this.data?.agent?._id) return
+      if (!this.hasPermission('/core/agents', 'update')) return
+
+      this.data.agent.otpKey = ''
+      await this.save()
+    },
     async save() {
       const method = this.isNew ? 'post' : 'patch'
       const path = this.isNew ? '/core/agents' : `/core/agents/${this.data.agent!._id}`
@@ -87,18 +119,24 @@ export default defineNuxtComponent({
       const sanitizedAgent: Agent & Record<string, unknown> = { ...this.data.agent }
       delete sanitizedAgent.metadata
 
-      const allowedNetworks = Array.isArray(sanitizedAgent.allowedNetworks)
-        ? sanitizedAgent.allowedNetworks
-        : undefined
+      const allowedNetworks = Array.isArray(sanitizedAgent.allowedNetworks) ? sanitizedAgent.allowedNetworks : undefined
+      const otpKey = typeof sanitizedAgent.otpKey === 'string' ? sanitizedAgent.otpKey.trim() : undefined
       const security = typeof sanitizedAgent.security === 'object' && sanitizedAgent.security !== null ? { ...(sanitizedAgent.security as Record<string, unknown>) } : {}
       delete security.oldPasswords
 
       if (allowedNetworks) {
         security.allowedNetworks = allowedNetworks
       }
+      // Dans "settings → agents", on autorise uniquement la suppression du TOTP :
+      // - on ignore tout ajout/remplacement de clé
+      // - on envoie explicitement une clé vide uniquement si l'agent en avait une au chargement
+      if (typeof otpKey === 'string' && otpKey.length === 0 && this.hasTotpEnabled) {
+        security.otpKey = ''
+      }
 
       sanitizedAgent.security = security
       delete sanitizedAgent.allowedNetworks
+      delete sanitizedAgent.otpKey
 
       try {
         await this.$http[method](path, {

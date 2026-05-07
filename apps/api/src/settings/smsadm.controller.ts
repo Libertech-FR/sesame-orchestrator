@@ -5,6 +5,7 @@ import { Response } from 'express';
 import { SmsSettingsDto } from '~/settings/_dto/sms.settings.dto';
 import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
 import { UseRoles } from '~/_common/decorators/use-roles.decorator';
+import { RequireMfa } from '~/_common/decorators/require-mfa.decorator';
 
 @Controller('settings/sms')
 @ApiTags('settings')
@@ -26,6 +27,7 @@ export class SmsadmController {
   }
 
   @Post('set')
+  @RequireMfa()
   @UseRoles({
     resource: '/settings/smsadm',
     action: AC_ACTIONS.UPDATE,

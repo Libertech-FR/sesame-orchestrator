@@ -89,18 +89,6 @@ export function buildClientIpDebugPayload(req: Request): Record<string, unknown>
   const xffFirst = normalizeIp(firstCsvSegment(xffRaw) ?? (xffRaw?.trim() || null));
   const xffEchoesPeer = Boolean(peerIp && xffFirst && peerIp === xffFirst);
   const clientIp = resolveClientIp(req);
-  const hasTrustedForward =
-    Boolean(normalizeIp(headerString(req, 'x-real-ip'))) ||
-    Boolean(normalizeIp(headerString(req, 'cf-connecting-ip'))) ||
-    Boolean(normalizeIp(headerString(req, 'true-client-ip')));
-
-  let hintFr =
-    'clientIp = valeur utilisée par Nest (auth, audits). Ce n’est pas forcément « votre PC » si la connexion TCP passe par un relai (tunnel, port forward, Docker/Nitro).';
-
-  if (xffEchoesPeer && !hasTrustedForward) {
-    hintFr +=
-      ' Ici X-Forwarded-For ne fait que répéter l’IP du pair TCP (relai) : il est ignoré pour la résolution. Sans X-Real-IP / CF-Connecting-IP / premier hop X-Forwarded-For fiable, Nest ne peut pas inventer votre IP LAN. Solution : reverse-proxy (nginx, Traefik…) qui transmet le client, puis SESAME_TRUST_PROXY=1 sur l’API.';
-  }
 
   return {
     clientIp,
@@ -115,6 +103,5 @@ export function buildClientIpDebugPayload(req: Request): Record<string, unknown>
     cfConnectingIp: pick('cf-connecting-ip') ?? null,
     host: pick('host') ?? null,
     trustProxyEnv: process.env['SESAME_TRUST_PROXY'] ?? null,
-    hintFr,
   };
 }

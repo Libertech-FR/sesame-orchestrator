@@ -56,10 +56,11 @@ export default defineNuxtComponent({
       transform: (result: unknown) => {
         const res = result as Response | undefined
         if (!res || res.data == null) throw new Error('Invalid API response')
-        const agent = res.data as Agent & { security?: { allowedNetworks?: string[] }; allowedNetworks?: string[] }
+        const agent = res.data as Agent & { security?: { allowedNetworks?: string[]; otpKey?: string }; allowedNetworks?: string[]; otpKey?: string }
         return {
           ...agent,
           allowedNetworks: Array.isArray(agent?.security?.allowedNetworks) ? [...agent.security.allowedNetworks] : [],
+          otpKey: agent?.security?.otpKey || '',
         } as Agent
       },
     })

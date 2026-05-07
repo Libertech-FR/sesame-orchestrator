@@ -27,6 +27,7 @@ import { DeleteIdentitiesDto } from './_dto/delete-identities.dto';
 import { hash } from 'crypto';
 import { AgentsService } from '../agents/agents.service';
 import { Agents } from '../agents/_schemas/agents.schema';
+import { RequireMfa } from '~/_common/decorators/require-mfa.decorator';
 
 function fireMessage(observer: Subscriber<MessageEvent>, channel: string, message: any, loggername: string) {
   try {
@@ -48,9 +49,10 @@ export class BackendsController {
     private agentsService: AgentsService,
     private backendsService: BackendsService,
     @InjectRedis() protected readonly redis: Redis,
-  ) { }
+  ) {}
 
   @Post('delete')
+  @RequireMfa()
   @ApiOperation({ summary: "Supprime une liste d'identitées" })
   public async deleteIdentities(
     @Res() res: Response,
@@ -66,6 +68,7 @@ export class BackendsController {
   }
 
   @Post('undelete')
+  @RequireMfa()
   @ApiOperation({ summary: "Restaure une liste d'identitées supprimées" })
   public async undeleteIdentities(
     @Res() res: Response,
@@ -81,6 +84,7 @@ export class BackendsController {
   }
 
   @Post('sync')
+  @RequireMfa()
   @ApiOperation({ summary: "Synchronise une liste d'identitées" })
   public async syncIdentities(
     @Res() res: Response,
@@ -96,6 +100,7 @@ export class BackendsController {
   }
 
   @Post('syncall')
+  @RequireMfa()
   @ApiOperation({ summary: 'Synchronise toutes les identitées à synchroniser' })
   public async syncAllIdentities(@Res() res: Response, @Query('async') asyncQuery: string) {
     const async = /true|on|yes|1/i.test(asyncQuery);
@@ -106,6 +111,7 @@ export class BackendsController {
   }
 
   @Post('execute')
+  @RequireMfa()
   @ApiOperation({ summary: 'Execute un backend manuellement' })
   public async executeJob(
     @Res() res: Response,
@@ -147,7 +153,11 @@ export class BackendsController {
   @Header('Cache-Control', 'no-cache, no-transform')
   @Header('Connection', 'keep-alive')
   @ApiOperation({ summary: 'Server Sent Event - Récupère en temps réel les Jobs et affiche leurs état' })
-  public async sse(@Res() res: Response, @Query('id') id: string, @Query('key') key: string): Promise<Observable<MessageEvent>> {
+  public async sse(
+    @Res() res: Response,
+    @Query('id') id: string,
+    @Query('key') key: string,
+  ): Promise<Observable<MessageEvent>> {
     if (!id || !key) throw new UnauthorizedException();
     const user = await this.agentsService.findById<Agents>(id);
     if (!user) throw new UnauthorizedException();
@@ -194,7 +204,9 @@ export class BackendsController {
         this.backendsService.queueEvents.off('added', onAdded);
         this.backendsService.queueEvents.off('completed', onCompleted);
         this.backendsService.queueEvents.off('failed', onFailed);
-        try { observer.complete?.(); } catch { }
+        try {
+          observer.complete?.();
+        } catch {}
         Logger.debug(`Observer close connection`, BackendsController.name);
       };
 

@@ -28,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   // noinspection JSUnusedGlobalSymbols
   public async validate(
     _: Request,
-    payload: JwtPayload & { identity: AgentType },
+    payload: JwtPayload & { identity: AgentType; mfaVerified?: boolean },
     done: VerifiedCallback,
   ): Promise<void> {
     this.logger.verbose(`Atempt to authenticate with JTI: <${payload.jti}>`);
@@ -37,21 +37,20 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     if (!user) return done(new ForbiddenException(), false);
 
-    const roles = [...Array.isArray(payload.identity?.roles) ? payload.identity.roles : []]
-    if (!roles.includes('admin') && (payload.identity?._id === '000000000000000000000000')) {
-      roles.push('admin')
+    const roles = [...(Array.isArray(payload.identity?.roles) ? payload.identity.roles : [])];
+    if (!roles.includes('admin') && payload.identity?._id === '000000000000000000000000') {
+      roles.push('admin');
     }
 
     if (roles.length === 0 && payload.scopes.includes('api')) {
-      roles.push('admin')
+      roles.push('admin');
     }
 
     return done(null, {
-      $ref: !payload.scopes.includes('api')
-        ? Agents.name
-        : Keyrings.name,
+      $ref: !payload.scopes.includes('api') ? Agents.name : Keyrings.name,
       ...payload?.identity,
       roles,
+      mfaVerified: !!payload?.mfaVerified,
     });
   }
 }

@@ -1,159 +1,166 @@
-import { ForbiddenException, UnauthorizedException } from '@nestjs/common'
-import { AuthService } from '~/core/auth/auth.service'
-import { verify as argon2Verify } from 'argon2'
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import { AuthService } from '~/core/auth/auth.service';
+import { verify as argon2Verify } from 'argon2';
+import { AgentState } from '~/core/agents/_enum/agent-state.enum';
 
 jest.mock('argon2', () => ({
   verify: jest.fn(),
-}))
+}));
 
 describe('AuthService', () => {
-  const redisGet = jest.fn()
-  const redisSet = jest.fn()
-  const redisExpire = jest.fn()
-  const redisDel = jest.fn()
+  const redisGet = jest.fn();
+  const redisSet = jest.fn();
+  const redisExpire = jest.fn();
+  const redisDel = jest.fn();
   const redis = {
     get: redisGet,
     set: redisSet,
     expire: redisExpire,
     del: redisDel,
-  }
+  };
 
-  const agentsFindOne = jest.fn()
+  const agentsFindOne = jest.fn();
   const agentsService = {
     findOne: agentsFindOne,
     model: {
       countDocuments: jest.fn(),
     },
-  }
+  };
 
-  const keyringsFindOne = jest.fn()
+  const keyringsFindOne = jest.fn();
   const keyringsService = {
     findOne: keyringsFindOne,
-  }
+  };
 
-  const jwtSign = jest.fn()
-  const jwtDecode = jest.fn()
+  const jwtSign = jest.fn();
+  const jwtDecode = jest.fn();
   const jwtService = {
     sign: jwtSign,
     decode: jwtDecode,
-  }
+  };
 
-  const createAuthenticationAudit = jest.fn()
+  const createAuthenticationAudit = jest.fn();
   const auditsService = {
     createAuthenticationAudit,
-  }
+  };
 
-  let service: AuthService
+  let service: AuthService;
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    service = new AuthService({} as any, agentsService as any, keyringsService as any, auditsService as any, jwtService as any, redis as any)
-  })
+    jest.clearAllMocks();
+    service = new AuthService(
+      {} as any,
+      agentsService as any,
+      keyringsService as any,
+      auditsService as any,
+      jwtService as any,
+      redis as any,
+    );
+  });
 
   it('should create access+refresh tokens and persist redis session', async () => {
-    jwtSign.mockReturnValue('access-token')
+    jwtSign.mockReturnValue('access-token');
     agentsFindOne.mockResolvedValue({
       toJSON: () => ({ _id: 'a1', username: 'john' }),
-    })
-    redisSet.mockResolvedValue('OK')
-    redisExpire.mockResolvedValue(1)
+    });
+    redisSet.mockResolvedValue('OK');
+    redisExpire.mockResolvedValue(1);
 
-    const result = await service.createTokens({ _id: 'a1', username: 'john', roles: ['user'] } as any)
+    const result = await service.createTokens({ _id: 'a1', username: 'john', roles: ['user'] } as any);
 
-    expect(result.access_token).toBe('access-token')
-    expect(result.refresh_token).toBeDefined()
-    expect(redisSet).toHaveBeenCalled()
-    expect(redisExpire).toHaveBeenCalled()
-  })
+    expect(result.access_token).toBe('access-token');
+    expect(result.refresh_token).toBeDefined();
+    expect(redisSet).toHaveBeenCalled();
+    expect(redisExpire).toHaveBeenCalled();
+  });
 
   it('should create access token only when refresh_token is false', async () => {
-    jwtSign.mockReturnValue('access-token')
+    jwtSign.mockReturnValue('access-token');
 
-    const result = await service.createTokens({ _id: 'a1', username: 'john', roles: ['user'] } as any, false)
+    const result = await service.createTokens({ _id: 'a1', username: 'john', roles: ['user'] } as any, false);
 
-    expect(result).toEqual({ access_token: 'access-token' })
-    expect(redisExpire).not.toHaveBeenCalled()
-  })
+    expect(result).toEqual({ access_token: 'access-token' });
+    expect(redisExpire).not.toHaveBeenCalled();
+  });
 
   it('should renew tokens with existing refresh token', async () => {
-    redisGet.mockResolvedValueOnce(JSON.stringify({ identityId: 'a1' }))
+    redisGet.mockResolvedValueOnce(JSON.stringify({ identityId: 'a1' }));
     agentsFindOne.mockResolvedValueOnce({
       _id: 'a1',
       toObject: () => ({ _id: 'a1', username: 'john', password: 'hash' }),
-    })
+    });
     const createTokensSpy = jest.spyOn(service, 'createTokens').mockResolvedValue({
       access_token: 'new-a',
       refresh_token: 'existing-r',
-    })
+    });
 
-    const [identity, tokens] = await service.renewTokens('existing-r')
+    const [identity, tokens] = await service.renewTokens('existing-r');
 
-    expect(identity._id).toBe('a1')
-    expect(tokens.access_token).toBe('new-a')
-    expect(createTokensSpy).toHaveBeenCalledWith(
-      { _id: 'a1', username: 'john' },
-      'existing-r',
-    )
-  })
+    expect(identity._id).toBe('a1');
+    expect(tokens.access_token).toBe('new-a');
+    expect(createTokensSpy).toHaveBeenCalledWith({ _id: 'a1', username: 'john' }, 'existing-r', {
+      mfaVerified: undefined,
+    });
+  });
 
   it('should throw UnauthorizedException when renew token does not exist', async () => {
-    redisGet.mockResolvedValue(null)
+    redisGet.mockResolvedValue(null);
 
-    await expect(service.renewTokens('missing-r')).rejects.toThrow(UnauthorizedException)
-  })
+    await expect(service.renewTokens('missing-r')).rejects.toThrow(UnauthorizedException);
+  });
 
   it('should throw ForbiddenException when identity is missing during renew', async () => {
-    redisGet.mockResolvedValue(JSON.stringify({ identityId: 'a1' }))
-    agentsFindOne.mockResolvedValue(null)
+    redisGet.mockResolvedValue(JSON.stringify({ identityId: 'a1' }));
+    agentsFindOne.mockResolvedValue(null);
 
-    await expect(service.renewTokens('existing-r')).rejects.toThrow(ForbiddenException)
-  })
+    await expect(service.renewTokens('existing-r')).rejects.toThrow(ForbiddenException);
+  });
 
   it('should clear access and refresh tokens from redis', async () => {
-    jwtDecode.mockReturnValue({ jti: 'jwt-id' })
-    redisGet.mockResolvedValue(JSON.stringify({ refresh_token: 'refresh-id' }))
-    redisDel.mockResolvedValue(1)
+    jwtDecode.mockReturnValue({ jti: 'jwt-id' });
+    redisGet.mockResolvedValue(JSON.stringify({ refresh_token: 'refresh-id' }));
+    redisDel.mockResolvedValue(1);
 
-    await service.clearSession('jwt-token')
+    await service.clearSession('jwt-token');
 
-    expect(redisDel).toHaveBeenCalledWith('access_token:jwt-id')
-    expect(redisDel).toHaveBeenCalledWith('refresh_token:refresh-id')
-  })
+    expect(redisDel).toHaveBeenCalledWith('access_token:jwt-id');
+    expect(redisDel).toHaveBeenCalledWith('refresh_token:refresh-id');
+  });
 
   it('should verify api identity with keyring token', async () => {
     keyringsFindOne.mockResolvedValue({
       toObject: () => ({ _id: 'k1' }),
-    })
+    });
 
     const result = await service.verifyIdentity({
       scopes: ['api'],
       identity: { _id: 'k1', token: 'abc' },
-    } as any)
+    } as any);
 
-    expect(result).toEqual({ _id: 'k1' })
-  })
+    expect(result).toEqual({ _id: 'k1' });
+  });
 
   it('should return offline identity as-is for offline scope', async () => {
-    const identity = { _id: 'console-1', username: 'console' }
+    const identity = { _id: 'console-1', username: 'console' };
 
     const result = await service.verifyIdentity({
       scopes: ['offline'],
       identity,
-    } as any)
+    } as any);
 
-    expect(result).toBe(identity)
-  })
+    expect(result).toBe(identity);
+  });
 
   it('should return null for api scope when keyring is not found', async () => {
-    keyringsFindOne.mockRejectedValue(new Error('not found'))
+    keyringsFindOne.mockRejectedValue(new Error('not found'));
 
     const result = await service.verifyIdentity({
       scopes: ['api'],
       identity: { _id: 'k1', token: 'missing' },
-    } as any)
+    } as any);
 
-    expect(result).toBeNull()
-  })
+    expect(result).toBeNull();
+  });
 
   it('should verify jwt session scope with redis-backed session and matching secret key', async () => {
     redisGet.mockResolvedValue(
@@ -164,107 +171,110 @@ describe('AuthService', () => {
           },
         },
       }),
-    )
-    ;(agentsService.model.countDocuments as jest.Mock).mockResolvedValue(1)
+    );
+    (agentsService.model.countDocuments as jest.Mock).mockResolvedValue(1);
 
     const result = await service.verifyIdentity({
       jti: 'jwt-id',
       scopes: ['sesame'],
       identity: { _id: 'a1' },
-    } as any)
+    } as any);
 
-    expect(redisGet).toHaveBeenCalledWith('access_token:jwt-id')
+    expect(redisGet).toHaveBeenCalledWith('access_token:jwt-id');
     expect(agentsService.model.countDocuments).toHaveBeenCalledWith({
       _id: 'a1',
       'security.secretKey': 's3cr3t',
-    })
+    });
     expect(result).toEqual({
       identity: {
         security: {
           secretKey: 's3cr3t',
         },
       },
-    })
-  })
+    });
+  });
 
   it('should return null for jwt session scope when no redis session exists', async () => {
-    redisGet.mockResolvedValue(null)
+    redisGet.mockResolvedValue(null);
 
     const result = await service.verifyIdentity({
       jti: 'missing-jti',
       scopes: ['sesame'],
       identity: { _id: 'a1' },
-    } as any)
+    } as any);
 
-    expect(result).toBeNull()
-  })
+    expect(result).toBeNull();
+  });
 
   it('should not delete anything when clearSession cannot decode jwt', async () => {
-    jwtDecode.mockReturnValue(null)
+    jwtDecode.mockReturnValue(null);
 
-    await service.clearSession('invalid-token')
+    await service.clearSession('invalid-token');
 
-    expect(redisDel).not.toHaveBeenCalled()
-  })
+    expect(redisDel).not.toHaveBeenCalled();
+  });
 
   it('should authenticate when allowedNetworks is empty', async () => {
     const agent = {
       _id: 'a1',
       password: 'hashed',
       security: { allowedNetworks: [] },
-    }
-    agentsFindOne.mockResolvedValue(agent)
-    ;(argon2Verify as jest.Mock).mockResolvedValue(true)
+      state: { current: AgentState.ACTIVE },
+    };
+    agentsFindOne.mockResolvedValue(agent);
+    (argon2Verify as jest.Mock).mockResolvedValue(true);
 
-    const result = await service.authenticateWithLocal('john', 'secret', '203.0.113.10')
+    const result = await service.authenticateWithLocal('john', 'secret', '203.0.113.10');
 
-    expect(result).toBe(agent)
+    expect(result).toBe(agent);
     expect(createAuthenticationAudit).toHaveBeenCalledWith(
       expect.objectContaining({
         username: 'john',
         ip: '203.0.113.10',
         result: 'success',
       }),
-    )
-  })
+    );
+  });
 
   it('should refuse authentication when ip does not match allowedNetworks', async () => {
     agentsFindOne.mockResolvedValue({
       _id: 'a1',
       password: 'hashed',
       security: { allowedNetworks: ['10.0.0.1-10.0.0.5'] },
-    })
-    ;(argon2Verify as jest.Mock).mockResolvedValue(true)
+      state: { current: AgentState.ACTIVE },
+    });
+    (argon2Verify as jest.Mock).mockResolvedValue(true);
 
-    const result = await service.authenticateWithLocal('john', 'secret', '10.0.0.25')
+    const result = await service.authenticateWithLocal('john', 'secret', '10.0.0.25');
 
-    expect(result).toBeNull()
+    expect(result).toBeNull();
     expect(createAuthenticationAudit).toHaveBeenCalledWith(
       expect.objectContaining({
         username: 'john',
         ip: '10.0.0.25',
-        result: 'failure',
+        result: 'failed',
         reason: 'network_not_allowed',
       }),
-    )
-  })
+    );
+  });
 
   it('should allow authentication when ip matches CIDR rule', async () => {
     const agent = {
       _id: 'a1',
       password: 'hashed',
       security: { allowedNetworks: ['192.168.1.0/24'] },
-    }
-    agentsFindOne.mockResolvedValue(agent)
-    ;(argon2Verify as jest.Mock).mockResolvedValue(true)
+      state: { current: AgentState.ACTIVE },
+    };
+    agentsFindOne.mockResolvedValue(agent);
+    (argon2Verify as jest.Mock).mockResolvedValue(true);
 
-    const result = await service.authenticateWithLocal('john', 'secret', '192.168.1.42')
+    const result = await service.authenticateWithLocal('john', 'secret', '192.168.1.42');
 
-    expect(result).toBe(agent)
+    expect(result).toBe(agent);
     expect(createAuthenticationAudit).toHaveBeenCalledWith(
       expect.objectContaining({
         result: 'success',
       }),
-    )
-  })
-})
+    );
+  });
+});

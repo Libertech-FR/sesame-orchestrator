@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { existsSync, readFileSync, statSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'fs'
 import openapiTS, { astToString, COMMENT_HEADER } from 'openapi-typescript'
 import { defineNuxtConfig } from 'nuxt/config'
 import * as consola from 'consola'
@@ -273,6 +273,19 @@ export default defineNuxtConfig({
   },
   hooks: {
     ready: async (nuxt) => {
+      // Nuxt (Nitro) en SPA (`ssr:false`) peut parfois importer un client manifest absent en dev,
+      // ce qui casse toutes les requêtes. On crée un stub si nécessaire.
+      try {
+        const clientManifestPath = resolve(process.cwd(), '.nuxt/dist/server/client.manifest.mjs')
+        if (!existsSync(clientManifestPath)) {
+          mkdirSync(resolve(process.cwd(), '.nuxt/dist/server'), { recursive: true })
+          writeFileSync(clientManifestPath, 'export default {}\\n')
+          consola.info('[Nuxt] Created missing client.manifest.mjs stub')
+        }
+      } catch (error) {
+        consola.warn('[Nuxt] Unable to ensure client.manifest.mjs stub', error)
+      }
+
       const forceOpenapiRefresh = /true|on|yes|1/i.test(`${process.env.SESAME_FORCE_OPENAPI_TYPES_REFRESH}`)
       const openapiTypesPath = '.nuxt/types/service-api.d.ts'
       const maxOpenapiTypesAgeMs = 1000 * 60 * 15

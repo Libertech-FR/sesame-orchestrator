@@ -35,6 +35,13 @@ import { AgentType } from '~/_common/types/agent.type';
 import { verify as argon2Verify } from 'argon2';
 import { randomBytes } from 'crypto';
 import * as speakeasy from 'speakeasy';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import { ConfigService } from '@nestjs/config';
+import Redis from 'ioredis';
+import { generateRegistrationOptions, verifyRegistrationResponse } from '@simplewebauthn/server';
+import { WebAuthnRegisterBeginDto, WebAuthnRegisterFinishDto } from '~/core/agents/_dto/webauthn.dto';
+import { PasswdadmService } from '~/settings/passwdadm.service';
+import { assertAgentPasswordNotReused, nextAgentOldPasswords } from '~/core/agents/_utils/agent-password-history';
 
 type TotpConfirmBody = {
   secret: string;
@@ -53,6 +60,9 @@ type TotpConfirmBody = {
 @ApiTags('core/agents')
 @Controller('agents')
 export class AgentsController extends AbstractController {
+  private readonly WEBAUTHN_REG_PREFIX = 'webauthn_reg';
+  private readonly WEBAUTHN_REG_TTL_SECONDS = 5 * 60;
+
   protected sanitizeAgentPayload<T = any>(payload: T, options?: { includeOtpKey?: boolean }): T {
     if (!payload || typeof payload !== 'object') return payload;
 
@@ -67,6 +77,15 @@ export class AgentsController extends AbstractController {
     if (cloned.security && typeof cloned.security === 'object') {
       cloned.security = { ...cloned.security };
       delete cloned.security.oldPasswords;
+      if (Array.isArray(cloned.security.u2fKey)) {
+        cloned.security.u2fKey = cloned.security.u2fKey.map((k: any) => ({
+          credentialId: k?.credentialId,
+          transports: k?.transports,
+          createdAt: k?.createdAt,
+          name: k?.name,
+          signCount: k?.signCount,
+        }));
+      }
       if (!options?.includeOtpKey) {
         delete cloned.security.otpKey;
       }
@@ -110,8 +129,43 @@ export class AgentsController extends AbstractController {
    *
    * @param {AgentsService} _service - Service de gestion des agents injecté par dépendance
    */
-  public constructor(private readonly _service: AgentsService) {
+  public constructor(
+    private readonly _service: AgentsService,
+    private readonly configService: ConfigService,
+    private readonly passwdadmService: PasswdadmService,
+    @InjectRedis() private readonly redis: Redis,
+  ) {
     super();
+  }
+
+  private base64urlToBuffer(value: string): Buffer {
+    const normalized = (value || '').replace(/-/g, '+').replace(/_/g, '/');
+    const pad = normalized.length % 4 === 0 ? '' : '='.repeat(4 - (normalized.length % 4));
+    return Buffer.from(`${normalized}${pad}`, 'base64');
+  }
+
+  private bufferToBase64url(buf: Uint8Array | Buffer): string {
+    return Buffer.from(buf).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  }
+
+  private getWebAuthnExpectedOrigin(): string {
+    const raw = (process.env['SESAME_WEBAUTHN_ORIGIN'] || this.configService.get<string>('frontPwd.url') || '').trim();
+    return raw.replace(/\/+$/, '');
+  }
+
+  private getWebAuthnRpId(): string {
+    const env = (process.env['SESAME_WEBAUTHN_RP_ID'] || '').trim();
+    if (env) return env;
+    const origin = this.getWebAuthnExpectedOrigin();
+    try {
+      return new URL(origin).hostname;
+    } catch {
+      return '';
+    }
+  }
+
+  private getWebAuthnRpName(): string {
+    return (process.env['SESAME_WEBAUTHN_RP_NAME'] || 'Sesame').trim() || 'Sesame';
   }
 
   /**
@@ -290,6 +344,32 @@ export class AgentsController extends AbstractController {
       if (!ok) {
         throw new BadRequestException('Le mot de passe actuel est invalide');
       }
+
+      const newPassword = `${payload.password}`.trim();
+      if ((await this.passwdadmService.checkPolicies(newPassword)) === false) {
+        throw new BadRequestException({
+          message: 'Une erreur est survenue : Le mot de passe ne respecte pas la politique des mots de passe',
+          error: 'Bad Request',
+          statusCode: 400,
+        });
+      }
+
+      const policies: any = await this.passwdadmService.getPolicies();
+      const historyCount = Number(policies?.passwordHistoryCount || 0);
+      await assertAgentPasswordNotReused({
+        newPassword,
+        currentHash,
+        oldHashes: (currentSecurity as any)?.oldPasswords,
+      });
+      payload.security = {
+        ...(payload.security || {}),
+        oldPasswords: nextAgentOldPasswords({
+          currentHash,
+          oldHashes: (currentSecurity as any)?.oldPasswords,
+          maxCount: Number.isFinite(historyCount) ? historyCount : 0,
+        }),
+      };
+
       payload.security = {
         ...(payload.security || {}),
         secretKey: randomBytes(32).toString('hex'),
@@ -427,6 +507,144 @@ export class AgentsController extends AbstractController {
     });
   }
 
+  @Post('me/mfa/webauthn/register/begin')
+  @RequireMfa()
+  public async beginWebAuthnRegisterSelf(
+    @ReqIdentity() identity: AgentType,
+    @Body() body: WebAuthnRegisterBeginDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const rpID = this.getWebAuthnRpId();
+    const rpName = this.getWebAuthnRpName();
+    const expectedOrigin = this.getWebAuthnExpectedOrigin();
+    if (!rpID || !expectedOrigin) {
+      throw new BadRequestException('WebAuthn non configuré (RP ID / origin manquants)');
+    }
+
+    const currentAgent = await this._service.findById<Agents>(identity._id as Types.ObjectId);
+    const existing = Array.isArray((currentAgent as any)?.security?.u2fKey)
+      ? (currentAgent as any).security.u2fKey
+      : [];
+    const excludeCredentials = existing
+      .map((k: any) => `${k?.credentialId || ''}`.trim())
+      .filter((id: string) => id.length > 0)
+      .map((id: string) => ({
+        id: this.base64urlToBuffer(id),
+        type: 'public-key' as const,
+      }));
+
+    const options = await generateRegistrationOptions({
+      rpName,
+      rpID,
+      userID: Buffer.from(`${identity._id}`),
+      userName: `${(currentAgent as any)?.username || identity?._id}`,
+      attestationType: 'none',
+      excludeCredentials,
+      authenticatorSelection: {
+        userVerification: 'preferred',
+        residentKey: 'preferred',
+      },
+    });
+
+    await this.redis.set(
+      [this.WEBAUTHN_REG_PREFIX, `${identity._id}`].join(':'),
+      JSON.stringify({
+        challenge: options.challenge,
+        createdAt: Date.now(),
+        expectedOrigin,
+        rpID,
+        name: `${body?.name || ''}`.trim(),
+      }),
+      'EX',
+      this.WEBAUTHN_REG_TTL_SECONDS,
+    );
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: options,
+    });
+  }
+
+  @Post('me/mfa/webauthn/register/finish')
+  @RequireMfa()
+  public async finishWebAuthnRegisterSelf(
+    @ReqIdentity() identity: AgentType,
+    @Body() body: WebAuthnRegisterFinishDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const key = [this.WEBAUTHN_REG_PREFIX, `${identity._id}`].join(':');
+    const raw = await this.redis.get(key);
+    if (!raw) {
+      throw new BadRequestException('Challenge WebAuthn manquant ou expiré');
+    }
+    const stored = JSON.parse(raw) as { challenge: string; expectedOrigin: string; rpID: string; name?: string };
+
+    const responseJson = (body?.response || {}) as any;
+    const verification = await verifyRegistrationResponse({
+      response: responseJson,
+      expectedChallenge: stored.challenge,
+      expectedOrigin: stored.expectedOrigin,
+      expectedRPID: stored.rpID,
+      requireUserVerification: false,
+    });
+
+    if (!verification.verified || !verification.registrationInfo) {
+      throw new BadRequestException('Enregistrement WebAuthn invalide');
+    }
+
+    const regInfo: any = verification.registrationInfo as any;
+    const credential: any = regInfo?.credential || {};
+    const credentialIdRaw = credential?.id || regInfo?.credentialID;
+    const publicKeyRaw = credential?.publicKey || regInfo?.credentialPublicKey;
+    const counterRaw = credential?.counter ?? regInfo?.counter;
+
+    const credentialIdB64u = this.bufferToBase64url(credentialIdRaw);
+    const publicKeyB64u = this.bufferToBase64url(publicKeyRaw);
+
+    const currentAgent = await this._service.findById<Agents>(identity._id as Types.ObjectId);
+    const currentSecurity =
+      currentAgent?.security && typeof currentAgent.security === 'object'
+        ? typeof (currentAgent.security as any).toObject === 'function'
+          ? (currentAgent.security as any).toObject()
+          : { ...(currentAgent.security as unknown as Record<string, unknown>) }
+        : {};
+
+    const existing = Array.isArray((currentSecurity as any)?.u2fKey) ? ((currentSecurity as any).u2fKey as any[]) : [];
+    if (existing.some((k) => `${k?.credentialId || ''}`.trim() === credentialIdB64u)) {
+      throw new BadRequestException('Cette clé est déjà enregistrée');
+    }
+
+    const name = (`${body?.name || stored?.name || ''}`.trim() || '').slice(0, 80);
+    const next = [
+      ...existing,
+      {
+        credentialId: credentialIdB64u,
+        publicKey: publicKeyB64u,
+        signCount: Number.isFinite(counterRaw) ? counterRaw : 0,
+        transports: (responseJson as any)?.response?.transports || [],
+        createdAt: new Date(),
+        name,
+      },
+    ];
+
+    const data = await this._service.update(
+      identity._id as Types.ObjectId,
+      {
+        security: {
+          ...currentSecurity,
+          u2fKey: next,
+        },
+      } as AgentsUpdateDto,
+    );
+
+    await this.redis.del(key);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: this.sanitizeAgentPayload(data, { includeOtpKey: true }),
+    });
+  }
+
   /**
    * Met à jour un agent existant
    *
@@ -455,7 +673,47 @@ export class AgentsController extends AbstractController {
     @Body() body: AgentsUpdateDto,
     @Res() res: Response,
   ): Promise<Response> {
-    const data = await this._service.update(_id, body);
+    const payload: Record<string, any> = { ...(body as Record<string, any>) };
+    if (typeof payload.password === 'string' && payload.password.trim().length > 0) {
+      const newPassword = `${payload.password}`.trim();
+      if ((await this.passwdadmService.checkPolicies(newPassword)) === false) {
+        throw new BadRequestException({
+          message: 'Une erreur est survenue : Le mot de passe ne respecte pas la politique des mots de passe',
+          error: 'Bad Request',
+          statusCode: 400,
+        });
+      }
+
+      const currentAgent = await this._service.findById<Agents>(_id);
+      const currentSecurity =
+        currentAgent?.security && typeof currentAgent.security === 'object'
+          ? typeof (currentAgent.security as any).toObject === 'function'
+            ? (currentAgent.security as any).toObject()
+            : { ...(currentAgent.security as unknown as Record<string, unknown>) }
+          : {};
+      const currentHash = `${(currentAgent as any)?.password || ''}`;
+
+      const policies: any = await this.passwdadmService.getPolicies();
+      const historyCount = Number(policies?.passwordHistoryCount || 0);
+      await assertAgentPasswordNotReused({
+        newPassword,
+        currentHash,
+        oldHashes: (currentSecurity as any)?.oldPasswords,
+      });
+
+      payload.security = {
+        ...(currentSecurity as any),
+        ...(payload.security || {}),
+        oldPasswords: nextAgentOldPasswords({
+          currentHash,
+          oldHashes: (currentSecurity as any)?.oldPasswords,
+          maxCount: Number.isFinite(historyCount) ? historyCount : 0,
+        }),
+        secretKey: randomBytes(32).toString('hex'),
+      };
+    }
+
+    const data = await this._service.update(_id, payload as AgentsUpdateDto);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: this.sanitizeAgentPayload(data),

@@ -1,5 +1,34 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document } from 'mongoose'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+
+@Schema({ _id: false })
+export class U2fKeyCredential {
+  @Prop({ type: String, required: true })
+  public credentialId: string;
+
+  /**
+   * Clé publique associée à la credential (encodée en base64url).
+   */
+  @Prop({ type: String, required: true })
+  public publicKey: string;
+
+  /**
+   * Compteur de signature WebAuthn (anti-rejeu), fourni par l’authenticator.
+   */
+  @Prop({ type: Number, required: true, default: 0 })
+  public signCount: number;
+
+  @Prop({ type: [String], required: false, default: [] })
+  public transports?: string[];
+
+  @Prop({ type: Date, required: true, default: () => new Date() })
+  public createdAt: Date;
+
+  @Prop({ type: String, required: false, default: '' })
+  public name?: string;
+}
+
+export const U2fKeyCredentialSchema = SchemaFactory.createForClass(U2fKeyCredential);
 
 /**
  * Schéma Mongoose pour la partie sécurité des agents.
@@ -50,7 +79,7 @@ export class SecurityPart extends Document {
     type: [String],
     default: [],
   })
-  public oldPasswords?: string[]
+  public oldPasswords?: string[];
 
   /**
    * Clé secrète pour l'authentification OTP (One-Time Password).
@@ -63,19 +92,20 @@ export class SecurityPart extends Document {
   @Prop({
     type: String,
   })
-  public otpKey?: string
+  public otpKey?: string;
 
   /**
    * Clés U2F/FIDO enregistrées pour l'authentification matérielle.
    * Tableau des identifiants de clés de sécurité physiques enregistrées.
    *
-   * @type {string[]}
+   * @type {U2fKeyCredential[]}
    * @optional
    */
   @Prop({
-    type: [String],
+    type: [U2fKeyCredentialSchema],
+    default: [],
   })
-  public u2fKey?: string[]
+  public u2fKey?: U2fKeyCredential[];
 
   /**
    * Liste des réseaux/IP autorisés pour cet agent.
@@ -89,12 +119,12 @@ export class SecurityPart extends Document {
   @Prop({
     type: [String],
     set: (value: string[] | string | null | undefined): string[] | undefined => {
-      if (value === null || value === undefined) return undefined
-      const values = Array.isArray(value) ? value : [value]
-      return values.map((item) => `${item || ''}`.trim()).filter((item) => item.length > 0)
+      if (value === null || value === undefined) return undefined;
+      const values = Array.isArray(value) ? value : [value];
+      return values.map((item) => `${item || ''}`.trim()).filter((item) => item.length > 0);
     },
   })
-  public allowedNetworks?: string[]
+  public allowedNetworks?: string[];
 
   /**
    * Indique si l'agent doit changer son mot de passe à la prochaine connexion.
@@ -108,7 +138,7 @@ export class SecurityPart extends Document {
     type: Boolean,
     default: false,
   })
-  public changePwdAtNextLogin: boolean
+  public changePwdAtNextLogin: boolean;
 
   /**
    * Clé secrète unique de l'agent.
@@ -122,10 +152,10 @@ export class SecurityPart extends Document {
   @Prop({
     type: String,
   })
-  public secretKey: string
+  public secretKey: string;
 }
 
 /**
  * Factory pour créer le schéma Mongoose à partir de la classe SecurityPart.
  */
-export const SecurityPartSchema = SchemaFactory.createForClass(SecurityPart)
+export const SecurityPartSchema = SchemaFactory.createForClass(SecurityPart);

@@ -71,6 +71,36 @@
                   @click='disableTotp'
                 ) &nbsp;&nbsp;Désactiver
 
+            .row.items-center.q-col-gutter-sm.q-mt-md
+              .col-auto
+                q-badge(
+                  :color='(u2fKeys?.length || 0) > 0 ? "positive" : "grey-7"'
+                  text-color='white'
+                ) {{ (u2fKeys?.length || 0) > 0 ? `Clés de sécurité: ${(u2fKeys?.length || 0)}` : 'Aucune clé de sécurité' }}
+              .col-auto
+                q-btn(
+                  color='primary'
+                  icon='mdi-usb'
+                  :loading='pendingWebAuthnRegister'
+                  @click='registerSecurityKey'
+                  unelevated
+                ) Ajouter une clé FIDO
+
+            q-card.q-mt-md(v-if='(u2fKeys?.length || 0) > 0' flat bordered)
+              q-card-section
+                .text-subtitle2 Clés de sécurité (WebAuthn)
+                .text-caption.text-grey-7 Ces clés servent à une authentification forte (FIDO2/WebAuthn).
+              q-separator
+              q-card-section
+                q-list(dense bordered separator)
+                  q-item(v-for='k in u2fKeys' :key='k.credentialId')
+                    q-item-section
+                      q-item-label {{ k.name || 'Clé de sécurité' }}
+                      q-item-label(caption)
+                        | ID: {{ k.credentialId }}
+                    q-item-section(side)
+                      q-badge(color='grey-7' text-color='white') {{ typeof k.createdAt === 'string' ? k.createdAt : '' }}
+
             q-card.q-mt-md(v-if='totpSetup.otpauthUrl' flat bordered)
               q-card-section
                 .text-subtitle2 Scanner le QR code
@@ -171,10 +201,13 @@
 
 <script lang="ts">
 import type { components } from '#build/types/service-api'
+import { startRegistration } from '@simplewebauthn/browser'
+import type { PublicKeyCredentialCreationOptionsJSON, RegistrationResponseJSON } from '@simplewebauthn/types'
 
 type Agent = components['schemas']['AgentsDto']
 
 type TotpSetupPayload = { secret: string; otpauthUrl: string }
+type U2fKey = { credentialId: string; name?: string; transports?: string[]; createdAt?: string; signCount?: number }
 
 export default defineNuxtComponent({
   name: 'ProfilePage',
@@ -185,6 +218,7 @@ export default defineNuxtComponent({
     const pendingTotpSetup = ref(false)
     const pendingTotpConfirm = ref(false)
     const pendingTotpDisable = ref(false)
+    const pendingWebAuthnRegister = ref(false)
     const showPasswordDialog = ref(false)
 
     const { data, error, refresh } = await useHttp<Agent>('/core/agents/me', {
@@ -192,11 +226,17 @@ export default defineNuxtComponent({
       transform: (result: unknown) => {
         const res = result as { data?: Agent } | undefined
         if (!res || res.data == null) throw new Error('Invalid API response')
-        const agent = res.data as Agent & { security?: { allowedNetworks?: string[]; otpKey?: string }; allowedNetworks?: string[]; otpKey?: string }
+        const agent = res.data as Agent & {
+          security?: { allowedNetworks?: string[]; otpKey?: string; u2fKey?: U2fKey[] }
+          allowedNetworks?: string[]
+          otpKey?: string
+          u2fKey?: U2fKey[]
+        }
         return {
           ...agent,
           allowedNetworks: Array.isArray(agent?.security?.allowedNetworks) ? [...agent.security.allowedNetworks] : [],
           otpKey: agent?.security?.otpKey || '',
+          u2fKey: Array.isArray(agent?.security?.u2fKey) ? [...agent.security.u2fKey] : [],
         } as Agent
       },
     })
@@ -214,6 +254,8 @@ export default defineNuxtComponent({
       baseURL: data.value?.baseURL || '/',
     })
     const isTotpEnabled = ref(`${(data.value as unknown as { otpKey?: string } | undefined)?.otpKey || ''}`.trim().length > 0)
+    const initialKeys = (data.value as unknown as { u2fKey?: unknown } | undefined)?.u2fKey
+    const u2fKeys = ref<U2fKey[]>(Array.isArray(initialKeys) ? (initialKeys as U2fKey[]) : [])
     const totpSetup = ref({
       secret: '',
       otpauthUrl: '',
@@ -234,9 +276,11 @@ export default defineNuxtComponent({
       pendingTotpSetup,
       pendingTotpConfirm,
       pendingTotpDisable,
+      pendingWebAuthnRegister,
       showPasswordDialog,
       form,
       isTotpEnabled,
+      u2fKeys,
       totpSetup,
       passwordForm,
       showCurrentPassword,
@@ -247,9 +291,31 @@ export default defineNuxtComponent({
     }
   },
   methods: {
+    extractHttpData(response: unknown): unknown {
+      const r =
+        response && typeof response === 'object'
+          ? (response as Record<string, unknown>)
+          : ({} as Record<string, unknown>)
+
+      const topData = r.data
+      const topUnderscoreData = r._data
+      const nestedData =
+        topData && typeof topData === 'object' ? (topData as Record<string, unknown>).data : undefined
+      const nestedUnderscoreData =
+        topUnderscoreData && typeof topUnderscoreData === 'object'
+          ? (topUnderscoreData as Record<string, unknown>).data
+          : undefined
+
+      const candidates: unknown[] = [response, topData, topUnderscoreData, nestedData, nestedUnderscoreData]
+      for (const c of candidates) {
+        if (c !== undefined && c !== null) return c
+      }
+      return undefined
+    },
     extractTotpSetupPayload(response: unknown): TotpSetupPayload {
-      const r = response as Record<string, unknown> | undefined
-      const candidates: unknown[] = [r, (r as any)?.data, (r as any)?._data, (r as any)?.data?.data, (r as any)?._data?.data]
+      const r = this.extractHttpData(response)
+      const root = r && typeof r === 'object' ? (r as Record<string, unknown>) : ({} as Record<string, unknown>)
+      const candidates: unknown[] = [root]
 
       for (const candidate of candidates) {
         const c = candidate as Record<string, unknown> | undefined
@@ -261,6 +327,80 @@ export default defineNuxtComponent({
       }
 
       return { secret: '', otpauthUrl: '' }
+    },
+    async registerSecurityKey() {
+      this.pendingWebAuthnRegister = true
+      try {
+        if (typeof window === 'undefined' || !window.PublicKeyCredential) {
+          this.$q.notify({
+            type: 'negative',
+            message: 'WebAuthn non supporté par ce navigateur/appareil',
+            position: 'top-right',
+          })
+          return
+        }
+
+        const keyName = await new Promise<string>((resolve, reject) => {
+          this.$q
+            .dialog({
+              title: 'Ajouter une clé de sécurité',
+              message: 'Donnez un nom à cette clé (optionnel).',
+              prompt: {
+                model: '',
+                type: 'text',
+              },
+              cancel: true,
+              persistent: true,
+              color: 'primary',
+              ok: { label: 'Continuer', color: 'primary' },
+            })
+            .onOk((val: string) => resolve(String(val || '').trim()))
+            .onCancel(() => reject(new Error('WebAuthn register cancelled')))
+            .onDismiss(() => reject(new Error('WebAuthn register dismissed')))
+        })
+
+        const begin = (await this.$http.post('/core/agents/me/mfa/webauthn/register/begin', {
+          body: { name: keyName || undefined },
+        })) as unknown
+        const options = this.extractHttpData(begin)
+        if (!options || typeof options !== 'object' || !('challenge' in (options as Record<string, unknown>))) {
+          throw new Error('Invalid WebAuthn begin payload')
+        }
+
+        const attResp = (await startRegistration(options as PublicKeyCredentialCreationOptionsJSON)) as RegistrationResponseJSON
+
+        await this.$http.post('/core/agents/me/mfa/webauthn/register/finish', {
+          body: {
+            name: keyName || undefined,
+            response: attResp,
+          },
+        })
+
+        await this.refresh()
+        try {
+          const me = (await this.$http.get('/core/agents/me')) as unknown
+          const agent = this.extractHttpData(me) as { security?: { u2fKey?: unknown } } | undefined
+          const keys = agent?.security?.u2fKey
+          if (Array.isArray(keys)) {
+            this.u2fKeys = keys as U2fKey[]
+          }
+        } catch {
+          // ignore (refresh already triggered)
+        }
+
+        this.$q.notify({
+          type: 'positive',
+          message: 'Clé de sécurité ajoutée',
+          position: 'top-right',
+        })
+      } catch (error) {
+        this.handleErrorReq({
+          error,
+          message: "Impossible d'ajouter la clé de sécurité",
+        })
+      } finally {
+        this.pendingWebAuthnRegister = false
+      }
     },
     async save() {
       this.pendingSave = true

@@ -1,5 +1,30 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { IsString, IsArray, IsBoolean, IsOptional } from 'class-validator'
+import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
+
+export class U2fKeyCredentialDTO {
+  @IsString()
+  @ApiProperty()
+  public credentialId: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  public name?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  @ApiProperty({ type: [String], required: false })
+  public transports?: string[];
+
+  @IsOptional()
+  @ApiProperty({ required: false, type: Number })
+  public signCount?: number;
+
+  @IsOptional()
+  @ApiProperty({ required: false, type: String })
+  public createdAt?: string;
+}
 
 /**
  * DTO pour la partie sécurité d'un agent.
@@ -43,7 +68,7 @@ export class SecurityPartDTO {
    */
   @IsOptional()
   @ApiProperty({ type: [String] })
-  public oldPasswords?: string[]
+  public oldPasswords?: string[];
 
   /**
    * Clé secrète pour l'authentification OTP (One-Time Password).
@@ -56,20 +81,19 @@ export class SecurityPartDTO {
   @IsString()
   @IsOptional()
   @ApiProperty()
-  public otpKey?: string
+  public otpKey?: string;
 
   /**
    * Clés U2F/FIDO enregistrées pour l'authentification matérielle.
    * Tableau des identifiants de clés de sécurité physiques.
    *
-   * @type {string[]}
+   * @type {U2fKeyCredentialDTO[]}
    * @optional
    */
   @IsArray()
-  @IsString({ each: true })
   @IsOptional()
-  @ApiProperty({ type: [String] })
-  public u2fKey?: string[]
+  @ApiProperty({ type: [U2fKeyCredentialDTO] })
+  public u2fKey?: U2fKeyCredentialDTO[];
 
   /**
    * Liste des réseaux/IP autorisés pour cet agent.
@@ -84,7 +108,7 @@ export class SecurityPartDTO {
   @IsString({ each: true })
   @IsOptional()
   @ApiProperty({ type: [String] })
-  public allowedNetworks?: string[]
+  public allowedNetworks?: string[];
 
   /**
    * Indique si l'agent doit changer son mot de passe à la prochaine connexion.
@@ -97,7 +121,7 @@ export class SecurityPartDTO {
   @IsBoolean()
   @IsOptional()
   @ApiProperty()
-  public changePwdAtNextLogin: boolean
+  public changePwdAtNextLogin: boolean;
 
   /**
    * Clé secrète unique de l'agent.
@@ -111,5 +135,5 @@ export class SecurityPartDTO {
   @IsString()
   @IsOptional()
   @ApiProperty()
-  public secretKey?: string
+  public secretKey?: string;
 }

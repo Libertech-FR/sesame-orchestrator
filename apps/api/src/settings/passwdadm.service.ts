@@ -41,7 +41,7 @@ export class PasswdadmService extends AbstractSettingsService {
       }
     }
     if (policies.hasNumbers > 0) {
-      if (/[A-Z]/.test(password) === false) {
+      if (/[0-9]/.test(password) === false) {
         this.logger.error('must have number');
         return false;
       }

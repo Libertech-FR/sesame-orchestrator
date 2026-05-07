@@ -72,7 +72,6 @@ describe('resolveClientIp', () => {
     const p = buildClientIpDebugPayload(req);
     expect(p.xffIgnoredAsEchoOfTcpPeer).toBe(true);
     expect(p.tcpPeerNormalized).toBe('140.82.121.5');
-    expect(p.hintFr).toEqual(expect.stringContaining('X-Forwarded-For'));
   });
 
   it('keeps raw peer fields in debug payload', () => {

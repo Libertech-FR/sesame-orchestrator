@@ -22,7 +22,7 @@ describe('AuditsService', () => {
     await service.createAuthenticationAudit({
       username: 'john',
       ip: '203.0.113.10',
-      result: 'failure',
+      result: 'failed',
       reason: 'network_not_allowed',
       agentId: new Types.ObjectId('507f1f77bcf86cd799439011'),
     })
@@ -40,7 +40,7 @@ describe('AuditsService', () => {
           event: 'authentication_attempt',
           username: 'john',
           ip: '203.0.113.10',
-          result: 'failure',
+          result: 'failed',
           reason: 'network_not_allowed',
         }),
       }),
@@ -53,7 +53,7 @@ describe('AuditsService', () => {
     await service.createAuthenticationAudit({
       username: 'unknown',
       ip: '203.0.113.50',
-      result: 'failure',
+      result: 'failed',
       reason: 'invalid_credentials',
     })
 

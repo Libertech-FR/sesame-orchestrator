@@ -130,13 +130,8 @@ export default defineNuxtConfig({
           logout: { url: `/api/core/auth/logout`, method: 'post' },
           user: { url: `/api/core/auth/session`, method: 'get' },
         },
-        redirect: {
-          logout: '/login',
-          login: '/',
-        },
-        tokenType: 'Bearer',
         autoRefresh: true,
-      },
+      } as any,
     },
     stores: {
       pinia: {

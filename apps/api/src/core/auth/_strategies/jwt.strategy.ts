@@ -28,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   // noinspection JSUnusedGlobalSymbols
   public async validate(
     _: Request,
-    payload: JwtPayload & { identity: AgentType; mfaVerified?: boolean },
+    payload: JwtPayload & { identity: AgentType; mfaVerified?: boolean; mfaVerifiedAt?: number | null },
     done: VerifiedCallback,
   ): Promise<void> {
     this.logger.verbose(`Atempt to authenticate with JTI: <${payload.jti}>`);
@@ -51,6 +51,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       ...payload?.identity,
       roles,
       mfaVerified: !!payload?.mfaVerified,
+      mfaVerifiedAt: typeof payload?.mfaVerifiedAt === 'number' ? payload.mfaVerifiedAt : null,
     });
   }
 }

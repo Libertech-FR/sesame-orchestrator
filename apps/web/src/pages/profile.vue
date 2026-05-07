@@ -354,7 +354,31 @@ export default defineNuxtComponent({
     async disableTotp() {
       this.pendingTotpDisable = true
       try {
-        await this.$http.post('/core/agents/me/mfa/totp/disable')
+        const otpCode = await new Promise<string>((resolve, reject) => {
+          this.$q
+            .dialog({
+              title: 'Désactiver le MFA',
+              message: 'Entrez votre code TOTP à 6 chiffres pour confirmer.',
+              prompt: {
+                model: '',
+                type: 'text',
+                isValid: (val: string) => /^\d{6}$/.test(String(val || '').trim()),
+              },
+              cancel: true,
+              persistent: true,
+              color: 'warning',
+              ok: { label: 'Désactiver', color: 'warning' },
+            })
+            .onOk((val: string) => resolve(val))
+            .onCancel(() => reject(new Error('Disable TOTP cancelled')))
+            .onDismiss(() => reject(new Error('Disable TOTP dismissed')))
+        })
+
+        await this.$http.post('/core/agents/me/mfa/totp/disable', {
+          body: {
+            otpCode: String(otpCode || '').trim(),
+          },
+        })
         this.isTotpEnabled = false
         this.cancelTotpSetup()
         this.$q.notify({

@@ -385,8 +385,9 @@ export class AuthService extends AbstractService implements OnModuleInit {
     const normalizedIdentity = typeof identity?.toObject === 'function' ? identity.toObject() : identity;
     const jwtid = `${identity._id}_${randomBytes(16).toString('hex')}`;
     const mfaVerified = !!options?.mfaVerified;
+    const mfaVerifiedAt = mfaVerified ? Date.now() : null;
     const access_token = this.jwtService.sign(
-      { identity: pick(normalizedIdentity, ['_id', 'username', 'email', 'token', 'roles']), scopes, mfaVerified },
+      { identity: pick(normalizedIdentity, ['_id', 'username', 'email', 'token', 'roles']), scopes, mfaVerified, mfaVerifiedAt },
       {
         expiresIn: this.ACCESS_TOKEN_EXPIRES_IN,
         jwtid,
@@ -405,6 +406,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
         JSON.stringify({
           identityId: identity._id,
           mfaVerified,
+          mfaVerifiedAt,
         }),
       );
     }
@@ -419,6 +421,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
         identity: userIdentity.toJSON(),
         refresh_token,
         mfaVerified,
+        mfaVerifiedAt,
       }),
       'EX',
       this.ACCESS_TOKEN_EXPIRES_IN,

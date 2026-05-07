@@ -20,6 +20,14 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   let inFlightStepUp: Promise<void> | null = null
 
+  const isSettingsContext = (): boolean => {
+    try {
+      const r = useRoute()
+      return typeof r?.fullPath === 'string' && r.fullPath.startsWith('/settings')
+    } catch {
+      return false
+    }
+  }
   const ensureStepUp = async () => {
     if (inFlightStepUp) return await inFlightStepUp
     if (!rawHttpRef) throw new Error('HTTP client not ready')
@@ -121,12 +129,20 @@ export default defineNuxtPlugin((nuxtApp) => {
   const wrap = (fn: any, kind: 'read' | 'write') => {
     if (typeof fn !== 'function') return fn
     return async (...args: any[]) => {
+      const url = args?.[0]
+      // Never intercept the step-up endpoint itself.
+      if (typeof url === 'string' && url.startsWith('/core/auth/mfa/step-up')) {
+        return await fn(...args)
+      }
+
       try {
         return await fn(...args)
       } catch (error: any) {
         if (!isMfaRequiredError(error)) throw error
         // Only step-up for explicit "save" / write intents.
         if (kind !== 'write') throw error
+        // Only prompt for step-up on sensitive settings pages.
+        if (!isSettingsContext()) throw error
         await ensureStepUp()
         return await fn(...args)
       }

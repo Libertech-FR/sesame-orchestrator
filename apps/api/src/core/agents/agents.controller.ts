@@ -378,7 +378,11 @@ export class AgentsController extends AbstractController {
   }
 
   @Post('me/mfa/totp/disable')
-  public async disableTotpSelf(@ReqIdentity() identity: AgentType, @Res() res: Response): Promise<Response> {
+  public async disableTotpSelf(
+    @ReqIdentity() identity: AgentType,
+    @Body() body: { otpCode?: string },
+    @Res() res: Response,
+  ): Promise<Response> {
     const currentAgent = await this._service.findById<Agents>(identity._id as Types.ObjectId);
     const currentSecurity =
       currentAgent?.security && typeof currentAgent.security === 'object'
@@ -386,6 +390,26 @@ export class AgentsController extends AbstractController {
           ? (currentAgent.security as any).toObject()
           : { ...(currentAgent.security as unknown as Record<string, unknown>) }
         : {};
+
+    const currentOtpKey = `${(currentSecurity as any)?.otpKey || ''}`.trim().replace(/\s+/g, '').toUpperCase();
+    if (!currentOtpKey) {
+      throw new BadRequestException('MFA TOTP non activé');
+    }
+
+    const otpCode = `${body?.otpCode || ''}`.trim();
+    if (!otpCode) {
+      throw new BadRequestException('Code OTP requis');
+    }
+
+    const isValid = speakeasy.totp.verify({
+      secret: currentOtpKey,
+      token: otpCode,
+      encoding: 'base32',
+      window: 1,
+    });
+    if (!isValid) {
+      throw new BadRequestException('Code OTP invalide');
+    }
 
     const data = await this._service.update(
       identity._id as Types.ObjectId,

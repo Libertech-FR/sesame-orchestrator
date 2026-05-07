@@ -220,6 +220,7 @@ export interface ConfigInstance {
       key: string;
       cert: string;
     }
+    mfaStepUpMaxAgeSeconds: number
   }
   helmet: HelmetOptions
   mongoose: {
@@ -319,6 +320,7 @@ export default (): ConfigInstance => ({
       key: process.env['SESAME_HTTPS_PATH_KEY'] || '',
       cert: process.env['SESAME_HTTPS_PATH_CERT'] || '',
     },
+    mfaStepUpMaxAgeSeconds: parseInt(process.env['SESAME_MFA_STEPUP_MAX_AGE_SECONDS'] || `${5 * 60}`, 10),
   },
   helmet: {
     contentSecurityPolicy: {

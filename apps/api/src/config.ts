@@ -320,7 +320,7 @@ export default (): ConfigInstance => ({
       key: process.env['SESAME_HTTPS_PATH_KEY'] || '',
       cert: process.env['SESAME_HTTPS_PATH_CERT'] || '',
     },
-    mfaStepUpMaxAgeSeconds: parseInt(process.env['SESAME_MFA_STEPUP_MAX_AGE_SECONDS'] || `${5 * 60}`, 10),
+    mfaStepUpMaxAgeSeconds: parseInt(process.env['SESAME_MFA_STEPUP_MAX_AGE_SECONDS'] || `${15 * 60}`, 10),
   },
   helmet: {
     contentSecurityPolicy: {

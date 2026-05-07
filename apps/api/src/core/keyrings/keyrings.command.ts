@@ -30,6 +30,20 @@ export class KeyringsCreateQuestions {
 
     return roles;
   }
+
+  @Question({
+    message: 'Réseaux autorisés (CSV, vide = 0.0.0.0/0) ?',
+    name: 'allowedNetworks',
+  })
+  parseAllowedNetworks(val: string) {
+    const raw = `${val || ''}`.trim()
+    if (!raw) return ['0.0.0.0/0']
+    const values = raw
+      .split(',')
+      .map((item) => `${item || ''}`.trim())
+      .filter((item) => item.length > 0)
+    return values.length > 0 ? values : ['0.0.0.0/0']
+  }
 }
 
 @SubCommand({ name: 'create' })

@@ -59,6 +59,19 @@ export class AgentCreateQuestions {
   parsePassword(val: string) {
     return val
   }
+
+  @Question({
+    message: 'Réseaux autorisés (CSV, vide = aucun filtrage) ?',
+    name: 'allowedNetworks',
+  })
+  parseAllowedNetworks(val: string) {
+    const raw = `${val || ''}`.trim()
+    if (!raw) return []
+    return raw
+      .split(',')
+      .map((item) => `${item || ''}`.trim())
+      .filter((item) => item.length > 0)
+  }
 }
 
 /**
@@ -106,8 +119,15 @@ export class AgentsCreateCommand extends CommandRunner {
   async run(_inputs: string[], _options: any): Promise<void> {
     this.logger.log('Starting agent creation process...')
     // Pose les questions définies dans AgentCreateQuestions pour obtenir les données de l'agent
-    const agent = await this.inquirer.ask<AgentsCreateDto>('agent-create-questions', undefined)
+    const agent = await this.inquirer.ask<AgentsCreateDto & { allowedNetworks?: string[] }>('agent-create-questions', undefined)
     try {
+      if (Array.isArray((agent as any).allowedNetworks) && (agent as any).allowedNetworks.length > 0) {
+        ;(agent as any).security = {
+          ...(agent as any).security,
+          allowedNetworks: (agent as any).allowedNetworks,
+        }
+      }
+      delete (agent as any).allowedNetworks
       // Crée l'agent avec les données collectées
       await this.agentsService.create(agent)
       console.log('Agent created successfully')

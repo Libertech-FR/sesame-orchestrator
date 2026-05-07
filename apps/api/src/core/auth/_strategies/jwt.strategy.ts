@@ -8,6 +8,36 @@ import { AgentType } from '~/_common/types/agent.type';
 import { JwtPayload } from 'jsonwebtoken';
 import { Keyrings } from '~/core/keyrings/_schemas/keyrings.schema';
 import { Agents } from '~/core/agents/_schemas/agents.schema';
+import { resolveClientIp } from '~/_common/functions/resolve-client-ip';
+import ipRangeCheck from 'ip-range-check';
+
+function isClientIpAllowed(allowedNetworks?: string[] | null, clientIp?: string | null): boolean {
+  if (!Array.isArray(allowedNetworks) || allowedNetworks.length === 0) return true;
+  if (!clientIp) return false;
+
+  const normalizedRules = allowedNetworks.map((item) => `${item || ''}`.trim()).filter((item) => item.length > 0);
+  if (normalizedRules.length === 0) return true;
+
+  try {
+    return ipRangeCheck(clientIp, normalizedRules);
+  } catch {
+    return false;
+  }
+}
+
+function resolveAllowedNetworksFromVerifiedIdentity(verified: unknown): string[] | null {
+  const v = verified as any;
+  const direct = Array.isArray(v?.allowedNetworks) ? (v.allowedNetworks as string[]) : null;
+  if (direct && direct.length > 0) return direct;
+
+  const fromSecurity = Array.isArray(v?.security?.allowedNetworks) ? (v.security.allowedNetworks as string[]) : null;
+  if (fromSecurity && fromSecurity.length > 0) return fromSecurity;
+
+  const fromIdentitySecurity = Array.isArray(v?.identity?.security?.allowedNetworks) ? (v.identity.security.allowedNetworks as string[]) : null;
+  if (fromIdentitySecurity && fromIdentitySecurity.length > 0) return fromIdentitySecurity;
+
+  return null;
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -27,7 +57,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   // noinspection JSUnusedGlobalSymbols
   public async validate(
-    _: Request,
+    req: Request,
     payload: JwtPayload & { identity: AgentType; mfaVerified?: boolean; mfaVerifiedAt?: number | null },
     done: VerifiedCallback,
   ): Promise<void> {
@@ -36,6 +66,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     const user = await this.auth.verifyIdentity(payload);
 
     if (!user) return done(new ForbiddenException(), false);
+
+    const clientIp = resolveClientIp(req);
+    const allowedNetworks = resolveAllowedNetworksFromVerifiedIdentity(user);
+    if (!isClientIpAllowed(allowedNetworks, clientIp)) {
+      return done(new ForbiddenException('Network not allowed'), false);
+    }
 
     const roles = [...(Array.isArray(payload.identity?.roles) ? payload.identity.roles : [])];
     if (!roles.includes('admin') && payload.identity?._id === '000000000000000000000000') {

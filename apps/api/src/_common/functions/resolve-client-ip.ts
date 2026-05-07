@@ -4,7 +4,9 @@ import type { Request } from 'express';
  * Lit une en-tête HTTP (string ou première entrée d'un tableau).
  */
 function headerString(req: Request, name: string): string | undefined {
-  const v = req.headers[name.toLowerCase()];
+  const headers = req?.headers;
+  if (!headers) return undefined;
+  const v = headers[name.toLowerCase()];
   if (typeof v === 'string') {
     return v;
   }

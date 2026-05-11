@@ -176,6 +176,30 @@ export class AuthController extends AbstractController {
     });
   }
 
+  @Post('local/preflight')
+  @ApiOperation({ summary: 'Préflight MFA (ne crée pas de session)' })
+  public async preflightLocal(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Body() body: LocalLoginBody,
+  ): Promise<Response> {
+    const payload = body?.body && typeof body.body === 'object' ? body.body : body;
+    const ip = resolveClientIp(req) ?? null;
+    const username = `${payload?.username || ''}`.trim();
+    const password = `${payload?.password || ''}`;
+
+    const preflight = await this.service.preflightLocalMfa(username, password, ip ?? undefined);
+    if (!preflight?.requires2fa) {
+      return res.status(HttpStatus.OK).json({ requires2fa: false });
+    }
+
+    return res.status(HttpStatus.OK).json({
+      requires2fa: true,
+      challengeToken: preflight.challengeToken,
+      method: 'totp',
+    });
+  }
+
   @Post('local/2fa/verify')
   @ApiOperation({ summary: 'Validation du code TOTP pour finaliser la connexion' })
   public async verifyLocal2fa(

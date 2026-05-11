@@ -114,6 +114,15 @@ export default defineNuxtComponent({
     isRecord(value: unknown): value is Record<string, unknown> {
       return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
     },
+    getAuthUser(auth: unknown): Record<string, unknown> | null {
+      if (!this.isRecord(auth)) return null
+      const user = auth['user']
+      if (this.isRecord(user)) return user
+      if (this.isRecord(user) && this.isRecord((user as Record<string, unknown>)['value'])) {
+        return (user as Record<string, unknown>)['value'] as Record<string, unknown>
+      }
+      return null
+    },
     getErrorStatus(error: unknown): number | null {
       const anyErr = this.isRecord(error) ? error : {}
       const response = this.isRecord(anyErr.response) ? anyErr.response : {}
@@ -245,8 +254,7 @@ export default defineNuxtComponent({
           },
         })
         await auth.fetchUser()
-        const authAny = auth as unknown as { user?: { value?: unknown } | unknown }
-        const authUser = (this.isRecord(authAny.user) ? authAny.user : null) || (this.isRecord(authAny.user?.value) ? authAny.user.value : null)
+        const authUser = this.getAuthUser(auth)
         const responsePayload = this.extractPayload(response)
         const uri = this.getPostLoginRedirect((this.isRecord(authUser) ? (authUser.baseURL as string | undefined) : undefined) || (responsePayload.uri as string | undefined))
         this.showTotpDialog = false
@@ -272,7 +280,7 @@ export default defineNuxtComponent({
         const auth = useAuth()
         let response: unknown = null
         if (!this.requires2fa) {
-          const preAuthResponse = await this.$http.post('/core/auth/local', {
+          const preAuthResponse = await this.$http.post('/core/auth/local/preflight', {
             body: {
               username: this.formData.username,
               password: this.formData.password,
@@ -302,8 +310,7 @@ export default defineNuxtComponent({
           return
         }
         await auth.fetchUser()
-        const authAny = auth as unknown as { user?: { value?: unknown } | unknown }
-        const authUser = (this.isRecord(authAny.user) ? authAny.user : null) || (this.isRecord(authAny.user?.value) ? authAny.user.value : null)
+        const authUser = this.getAuthUser(auth)
         const responsePayload = this.extractPayload(response)
         const uri = this.getPostLoginRedirect((this.isRecord(authUser) ? (authUser.baseURL as string | undefined) : undefined) || (responsePayload.uri as string | undefined))
         await this.$router.push(uri)

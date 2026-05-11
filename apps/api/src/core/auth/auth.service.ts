@@ -182,6 +182,48 @@ export class AuthService extends AbstractService implements OnModuleInit {
     }
   }
 
+  public async preflightLocalMfa(
+    username: string,
+    password: string,
+    clientIp?: string,
+  ): Promise<{ requires2fa: true; challengeToken: string } | { requires2fa: false }> {
+    const ip = this.normalizeClientIp(clientIp);
+    const normalizedUsername = `${username || ''}`.trim();
+    const normalizedPassword = `${password || ''}`;
+    if (!normalizedUsername || !normalizedPassword.trim()) return { requires2fa: false };
+
+    try {
+      const block = await this.getLocalBruteforceBlock({ username: normalizedUsername, ip });
+      if (block.blocked) {
+        // Préflight choisi en 200 générique: ne pas révéler le blocage, mais ne pas offrir de contournement.
+        await this.registerLocalBruteforceFailure({ username: normalizedUsername, ip });
+        return { requires2fa: false };
+      }
+
+      const user = await this.agentsService.findOne<Agents>({ username: normalizedUsername });
+      if (!user || !(await argon2Verify(user.password, normalizedPassword))) {
+        await this.registerLocalBruteforceFailure({ username: normalizedUsername, ip });
+        return { requires2fa: false };
+      }
+
+      if (user?.state?.current !== AgentState.ACTIVE) return { requires2fa: false };
+      if (!this.isClientIpAllowed(user?.security?.allowedNetworks, ip)) return { requires2fa: false };
+
+      // Credentials valides: reset du compteur pour éviter de pénaliser un utilisateur légitime.
+      await this.clearLocalBruteforceState({ username: normalizedUsername, ip });
+
+      if (!this.isTotpEnabledForUser(user)) return { requires2fa: false };
+      const challengeToken = await this.createMfaChallenge(user);
+      return { requires2fa: true, challengeToken };
+    } catch (e) {
+      this.logger.warn(
+        `[preflight-mfa] failed username=${normalizedUsername} ip=${ip || 'n/a'}`,
+        e instanceof Error ? e.stack : undefined,
+      );
+      return { requires2fa: false };
+    }
+  }
+
   public async getLocalBruteforceBlock(params: {
     username: string;
     ip: string | null;

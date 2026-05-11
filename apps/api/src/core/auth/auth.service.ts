@@ -1,21 +1,27 @@
-import { ForbiddenException, Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  OnModuleInit,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AbstractService } from '~/_common/abstracts/abstract.service';
 import { ModuleRef } from '@nestjs/core';
 import { Redis } from 'ioredis';
-import { randomBytes } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { verify as argon2Verify } from 'argon2';
 import { Agents } from '~/core/agents/_schemas/agents.schema';
 import { AgentsService } from '~/core/agents/agents.service';
 import { AgentType } from '~/_common/types/agent.type';
-import { omit, pascal, pick } from 'radash';
+import { omit, pick } from 'radash';
 import { JwtPayload } from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 import { resolve } from 'path';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { ConsoleSession } from '~/_common/data/console-session';
 import { KeyringsService } from '../keyrings/keyrings.service';
-import { ApiSession } from '~/_common/data/api-session';
 import { AuditsService } from '~/core/audits/audits.service';
 import { Types } from 'mongoose';
 import ipRangeCheck from 'ip-range-check';
@@ -31,6 +37,19 @@ export class AuthService extends AbstractService implements OnModuleInit {
   protected readonly ACCESS_TOKEN_PREFIX = 'access_token';
   protected readonly REFRESH_TOKEN_PREFIX = 'refresh_token';
   protected readonly MFA_CHALLENGE_PREFIX = 'mfa_challenge';
+
+  protected readonly BRUTEFORCE_FAIL_PREFIX = 'auth:bf:fail';
+  protected readonly BRUTEFORCE_BLOCK_PREFIX = 'auth:bf:block';
+  protected readonly BRUTEFORCE_TOTP_FAIL_PREFIX = 'auth:bf:totp:fail';
+  protected readonly BRUTEFORCE_TOTP_BLOCK_PREFIX = 'auth:bf:totp:block';
+
+  protected readonly BRUTEFORCE_THRESHOLD = 5;
+  protected readonly BRUTEFORCE_FAIL_WINDOW_SECONDS = 6 * 60 * 60;
+  protected readonly BRUTEFORCE_COOLDOWN_STEPS_SECONDS = [60, 300, 1800, 3600];
+
+  protected readonly TOTP_BRUTEFORCE_THRESHOLD = 5;
+  protected readonly TOTP_BRUTEFORCE_FAIL_WINDOW_SECONDS = 30 * 60;
+  protected readonly TOTP_BRUTEFORCE_COOLDOWN_STEPS_SECONDS = [60, 300, 1800];
 
   protected ACCESS_TOKEN_EXPIRES_IN = 5 * 60;
   protected REFRESH_TOKEN_EXPIRES_IN = 3600 * 24 * 7;
@@ -58,7 +77,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
             this.logger.log(`TOKEN ALREADY EXIST : <${data.access_token}>`);
             return;
           }
-        } catch (e) {
+        } catch {
           this.logger.error(`TOKEN FILE CORRUPTED ! REGENERATING...`);
         }
       }
@@ -82,9 +101,27 @@ export class AuthService extends AbstractService implements OnModuleInit {
     let user: Agents | null = null;
     this.logger.debug(`[local-auth] attempt username=${username} ip=${ip || 'n/a'}`);
     try {
+      const block = await this.getLocalBruteforceBlock({ username, ip });
+      if (block.blocked) {
+        await this.auditAuthenticationAttempt({
+          username,
+          ip,
+          result: 'failed',
+          reason: 'bruteforce_blocked',
+        });
+        throw new HttpException(
+          {
+            message: 'Too many authentication attempts. Please retry later.',
+            retryAfterSeconds: block.retryAfterSeconds,
+          },
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
+
       user = await this.agentsService.findOne<Agents>({ username });
       if (!user || !(await argon2Verify(user.password, password))) {
         this.logger.warn(`[local-auth] invalid credentials username=${username}`);
+        await this.registerLocalBruteforceFailure({ username, ip });
         await this.auditAuthenticationAttempt({
           username,
           ip,
@@ -94,6 +131,8 @@ export class AuthService extends AbstractService implements OnModuleInit {
         });
         return null;
       }
+
+      await this.clearLocalBruteforceState({ username, ip });
 
       if (user?.state?.current !== AgentState.ACTIVE) {
         this.logger.warn(`[local-auth] inactive agent username=${username} state=${user?.state?.current}`);
@@ -130,6 +169,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
       this.logger.debug(`[local-auth] success username=${username} userId=${user?._id}`);
       return user;
     } catch (e) {
+      if (e instanceof HttpException && e.getStatus?.() === HttpStatus.TOO_MANY_REQUESTS) throw e;
       this.logger.error(`Local authentication failed for ${username}`, e instanceof Error ? e.stack : undefined);
       await this.auditAuthenticationAttempt({
         username,
@@ -140,6 +180,131 @@ export class AuthService extends AbstractService implements OnModuleInit {
       });
       return null;
     }
+  }
+
+  public async getLocalBruteforceBlock(params: {
+    username: string;
+    ip: string | null;
+  }): Promise<{ blocked: boolean; retryAfterSeconds: number }> {
+    const { username, ip } = params;
+    const blockKey = this.getLocalBruteforceBlockKey({ username, ip });
+    const ttl = await this.redis.ttl(blockKey);
+    const retryAfterSeconds = Number.isFinite(ttl) && ttl > 0 ? ttl : 0;
+    return { blocked: retryAfterSeconds > 0, retryAfterSeconds };
+  }
+
+  public async registerLocalBruteforceFailure(params: {
+    username: string;
+    ip: string | null;
+  }): Promise<{ count: number; blocked: boolean; retryAfterSeconds: number }> {
+    const failKey = this.getLocalBruteforceFailKey(params);
+    const count = await this.redis.incr(failKey);
+    if (count === 1) {
+      await this.redis.expire(failKey, this.BRUTEFORCE_FAIL_WINDOW_SECONDS);
+    }
+    try {
+      const blockKey = this.getLocalBruteforceBlockKey(params);
+      const blockTtl = await this.redis.ttl(blockKey);
+      this.logger.debug(
+        `[anti-bf] local failure username=${params.username || 'N/A'} ip=${params.ip || 'n/a'} count=${count} blockTtl=${blockTtl}s`,
+      );
+    } catch {}
+
+    if (count < this.BRUTEFORCE_THRESHOLD) {
+      return { count, blocked: false, retryAfterSeconds: 0 };
+    }
+
+    const stepIndex = Math.min(
+      this.BRUTEFORCE_COOLDOWN_STEPS_SECONDS.length - 1,
+      Math.max(count - this.BRUTEFORCE_THRESHOLD, 0),
+    );
+    const cooldownSeconds =
+      this.BRUTEFORCE_COOLDOWN_STEPS_SECONDS[stepIndex] ?? this.BRUTEFORCE_COOLDOWN_STEPS_SECONDS.at(-1) ?? 60;
+
+    const blockKey = this.getLocalBruteforceBlockKey(params);
+    await this.redis.set(blockKey, `${count}`, 'EX', cooldownSeconds);
+    this.logger.debug(
+      `[anti-bf] local blocked username=${params.username || 'N/A'} ip=${params.ip || 'n/a'} count=${count} cooldown=${cooldownSeconds}s`,
+    );
+
+    await this.auditAuthenticationAttempt({
+      username: params.username,
+      ip: params.ip,
+      result: 'failed',
+      reason: `bruteforce_blocked_${count}_${cooldownSeconds}s`,
+    });
+    return { count, blocked: true, retryAfterSeconds: cooldownSeconds };
+  }
+
+  public async clearLocalBruteforceState(params: { username: string; ip: string | null }): Promise<void> {
+    await this.redis.del(this.getLocalBruteforceFailKey(params));
+    await this.redis.del(this.getLocalBruteforceBlockKey(params));
+  }
+
+  public async getTotpBruteforceBlock(params: {
+    ip: string | null;
+    challengeToken: string;
+  }): Promise<{ blocked: boolean; retryAfterSeconds: number }> {
+    const blockKey = this.getTotpBruteforceBlockKey(params);
+    const ttl = await this.redis.ttl(blockKey);
+    const retryAfterSeconds = Number.isFinite(ttl) && ttl > 0 ? ttl : 0;
+    return { blocked: retryAfterSeconds > 0, retryAfterSeconds };
+  }
+
+  public async registerTotpBruteforceFailure(params: {
+    ip: string | null;
+    challengeToken: string;
+    username?: string;
+    agentId?: Types.ObjectId | string;
+  }): Promise<{ count: number; blocked: boolean; retryAfterSeconds: number }> {
+    const failKey = this.getTotpBruteforceFailKey(params);
+    const count = await this.redis.incr(failKey);
+    if (count === 1) {
+      await this.redis.expire(failKey, this.TOTP_BRUTEFORCE_FAIL_WINDOW_SECONDS);
+    }
+
+    if (count < this.TOTP_BRUTEFORCE_THRESHOLD) {
+      return { count, blocked: false, retryAfterSeconds: 0 };
+    }
+
+    const stepIndex = Math.min(
+      this.TOTP_BRUTEFORCE_COOLDOWN_STEPS_SECONDS.length - 1,
+      Math.max(count - this.TOTP_BRUTEFORCE_THRESHOLD, 0),
+    );
+    const cooldownSeconds =
+      this.TOTP_BRUTEFORCE_COOLDOWN_STEPS_SECONDS[stepIndex] ??
+      this.TOTP_BRUTEFORCE_COOLDOWN_STEPS_SECONDS.at(-1) ??
+      60;
+
+    const blockKey = this.getTotpBruteforceBlockKey(params);
+    await this.redis.set(blockKey, `${count}`, 'EX', cooldownSeconds);
+
+    if (params.username) {
+      await this.auditAuthenticationAttempt({
+        username: params.username,
+        ip: params.ip,
+        result: 'failed',
+        reason: `totp_bruteforce_blocked_${count}_${cooldownSeconds}s`,
+        agentId: params.agentId,
+      });
+    }
+
+    return { count, blocked: true, retryAfterSeconds: cooldownSeconds };
+  }
+
+  public async clearTotpBruteforceState(params: { ip: string | null; challengeToken: string }): Promise<void> {
+    await this.redis.del(this.getTotpBruteforceFailKey(params));
+    await this.redis.del(this.getTotpBruteforceBlockKey(params));
+  }
+
+  public async auditAuthAttempt(params: {
+    username: string;
+    ip: string | null;
+    result: 'success' | 'failed';
+    reason: string;
+    agentId?: Types.ObjectId | string;
+  }): Promise<void> {
+    await this.auditAuthenticationAttempt(params);
   }
 
   public isTotpEnabledForUser(user: Pick<Agents, 'security'>): boolean {
@@ -274,10 +439,43 @@ export class AuthService extends AbstractService implements OnModuleInit {
 
   protected normalizeClientIp(clientIp?: string): string | null {
     if (!clientIp || typeof clientIp !== 'string') return null;
-    const value = clientIp.trim();
+    let value = clientIp.trim();
     if (!value) return null;
     if (value.startsWith('::ffff:')) return value.slice(7);
+    // IPv6 zone id (e.g. fe80::1%lo0) is not relevant for throttling keys
+    const zoneIdx = value.indexOf('%');
+    if (zoneIdx > -1) value = value.slice(0, zoneIdx);
+    // Normalize local loopback to a single representation in dev/proxy setups.
+    if (value === '::1') return '127.0.0.1';
     return value;
+  }
+
+  protected getLocalBruteforceFailKey(params: { username: string; ip: string | null }): string {
+    const ipPart = this.hashKeyPart(params.ip || 'n/a');
+    const userPart = this.hashKeyPart(`${params.username || ''}`.trim().toLowerCase());
+    return [this.BRUTEFORCE_FAIL_PREFIX, ipPart, userPart].join(this.TOKEN_PATH_SEPARATOR);
+  }
+
+  protected getLocalBruteforceBlockKey(params: { username: string; ip: string | null }): string {
+    const ipPart = this.hashKeyPart(params.ip || 'n/a');
+    const userPart = this.hashKeyPart(`${params.username || ''}`.trim().toLowerCase());
+    return [this.BRUTEFORCE_BLOCK_PREFIX, ipPart, userPart].join(this.TOKEN_PATH_SEPARATOR);
+  }
+
+  protected getTotpBruteforceFailKey(params: { ip: string | null; challengeToken: string }): string {
+    const ipPart = this.hashKeyPart(params.ip || 'n/a');
+    const tokenPart = this.hashKeyPart(`${params.challengeToken || ''}`.trim());
+    return [this.BRUTEFORCE_TOTP_FAIL_PREFIX, ipPart, tokenPart].join(this.TOKEN_PATH_SEPARATOR);
+  }
+
+  protected getTotpBruteforceBlockKey(params: { ip: string | null; challengeToken: string }): string {
+    const ipPart = this.hashKeyPart(params.ip || 'n/a');
+    const tokenPart = this.hashKeyPart(`${params.challengeToken || ''}`.trim());
+    return [this.BRUTEFORCE_TOTP_BLOCK_PREFIX, ipPart, tokenPart].join(this.TOKEN_PATH_SEPARATOR);
+  }
+
+  protected hashKeyPart(value: string): string {
+    return createHash('sha256').update(value).digest('hex').slice(0, 32);
   }
 
   protected isClientIpAllowed(allowedNetworks?: string[] | null, clientIp?: string | null): boolean {
@@ -317,7 +515,6 @@ export class AuthService extends AbstractService implements OnModuleInit {
     }
   }
 
-  // eslint-disable-next-line
   public async verifyIdentity(payload: any & { identity: AgentType & { token: string } }): Promise<any> {
     // console.log('payload', payload);
     if (payload.scopes.includes('offline')) {
@@ -334,7 +531,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
           this.logger.debug(`[jwt-verify] api accepted identityId=${payload?.identity?._id}`);
           return identity.toObject();
         }
-      } catch (e) {}
+      } catch {}
       this.logger.warn(`[jwt-verify] api rejected identityId=${payload?.identity?._id}`);
       return null;
     }
@@ -387,7 +584,12 @@ export class AuthService extends AbstractService implements OnModuleInit {
     const mfaVerified = !!options?.mfaVerified;
     const mfaVerifiedAt = mfaVerified ? Date.now() : null;
     const access_token = this.jwtService.sign(
-      { identity: pick(normalizedIdentity, ['_id', 'username', 'email', 'token', 'roles']), scopes, mfaVerified, mfaVerifiedAt },
+      {
+        identity: pick(normalizedIdentity, ['_id', 'username', 'email', 'token', 'roles']),
+        scopes,
+        mfaVerified,
+        mfaVerifiedAt,
+      },
       {
         expiresIn: this.ACCESS_TOKEN_EXPIRES_IN,
         jwtid,

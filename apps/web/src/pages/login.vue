@@ -19,7 +19,7 @@ q-card.col.q-ma-xl(flat bordered style="min-width: 300px; max-width: 600px;")
               v-model="formData.username"
               label="Nom d'utilisateur"
               type="text"
-              :readonly='pending || requires2fa'
+              :readonly='pending || requires2fa || retryAfterSecondsLeft > 0'
               autocomplete='username'
               outlined
             )
@@ -28,7 +28,7 @@ q-card.col.q-ma-xl(flat bordered style="min-width: 300px; max-width: 600px;")
               label="Mot de passe"
               type="password"
               autocomplete='current-password'
-              :readonly='pending || requires2fa'
+              :readonly='pending || requires2fa || retryAfterSecondsLeft > 0'
               outlined
             )
             q-input.full-width(
@@ -44,7 +44,7 @@ q-card.col.q-ma-xl(flat bordered style="min-width: 300px; max-width: 600px;")
             q-btn(
               v-if='requires2fa'
               flat
-              :disable='pending'
+              :disable='pending || retryAfterSecondsLeft > 0'
               @click.prevent='reset2faFlow'
             ) Retour
             q-space
@@ -54,7 +54,8 @@ q-card.col.q-ma-xl(flat bordered style="min-width: 300px; max-width: 600px;")
               color='primary'
               size="lg"
               :loading='pending'
-            ) {{ requires2fa ? 'Vérifier' : 'Se connecter' }}
+              :disable='pending || retryAfterSecondsLeft > 0'
+            ) {{ retryAfterSecondsLeft > 0 ? `Réessayez dans ${retryAfterSecondsLeft}s` : (requires2fa ? 'Vérifier' : 'Se connecter') }}
             q-space
 
 q-dialog(v-model='showTotpDialog' persistent)
@@ -68,18 +69,19 @@ q-dialog(v-model='showTotpDialog' persistent)
         label='Code 2FA (6 chiffres)'
         maxlength='6'
         autocomplete='one-time-code'
-        :readonly='pending'
+        :readonly='pending || retryAfterSecondsLeft > 0'
         outlined
       )
     q-card-actions(align='right')
-      q-btn(flat color='primary' :disable='pending' @click='reset2faFlow') Annuler
+      q-btn(flat color='primary' :disable='pending || retryAfterSecondsLeft > 0' @click='reset2faFlow') Annuler
       q-btn(
         color='positive'
         icon='mdi-check-circle-outline'
         :loading='pending'
+        :disable='pending || retryAfterSecondsLeft > 0'
         @click='submitTotp'
         unelevated
-      ) Vérifier
+      ) {{ retryAfterSecondsLeft > 0 ? `Réessayez dans ${retryAfterSecondsLeft}s` : 'Vérifier' }}
 </template>
 
 <script lang="ts">
@@ -104,18 +106,109 @@ export default defineNuxtComponent({
       requires2fa: ref(false),
       challengeToken: ref(''),
       showTotpDialog: ref(false),
+      retryAfterSecondsLeft: ref(0),
+      retryAfterTimer: ref<ReturnType<typeof setInterval> | null>(null),
     }
   },
   methods: {
-    extractPayload(response: any): Record<string, any> {
-      const candidates = [response?.data, response?._data, response?.data?.data, response?._data?.data, response]
+    isRecord(value: unknown): value is Record<string, unknown> {
+      return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+    },
+    getErrorStatus(error: unknown): number | null {
+      const anyErr = this.isRecord(error) ? error : {}
+      const response = this.isRecord(anyErr.response) ? anyErr.response : {}
+      const candidates = [
+        anyErr.status,
+        anyErr.statusCode,
+        response.status,
+        response.statusCode,
+      ]
+      for (const v of candidates) {
+        if (typeof v === 'number' && Number.isFinite(v)) return v
+      }
+      if (typeof response.status === 'string') {
+        const n = Number(response.status)
+        if (Number.isFinite(n)) return n
+      }
+      return null
+    },
+    getRetryAfterSecondsFromError(error: unknown): number | null {
+      const anyErr = this.isRecord(error) ? error : {}
+      const response = this.isRecord(anyErr.response) ? anyErr.response : {}
+      const responseHeaders = this.isRecord(response.headers) ? response.headers : {}
+      const headers = this.isRecord(anyErr.headers) ? anyErr.headers : {}
+      const payloadCandidates = [
+        anyErr.data,
+        anyErr._data,
+        response.data,
+        response._data,
+        response,
+      ]
+      for (const p of payloadCandidates) {
+        const v = this.isRecord(p) ? p.retryAfterSeconds : null
+        if (typeof v === 'number' && Number.isFinite(v) && v >= 0) return v
+        if (typeof v === 'string') {
+          const n = Number(v)
+          if (Number.isFinite(n) && n >= 0) return n
+        }
+      }
+      const headerCandidates = [
+        responseHeaders['retry-after'],
+        responseHeaders['Retry-After'],
+        headers['retry-after'],
+        headers['Retry-After'],
+      ]
+      for (const h of headerCandidates) {
+        if (typeof h === 'string') {
+          const n = Number(h)
+          if (Number.isFinite(n) && n >= 0) return n
+        }
+      }
+      return null
+    },
+    clearRetryAfterTimer() {
+      if (this.retryAfterTimer) {
+        clearInterval(this.retryAfterTimer)
+        this.retryAfterTimer = null
+      }
+    },
+    startRetryAfter(seconds: number) {
+      const s = Math.max(Math.floor(seconds), 0)
+      if (!Number.isFinite(s) || s <= 0) return
+
+      this.clearRetryAfterTimer()
+      this.retryAfterSecondsLeft = s
+      this.retryAfterTimer = setInterval(() => {
+        const next = Math.max(Number(this.retryAfterSecondsLeft || 0) - 1, 0)
+        this.retryAfterSecondsLeft = next
+        if (next <= 0) this.clearRetryAfterTimer()
+      }, 1000)
+    },
+    notifyTooManyAttempts(error: unknown, context: 'auth' | 'otp') {
+      const retryAfterSeconds = this.getRetryAfterSecondsFromError(error)
+      if (typeof retryAfterSeconds === 'number' && Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) {
+        this.startRetryAfter(retryAfterSeconds)
+      }
+      const suffix = typeof retryAfterSeconds === 'number' ? ` Réessayez dans ${retryAfterSeconds}s.` : ' Réessayez plus tard.'
+      this.$q.notify({
+        type: 'warning',
+        message: (context === 'otp' ? 'Trop de tentatives de code 2FA.' : 'Trop de tentatives de connexion.') + suffix,
+        position: 'top',
+        timeout: 10_000,
+      })
+    },
+    extractPayload(response: unknown): Record<string, unknown> {
+      const base = this.isRecord(response) ? response : {}
+      const baseData = this.isRecord(base.data) ? base.data : {}
+      const base_Data = this.isRecord(base._data) ? base._data : {}
+      const candidates: unknown[] = [baseData, base_Data, baseData.data, base_Data.data, base]
       for (const candidate of candidates) {
         if (!candidate || typeof candidate !== 'object') continue
         if ('requires2fa' in candidate || 'challengeToken' in candidate || 'access_token' in candidate || 'uri' in candidate) {
-          return candidate
+          return candidate as Record<string, unknown>
         }
       }
-      return response?.data || response?._data || response || {}
+      return (this.isRecord(base.data) ? base.data : null) || (this.isRecord(base._data) ? base._data : null) || base
     },
     normalizeRedirectUri(uri?: string): string {
       const fallback = '/'
@@ -143,7 +236,7 @@ export default defineNuxtComponent({
       this.pending = true
       try {
         const auth = useAuth()
-        const response: any = await auth.loginWith('local', {
+        const response = await auth.loginWith('local', {
           body: {
             username: this.formData.username,
             password: this.formData.password,
@@ -152,11 +245,17 @@ export default defineNuxtComponent({
           },
         })
         await auth.fetchUser()
-        const authUser = (auth as any)?.user?.value || (auth as any)?.user
-        const uri = this.getPostLoginRedirect(authUser?.baseURL || response?.data?.uri)
+        const authAny = auth as unknown as { user?: { value?: unknown } | unknown }
+        const authUser = (this.isRecord(authAny.user) ? authAny.user : null) || (this.isRecord(authAny.user?.value) ? authAny.user.value : null)
+        const responsePayload = this.extractPayload(response)
+        const uri = this.getPostLoginRedirect((this.isRecord(authUser) ? (authUser.baseURL as string | undefined) : undefined) || (responsePayload.uri as string | undefined))
         this.showTotpDialog = false
         await this.$router.push(uri)
       } catch (error) {
+        if (this.getErrorStatus(error) === 429) {
+          this.notifyTooManyAttempts(error, 'otp')
+          return
+        }
         this.$q.notify({
           type: 'negative',
           message: 'Code 2FA invalide ou expiré',
@@ -171,7 +270,7 @@ export default defineNuxtComponent({
       this.pending = true
       try {
         const auth = useAuth()
-        let response: any = null
+        let response: unknown = null
         if (!this.requires2fa) {
           const preAuthResponse = await this.$http.post('/core/auth/local', {
             body: {
@@ -182,7 +281,7 @@ export default defineNuxtComponent({
           const preAuthPayload = this.extractPayload(preAuthResponse)
           if (preAuthPayload?.requires2fa) {
             this.requires2fa = true
-            this.challengeToken = preAuthPayload.challengeToken || ''
+            this.challengeToken = (preAuthPayload.challengeToken as string | undefined) || ''
             this.showTotpDialog = true
             this.$q.notify({
               type: 'info',
@@ -203,10 +302,16 @@ export default defineNuxtComponent({
           return
         }
         await auth.fetchUser()
-        const authUser = (auth as any)?.user?.value || (auth as any)?.user
-        const uri = this.getPostLoginRedirect(authUser?.baseURL || response?.data?.uri)
+        const authAny = auth as unknown as { user?: { value?: unknown } | unknown }
+        const authUser = (this.isRecord(authAny.user) ? authAny.user : null) || (this.isRecord(authAny.user?.value) ? authAny.user.value : null)
+        const responsePayload = this.extractPayload(response)
+        const uri = this.getPostLoginRedirect((this.isRecord(authUser) ? (authUser.baseURL as string | undefined) : undefined) || (responsePayload.uri as string | undefined))
         await this.$router.push(uri)
       } catch (error) {
+        if (this.getErrorStatus(error) === 429) {
+          this.notifyTooManyAttempts(error, 'auth')
+          return
+        }
         this.$q.notify({
           type: 'negative',
           message: 'Erreur de connexion: ' + (error instanceof Error ? error.message : 'Unknown error'),

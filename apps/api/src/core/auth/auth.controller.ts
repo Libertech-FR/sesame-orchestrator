@@ -74,11 +74,30 @@ export class AuthController extends AbstractController {
     @Body() body: LocalLoginBody,
   ): Promise<Response> {
     const payload = body?.body && typeof body.body === 'object' ? body.body : body;
-    const user = await this.service.authenticateWithLocal(
-      payload?.username,
-      payload?.password,
-      resolveClientIp(req) ?? undefined,
+    const ip = resolveClientIp(req) ?? null;
+    const username = `${payload?.username || ''}`.trim();
+
+    const bruteforce = await this.service.getLocalBruteforceBlock({
+      username,
+      ip,
+    });
+    this.logger.debug(
+      `[anti-bf] local username=${username || 'N/A'} ip=${ip || 'n/a'} blocked=${bruteforce.blocked} retryAfter=${bruteforce.retryAfterSeconds}s`,
     );
+    if (bruteforce.blocked) {
+      await this.service.auditAuthAttempt({
+        username: username || 'N/A',
+        ip,
+        result: 'failed',
+        reason: 'bruteforce_blocked',
+      });
+      return res.status(HttpStatus.TOO_MANY_REQUESTS).set('Retry-After', `${bruteforce.retryAfterSeconds}`).json({
+        message: 'Too many authentication attempts. Please retry later.',
+        retryAfterSeconds: bruteforce.retryAfterSeconds,
+      });
+    }
+
+    const user = await this.service.authenticateWithLocal(username, payload?.password, ip ?? undefined);
     if (!user) throw new UnauthorizedException();
 
     if (this.service.isTotpEnabledForUser(user)) {
@@ -96,11 +115,45 @@ export class AuthController extends AbstractController {
         });
       }
 
+      const totpBruteforce = await this.service.getTotpBruteforceBlock({
+        ip,
+        challengeToken: payload.challengeToken.trim(),
+      });
+      this.logger.debug(
+        `[anti-bf] totp username=${user.username || 'N/A'} ip=${ip || 'n/a'} blocked=${totpBruteforce.blocked} retryAfter=${totpBruteforce.retryAfterSeconds}s`,
+      );
+      if (totpBruteforce.blocked) {
+        await this.service.auditAuthAttempt({
+          username: user.username,
+          ip,
+          result: 'failed',
+          reason: 'totp_bruteforce_blocked',
+          agentId: user._id,
+        });
+        return res.status(HttpStatus.TOO_MANY_REQUESTS).set('Retry-After', `${totpBruteforce.retryAfterSeconds}`).json({
+          message: 'Too many OTP attempts. Please retry later.',
+          retryAfterSeconds: totpBruteforce.retryAfterSeconds,
+        });
+      }
+
       const verifiedUser = await this.service.verifyTotpChallenge(
         payload.challengeToken.trim(),
         payload.otpCode.trim(),
       );
-      if (!verifiedUser || `${verifiedUser._id}` !== `${user._id}`) throw new UnauthorizedException();
+      if (!verifiedUser || `${verifiedUser._id}` !== `${user._id}`) {
+        await this.service.registerTotpBruteforceFailure({
+          ip,
+          challengeToken: payload.challengeToken.trim(),
+          username: user.username,
+          agentId: user._id,
+        });
+        throw new UnauthorizedException();
+      }
+
+      await this.service.clearTotpBruteforceState({
+        ip,
+        challengeToken: payload.challengeToken.trim(),
+      });
 
       const tokens = await this.service.createTokens(verifiedUser, undefined, { mfaVerified: true });
       const uri =
@@ -125,12 +178,47 @@ export class AuthController extends AbstractController {
 
   @Post('local/2fa/verify')
   @ApiOperation({ summary: 'Validation du code TOTP pour finaliser la connexion' })
-  public async verifyLocal2fa(@Res() res: Response, @Body() body: VerifyTotpBody): Promise<Response> {
-    const user = await this.service.verifyTotpChallenge(
-      `${body?.challengeToken || ''}`.trim(),
-      `${body?.otpCode || ''}`.trim(),
+  public async verifyLocal2fa(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Body() body: VerifyTotpBody,
+  ): Promise<Response> {
+    const ip = resolveClientIp(req) ?? null;
+    const challengeToken = `${body?.challengeToken || ''}`.trim();
+
+    const totpBruteforce = await this.service.getTotpBruteforceBlock({
+      ip,
+      challengeToken,
+    });
+    this.logger.debug(
+      `[anti-bf] totp-verify ip=${ip || 'n/a'} tokenPrefix=${challengeToken.slice(0, 8) || 'n/a'} blocked=${totpBruteforce.blocked} retryAfter=${totpBruteforce.retryAfterSeconds}s`,
     );
-    if (!user) throw new UnauthorizedException();
+    if (totpBruteforce.blocked) {
+      await this.service.auditAuthAttempt({
+        username: 'N/A',
+        ip,
+        result: 'failed',
+        reason: 'totp_bruteforce_blocked',
+      });
+      return res.status(HttpStatus.TOO_MANY_REQUESTS).set('Retry-After', `${totpBruteforce.retryAfterSeconds}`).json({
+        message: 'Too many OTP attempts. Please retry later.',
+        retryAfterSeconds: totpBruteforce.retryAfterSeconds,
+      });
+    }
+
+    const user = await this.service.verifyTotpChallenge(challengeToken, `${body?.otpCode || ''}`.trim());
+    if (!user) {
+      await this.service.registerTotpBruteforceFailure({
+        ip,
+        challengeToken,
+      });
+      throw new UnauthorizedException();
+    }
+
+    await this.service.clearTotpBruteforceState({
+      ip,
+      challengeToken,
+    });
     const tokens = await this.service.createTokens(user, undefined, { mfaVerified: true });
     const uri = typeof user?.baseURL === 'string' && user.baseURL.trim().length > 0 ? user.baseURL.trim() : '/';
     return res.status(HttpStatus.OK).json({

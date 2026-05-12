@@ -23,11 +23,11 @@
           :disable='!hasPermission("/settings/mailadm", "update")'
           type="text"
           outlined
-          v-model="payload.emetteur"
+          v-model="payload.sender"
           label="Adresse émetteur"
           hint="Adresse émetteur de connexion au serveur SMTP"
-          :error="!!validations['emetteur']"
-          :error-message='validations["emetteur"]'
+          :error="!!validations['sender']"
+          :error-message='validations["sender"]'
           dense
         )
         .offset-md-1
@@ -57,6 +57,30 @@
           template(v-slot:append)
             q-icon.cursor-pointer(name="mdi-eye" @click="togglePassword")
         .offset-md-1
+        q-input.col-12.col-md-6(
+          :disable='!hasPermission("/settings/mailadm", "update")'
+          type="text"
+          outlined
+          v-model="payload.recipientJsonPathEmailPersonnel"
+          label="Chemin JSON — e-mail personnel"
+          hint="Segments séparés par des points (ex. champ additionnel). Vérifié à l'enregistrement sur une identité synchronisée."
+          :error="!!validations['recipientJsonPathEmailPersonnel']"
+          :error-message='validations["recipientJsonPathEmailPersonnel"]'
+          dense
+        )
+        .offset-md-1
+        q-input.col-12.col-md-6(
+          :disable='!hasPermission("/settings/mailadm", "update")'
+          type="text"
+          outlined
+          v-model="payload.recipientJsonPathEmailPrincipal"
+          label="Chemin JSON — e-mail principal"
+          hint="Ex. inetOrgPerson.mail"
+          :error="!!validations['recipientJsonPathEmailPrincipal']"
+          :error-message='validations["recipientJsonPathEmailPrincipal"]'
+          dense
+        )
+        .offset-md-1
   q-card-actions.sticky-footer.border-top.full-width
     q-space
     q-btn.text-positive(
@@ -73,9 +97,11 @@ import { ref } from 'vue'
 
 type SmtpSettings = {
   host: string
-  emetteur: string
+  sender: string
   username: string
   password: string
+  recipientJsonPathEmailPersonnel?: string
+  recipientJsonPathEmailPrincipal?: string
 }
 
 export default defineComponent({
@@ -91,9 +117,11 @@ export default defineComponent({
 
     const payload = ref({
       host: '',
-      emetteur: '',
+      sender: '',
       username: '',
       password: '',
+      recipientJsonPathEmailPersonnel: '',
+      recipientJsonPathEmailPrincipal: '',
     } as SmtpSettings)
     const validations = ref({} as Record<string, any>)
 
@@ -111,7 +139,17 @@ export default defineComponent({
         message: 'Erreur lors de de la lecture des paramètres',
       })
     } else {
-      payload.value = result.value?.data || payload.value
+      const raw = result.value?.data as SmtpSettings & { emetteur?: string }
+      if (raw) {
+        payload.value = {
+          host: raw.host ?? '',
+          sender: raw.sender ?? raw.emetteur ?? '',
+          username: raw.username ?? '',
+          password: raw.password ?? '',
+          recipientJsonPathEmailPersonnel: raw.recipientJsonPathEmailPersonnel ?? '',
+          recipientJsonPathEmailPrincipal: raw.recipientJsonPathEmailPrincipal ?? '',
+        }
+      }
       validations.value = {}
     }
 

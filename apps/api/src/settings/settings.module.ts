@@ -10,6 +10,7 @@ import { PasswdadmService } from '~/settings/passwdadm.service';
 import { PasswdadmController } from '~/settings/passwdadm.controller';
 import { MailadmService } from '~/settings/mailadm.service';
 import { MailadmController } from '~/settings/mailadm.controller';
+
 @Module({
   exports: [SmsadmService, PasswdadmService, MailadmService],
   imports: [

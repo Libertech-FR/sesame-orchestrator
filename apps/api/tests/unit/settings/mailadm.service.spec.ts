@@ -4,8 +4,16 @@ import { MailSettingsDto } from '~/settings/_dto/mail.settings.dto'
 describe('MailadmService', () => {
   let service: MailadmService
 
+  const mockCollection = {
+    findOne: jest.fn().mockResolvedValue(null),
+  }
+
+  const mockConnection = {
+    collection: jest.fn().mockReturnValue(mockCollection),
+  }
+
   beforeEach(() => {
-    service = new MailadmService({} as any)
+    service = new MailadmService({} as any, mockConnection as any)
   })
 
   it('should read smtp params via getParameter(smtpServer)', async () => {

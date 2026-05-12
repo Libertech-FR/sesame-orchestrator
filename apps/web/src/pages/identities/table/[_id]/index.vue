@@ -439,6 +439,7 @@ export default defineNuxtComponent({
                 ids: [this.identity._id],
                 template: data?.template,
                 variables: data?.variables,
+                ...(data?.recipientAddressSource ? { recipientAddressSource: data.recipientAddressSource } : {}),
               },
             })
             this.$q.notify({

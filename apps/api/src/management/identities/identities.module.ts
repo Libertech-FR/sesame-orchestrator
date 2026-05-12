@@ -40,7 +40,7 @@ import { IdentitiesPasswordExpirationReminderService } from '~/management/identi
     ]),
     FilestorageModule,
     forwardRef(() => BackendsModule),
-    SettingsModule,
+    forwardRef(() => SettingsModule),
     PasswordHistoryModule,
     AgentsModule,
   ],

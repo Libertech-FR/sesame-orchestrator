@@ -558,6 +558,7 @@ export default defineNuxtComponent({
             ids,
             template: data?.template,
             variables: data?.variables,
+            ...(data?.recipientAddressSource ? { recipientAddressSource: data.recipientAddressSource } : {}),
           },
         })) as { data?: { sent?: number; skipped?: number } }
 

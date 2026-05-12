@@ -1,10 +1,10 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common'
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { Response } from 'express'
-import { UseRoles } from '~/_common/decorators/use-roles.decorator'
-import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types'
-import { MailSendManyDto } from './_dto/mail-send-many.dto'
-import { MailSendService } from './mail-send.service'
+import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
+import { UseRoles } from '~/_common/decorators/use-roles.decorator';
+import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
+import { MailSendManyDto } from './_dto/mail-send-many.dto';
+import { MailSendService } from './mail-send.service';
 
 @Controller('mail')
 @ApiTags('management/mail')
@@ -24,8 +24,8 @@ export class MailSendController {
       ids: (body.ids || []).map((id) => String(id)),
       template: body.template,
       variables: body.variables,
-    })
-    return res.status(HttpStatus.OK).json({ statusCode: HttpStatus.OK, data: result })
+      recipientAddressSource: body.recipientAddressSource,
+    });
+    return res.status(HttpStatus.OK).json({ statusCode: HttpStatus.OK, data: result });
   }
 }
-

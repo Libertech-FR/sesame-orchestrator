@@ -190,3 +190,14 @@ body.body--dark
   ::-webkit-scrollbar-thumb
     background-color: #555
     border-radius: 4px
+
+// Modales identités — bouton « Annuler » (outline Quasar = bordure sur ::before, pas sur le root .q-btn { border: 0 })
+// Couleur de trait explicite : évite un contour trop faible (ex. currentColor / ordre CSS) sur une modale isolée.
+.q-btn.identity-modal-btn-cancel.q-btn--outline::before
+  border: 1px solid $separator-color !important
+
+body.body--dark .q-btn.identity-modal-btn-cancel.q-btn--outline::before
+  border-color: $separator-dark-color !important
+
+body.body--dark .q-btn.identity-modal-btn-cancel.q-btn--outline
+  color: rgba(255, 255, 255, 0.88) !important

@@ -2,30 +2,131 @@
 q-dialog(
   ref="dialogRef",
   @hide="onDialogHide",
-  maximized
+  maximized,
+  transition-show="scale",
+  transition-hide="scale",
 )
-  q-card.q-dialog-plugin.column.fit(style="overflow: hidden;")
-    q-toolbar.bg-primary(dense)
-      q-toolbar-title.text-white Envoyer un mail
-      q-space
+  q-card.mail-template-card.column.fit(flat bordered)
+    q-card-section.identity-modal-header.row.items-center.no-wrap.bg-teal-7.text-white
+      q-avatar(round color="white" text-color="teal-7" icon="mdi-email-multiple" size="32px")
+      .column.q-ml-md.col
+        .text-h6.text-weight-medium Envoyer un mail
+        .text-caption(style="opacity: 0.92") Template, variables et aperçu avant envoi
       q-btn(icon="mdi-close" flat round dense color="white" @click="cancelSync")
     q-separator
-    q-splitter.col(
-      v-if="q.screen.gt.md"
-      v-model="splitterModel"
-      :limits="[25, 70]"
-      style="min-height: 0;"
-    )
-      template(#before)
-        .q-pa-md.overflow-auto(style="height: 100%;")
-          p.text-body2(v-if="showSendAll") {{ introText }}
-          q-checkbox(
-            v-if="showSendAll"
-            v-model="initAllIdentities"
-            :label="checkboxLabel"
-          )
-          q-separator.q-my-md(v-if="showSendAll")
+    q-card-section.mail-template-split-wrap.col.column(flat style="min-height: 0; flex: 1 1 auto; padding: 0;")
+      q-splitter.col(
+        v-if="q.screen.gt.md"
+        v-model="splitterModel"
+        :limits="[25, 70]"
+        style="min-height: 0; height: 100%; flex: 1 1 auto;"
+      )
+        template(#before)
+          .q-pa-md.overflow-auto(style="height: 100%;")
+            p.text-body2(v-if="showSendAll") {{ introText }}
+            q-checkbox(
+              v-if="showSendAll"
+              v-model="initAllIdentities"
+              :label="checkboxLabel"
+              color="teal-7"
+              dense
+            )
+            q-separator.q-my-md(v-if="showSendAll")
 
+            q-select(
+              v-model="templateName"
+              :options="templates"
+              label="Template"
+              hint="Sélectionnez un template"
+              outlined
+              dense
+              emit-value
+              map-options
+              :loading="templatesLoading"
+              color="teal-7"
+            )
+            q-separator.q-my-md
+            .text-subtitle2 Variables pré-construites
+            .text-caption.text-grey-7
+              | Ces variables proviennent de la config `mail_templates.yml` et sont envoyées quoi qu'il arrive. Pour les surcharger, ajoutez une variable additionnelle avec la même clé.
+            .q-mt-sm(v-if="availableVariables.length")
+              q-list(bordered separator dense)
+                q-item(v-for="v in availableVariables" :key="v.key")
+                  q-item-section
+                    q-item-label
+                      b {{ v.label || v.key }}
+                      span.text-grey-7(v-if="v.label") &nbsp;({{ v.key }})
+                    q-item-label(caption v-if="v.description") {{ v.description }}
+                    q-item-label(caption v-if="v.example") Exemple: {{ v.example }}
+                    q-item-label(caption v-if="v.defaultValue !== undefined") Défaut: {{ String(v.defaultValue) }}
+            q-banner.bg-grey-2.text-grey-9.q-mt-sm(v-else)
+              | Aucune variable pré-construite trouvée dans la configuration.
+
+            q-separator.q-my-md
+            .text-subtitle2 Variables additionnelles (optionnel)
+            .text-caption.text-grey-7
+              | Variables libres (clé/valeur) ajoutées au contexte du template.
+            .q-mt-sm
+              .row.q-col-gutter-sm.items-center(v-for="(row, idx) in variablesRows" :key="`var-${idx}`")
+                q-input.col(
+                  v-model="row.key"
+                  label="Clé"
+                  outlined
+                  dense
+                )
+                q-input.col(
+                  v-model="row.value"
+                  label="Valeur"
+                  outlined
+                  dense
+                )
+                q-btn(
+                  icon="mdi-delete"
+                  color="negative"
+                  flat
+                  round
+                  dense
+                  @click="removeVar(idx)"
+                )
+              q-btn.q-mt-sm(
+                icon="mdi-plus"
+                label="Ajouter une variable"
+                color="teal-7"
+                flat
+                dense
+                @click="addVar"
+              )
+
+        template(#after)
+          .bg-grey-1.column(style="min-height: 0; height: 100%; overflow: hidden;")
+            q-bar(flat)
+              .text-subtitle2 Aperçu
+              q-space
+              q-btn(
+                icon="mdi-refresh"
+                label="Rafraîchir l'aperçu"
+                color="teal-7"
+                flat
+                dense
+                :loading="previewLoading"
+                @click="refreshPreview"
+              )
+            q-card(flat bordered class="col" style="min-height: 0; overflow: hidden;")
+              .col(style="min-height: 0; height: 100%;")
+                object(
+                  v-if="previewObjectUrl"
+                  :data="previewObjectUrl"
+                  type="text/html"
+                  style="border: 0; width: 100%; height: 100%;"
+                )
+                .fit.row.items-center.justify-center(v-else)
+                  q-spinner-dots(color="teal-7" size="40px" v-if="previewLoading")
+                  q-banner.bg-grey-2.text-grey-9(v-else)
+                    | Aucun aperçu disponible.
+
+      .column.col(v-else style="min-height: 0;")
+        .col.q-pa-md.overflow-auto(style="min-height: 0;")
+          p.text-body2.text-weight-medium.q-mb-sm {{ mainText }}
           q-select(
             v-model="templateName"
             :options="templates"
@@ -36,6 +137,7 @@ q-dialog(
             emit-value
             map-options
             :loading="templatesLoading"
+            color="teal-7"
           )
           q-separator.q-my-md
           .text-subtitle2 Variables pré-construites
@@ -83,126 +185,39 @@ q-dialog(
             q-btn.q-mt-sm(
               icon="mdi-plus"
               label="Ajouter une variable"
-              color="primary"
+              color="teal-7"
               flat
               dense
               @click="addVar"
             )
 
-      template(#after)
-        .bg-grey-1.column(style="min-height: 0; height: 100%; overflow: hidden;")
-          q-bar(flat)
-            .text-subtitle2 Aperçu
-            q-space
-            q-btn(
-              icon="mdi-refresh"
-              label="Rafraîchir l’aperçu"
-              color="primary"
-              flat
-              dense
-              :loading="previewLoading"
-              @click="refreshPreview"
-            )
-          q-card(flat bordered class="col" style="min-height: 0; overflow: hidden;")
-            .col(style="min-height: 0; height: 100%;")
-              object(
-                v-if="previewObjectUrl"
-                :data="previewObjectUrl"
-                type="text/html"
-                style="border: 0; width: 100%; height: 100%;"
-              )
-              .fit.row.items-center.justify-center(v-else)
-                q-spinner-dots(color="primary" size="40px" v-if="previewLoading")
-                q-banner.bg-grey-2.text-grey-9(v-else)
-                  | Aucun aperçu disponible.
-
-    .column.col(v-else style="min-height: 0;")
-      .col.q-pa-md.overflow-auto(style="min-height: 0;")
-        p {{ mainText }}
-        q-select(
-          v-model="templateName"
-          :options="templates"
-          label="Template"
-          hint="Sélectionnez un template"
-          outlined
-          dense
-          emit-value
-          map-options
-          :loading="templatesLoading"
-        )
-        q-separator.q-my-md
-        .text-subtitle2 Variables pré-construites
-        .text-caption.text-grey-7
-          | Ces variables proviennent de la config `mail_templates.yml` et sont envoyées quoi qu'il arrive. Pour les surcharger, ajoutez une variable additionnelle avec la même clé.
-        .q-mt-sm(v-if="availableVariables.length")
-          q-list(bordered separator dense)
-            q-item(v-for="v in availableVariables" :key="v.key")
-              q-item-section
-                q-item-label
-                  b {{ v.label || v.key }}
-                  span.text-grey-7(v-if="v.label") &nbsp;({{ v.key }})
-                q-item-label(caption v-if="v.description") {{ v.description }}
-                q-item-label(caption v-if="v.example") Exemple: {{ v.example }}
-                q-item-label(caption v-if="v.defaultValue !== undefined") Défaut: {{ String(v.defaultValue) }}
-        q-banner.bg-grey-2.text-grey-9.q-mt-sm(v-else)
-          | Aucune variable pré-construite trouvée dans la configuration.
-
-        q-separator.q-my-md
-        .text-subtitle2 Variables additionnelles (optionnel)
-        .text-caption.text-grey-7
-          | Variables libres (clé/valeur) ajoutées au contexte du template.
-        .q-mt-sm
-          .row.q-col-gutter-sm.items-center(v-for="(row, idx) in variablesRows" :key="`var-${idx}`")
-            q-input.col(
-              v-model="row.key"
-              label="Clé"
-              outlined
-              dense
-            )
-            q-input.col(
-              v-model="row.value"
-              label="Valeur"
-              outlined
-              dense
-            )
-            q-btn(
-              icon="mdi-delete"
-              color="negative"
-              flat
-              round
-              dense
-              @click="removeVar(idx)"
-            )
-          q-btn.q-mt-sm(
-            icon="mdi-plus"
-            label="Ajouter une variable"
-            color="primary"
-            flat
+          q-separator.q-my-md
+          q-checkbox(
+            v-if="showSendAll"
+            v-model="initAllIdentities"
+            :label="checkboxLabel"
+            color="teal-7"
             dense
-            @click="addVar"
           )
 
-        q-separator.q-my-md
-        q-checkbox(
-          v-if="showSendAll"
-          v-model="initAllIdentities"
-          :label="checkboxLabel"
-        )
-
     q-separator
-    q-card-actions.bg-white(style="position: sticky; bottom: 0; z-index: 2;")
-      q-space
-      q-btn(
-        color="negative"
+    q-card-actions.identity-modal-actions(align="right")
+      q-btn.identity-modal-btn-cancel(
+        outline
+        color="grey-8"
+        no-caps
+        padding="sm lg"
         label="Annuler"
         @click="cancelSync"
-        push
       )
       q-btn(
+        unelevated
+        no-caps
+        padding="sm lg"
         color="positive"
+        icon-right="mdi-send"
         label="Envoyer"
         @click="syncIdentities"
-        push
       )
 </template>
 
@@ -228,8 +243,11 @@ const props = defineProps({
 
 defineEmits([...useDialogPluginComponent.emits])
 
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any -- template Pug */
 const q = useQuasar()
 const splitterModel = ref(42)
+
+const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
 
 const mainText = computed(
   () => `Vous êtes sur le point d'envoyer un mail à ${props.selectedIdentities.length} identités "${props.identityTypesName}". Voulez-vous continuer ?`,
@@ -384,11 +402,35 @@ const syncIdentities = () => {
 const cancelSync = () => {
   onDialogCancel()
 }
-
-const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
+/* eslint-enable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
 </script>
 
 <style scoped>
+.mail-template-card {
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.mail-template-split-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.identity-modal-header {
+  padding: 1rem 1.25rem;
+  flex-shrink: 0;
+}
+
+.identity-modal-actions {
+  padding: 0.5rem 1rem 1rem;
+  background: rgba(0, 0, 0, 0.02);
+  flex-shrink: 0;
+}
+
+.body--dark .identity-modal-actions {
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .preview-scroll {
   overflow: auto;
   -webkit-overflow-scrolling: touch;

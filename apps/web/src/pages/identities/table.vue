@@ -13,7 +13,7 @@ q-page.grid
     :execute='execute'
     :targetId='targetId'
     selection='multiple'
-    row-key='_id'
+    :row-key='identityTableRowKey'
   )
     template(#top-table)
       sesame-core-pan-filters(:columns='columns' :columnsType='columnsType' mode='complex' :placeholder='"Rechercher par nom, prénom, email, ..."')
@@ -33,17 +33,17 @@ q-page.grid
       q-separator.q-mx-sm(vertical)
     template(#before-top-left="{ selected, clearSelection }")
       q-btn-group(rounded flat)
-        q-btn(flat icon="mdi-sync" color="orange-8" rounded @click="openUpdateModal(selected)" size="md" :disable="selected.length === 0" dense)
+        q-btn(flat icon="mdi-sync" color="orange-8" rounded @click="openUpdateModal()" size="md" :disable="selected.length === 0" dense)
           q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Mettre à synchroniser les identités sélectionnées
-        q-btn(flat icon="mdi-email-arrow-right" color="primary" rounded @click="openInitModal(selected)" size="md" :disable="selected.length === 0 || !areAllSelectedSynced(selected)" dense)
+        q-btn(flat icon="mdi-email-arrow-right" color="primary" rounded @click="openInitModal()" size="md" :disable="selected.length === 0 || !areAllSelectedSynced(selected)" dense)
           q-tooltip.text-body2(transition-show="scale" transition-hide="scale")
             span(v-if="areAllSelectedSynced(selected)") Envoyer le mail d'invitation
             span(v-else) Action disponible uniquement pour des identités synchronisées
-        q-btn(flat icon="mdi-email" color="teal-7" rounded @click="openMailTemplateModal(selected)" size="md" :disable="selected.length === 0 || !areAllSelectedSynced(selected)" dense)
+        q-btn(flat icon="mdi-email" color="teal-7" rounded @click="openMailTemplateModal()" size="md" :disable="selected.length === 0 || !areAllSelectedSynced(selected)" dense)
           q-tooltip.text-body2(transition-show="scale" transition-hide="scale")
             span(v-if="areAllSelectedSynced(selected)") Envoyer un mail (template)
             span(v-else) Action disponible uniquement pour des identités synchronisées
-        q-btn(flat icon="mdi-delete" color="negative" rounded @click="openTrashModal(selected)" size="md" :disable="selected.length === 0" dense)
+        q-btn(flat icon="mdi-delete" color="negative" rounded @click="openTrashModal()" size="md" :disable="selected.length === 0" dense)
           q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer en masse
         q-separator(vertical v-if="selected.length !== 0")
         q-btn(flat icon="mdi-cancel" color="warning" rounded @click="clearSelection" size="md" v-show="selected.length !== 0" dense)
@@ -176,11 +176,21 @@ export default defineNuxtComponent({
       })
     }
 
+    /** Clé unique par ligne : évite le bug Quasar (plusieurs lignes cochées pour un seul _id dans `selected`). */
+    function identityTableRowKey(row: Record<string, unknown>) {
+      const list = identities.value?.data
+      if (!row || !Array.isArray(list)) return '__'
+      const idx = list.indexOf(row)
+      const id = row?._id != null ? String(row._id) : 'noid'
+      return idx >= 0 ? `${id}::${idx}` : `${id}::${list.length}`
+    }
+
     return {
       debug,
       page,
       hasPermission,
       identities,
+      identityTableRowKey,
       pending,
       refresh,
       execute,
@@ -260,6 +270,40 @@ export default defineNuxtComponent({
     },
   },
   methods: {
+    getTableSelection(): Record<string, unknown>[] {
+      const pan = this.$refs.twoPan as { getSelectedRows?: () => unknown[] } | undefined
+      const rows = pan?.getSelectedRows?.()
+      return Array.isArray(rows) ? (rows as Record<string, unknown>[]) : []
+    },
+    cloneRowsForDialog(rows: unknown[]): unknown[] {
+      try {
+        return JSON.parse(JSON.stringify(rows)) as unknown[]
+      } catch {
+        return [...rows]
+      }
+    },
+    identityRowIdString(row: Record<string, unknown> | undefined): string {
+      if (!row || typeof row !== 'object') return ''
+      const id = row._id as unknown
+      if (id == null) return ''
+      if (typeof id === 'string' && /^[a-f0-9]{24}$/i.test(id)) return id
+      if (typeof id === 'object' && id !== null && '$oid' in (id as Record<string, unknown>)) {
+        const oid = String((id as Record<string, unknown>).$oid ?? '')
+        return /^[a-f0-9]{24}$/i.test(oid) ? oid : ''
+      }
+      if (typeof id === 'object' && id !== null && typeof (id as { toString?: () => string }).toString === 'function') {
+        const s = (id as { toString: () => string }).toString()
+        if (/^[a-f0-9]{24}$/i.test(s)) return s
+      }
+      const s = String(id)
+      return /^[a-f0-9]{24}$/i.test(s) ? s : ''
+    },
+    bulkIdsFromIdentities(identities: unknown[]): string[] {
+      if (!Array.isArray(identities)) return []
+      return identities
+        .map((row) => this.identityRowIdString(row as Record<string, unknown>))
+        .filter((id): id is string => id.length > 0)
+    },
     async fetchSyncedTotalCount(): Promise<number> {
       try {
         const { data: identities } = await useHttp<any>(`/management/identities?limit=1&&filters[@state][]=${IdentityState.SYNCED}`, {
@@ -275,8 +319,11 @@ export default defineNuxtComponent({
       if (!Array.isArray(selected) || selected.length === 0) return false
       return selected.every((i) => i?.state === IdentityState.SYNCED)
     },
-    openUpdateModal(selected) {
-      const identityState: IdentityState = selected[0].state
+    openUpdateModal() {
+      const selectionAtOpen = this.cloneRowsForDialog(this.getTableSelection()) as Record<string, unknown>[]
+      if (selectionAtOpen.length === 0) return
+
+      const identityState: IdentityState = selectionAtOpen[0].state as IdentityState
 
       if (typeof identityState !== 'number') {
         console.error('Invalid state', identityState)
@@ -289,7 +336,7 @@ export default defineNuxtComponent({
         .dialog({
           component: updateIdentityModal,
           componentProps: {
-            selectedIdentities: selected,
+            selectedIdentities: selectionAtOpen,
             identityTypesName: name,
             allIdentitiesCount: this.identities?.total,
           },
@@ -298,92 +345,123 @@ export default defineNuxtComponent({
           if (data.syncAllIdentities) {
             await this.updateAllIdentities(identityState)
           } else {
-            await this.updateIdentity(selected, identityState)
+            await this.updateIdentity(selectionAtOpen, identityState)
           }
         })
     },
 
-    openInitModal(selected) {
-      if (!this.areAllSelectedSynced(selected)) {
+    openInitModal() {
+      const initial = this.cloneRowsForDialog(this.getTableSelection()) as Record<string, unknown>[]
+      if (initial.length === 0) return
+      if (!this.areAllSelectedSynced(initial)) {
         this.$q.notify({
           message: "L'envoi de l'invitation est disponible uniquement pour des identités synchronisées",
           color: 'warning',
         })
         return
       }
-      const identityState: IdentityState = selected[0].state
 
-      if (typeof identityState !== 'number') {
-        console.error('Invalid state', identityState)
-        return
-      }
-
-      const name = this.getStateName(identityState)
-
-      this.fetchSyncedTotalCount().then((syncedTotal) => {
-        this.$q
-        .dialog({
-          component: updateInitModal,
-          componentProps: {
-            selectedIdentities: selected,
-            identityTypesName: name,
-            allIdentitiesCount: syncedTotal,
-          },
-        })
-        .onOk(async (data) => {
-          if (data.initAllIdentities === true) {
-            await this.sendInitToAllIdentities()
-          } else {
-            await this.sendInitToIdentity(selected)
+      this.fetchSyncedTotalCount()
+        .then((syncedTotal) => {
+          const selectionAtOpen = this.cloneRowsForDialog(this.getTableSelection()) as Record<string, unknown>[]
+          if (selectionAtOpen.length === 0) return
+          if (!this.areAllSelectedSynced(selectionAtOpen)) {
+            this.$q.notify({
+              message: "L'envoi de l'invitation est disponible uniquement pour des identités synchronisées",
+              color: 'warning',
+            })
+            return
           }
+
+          const identityState: IdentityState = selectionAtOpen[0].state as IdentityState
+          if (typeof identityState !== 'number') {
+            console.error('Invalid state', identityState)
+            return
+          }
+
+          const name = this.getStateName(identityState)
+
+          this.$q
+            .dialog({
+              component: updateInitModal,
+              componentProps: {
+                selectedIdentities: selectionAtOpen,
+                identityTypesName: name,
+                allIdentitiesCount: syncedTotal,
+              },
+            })
+            .onOk(async (data) => {
+              if (data.initAllIdentities === true) {
+                await this.sendInitToAllIdentities()
+              } else {
+                await this.sendInitToIdentity(selectionAtOpen)
+              }
+            })
         })
-      })
+        .catch(() => {})
     },
 
-    openMailTemplateModal(selected) {
-      if (!this.areAllSelectedSynced(selected)) {
+    openMailTemplateModal() {
+      const initial = this.cloneRowsForDialog(this.getTableSelection()) as Record<string, unknown>[]
+      if (initial.length === 0) return
+      if (!this.areAllSelectedSynced(initial)) {
         this.$q.notify({
           message: "L'envoi de mail (template) est disponible uniquement pour des identités synchronisées",
           color: 'warning',
         })
         return
       }
-      const identityState: IdentityState = selected[0].state
 
-      if (typeof identityState !== 'number') {
-        console.error('Invalid state', identityState)
-        return
-      }
-
-      const name = this.getStateName(identityState)
-
-      this.fetchSyncedTotalCount().then((syncedTotal) => {
-        this.$q
-        .dialog({
-          component: mailTemplateModal,
-          componentProps: {
-            selectedIdentities: selected,
-            identityTypesName: name,
-            allIdentitiesCount: syncedTotal,
-          },
-        })
-        .onOk(async (data) => {
-          if (data.initAllIdentities === true) {
-            const { data: identities } = await useHttp<any>('/management/identities?limit=99999', {
-              method: 'get',
-              query: this.returnFilter(),
+      this.fetchSyncedTotalCount()
+        .then((syncedTotal) => {
+          const selectionAtOpen = this.cloneRowsForDialog(this.getTableSelection()) as Record<string, unknown>[]
+          if (selectionAtOpen.length === 0) return
+          if (!this.areAllSelectedSynced(selectionAtOpen)) {
+            this.$q.notify({
+              message: "L'envoi de mail (template) est disponible uniquement pour des identités synchronisées",
+              color: 'warning',
             })
-            if (!identities) return
-            await this.sendTemplateMailToIdentities(identities.value.data, data)
-          } else {
-            await this.sendTemplateMailToIdentities(selected, data)
+            return
           }
+
+          const identityState: IdentityState = selectionAtOpen[0].state as IdentityState
+          if (typeof identityState !== 'number') {
+            console.error('Invalid state', identityState)
+            return
+          }
+
+          const name = this.getStateName(identityState)
+
+          this.$q
+            .dialog({
+              component: mailTemplateModal,
+              componentProps: {
+                selectedIdentities: selectionAtOpen,
+                identityTypesName: name,
+                allIdentitiesCount: syncedTotal,
+              },
+            })
+            .onOk(async (data) => {
+              if (data.initAllIdentities === true) {
+                const { data: identities } = await useHttp<any>('/management/identities?limit=99999', {
+                  method: 'get',
+                  query: this.returnFilter(),
+                })
+                if (!identities) return
+                await this.sendTemplateMailToIdentities(identities.value.data, data)
+              } else {
+                await this.sendTemplateMailToIdentities(selectionAtOpen, data)
+              }
+            })
         })
-      })
+        .catch(() => {})
     },
 
-    openTrashModal(selected) {
-      const identityState: IdentityState = selected[0].state
+    openTrashModal() {
+      const selectionAtOpen = this.cloneRowsForDialog(this.getTableSelection()) as Record<string, unknown>[]
+      if (selectionAtOpen.length === 0) return
+
+      const identityState: IdentityState = selectionAtOpen[0].state as IdentityState
       if (typeof identityState !== 'number') {
         console.error('Invalid state', identityState)
         return
@@ -393,11 +471,11 @@ export default defineNuxtComponent({
         .dialog({
           component: deleteManyModal,
           componentProps: {
-            selectedIdentities: selected,
+            selectedIdentities: selectionAtOpen,
           },
         })
-        .onOk(async (data) => {
-          await this.trashManySelected(selected)
+        .onOk(async () => {
+          await this.trashManySelected(selectionAtOpen)
         })
     },
 
@@ -421,90 +499,85 @@ export default defineNuxtComponent({
     async updateIdentity(identities, state: IdentityState) {
       const targetState = this.getTargetState(state)
 
-      const ids = identities.map((identity) => identity._id)
-      const { data, error } = await useHttp(`/management/identities/state`, {
-        method: 'patch',
-        body: {
-          ids,
-          originState: state,
-          targetState,
-        },
-      })
+      const ids = this.bulkIdsFromIdentities(identities)
+      try {
+        await this.$http.patch('/management/identities/state', {
+          body: {
+            ids,
+            originState: state,
+            targetState,
+          },
+        })
 
-      if (error.value) {
         this.$q.notify({
-          message: error.value.data.message,
+          message: `Les identités ont été mises à jour avec succès`,
+          color: 'positive',
+        })
+        await this.fetchAllStateCount()
+        this.refresh()
+        ;(this.$refs.twoPan as any).clearSelection()
+      } catch (error: unknown) {
+        const err = error as { response?: { _data?: { message?: string } }; data?: { message?: string } }
+        this.$q.notify({
+          message: err?.response?._data?.message ?? err?.data?.message ?? 'Erreur lors de la mise à jour',
           color: 'negative',
         })
-        return
       }
-
-      this.$q.notify({
-        message: `Les identités ont été mises à jour avec succès`,
-        color: 'positive',
-      })
-      await this.fetchAllStateCount()
-      this.refresh()
-      ;(this.$refs.twoPan as any).clearSelection()
     },
 
     async sendInitToIdentity(identities) {
-      const ids = identities.map((identity) => identity._id)
-      const { data, error } = await useHttp(`/management/passwd/initmany`, {
-        method: 'post',
-        body: {
-          ids,
-        },
-      })
+      const ids = this.bulkIdsFromIdentities(identities)
+      try {
+        await this.$http.post('/management/passwd/initmany', {
+          body: {
+            ids,
+          },
+        })
 
-      if (error.value) {
         this.$q.notify({
-          message: error.value.data.message,
+          message: `Les identités ont été mises à jour avec succès`,
+          color: 'positive',
+        })
+        await this.fetchAllStateCount()
+        this.refresh()
+        ;(this.$refs.twoPan as any).clearSelection()
+      } catch (error: unknown) {
+        const err = error as { response?: { _data?: { message?: string } }; data?: { message?: string } }
+        this.$q.notify({
+          message: err?.response?._data?.message ?? err?.data?.message ?? 'Erreur',
           color: 'negative',
         })
-        return
       }
-
-      this.$q.notify({
-        message: `Les identités ont été mises à jour avec succès`,
-        color: 'positive',
-      })
-      await this.fetchAllStateCount()
-      this.refresh()
-      ;(this.$refs.twoPan as any).clearSelection()
     },
 
     async sendTemplateMailToIdentities(identities, data: { template?: string; variables?: Record<string, string> }) {
-      const ids = identities.map((identity) => identity._id)
-      const { data: result, error } = await useHttp(`/management/mail/sendmany`, {
-        method: 'post',
-        body: {
-          ids,
-          template: data?.template,
-          variables: data?.variables,
-        },
-      })
+      const ids = this.bulkIdsFromIdentities(identities)
+      try {
+        const result = (await this.$http.post('/management/mail/sendmany', {
+          body: {
+            ids,
+            template: data?.template,
+            variables: data?.variables,
+          },
+        })) as { data?: { sent?: number; skipped?: number } }
 
-      if (error.value) {
+        const sent = result?.data?.sent ?? 0
+        const skipped = result?.data?.skipped ?? 0
         this.$q.notify({
-          message: error.value.data.message,
+          message: `Mail envoyé (${sent} envoyé${sent > 1 ? 's' : ''}, ${skipped} ignoré${skipped > 1 ? 's' : ''})`,
+          color: skipped > 0 ? 'warning' : 'positive',
+        })
+      } catch (error: unknown) {
+        const err = error as { response?: { _data?: { message?: string } }; data?: { message?: string } }
+        this.$q.notify({
+          message: err?.response?._data?.message ?? err?.data?.message ?? 'Erreur',
           color: 'negative',
         })
-        return
       }
-
-      const sent = (result.value as any)?.data?.sent ?? 0
-      const skipped = (result.value as any)?.data?.skipped ?? 0
-      this.$q.notify({
-        message: `Mail envoyé (${sent} envoyé${sent > 1 ? 's' : ''}, ${skipped} ignoré${skipped > 1 ? 's' : ''})`,
-        color: skipped > 0 ? 'warning' : 'positive',
-      })
     },
 
     async trashManySelected(identities) {
-      console.log('trashManySelected', identities)
-      const ids = identities.map((identity) => identity._id)
-      console.log('trashManySelected', ids)
+      const ids = this.bulkIdsFromIdentities(identities)
 
       try {
         const { data } = await $http.$post(`/core/backends/delete`, {

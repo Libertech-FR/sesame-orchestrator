@@ -124,7 +124,7 @@ export default defineNuxtComponent({
       default: 33,
     },
     rowKey: {
-      type: String,
+      type: [String, Function] as PropType<string | ((row: Record<string, unknown>) => string | number)>,
       default: 'id',
     },
     refresh: {
@@ -156,9 +156,14 @@ export default defineNuxtComponent({
       default: 'sesame-table-td-highlight',
     },
     rowClassHandler: {
-      type: Function as PropType<(payload: { row: any; targetId: string; rowKey: string; rowClassHighlight: string }) => string>,
+      type: Function as PropType<
+        (payload: { row: any; targetId: string; rowKey: string | ((row: any) => string | number); rowClassHighlight: string }) => string
+      >,
       default: ({ row, targetId, rowKey, rowClassHighlight }) => {
-        if (`${row[rowKey]}` === targetId) {
+        const keyVal = typeof rowKey === 'function' ? rowKey(row) : row?.[rowKey as string]
+        const keyStr = String(keyVal ?? '')
+        const baseKey = keyStr.includes('::') ? keyStr.slice(0, keyStr.indexOf('::')) : keyStr
+        if (baseKey === String(targetId)) {
           return rowClassHighlight
         }
 
@@ -229,6 +234,9 @@ export default defineNuxtComponent({
         if (this.isSimple) {
           this.splitterModel = !t ? 100 : 0
         }
+        // Même jeu de `rows` que la navigation précédente : éviter une sélection figée
+        // sur d’anciennes lignes au retour liste / changement de fiche.
+        this.clearSelection()
       },
     },
     total: {
@@ -236,6 +244,11 @@ export default defineNuxtComponent({
         this.updatePaginationData({ total })
       },
       immediate: true,
+    },
+    rows: {
+      handler() {
+        this.syncSelectionWithRows()
+      },
     },
   },
   computed: {
@@ -251,7 +264,7 @@ export default defineNuxtComponent({
         return this.rowClassHandler({
           row,
           targetId: this.targetId,
-          rowKey: this.rowKey,
+          rowKey: this.rowKey as string | ((row: any) => string | number),
           rowClassHighlight: this.rowClassHighlight,
         }) as string
       }
@@ -277,8 +290,30 @@ export default defineNuxtComponent({
     },
   },
   methods: {
+    /**
+     * Garde uniquement les lignes encore présentes dans `rows` (même clé `rowKey`)
+     * et réaligne sur les objets courants. Sinon la sélection peut rester bloquée
+     * sur d’anciennes lignes après changement de route / filtres / rechargement.
+     */
+    tableRowKey(row: Record<string, unknown>): string {
+      const rk = this.rowKey
+      return typeof rk === 'function' ? String(rk(row)) : String(row?.[rk as string] ?? '')
+    },
+    syncSelectionWithRows() {
+      if (!this.selection || this.selection === 'none') return
+      if (!Array.isArray(this.selected) || this.selected.length === 0) return
+      const rows = this.rows || []
+      const rowByKey = new Map(rows.map((r) => [this.tableRowKey(r), r]))
+      const next = this.selected.map((s) => rowByKey.get(this.tableRowKey(s))).filter((r) => r !== undefined)
+      if (next.length !== this.selected.length || next.some((r, i) => r !== this.selected[i])) {
+        this.selected = next
+      }
+    },
     clearSelection() {
       this.selected = []
+    },
+    getSelectedRows(): unknown[] {
+      return Array.isArray(this.selected) ? [...this.selected] : []
     },
     async onRequestEvent(props: { pagination: QTableProps['pagination']; filter: string; getCellValue: Function }) {
       // console.log('onRequestEvent', props)
@@ -286,7 +321,7 @@ export default defineNuxtComponent({
     },
   },
   async mounted() {
-    const table = <{ $el?: HTMLElement }>this.$refs.table
+    const table = this.$refs.table as { $el?: HTMLElement }
     const internalChildren = table?.$el?.querySelector('.q-table__middle')
     const internalInnerHeight = internalChildren?.clientHeight || table?.$el?.offsetHeight || window.innerHeight
 

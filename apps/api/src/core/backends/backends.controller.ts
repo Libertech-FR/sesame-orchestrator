@@ -8,13 +8,12 @@ import {
   ParseIntPipe,
   Post,
   Query,
-  Req,
   Res,
   Sse,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 import Redis from 'ioredis';
 import { Observable, Subscriber } from 'rxjs';
 import { Public } from '~/_common/decorators/public.decorator';
@@ -27,7 +26,6 @@ import { DeleteIdentitiesDto } from './_dto/delete-identities.dto';
 import { hash } from 'crypto';
 import { AgentsService } from '../agents/agents.service';
 import { Agents } from '../agents/_schemas/agents.schema';
-import { RequireMfa } from '~/_common/decorators/require-mfa.decorator';
 
 function fireMessage(observer: Subscriber<MessageEvent>, channel: string, message: any, loggername: string) {
   try {
@@ -52,7 +50,6 @@ export class BackendsController {
   ) {}
 
   @Post('delete')
-  @RequireMfa()
   @ApiOperation({ summary: "Supprime une liste d'identitées" })
   public async deleteIdentities(
     @Res() res: Response,
@@ -68,7 +65,6 @@ export class BackendsController {
   }
 
   @Post('undelete')
-  @RequireMfa()
   @ApiOperation({ summary: "Restaure une liste d'identitées supprimées" })
   public async undeleteIdentities(
     @Res() res: Response,
@@ -84,7 +80,6 @@ export class BackendsController {
   }
 
   @Post('sync')
-  @RequireMfa()
   @ApiOperation({ summary: "Synchronise une liste d'identitées" })
   public async syncIdentities(
     @Res() res: Response,
@@ -100,7 +95,6 @@ export class BackendsController {
   }
 
   @Post('syncall')
-  @RequireMfa()
   @ApiOperation({ summary: 'Synchronise toutes les identitées à synchroniser' })
   public async syncAllIdentities(@Res() res: Response, @Query('async') asyncQuery: string) {
     const async = /true|on|yes|1/i.test(asyncQuery);
@@ -111,7 +105,6 @@ export class BackendsController {
   }
 
   @Post('execute')
-  @RequireMfa()
   @ApiOperation({ summary: 'Execute un backend manuellement' })
   public async executeJob(
     @Res() res: Response,

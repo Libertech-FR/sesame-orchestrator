@@ -23,16 +23,7 @@ q-dialog(
       )
         template(#before)
           .q-pa-md.overflow-auto(style="height: 100%;")
-            p.text-body2(v-if="showSendAll") {{ introText }}
-            q-checkbox(
-              v-if="showSendAll"
-              v-model="initAllIdentities"
-              :label="checkboxLabel"
-              color="teal-7"
-              dense
-            )
-            q-separator.q-my-md(v-if="showSendAll")
-
+            p.text-body2.identity-modal-lede.q-mb-md {{ mainText }}
             q-select(
               v-model="templateName"
               :options="templates"
@@ -125,6 +116,42 @@ q-dialog(
                 @click="addVar"
               )
 
+            q-separator.q-my-md
+            .row.items-center.no-wrap.q-mb-sm
+              q-icon(color="teal-7" name="mdi-account-multiple-outline" size="22px")
+              .text-subtitle1.q-ml-sm.text-weight-medium Destinataires
+              q-space
+              q-badge(color="teal-7" text-color="white" rounded) {{ selectedRows.length }}
+            q-banner(
+              v-if="selectedRows.length === 0"
+              dense
+              rounded
+              class="bg-amber-2 text-dark"
+            )
+              span Aucune identité dans la sélection.
+            .identity-modal-list-wrap.mail-template-dest-in-form(
+              v-if="selectedRows.length > 0"
+              :class="listWrapClass"
+            )
+              q-list(dense separator padding)
+                q-item.identity-modal-list-item(
+                  v-for="item in identityListItems"
+                  :key="item.key"
+                )
+                  q-item-section(side)
+                    q-avatar(:color="item.avatarColor" text-color="white" size="36px") {{ item.initials }}
+                  q-item-section
+                    q-item-label.text-weight-medium(lines="2") {{ item.label }}
+                    q-item-label.text-caption.text-grey-6(lines="1" style="font-family: ui-monospace, monospace") {{ item.idShort }}
+            template(v-if="showSendAll")
+              q-separator.q-my-md
+              q-checkbox(
+                v-model="initAllIdentities"
+                :label="checkboxLabel"
+                color="teal-7"
+                dense
+              )
+
         template(#after)
           .bg-grey-1.column(style="min-height: 0; height: 100%; overflow: hidden;")
             q-bar(flat)
@@ -154,7 +181,8 @@ q-dialog(
 
       .column(v-else style="min-height: 0; width: 100%;")
         .col.q-pa-md.overflow-auto(style="min-height: 0;")
-          p.text-body2.text-weight-medium.q-mb-sm {{ mainText }}
+          p.text-body2.identity-modal-lede.q-mb-md {{ mainText }}
+          q-separator.q-my-md
           q-select(
             v-model="templateName"
             :options="templates"
@@ -248,13 +276,40 @@ q-dialog(
             )
 
           q-separator.q-my-md
-          q-checkbox(
-            v-if="showSendAll"
-            v-model="initAllIdentities"
-            :label="checkboxLabel"
-            color="teal-7"
+          .row.items-center.no-wrap.q-mb-sm
+            q-icon(color="teal-7" name="mdi-account-multiple-outline" size="22px")
+            .text-subtitle1.q-ml-sm.text-weight-medium Destinataires
+            q-space
+            q-badge(color="teal-7" text-color="white" rounded) {{ selectedRows.length }}
+          q-banner(
+            v-if="selectedRows.length === 0"
             dense
+            rounded
+            class="bg-amber-2 text-dark"
           )
+            span Aucune identité dans la sélection.
+          .identity-modal-list-wrap.mail-template-dest-in-form(
+            v-if="selectedRows.length > 0"
+            :class="listWrapClass"
+          )
+            q-list(dense separator padding)
+              q-item.identity-modal-list-item(
+                v-for="item in identityListItems"
+                :key="item.key"
+              )
+                q-item-section(side)
+                  q-avatar(:color="item.avatarColor" text-color="white" size="36px") {{ item.initials }}
+                q-item-section
+                  q-item-label.text-weight-medium(lines="2") {{ item.label }}
+                  q-item-label.text-caption.text-grey-6(lines="1" style="font-family: ui-monospace, monospace") {{ item.idShort }}
+          template(v-if="showSendAll")
+            q-separator.q-my-md
+            q-checkbox(
+              v-model="initAllIdentities"
+              :label="checkboxLabel"
+              color="teal-7"
+              dense
+            )
 
     q-separator
     q-card-actions.identity-modal-actions(align="right")
@@ -301,21 +356,99 @@ const props = defineProps({
 
 defineEmits([...useDialogPluginComponent.emits])
 
+const AVATAR_COLORS = ['orange-8', 'teal', 'indigo', 'deep-orange', 'purple', 'cyan', 'brown']
+
+function idToString(id: unknown): string {
+  if (id == null) return ''
+  if (typeof id === 'string') return id
+  if (typeof id === 'object' && id !== null && '$oid' in (id as Record<string, unknown>)) {
+    return String((id as Record<string, unknown>).$oid)
+  }
+  return String(id)
+}
+
+function strOrJoin(v: unknown): string {
+  if (v == null) return ''
+  if (typeof v === 'string') return v.trim()
+  if (Array.isArray(v)) {
+    return v
+      .map((x) => (typeof x === 'string' ? x.trim() : x != null ? String(x).trim() : ''))
+      .filter(Boolean)
+      .join(' ')
+  }
+  return String(v).trim()
+}
+
+function buildIdentityLabel(row: Record<string, unknown>): string {
+  const p = row?.inetOrgPerson as Record<string, unknown> | undefined
+  if (p && typeof p === 'object') {
+    const fromCn = strOrJoin(p.cn)
+    if (fromCn) return fromCn
+    const dn = strOrJoin(p.displayName)
+    if (dn) return dn
+    const gn = strOrJoin(p.givenName)
+    const sn = strOrJoin(p.sn)
+    if (gn || sn) return [gn, sn].filter(Boolean).join(' ')
+    const mail = strOrJoin(p.mail)
+    if (mail) return mail
+    const uid = strOrJoin(p.uid)
+    if (uid) return uid
+  }
+  const id = idToString(row?._id)
+  if (id) return `Identité ${id.length > 14 ? `${id.slice(0, 14)}…` : id}`
+  return 'Identité (sans identifiant)'
+}
+
+function initialsFromLabel(label: string): string {
+  const t = label.trim()
+  if (!t) return '?'
+  const parts = t.split(/\s+/).filter(Boolean)
+  if (parts.length >= 2) {
+    const a = parts[0][0] || ''
+    const b = parts[1][0] || ''
+    return `${a}${b}`.toUpperCase()
+  }
+  if (t.length >= 2) return t.slice(0, 2).toUpperCase()
+  return t.charAt(0).toUpperCase()
+}
+
+function shortId(id: string): string {
+  if (!id) return '—'
+  if (id.length <= 22) return id
+  return `${id.slice(0, 10)}…${id.slice(-8)}`
+}
+
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any -- template Pug */
 const q = useQuasar()
 const splitterModel = ref(42)
 
+const selectedRows = computed(() => {
+  const raw = props.selectedIdentities
+  if (!Array.isArray(raw)) return [] as Record<string, unknown>[]
+  return raw as Record<string, unknown>[]
+})
+
+const listWrapClass = computed(() => (q.dark.isActive ? 'identity-modal-list-wrap--dark' : 'identity-modal-list-wrap--light'))
+
+const identityListItems = computed(() => {
+  return selectedRows.value.map((row, idx) => {
+    const label = buildIdentityLabel(row)
+    const id = idToString(row?._id)
+    return {
+      key: `${id || 'noid'}_${idx}`,
+      label,
+      idShort: shortId(id),
+      initials: initialsFromLabel(label),
+      avatarColor: AVATAR_COLORS[idx % AVATAR_COLORS.length],
+    }
+  })
+})
+
 const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
 
-const mainText = computed(
-  () => `Vous êtes sur le point d'envoyer un mail à ${props.selectedIdentities.length} identités "${props.identityTypesName}". Voulez-vous continuer ?`,
-)
-
-const introText = computed(() => {
-  if (showSendAll.value) {
-    return `Vous êtes sur le point d'envoyer un mail à ${props.selectedIdentities.length} identités "${props.identityTypesName}". Vous pouvez aussi choisir de l'envoyer à toutes les identités synchronisées (${props.allIdentitiesCount}).`
-  }
-  return `Vous êtes sur le point d'envoyer un mail à ${props.selectedIdentities.length} identités "${props.identityTypesName}".`
+const mainText = computed(() => {
+  const n = selectedRows.value.length
+  return `Vous êtes sur le point d'envoyer un mail à ${n} identité${n > 1 ? 's' : ''} « ${props.identityTypesName} ». Voulez-vous continuer ?`
 })
 
 const checkboxLabel = computed(() => {
@@ -324,7 +457,7 @@ const checkboxLabel = computed(() => {
 
 const showSendAll = computed(() => {
   const total = Number(props.allIdentitiesCount || 0)
-  const selected = Array.isArray(props.selectedIdentities) ? props.selectedIdentities.length : 0
+  const selected = selectedRows.value.length
   return total > Math.max(selected, 1)
 })
 
@@ -542,7 +675,6 @@ const cancelSync = () => {
 }
 
 .mail-template-card > :deep(.q-card__actions) {
-  margin-top: auto;
   flex: 0 0 auto;
   width: 100%;
   max-width: 100%;
@@ -555,12 +687,56 @@ const cancelSync = () => {
   min-width: 0;
   width: 100%;
   max-width: 100%;
-  height: 84%;
+  height: 100%;
+}
+
+.mail-template-dest-in-form.identity-modal-list-wrap--light,
+.mail-template-dest-in-form.identity-modal-list-wrap--dark {
+  max-height: min(260px, 40vh);
 }
 
 .identity-modal-header {
   padding: 1rem 1.25rem;
   flex-shrink: 0;
+}
+
+.identity-modal-lede {
+  line-height: 1.55;
+  margin-bottom: 1rem;
+  opacity: 0.92;
+}
+
+.identity-modal-list-wrap--light {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.identity-modal-list-wrap--dark {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.identity-modal-list-wrap--light,
+.identity-modal-list-wrap--dark {
+  flex: 1 1 auto;
+  min-height: 0;
+  border-radius: 10px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.identity-modal-list-item {
+  border-radius: 8px;
+  margin-bottom: 2px;
+  transition: background-color 0.15s ease;
+}
+
+.identity-modal-list-wrap--light .identity-modal-list-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.identity-modal-list-wrap--dark .identity-modal-list-item:hover {
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .identity-modal-actions {

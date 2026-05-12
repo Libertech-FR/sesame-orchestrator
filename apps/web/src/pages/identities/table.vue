@@ -553,19 +553,19 @@ export default defineNuxtComponent({
     async sendTemplateMailToIdentities(identities, data: { template?: string; variables?: Record<string, string> }) {
       const ids = this.bulkIdsFromIdentities(identities)
       try {
-        const result = (await this.$http.post('/management/mail/sendmany', {
+        const result = await this.$http.post('/management/mail/sendmany', {
           body: {
             ids,
             template: data?.template,
             variables: data?.variables,
             ...(data?.recipientAddressSource ? { recipientAddressSource: data.recipientAddressSource } : {}),
           },
-        })) as { data?: { sent?: number; skipped?: number } }
-
-        const sent = result?.data?.sent ?? 0
-        const skipped = result?.data?.skipped ?? 0
+        })
+        const payload = (result as { _data?: { data?: { sent?: number; skipped?: number } } })._data?.data
+        const sent = Number(payload?.sent ?? 0)
+        const skipped = Number(payload?.skipped ?? 0)
         this.$q.notify({
-          message: `Mail envoyé (${sent} envoyé${sent > 1 ? 's' : ''}, ${skipped} ignoré${skipped > 1 ? 's' : ''})`,
+          message: `Mail(s) envoyé(s)`,
           color: skipped > 0 ? 'warning' : 'positive',
         })
       } catch (error: unknown) {

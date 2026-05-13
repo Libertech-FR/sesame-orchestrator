@@ -1,6 +1,6 @@
 <template lang="pug">
 q-page.grid.q-pa-sm
-  q-card.col.full-height.flex.column.outdated-card(style="min-height: inherit" flat bordered)
+  q-card.col.full-height.flex.column.outdated-card(flat bordered)
     q-bar.bg-transparent.border-bottom
       q-toolbar-title Identités avec invitation périmées
     .row.items-center.no-wrap.q-px-sm.q-py-xs

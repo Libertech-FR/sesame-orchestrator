@@ -245,9 +245,6 @@ export default defineNuxtConfig({
       websocket: false,
     },
     routeRules: {
-      '/api/**': {
-        proxy: `${SESAME_APP_API_URL}/**`,
-      },
       '/api/core/backends/sse': {
         proxy: `${SESAME_APP_API_URL}/core/backends/sse`,
         // Disable compression and caching for SSE
@@ -256,6 +253,9 @@ export default defineNuxtConfig({
           'Connection': 'keep-alive',
           'X-Accel-Buffering': 'no', // Disable buffering in nginx
         },
+      },
+      '/api/**': {
+        proxy: `${SESAME_APP_API_URL}/**`,
       },
     },
   },

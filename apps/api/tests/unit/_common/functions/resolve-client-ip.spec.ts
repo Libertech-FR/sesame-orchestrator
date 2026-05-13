@@ -27,12 +27,24 @@ describe('resolveClientIp', () => {
     expect(resolveClientIp(req)).toBe('203.0.113.1');
   });
 
-  it('returns X-Real-IP before falling back to req.ip', () => {
+  it('returns X-Real-IP when X-Forwarded-For is absent before falling back to req.ip', () => {
     const req = makeReq({
       headers: { 'x-real-ip': '192.0.2.50' },
       ip: '10.0.0.3',
     });
     expect(resolveClientIp(req)).toBe('192.0.2.50');
+  });
+
+  it('returns X-Forwarded-For before X-Real-IP from the last proxy', () => {
+    const req = makeReq({
+      headers: {
+        'x-forwarded-for': '203.0.113.10, 172.18.0.2',
+        'x-real-ip': '172.18.0.2',
+      },
+      ip: '172.18.0.2',
+      socket: { remoteAddress: '172.18.0.2' } as any,
+    });
+    expect(resolveClientIp(req)).toBe('203.0.113.10');
   });
 
   it('strips IPv4-mapped IPv6 prefix', () => {

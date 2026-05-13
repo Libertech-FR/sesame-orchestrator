@@ -53,7 +53,7 @@ function tcpPeerIp(req: Request): string | null {
  */
 export function resolveClientIp(req: Request): string | null {
   const peerIp = tcpPeerIp(req);
-  const orderedHeaders = ['cf-connecting-ip', 'true-client-ip', 'x-real-ip', 'x-forwarded-for'] as const;
+  const orderedHeaders = ['cf-connecting-ip', 'true-client-ip', 'x-forwarded-for', 'x-real-ip'] as const;
 
   for (const name of orderedHeaders) {
     const raw = headerString(req, name);

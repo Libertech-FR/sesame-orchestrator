@@ -1,24 +1,6 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-  Res,
-} from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpStatus, Param, Patch, Post, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import {
-  FilterOptions,
-  filterSchema,
-  FilterSchema,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '~/_common/restools';
+import { FilterOptions, filterSchema, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '~/_common/restools';
 import { Response } from 'express';
 import { Document, Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
@@ -39,6 +21,13 @@ import { TransformersFilestorageService } from '~/core/filestorage/_services/tra
 import { IdentitiesCrudService } from '~/management/identities/identities-crud.service';
 import { UseRoles } from '~/_common/decorators/use-roles.decorator';
 import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
+import { PasswdadmService } from '~/settings/passwdadm.service';
+import {
+  buildExpiredInitInvitationFilter,
+  buildNonExpiredInitInvitationFilter,
+  INIT_INVITATION_EXPIRED_QUERY_PARAM,
+  parseInitInvitationExpiredQuery,
+} from '~/management/passwd/init-invitation-expiration.helper';
 
 @ApiTags('management/identities')
 @Controller('identities')
@@ -48,6 +37,7 @@ export class IdentitiesCrudController extends AbstractController {
     protected readonly _validation: IdentitiesValidationService,
     protected readonly filestorage: FilestorageService,
     private readonly transformerService: TransformersFilestorageService,
+    private readonly passwdadmService: PasswdadmService,
   ) {
     super();
   }
@@ -96,16 +86,12 @@ export class IdentitiesCrudController extends AbstractController {
       body.inetOrgPerson.employeeType = 'LOCAL';
     }
     if (!body.inetOrgPerson.cn) {
-      body.inetOrgPerson.cn = [
-        body.inetOrgPerson.sn?.toUpperCase(),
-        body.inetOrgPerson.givenName,
-      ].join(' ').trim();
+      body.inetOrgPerson.cn = [body.inetOrgPerson.sn?.toUpperCase(), body.inetOrgPerson.givenName].join(' ').trim();
     }
     if (!body.inetOrgPerson.displayName) {
-      body.inetOrgPerson.displayName = [
-        body.inetOrgPerson.givenName,
-        body.inetOrgPerson.sn?.toUpperCase(),
-      ].join(' ').trim();
+      body.inetOrgPerson.displayName = [body.inetOrgPerson.givenName, body.inetOrgPerson.sn?.toUpperCase()]
+        .join(' ')
+        .trim();
     }
     const data = await this._service.create<Identities>(body);
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
@@ -165,45 +151,62 @@ export class IdentitiesCrudController extends AbstractController {
     @Query('search') search: string,
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @SearchFilterOptions({ allowUnlimited: true }) searchFilterOptions: FilterOptions,
-  ): Promise<Response<{
-    statusCode: number;
-    data?: Document<Identities, any, Identities>;
-    total?: number;
-    message?: string;
-    validations?: MixedValue;
-  }>> {
-    const searchFilter = {}
+    @Query(INIT_INVITATION_EXPIRED_QUERY_PARAM) initInvitationExpired: string,
+  ): Promise<
+    Response<{
+      statusCode: number;
+      data?: Document<Identities, any, Identities>;
+      total?: number;
+      message?: string;
+      validations?: MixedValue;
+    }>
+  > {
+    const searchFilters = [];
     // Par défaut, on cache les identités "ne pas synchroniser" dans la recherche.
     // Si le client fournit déjà un filtre `state`, on ne l'écrase pas.
     // Le type `FilterSchema` est récursif (valeurs attendues), alors que pour Mongo on injecte parfois
     // des opérateurs comme `{ $ne: ... }`. On garde un cast `any` ici côté controller.
-    const effectiveSearchFilterSchema: any = { ...searchFilterSchema }
+    const effectiveSearchFilterSchema: any = { ...searchFilterSchema };
     if (!Object.prototype.hasOwnProperty.call(effectiveSearchFilterSchema, 'state')) {
-      effectiveSearchFilterSchema.state = { $ne: IdentityState.DONT_SYNC }
+      effectiveSearchFilterSchema.state = { $ne: IdentityState.DONT_SYNC };
     }
 
     if (search && search.trim().length > 0) {
-      const searchRequest = {}
-      searchRequest['$or'] = Object.keys(IdentitiesCrudController.searchFields).map((key) => {
-        return { [key]: { $regex: `^${search}`, $options: 'i' } }
-      }).filter(item => item !== undefined)
-      searchFilter['$and'] = [searchRequest]
-      searchFilter['$and'].push(effectiveSearchFilterSchema)
+      const searchRequest = {};
+      searchRequest['$or'] = Object.keys(IdentitiesCrudController.searchFields)
+        .map((key) => {
+          return { [key]: { $regex: `^${search}`, $options: 'i' } };
+        })
+        .filter((item) => item !== undefined);
+      searchFilters.push(searchRequest);
+      searchFilters.push(effectiveSearchFilterSchema);
     } else {
-      Object.assign(searchFilter, effectiveSearchFilterSchema)
+      searchFilters.push(effectiveSearchFilterSchema);
     }
+
+    const expiredQuery = parseInitInvitationExpiredQuery(initInvitationExpired);
+    if (expiredQuery !== null) {
+      const policies = await this.passwdadmService.getPolicies();
+      searchFilters.push(
+        expiredQuery
+          ? buildExpiredInitInvitationFilter(policies?.initTokenTTL)
+          : buildNonExpiredInitInvitationFilter(policies?.initTokenTTL),
+      );
+    }
+
+    const searchFilter = searchFilters.length === 1 ? searchFilters[0] : { $and: searchFilters };
 
     const [data, total] = await this._service.findAndCount(
       searchFilter,
       IdentitiesCrudController.projection,
       searchFilterOptions,
-    )
+    );
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,
       data,
-    })
+    });
   }
 
   @Get(':_id([0-9a-fA-F]{24})')
@@ -255,24 +258,30 @@ export class IdentitiesCrudController extends AbstractController {
   @ApiOperation({ summary: "Compte le nombre d'identitées en fonctions des filtres fournis via un body de counts" })
   public async countAll(
     @Res() res: Response,
-    @Body() body: {
+    @Body()
+    body: {
       [key: string]: FilterSchema;
     },
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
-  ): Promise<Response<{
-    statusCode: number;
-    data: {
-      [key: string]: number;
-    };
-  }>> {
-    let filters: Record<string, FilterSchema>
+  ): Promise<
+    Response<{
+      statusCode: number;
+      data: {
+        [key: string]: number;
+      };
+    }>
+  > {
+    let filters: Record<string, FilterSchema>;
     try {
-      filters = Object.entries(body).reduce((acc, [key, value]) => {
-        acc[key] = filterSchema(value)
-        return acc
-      }, {} as Record<string, FilterSchema>)
+      filters = Object.entries(body).reduce(
+        (acc, [key, value]) => {
+          acc[key] = filterSchema(value);
+          return acc;
+        },
+        {} as Record<string, FilterSchema>,
+      );
     } catch (error: any) {
-      throw new BadRequestException(error?.message ?? 'Invalid filters')
+      throw new BadRequestException(error?.message ?? 'Invalid filters');
     }
 
     const data = await this._service.countAll(filters, searchFilterOptions);

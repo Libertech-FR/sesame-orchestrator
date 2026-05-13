@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpStatus, Logger, Post, Res } from '@nestjs/co
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { Document } from 'mongoose';
+import { FilterOptions, SearchFilterOptions } from '~/_common/restools';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
 import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
@@ -20,7 +21,7 @@ export class PasswdController {
   public constructor(
     private passwdService: PasswdService,
     private passwdadmService: PasswdadmService,
-  ) { }
+  ) {}
 
   @Post('change')
   @ApiOperation({ summary: 'Execute un job de changement de mot de passe sur le/les backends' })
@@ -28,7 +29,7 @@ export class PasswdController {
   public async change(@Body() body: ChangePasswordDto, @Res() res: Response): Promise<Response> {
     const debug = {};
 
-    const [_, data] = await this.passwdService.change(body);
+    const [, data] = await this.passwdService.change(body);
     this.logger.log(`Call passwd change for : ${body.uid}`);
 
     if (process.env.NODE_ENV === 'development') {
@@ -49,7 +50,7 @@ export class PasswdController {
     const debug = {};
     this.logger.log('Reset by code : ' + body.token + ' code : ' + body.code);
     try {
-      const [_, data] = await this.passwdService.resetByCode(body);
+      const [, data] = await this.passwdService.resetByCode(body);
       if (process.env.NODE_ENV === 'development') {
         debug['_debug'] = data;
       }
@@ -58,13 +59,12 @@ export class PasswdController {
         message: 'Password changed',
         ...debug,
       });
-    } catch (e) {
+    } catch {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Erreur serveur',
         ...debug,
       });
     }
-
   }
 
   @Post('reset')
@@ -72,7 +72,7 @@ export class PasswdController {
   @ApiResponse({ status: HttpStatus.OK })
   public async reset(@Body() body: ResetPasswordDto, @Res() res: Response): Promise<Response> {
     const debug = {};
-    const [_, data] = await this.passwdService.reset(body);
+    const [, data] = await this.passwdService.reset(body);
 
     if (process.env.NODE_ENV === 'development') {
       debug['_debug'] = data;
@@ -115,6 +115,20 @@ export class PasswdController {
     });
   }
 
+  @Post('initoutdated')
+  @ApiOperation({ summary: "Initialise toutes les identités dont l'invitation est périmée" })
+  @ApiResponse({ status: HttpStatus.OK })
+  public async initOutdated(
+    @Body() body: Pick<InitManyDto, 'template' | 'variables'>,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const data = await this.passwdService.initOutdated(body);
+    return res.status(HttpStatus.OK).json({
+      message: 'identités initialisées',
+      data,
+    });
+  }
+
   @Post('initreset')
   @ApiOperation({ summary: 'Demande l envoi de mail pour le reset' })
   @ApiResponse({ status: HttpStatus.OK })
@@ -131,7 +145,10 @@ export class PasswdController {
 
   @Get('ioutdated')
   @ApiOperation({ summary: 'Compte donc l invitation d init n a pas été repondue dans les temps' })
-  public async search(@Res() res: Response): Promise<
+  public async search(
+    @Res() res: Response,
+    @SearchFilterOptions() searchFilterOptions: FilterOptions,
+  ): Promise<
     Response<
       {
         data?: Document<Identities, any, Identities>;
@@ -139,8 +156,7 @@ export class PasswdController {
       any
     >
   > {
-    const data = await this.passwdService.checkInitOutDated();
-    const total = data.length;
+    const [data, total] = await this.passwdService.checkInitOutDated(searchFilterOptions);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,

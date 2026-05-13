@@ -35,6 +35,8 @@ import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 import { SentMessageInfo } from 'nodemailer';
 import { PasswordHistoryService } from '~/management/password-history/password-history.service';
 import { PasswordPoliciesDto } from '~/settings/_dto/password-policy.dto';
+import { FilterOptions } from '~/_common/restools';
+import { buildExpiredInitInvitationFilter } from '~/management/passwd/init-invitation-expiration.helper';
 
 interface TokenData {
   k: string;
@@ -216,7 +218,7 @@ export class PasswdService extends AbstractService {
         },
       });
       this.logger.log('Init compte envoyé pour uid ' + initDto.uid + ' à ' + mail);
-      this.setInitState(identity, InitStatesEnum.SENT);
+      await this.setInitState(identity, InitStatesEnum.SENT);
 
       return send;
     } catch (e) {
@@ -497,6 +499,48 @@ export class PasswdService extends AbstractService {
     return updated as any;
   }
 
+  public async initOutdated(body: Pick<InitManyDto, 'template' | 'variables'> = {}): Promise<{
+    total: number;
+    sent: number;
+    skipped: number;
+  }> {
+    const filter = await this.getInitOutdatedFilter();
+    const total = await this.identities.model.countDocuments({
+      ...filter,
+      deletedFlag: { $ne: true },
+      state: IdentityState.SYNCED,
+    });
+    let sent = 0;
+    let skipped = 0;
+
+    const cursor = this.identities.model
+      .find(
+        {
+          ...filter,
+          deletedFlag: { $ne: true },
+          state: IdentityState.SYNCED,
+        },
+        { 'inetOrgPerson.uid': 1 },
+      )
+      .cursor();
+
+    for await (const identity of cursor) {
+      try {
+        await this.initAccount({
+          uid: identity.get('inetOrgPerson.uid'),
+          template: body?.template,
+          variables: body?.variables,
+        });
+        sent += 1;
+      } catch (e) {
+        skipped += 1;
+        this.logger.error('Error while init outdated account for ' + identity.get('inetOrgPerson.uid') + ': ' + e);
+      }
+    }
+
+    return { total, sent, skipped };
+  }
+
   // genere des octect pour completer le code qui est de 4 octets et demi
   private async getPaddingForCode(): Promise<string> {
     let code = '';
@@ -541,16 +585,28 @@ export class PasswdService extends AbstractService {
     );
   }
 
-  // sort les identites qui n ont pas repondu dans le delai à l init de leurs comptes
-  public async checkInitOutDated(): Promise<any> {
-    const date = new Date();
+  public async getInitOutdatedFilter() {
     const params = await this.passwdadmService.getPolicies();
-    date.setTime(date.getTime() - params.initTokenTTL * 1000);
-    console.log('modifié:' + date);
-    const identities = await this.identities.find({
-      initState: InitStatesEnum.SENT,
-      'initInfo.initDate': { $lt: date },
-    });
-    return identities;
+    return buildExpiredInitInvitationFilter(params?.initTokenTTL);
+  }
+
+  // sort les identites qui n ont pas repondu dans le delai à l init de leurs comptes
+  public async checkInitOutDated(options?: FilterOptions): Promise<[any[], number]> {
+    const filter = await this.getInitOutdatedFilter();
+
+    return await this.identities.findAndCount(
+      filter,
+      {
+        state: 1,
+        initState: 1,
+        inetOrgPerson: 1,
+        additionalFields: 1,
+        metadata: 1,
+        dataStatus: 1,
+        lifecycle: 1,
+        initInfo: 1,
+      },
+      options,
+    );
   }
 }

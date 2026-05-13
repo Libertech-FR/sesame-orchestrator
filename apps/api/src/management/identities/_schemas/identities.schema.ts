@@ -99,4 +99,5 @@ export const IdentitiesSchema = SchemaFactory.createForClass(Identities)
       return ctx.inetOrgPerson.employeeType === 'LOCAL';
     },
   })
-  .index({ 'inetOrgPerson.employeeNumber': 1, 'inetOrgPerson.employeeType': 1 }, { unique: true });
+  .index({ 'inetOrgPerson.employeeNumber': 1, 'inetOrgPerson.employeeType': 1 }, { unique: true })
+  .index({ initState: 1, 'initInfo.initDate': 1, deletedFlag: 1 });

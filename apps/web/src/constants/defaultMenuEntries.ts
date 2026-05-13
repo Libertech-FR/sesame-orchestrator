@@ -191,7 +191,7 @@ export function getDefaultMenuEntries(): MenuItem[] {
       icon: 'mdi-email-fast',
       label: 'Invitations envoyées',
       name: 'invitations_envoyées',
-      path: '/identities/table?limit=10&skip=0&filters[%23initState]=1&sort[metadata.lastUpdatedAt]=desc',
+      path: '/identities/table?limit=10&skip=0&filters[%23initState]=1&initInvitationExpired=false&sort[metadata.lastUpdatedAt]=desc',
       color: 'warning',
       textColor: 'black',
       part: normalizeNameFromLabel(MenuPart.ACTIVATION),

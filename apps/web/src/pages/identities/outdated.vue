@@ -1,8 +1,8 @@
 <template lang="pug">
 q-page.grid.q-pa-sm
-  q-card.col.full-height.flex.column.outdated-card(flat bordered)
+  q-card.col.full-height.flex.column.outdated-card(style="min-height: inherit" flat bordered)
     q-bar.bg-transparent.border-bottom
-      q-toolbar-title Identités dont l'invitation n'est plus valide
+      q-toolbar-title Identités avec invitation périmées
     .row.items-center.no-wrap.q-px-sm.q-py-xs
       q-btn-group(rounded flat)
         q-btn(
@@ -39,7 +39,7 @@ q-page.grid.q-pa-sm
         q-btn(@click="refresh" icon="mdi-refresh" flat square dense)
           q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Rafraîchir les données
     .outdated-table-wrapper.col
-      q-markup-table.outdated-markup-table(dense flat)
+      q-markup-table.sesame-sticky-last-column-table.sesame-sticky-thead.sesame-bordered-table.outdated-markup-table(dense flat)
         thead
           tr
             th.text-left.outdated-select-cell
@@ -68,7 +68,7 @@ q-page.grid.q-pa-sm
               )
             td.text-left(v-for="column in renderedColumns" :key="column.name") {{ formatCell(column.field(row)) }}
             td.text-left.outdated-actions-cell
-              q-btn(:to="identityPath(row)" color="primary" icon="mdi-eye" size="sm" flat round dense)
+              q-btn(:to="identityPath(row)" target="_blank" color="primary" icon="mdi-eye" size="sm" flat round dense)
     q-separator
     .outdated-pagination.row.items-center.justify-end.no-wrap.q-gutter-xs.q-pa-sm
       span.text-caption Lignes par page
@@ -433,53 +433,70 @@ export default defineNuxtComponent({
 
 <style scoped>
 .outdated-card {
-  min-height: inherit;
+  border-right: none;
 }
 
 .outdated-table-wrapper {
   min-height: 0;
-  overflow: auto;
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
-}
-
-.body--dark .outdated-table-wrapper {
-  border-top-color: rgba(255, 255, 255, 0.12);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
 }
 
 .outdated-markup-table {
-  min-width: max-content;
+  display: block;
+  width: 100%;
+  min-width: 0;
 }
 
-.outdated-markup-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: var(--q-card, white);
-  font-weight: 600;
+.outdated-markup-table :deep(table) {
+  table-layout: auto;
+  width: max-content !important;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-.body--dark .outdated-markup-table thead th {
-  background: var(--q-dark);
-}
-
-.outdated-markup-table th,
-.outdated-markup-table td {
+.outdated-markup-table :deep(th),
+.outdated-markup-table :deep(td) {
+  min-width: 140px;
   white-space: nowrap;
 }
 
+.outdated-markup-table :deep(thead tr) {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
 .outdated-select-cell {
-  width: 48px;
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px;
 }
 
 .outdated-actions-cell {
-  position: sticky;
-  right: 0;
-  width: 96px;
-  background: var(--q-card, white);
+  position: sticky !important;
+  right: 0 !important;
+  width: 96px !important;
+  min-width: 96px !important;
+  max-width: 96px;
+  border-left: 2px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
   box-shadow: -4px 0 6px rgba(0, 0, 0, 0.04);
 }
 
+th.outdated-actions-cell {
+  z-index: 5 !important;
+}
+
+td.outdated-actions-cell {
+  z-index: 3 !important;
+}
+
 .body--dark .outdated-actions-cell {
+  border-left-color: rgba(255, 255, 255, 0.12);
   background: var(--q-dark);
 }
 </style>

@@ -99,7 +99,18 @@
                       q-item-label(caption)
                         | ID: {{ k.credentialId }}
                     q-item-section(side)
-                      q-badge(color='grey-7' text-color='white') {{ typeof k.createdAt === 'string' ? k.createdAt : '' }}
+                      .row.items-center.q-gutter-sm
+                        q-badge(color='grey-7' text-color='white') {{ typeof k.createdAt === 'string' ? k.createdAt : '' }}
+                        q-btn(
+                          flat
+                          round
+                          dense
+                          color='negative'
+                          icon='mdi-delete-outline'
+                          :loading='pendingWebAuthnDelete === k.credentialId'
+                          :disable='!!pendingWebAuthnDelete'
+                          @click.stop='deleteSecurityKey(k)'
+                        )
 
             q-card.q-mt-md(v-if='totpSetup.otpauthUrl' flat bordered)
               q-card-section
@@ -219,6 +230,7 @@ export default defineNuxtComponent({
     const pendingTotpConfirm = ref(false)
     const pendingTotpDisable = ref(false)
     const pendingWebAuthnRegister = ref(false)
+    const pendingWebAuthnDelete = ref('')
     const showPasswordDialog = ref(false)
 
     const { data, error, refresh } = await useHttp<Agent>('/core/agents/me', {
@@ -277,6 +289,7 @@ export default defineNuxtComponent({
       pendingTotpConfirm,
       pendingTotpDisable,
       pendingWebAuthnRegister,
+      pendingWebAuthnDelete,
       showPasswordDialog,
       form,
       isTotpEnabled,
@@ -289,6 +302,12 @@ export default defineNuxtComponent({
       refresh,
       handleErrorReq,
     }
+  },
+  computed: {
+    totpQrCodeUrl(): string {
+      if (!this.totpSetup?.otpauthUrl) return ''
+      return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(this.totpSetup.otpauthUrl)}`
+    },
   },
   methods: {
     extractHttpData(response: unknown): unknown {
@@ -306,7 +325,7 @@ export default defineNuxtComponent({
           ? (topUnderscoreData as Record<string, unknown>).data
           : undefined
 
-      const candidates: unknown[] = [response, topData, topUnderscoreData, nestedData, nestedUnderscoreData]
+      const candidates: unknown[] = [nestedData, nestedUnderscoreData, topData, topUnderscoreData, response]
       for (const c of candidates) {
         if (c !== undefined && c !== null) return c
       }
@@ -320,7 +339,7 @@ export default defineNuxtComponent({
       for (const candidate of candidates) {
         const c = candidate as Record<string, unknown> | undefined
         const secret = `${c?.secret || ''}`.trim()
-        const otpauthUrl = `${c?.otpauthUrl || c?.otpauth_url || ''}`.trim()
+        const otpauthUrl = `${c?.otpauthUrl || c?.otpAuthUrl || c?.otpauthURL || c?.otpauth_url || c?.otp_auth_url || ''}`.trim()
         if (secret || otpauthUrl) {
           return { secret, otpauthUrl }
         }
@@ -400,6 +419,45 @@ export default defineNuxtComponent({
         })
       } finally {
         this.pendingWebAuthnRegister = false
+      }
+    },
+    async deleteSecurityKey(key: U2fKey) {
+      const credentialId = `${key?.credentialId || ''}`.trim()
+      if (!credentialId) return
+
+      const confirmed = await new Promise<boolean>((resolve) => {
+        this.$q
+          .dialog({
+            title: 'Supprimer la clé de sécurité',
+            message: `Supprimer la clé "${key.name || 'Clé de sécurité'}" ?`,
+            cancel: true,
+            persistent: true,
+            color: 'negative',
+            ok: { label: 'Supprimer', color: 'negative' },
+          })
+          .onOk(() => resolve(true))
+          .onCancel(() => resolve(false))
+          .onDismiss(() => resolve(false))
+      })
+      if (!confirmed) return
+
+      this.pendingWebAuthnDelete = credentialId
+      try {
+        await this.$http.delete(`/core/agents/me/mfa/webauthn/${encodeURIComponent(credentialId)}`)
+        this.u2fKeys = this.u2fKeys.filter((item) => `${item?.credentialId || ''}`.trim() !== credentialId)
+        await this.refresh()
+        this.$q.notify({
+          type: 'positive',
+          message: 'Clé de sécurité supprimée',
+          position: 'top-right',
+        })
+      } catch (error) {
+        this.handleErrorReq({
+          error,
+          message: 'Impossible de supprimer la clé de sécurité',
+        })
+      } finally {
+        this.pendingWebAuthnDelete = ''
       }
     },
     async save() {
@@ -594,12 +652,6 @@ export default defineNuxtComponent({
       } finally {
         this.pendingPasswordSave = false
       }
-    },
-  },
-  computed: {
-    totpQrCodeUrl(): string {
-      if (!this.totpSetup?.otpauthUrl) return ''
-      return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(this.totpSetup.otpauthUrl)}`
     },
   },
 })

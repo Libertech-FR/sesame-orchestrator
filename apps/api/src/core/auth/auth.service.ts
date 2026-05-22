@@ -37,6 +37,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
   protected readonly ACCESS_TOKEN_PREFIX = 'access_token';
   protected readonly REFRESH_TOKEN_PREFIX = 'refresh_token';
   protected readonly MFA_CHALLENGE_PREFIX = 'mfa_challenge';
+  protected readonly WEBAUTHN_CHALLENGE_PREFIX = 'webauthn_challenge';
 
   protected readonly BRUTEFORCE_FAIL_PREFIX = 'auth:bf:fail';
   protected readonly BRUTEFORCE_BLOCK_PREFIX = 'auth:bf:block';
@@ -186,7 +187,10 @@ export class AuthService extends AbstractService implements OnModuleInit {
     username: string,
     password: string,
     clientIp?: string,
-  ): Promise<{ requires2fa: true; challengeToken: string } | { requires2fa: false }> {
+  ): Promise<
+    | { requires2fa: true; challengeToken: string; totpAvailable: boolean; webAuthnAvailable: boolean }
+    | { requires2fa: false }
+  > {
     const ip = this.normalizeClientIp(clientIp);
     const normalizedUsername = `${username || ''}`.trim();
     const normalizedPassword = `${password || ''}`;
@@ -212,9 +216,16 @@ export class AuthService extends AbstractService implements OnModuleInit {
       // Credentials valides: reset du compteur pour éviter de pénaliser un utilisateur légitime.
       await this.clearLocalBruteforceState({ username: normalizedUsername, ip });
 
-      if (!this.isTotpEnabledForUser(user)) return { requires2fa: false };
+      const webAuthnAvailable = this.hasWebAuthnKeyForUser(user);
+      const totpAvailable = this.isTotpEnabledForUser(user);
+      if (!totpAvailable && !webAuthnAvailable) return { requires2fa: false };
       const challengeToken = await this.createMfaChallenge(user);
-      return { requires2fa: true, challengeToken };
+      return {
+        requires2fa: true,
+        challengeToken,
+        totpAvailable,
+        webAuthnAvailable,
+      };
     } catch (e) {
       this.logger.warn(
         `[preflight-mfa] failed username=${normalizedUsername} ip=${ip || 'n/a'}`,
@@ -371,6 +382,119 @@ export class AuthService extends AbstractService implements OnModuleInit {
     );
     this.logger.debug(`[mfa] challenge created userId=${identity._id} username=${identity.username}`);
     return challengeToken;
+  }
+
+  public hasWebAuthnKeyForUser(user: Pick<Agents, 'security'>): boolean {
+    const keys = user?.security?.u2fKey;
+    return (
+      Array.isArray(keys) && keys.some((key) => `${key?.credentialId || ''}`.trim() && `${key?.publicKey || ''}`.trim())
+    );
+  }
+
+  public createWebAuthnChallengeId(): string {
+    return randomBytes(48).toString('hex');
+  }
+
+  public async getMfaChallengeUser(challengeToken: string): Promise<Agents | null> {
+    const token = `${challengeToken || ''}`.trim();
+    if (!token) return null;
+
+    const challengeKey = [this.MFA_CHALLENGE_PREFIX, token].join(this.TOKEN_PATH_SEPARATOR);
+    const challengeRaw = await this.redis.get(challengeKey);
+    if (!challengeRaw) {
+      this.logger.warn(`[mfa] challenge missing/expired tokenPrefix=${token.slice(0, 8)}`);
+      return null;
+    }
+
+    const challenge = JSON.parse(challengeRaw) as { identityId: string; username?: string };
+    const identity = await this.agentsService.findOne<Agents>({ _id: challenge.identityId });
+    if (!identity) {
+      await this.redis.del(challengeKey);
+      this.logger.warn(`[mfa] challenge identity not found identityId=${challenge.identityId}`);
+      return null;
+    }
+
+    return identity;
+  }
+
+  public async getAgentById(identityId: Types.ObjectId | string): Promise<Agents | null> {
+    const id = `${identityId || ''}`.trim();
+    if (!id) return null;
+    return await this.agentsService.findOne<Agents>({ _id: id });
+  }
+
+  public async setWebAuthnChallenge(params: {
+    challengeId: string;
+    identityId: Types.ObjectId | string;
+    challenge: string;
+    expectedOrigin: string;
+    rpID: string;
+    context: 'login' | 'step-up';
+  }): Promise<void> {
+    await this.redis.set(
+      [this.WEBAUTHN_CHALLENGE_PREFIX, params.challengeId].join(this.TOKEN_PATH_SEPARATOR),
+      JSON.stringify({
+        identityId: `${params.identityId}`,
+        challenge: params.challenge,
+        expectedOrigin: params.expectedOrigin,
+        rpID: params.rpID,
+        context: params.context,
+      }),
+      'EX',
+      this.MFA_CHALLENGE_EXPIRES_IN,
+    );
+  }
+
+  public async getWebAuthnChallenge(challengeId: string): Promise<{
+    identityId: string;
+    challenge: string;
+    expectedOrigin: string;
+    rpID: string;
+    context: 'login' | 'step-up';
+  } | null> {
+    const id = `${challengeId || ''}`.trim();
+    if (!id) return null;
+    const raw = await this.redis.get([this.WEBAUTHN_CHALLENGE_PREFIX, id].join(this.TOKEN_PATH_SEPARATOR));
+    if (!raw) return null;
+    return JSON.parse(raw);
+  }
+
+  public async clearMfaChallenge(challengeToken: string): Promise<void> {
+    await this.redis.del([this.MFA_CHALLENGE_PREFIX, `${challengeToken || ''}`.trim()].join(this.TOKEN_PATH_SEPARATOR));
+  }
+
+  public async clearWebAuthnChallenge(challengeId: string): Promise<void> {
+    await this.redis.del(
+      [this.WEBAUTHN_CHALLENGE_PREFIX, `${challengeId || ''}`.trim()].join(this.TOKEN_PATH_SEPARATOR),
+    );
+  }
+
+  public async updateWebAuthnSignCount(
+    identityId: Types.ObjectId | string,
+    credentialId: string,
+    signCount: number,
+  ): Promise<void> {
+    const user = await this.getAgentById(identityId);
+    const currentSecurity =
+      user?.security && typeof user.security === 'object'
+        ? typeof (user.security as any).toObject === 'function'
+          ? (user.security as any).toObject()
+          : { ...(user.security as unknown as Record<string, unknown>) }
+        : {};
+    const keys = Array.isArray((currentSecurity as any)?.u2fKey) ? ((currentSecurity as any).u2fKey as any[]) : [];
+    await this.agentsService.update(identityId as Types.ObjectId, {
+      security: {
+        ...currentSecurity,
+        u2fKey: keys.map((key) =>
+          `${key?.credentialId || ''}`.trim() === credentialId
+            ? {
+                ...key,
+                signCount,
+              }
+            : key,
+        ),
+      },
+    });
   }
 
   public async verifyTotpChallenge(challengeToken: string, otpCode: string): Promise<Agents | null> {

@@ -9,11 +9,12 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Res,
 } from '@nestjs/common';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '~/_common/restools';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator';
@@ -144,24 +145,77 @@ export class AgentsController extends AbstractController {
     return Buffer.from(`${normalized}${pad}`, 'base64');
   }
 
-  private bufferToBase64url(buf: Uint8Array | Buffer): string {
+  private bufferToBase64url(buf: Uint8Array | Buffer | string): string {
+    if (typeof buf === 'string') return `${buf}`.trim();
     return Buffer.from(buf).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
   }
 
-  private getWebAuthnExpectedOrigin(): string {
-    const raw = (process.env['SESAME_WEBAUTHN_ORIGIN'] || this.configService.get<string>('frontPwd.url') || '').trim();
-    return raw.replace(/\/+$/, '');
+  private normalizeWebAuthnCredentialId(value: string): string {
+    const credentialId = `${value || ''}`.trim();
+    if (!credentialId) return '';
+
+    try {
+      const decoded = this.base64urlToBuffer(credentialId).toString('utf8').trim();
+      const looksLikeNestedBase64url = /^[A-Za-z0-9_-]+$/.test(decoded) && decoded.length >= 16;
+      return looksLikeNestedBase64url ? decoded : credentialId;
+    } catch {
+      return credentialId;
+    }
   }
 
-  private getWebAuthnRpId(): string {
+  private getWebAuthnExpectedOrigin(req?: Request): string {
+    const explicitOrigin = (process.env['SESAME_WEBAUTHN_ORIGIN'] || '').trim();
+    if (explicitOrigin) return explicitOrigin.replace(/\/+$/, '');
+
+    const requestOrigin = this.getRequestOrigin(req);
+    if (requestOrigin) return requestOrigin;
+
+    const fallbackOrigin = this.getForwardedOrigin(req);
+    if (fallbackOrigin) return fallbackOrigin;
+
+    const hostOrigin = this.getHostOrigin(req);
+    if (hostOrigin) return hostOrigin;
+
+    const configuredOrigin = (this.configService.get<string>('frontPwd.url') || '').trim();
+    return configuredOrigin.replace(/\/+$/, '');
+  }
+
+  private getWebAuthnRpId(req?: Request): string {
     const env = (process.env['SESAME_WEBAUTHN_RP_ID'] || '').trim();
     if (env) return env;
-    const origin = this.getWebAuthnExpectedOrigin();
+    const origin = this.getWebAuthnExpectedOrigin(req);
     try {
       return new URL(origin).hostname;
     } catch {
       return '';
     }
+  }
+
+  private getRequestOrigin(req?: Request): string {
+    const rawOrigin = `${req?.headers?.origin || ''}`.trim();
+    if (!rawOrigin) return '';
+    try {
+      const url = new URL(rawOrigin);
+      return `${url.protocol}//${url.host}`;
+    } catch {
+      return '';
+    }
+  }
+
+  private getForwardedOrigin(req?: Request): string {
+    const forwardedHost = `${req?.headers?.['x-forwarded-host'] || ''}`.split(',')[0]?.trim();
+    if (!forwardedHost) return '';
+
+    const forwardedProto =
+      `${req?.headers?.['x-forwarded-proto'] || req?.protocol || 'http'}`.split(',')[0]?.trim() || 'http';
+    return `${forwardedProto}://${forwardedHost}`.replace(/\/+$/, '');
+  }
+
+  private getHostOrigin(req?: Request): string {
+    const host = `${req?.headers?.host || ''}`.trim();
+    if (!host) return '';
+    const protocol = req?.protocol || 'http';
+    return `${protocol}://${host}`.replace(/\/+$/, '');
   }
 
   private getWebAuthnRpName(): string {
@@ -512,11 +566,12 @@ export class AgentsController extends AbstractController {
   public async beginWebAuthnRegisterSelf(
     @ReqIdentity() identity: AgentType,
     @Body() body: WebAuthnRegisterBeginDto,
+    @Req() req: Request,
     @Res() res: Response,
   ): Promise<Response> {
-    const rpID = this.getWebAuthnRpId();
+    const rpID = this.getWebAuthnRpId(req);
     const rpName = this.getWebAuthnRpName();
-    const expectedOrigin = this.getWebAuthnExpectedOrigin();
+    const expectedOrigin = this.getWebAuthnExpectedOrigin(req);
     if (!rpID || !expectedOrigin) {
       throw new BadRequestException('WebAuthn non configuré (RP ID / origin manquants)');
     }
@@ -526,10 +581,10 @@ export class AgentsController extends AbstractController {
       ? (currentAgent as any).security.u2fKey
       : [];
     const excludeCredentials = existing
-      .map((k: any) => `${k?.credentialId || ''}`.trim())
+      .map((k: any) => this.normalizeWebAuthnCredentialId(`${k?.credentialId || ''}`))
       .filter((id: string) => id.length > 0)
       .map((id: string) => ({
-        id: this.base64urlToBuffer(id),
+        id,
         type: 'public-key' as const,
       }));
 
@@ -610,7 +665,7 @@ export class AgentsController extends AbstractController {
         : {};
 
     const existing = Array.isArray((currentSecurity as any)?.u2fKey) ? ((currentSecurity as any).u2fKey as any[]) : [];
-    if (existing.some((k) => `${k?.credentialId || ''}`.trim() === credentialIdB64u)) {
+    if (existing.some((k) => this.normalizeWebAuthnCredentialId(`${k?.credentialId || ''}`) === credentialIdB64u)) {
       throw new BadRequestException('Cette clé est déjà enregistrée');
     }
 
@@ -638,6 +693,48 @@ export class AgentsController extends AbstractController {
     );
 
     await this.redis.del(key);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: this.sanitizeAgentPayload(data, { includeOtpKey: true }),
+    });
+  }
+
+  @Delete('me/mfa/webauthn/:credentialId')
+  @RequireMfa()
+  public async deleteWebAuthnCredentialSelf(
+    @ReqIdentity() identity: AgentType,
+    @Param('credentialId') credentialId: string,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const normalizedCredentialId = `${credentialId || ''}`.trim();
+    if (!normalizedCredentialId) {
+      throw new BadRequestException('Identifiant de clé requis');
+    }
+
+    const currentAgent = await this._service.findById<Agents>(identity._id as Types.ObjectId);
+    const currentSecurity =
+      currentAgent?.security && typeof currentAgent.security === 'object'
+        ? typeof (currentAgent.security as any).toObject === 'function'
+          ? (currentAgent.security as any).toObject()
+          : { ...(currentAgent.security as unknown as Record<string, unknown>) }
+        : {};
+
+    const existing = Array.isArray((currentSecurity as any)?.u2fKey) ? ((currentSecurity as any).u2fKey as any[]) : [];
+    const next = existing.filter((key) => `${key?.credentialId || ''}`.trim() !== normalizedCredentialId);
+    if (next.length === existing.length) {
+      throw new BadRequestException('Clé de sécurité introuvable');
+    }
+
+    const data = await this._service.update(
+      identity._id as Types.ObjectId,
+      {
+        security: {
+          ...currentSecurity,
+          u2fKey: next,
+        },
+      } as AgentsUpdateDto,
+    );
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

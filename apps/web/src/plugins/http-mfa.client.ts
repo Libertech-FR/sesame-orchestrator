@@ -1,14 +1,74 @@
-import { useAuth } from '#imports'
-import { useQuasar } from '#imports'
+import { useAuth, useQuasar } from '#imports'
+import { startAuthentication } from '@simplewebauthn/browser'
+import type { AuthenticationResponseJSON, PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/types'
 
 type MfaStepUpResponse = {
   access_token: string
   refresh_token?: string
 }
 
-function isMfaRequiredError(error: any): boolean {
-  const statusCode = error?.response?._data?.statusCode || error?.data?.statusCode
-  const rawMessage = error?.response?._data?.message || error?.data?.message
+type HttpMethod = (...args: unknown[]) => Promise<unknown>
+type HttpClient = Record<string, unknown> & {
+  $post?: HttpMethod
+}
+type AuthUser = {
+  mfaEnabled?: boolean
+  totpEnabled?: boolean
+  webAuthnEnabled?: boolean
+}
+type TokenSetter = (token: string) => void
+
+function asRecord(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === 'object' ? (value as Record<string, unknown>) : undefined
+}
+
+function isTokenSetter(value: unknown): value is TokenSetter {
+  return typeof value === 'function'
+}
+
+function getAuthUser(auth: unknown): AuthUser {
+  const user = asRecord(asRecord(auth)?.user)
+  const unwrappedUser = asRecord(user?.value) || user
+  return (unwrappedUser || {}) as AuthUser
+}
+
+function setRefreshToken(auth: unknown, refreshToken: string): void {
+  const tokenStrategy = asRecord(asRecord(auth)?.tokenStrategy)
+  const refreshTokenStore = asRecord(tokenStrategy?.refreshToken)
+  const set = refreshTokenStore?.set
+  if (isTokenSetter(set)) set(refreshToken)
+}
+
+function setAuthTokens(auth: unknown, response: MfaStepUpResponse): void {
+  const tokenStrategy = asRecord(asRecord(auth)?.tokenStrategy)
+  const tokenStore = asRecord(tokenStrategy?.token)
+  const setAccessToken = tokenStore?.set
+  if (isTokenSetter(setAccessToken)) setAccessToken(response.access_token)
+  if (response.refresh_token) setRefreshToken(auth, response.refresh_token)
+}
+
+function extractHttpPayload(response: unknown): Record<string, unknown> {
+  const base = asRecord(response) || {}
+  const topData = asRecord(base.data)
+  const topUnderscoreData = asRecord(base._data)
+  const nestedData = asRecord(topData?.data)
+  const nestedUnderscoreData = asRecord(topUnderscoreData?.data)
+  const candidates = [nestedData, nestedUnderscoreData, topData, topUnderscoreData, base]
+  return candidates.find((candidate): candidate is Record<string, unknown> => Boolean(candidate)) || {}
+}
+
+function extractWebAuthnOptions(payload: Record<string, unknown>): PublicKeyCredentialRequestOptionsJSON | null {
+  const nestedOptions = asRecord(payload.options)
+  const candidate = nestedOptions || payload
+  return typeof candidate.challenge === 'string' ? (candidate as unknown as PublicKeyCredentialRequestOptionsJSON) : null
+}
+
+function isMfaRequiredError(error: unknown): boolean {
+  const errorRecord = asRecord(error)
+  const responseData = asRecord(asRecord(errorRecord?.response)?._data)
+  const errorData = asRecord(errorRecord?.data)
+  const statusCode = responseData?.statusCode || errorData?.statusCode
+  const rawMessage = responseData?.message || errorData?.message
   const message = typeof rawMessage === 'string' ? rawMessage.trim() : ''
   return statusCode === 403 && message.toLowerCase() === 'mfa required'
 }
@@ -16,14 +76,15 @@ function isMfaRequiredError(error: any): boolean {
 export default defineNuxtPlugin((nuxtApp) => {
   const $q = useQuasar()
   const auth = useAuth()
-  let rawHttpRef: any = null
+  let rawHttpRef: HttpClient | null = null
 
   let inFlightStepUp: Promise<void> | null = null
 
-  const isSettingsContext = (): boolean => {
+  const isStepUpContext = (): boolean => {
     try {
       const r = useRoute()
-      return typeof r?.fullPath === 'string' && r.fullPath.startsWith('/settings')
+      const path = typeof r?.path === 'string' ? r.path : r?.fullPath || ''
+      return path.startsWith('/settings') || path.startsWith('/profile')
     } catch {
       return false
     }
@@ -40,10 +101,62 @@ export default defineNuxtPlugin((nuxtApp) => {
         // ignore
       }
 
-      const user = (auth as any)?.user?.value || (auth as any)?.user
+      const user = getAuthUser(auth)
       const mfaEnabled = user?.mfaEnabled === true
 
       if (mfaEnabled) {
+        const post = rawHttpRef.$post
+        if (typeof post !== 'function') throw new Error('HTTP client not ready')
+
+        const canUseWebAuthn =
+          user?.webAuthnEnabled === true &&
+          typeof window !== 'undefined' &&
+          typeof window.PublicKeyCredential !== 'undefined'
+        const shouldUseWebAuthn =
+          canUseWebAuthn &&
+          (user?.totpEnabled !== true ||
+            (await new Promise<boolean>((resolve) => {
+              $q.dialog({
+                title: 'Validation MFA requise',
+                message: 'Vous pouvez valider avec votre clé FIDO ou saisir un code TOTP.',
+                persistent: true,
+                color: 'warning',
+                ok: { label: 'Utiliser une clé FIDO', color: 'warning' },
+                cancel: { label: 'Code TOTP', flat: true, color: 'primary' },
+              })
+                .onOk(() => resolve(true))
+                .onCancel(() => resolve(false))
+            })))
+
+        if (shouldUseWebAuthn) {
+          try {
+            const begin = await post('/core/auth/mfa/webauthn/begin')
+            const beginPayload = extractHttpPayload(begin)
+            const options = extractWebAuthnOptions(beginPayload)
+            const challengeId = `${beginPayload.challengeId || ''}`.trim()
+            if (!options || !challengeId) throw new Error('Invalid WebAuthn step-up begin payload')
+
+            const response = (await startAuthentication(options)) as AuthenticationResponseJSON
+            const finish = (await post('/core/auth/mfa/webauthn/finish', {
+              body: {
+                challengeId,
+                response,
+              },
+            })) as MfaStepUpResponse
+
+            if (!finish?.access_token) throw new Error('Invalid WebAuthn step-up response (missing access_token)')
+            setAuthTokens(auth, finish)
+            return
+          } catch (error) {
+            if (user?.totpEnabled !== true) throw error
+            $q.notify({
+              type: 'warning',
+              message: 'Validation FIDO impossible. Saisissez votre code TOTP.',
+              position: 'top-right',
+            })
+          }
+        }
+
         const otpCode = await new Promise<string>((resolve, reject) => {
           $q.dialog({
             title: 'Validation MFA requise',
@@ -75,7 +188,7 @@ export default defineNuxtPlugin((nuxtApp) => {
             .onDismiss(() => reject(new Error('MFA step-up dismissed')))
         })
 
-        const response = (await rawHttpRef.$post('/core/auth/mfa/step-up', {
+        const response = (await post('/core/auth/mfa/step-up', {
           body: {
             otpCode: String(otpCode || '').trim(),
           },
@@ -83,10 +196,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
         if (!response?.access_token) throw new Error('Invalid step-up response (missing access_token)')
 
-        auth.tokenStrategy?.token?.set(response.access_token)
-        if (response.refresh_token) {
-          ;(auth.tokenStrategy as any)?.refreshToken?.set(response.refresh_token)
-        }
+        setAuthTokens(auth, response)
       } else {
         const password = await new Promise<string>((resolve, reject) => {
           $q.dialog({
@@ -107,7 +217,10 @@ export default defineNuxtPlugin((nuxtApp) => {
             .onDismiss(() => reject(new Error('Password confirmation dismissed')))
         })
 
-        const response = (await rawHttpRef.$post('/core/auth/mfa/step-up', {
+        const post = rawHttpRef.$post
+        if (typeof post !== 'function') throw new Error('HTTP client not ready')
+
+        const response = (await post('/core/auth/mfa/step-up', {
           body: {
             password: String(password || ''),
           },
@@ -115,10 +228,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
         if (!response?.access_token) throw new Error('Invalid step-up response (missing access_token)')
 
-        auth.tokenStrategy?.token?.set(response.access_token)
-        if (response.refresh_token) {
-          ;(auth.tokenStrategy as any)?.refreshToken?.set(response.refresh_token)
-        }
+        setAuthTokens(auth, response)
       }
 
       // Refresh user payload so subsequent UI has updated session info.
@@ -138,42 +248,47 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   const PATCH_MARK = '__sesameMfaPatched__'
 
-  const wrap = (fn: any, kind: 'read' | 'write') => {
+  const wrap = (fn: unknown, kind: 'read' | 'write') => {
     if (typeof fn !== 'function') return fn
-    return async (...args: any[]) => {
+    const httpFn = fn as HttpMethod
+    return async (...args: unknown[]) => {
       const url = args?.[0]
       // Never intercept the step-up endpoint itself.
-      if (typeof url === 'string' && url.startsWith('/core/auth/mfa/step-up')) {
-        return await fn(...args)
+      if (
+        typeof url === 'string' &&
+        (url.startsWith('/core/auth/mfa/step-up') || url.startsWith('/core/auth/mfa/webauthn/'))
+      ) {
+        return await httpFn(...args)
       }
 
       try {
-        return await fn(...args)
-      } catch (error: any) {
+        return await httpFn(...args)
+      } catch (error: unknown) {
         if (!isMfaRequiredError(error)) throw error
         // Only step-up for explicit "save" / write intents.
         if (kind !== 'write') throw error
-        // Only prompt for step-up on sensitive settings pages.
-        if (!isSettingsContext()) throw error
+        // Only prompt for step-up on pages containing sensitive account/settings actions.
+        if (!isStepUpContext()) throw error
         await ensureStepUp()
-        return await fn(...args)
+        return await httpFn(...args)
       }
     }
   }
 
   const install = () => {
-    const rawHttp = (nuxtApp as any).$http
+    const rawHttp = (nuxtApp as unknown as { $http?: HttpClient }).$http
     if (!rawHttp) return
     rawHttpRef = rawHttp
 
-    if ((rawHttp as any)[PATCH_MARK]) return
-    ;(rawHttp as any)[PATCH_MARK] = true
+    if (rawHttp[PATCH_MARK]) return
+    rawHttp[PATCH_MARK] = true
 
     // Patch common methods in-place (no reassignment of `$http`, which is getter-only).
     // Important: we ONLY patch write methods so the step-up modal appears only on "save"-like actions.
     for (const key of ['$post', '$put', '$patch', '$delete', 'post', 'put', 'patch', 'delete']) {
-      if (typeof (rawHttp as any)[key] === 'function') {
-        ;(rawHttp as any)[key] = wrap((rawHttp as any)[key].bind(rawHttp), 'write')
+      const method = rawHttp[key]
+      if (typeof method === 'function') {
+        rawHttp[key] = wrap((method as HttpMethod).bind(rawHttp), 'write')
       }
     }
   }

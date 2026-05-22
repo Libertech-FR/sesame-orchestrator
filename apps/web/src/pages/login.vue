@@ -62,8 +62,18 @@ q-dialog(v-model='showTotpDialog' persistent)
   q-card(style='min-width: 380px; max-width: 95vw')
     q-card-section
       .text-h6 Vérification 2FA
-      .text-caption.text-grey-7 Entrez le code TOTP à 6 chiffres de votre application.
-    q-card-section.q-pt-none
+      .text-caption.text-grey-7 Utilisez votre clé FIDO ou entrez le code TOTP à 6 chiffres de votre application.
+    q-card-section.q-pt-none(v-if='webAuthnAvailable')
+      q-btn.full-width(
+        color='primary'
+        icon='mdi-usb'
+        :loading='pending'
+        :disable='pending || retryAfterSecondsLeft > 0'
+        @click='submitWebAuthn'
+        unelevated
+      ) Utiliser une clé FIDO
+      q-separator.q-my-md
+    q-card-section.q-pt-none(v-if='totpAvailable')
       q-input(
         v-model='formData.otpCode'
         label='Code 2FA (6 chiffres)'
@@ -75,6 +85,7 @@ q-dialog(v-model='showTotpDialog' persistent)
     q-card-actions(align='right')
       q-btn(flat color='primary' :disable='pending || retryAfterSecondsLeft > 0' @click='reset2faFlow') Annuler
       q-btn(
+        v-if='totpAvailable'
         color='positive'
         icon='mdi-check-circle-outline'
         :loading='pending'
@@ -85,6 +96,15 @@ q-dialog(v-model='showTotpDialog' persistent)
 </template>
 
 <script lang="ts">
+import { startAuthentication } from '@simplewebauthn/browser'
+import type { AuthenticationResponseJSON, PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/types'
+
+type TokenResponse = {
+  access_token?: string
+  refresh_token?: string
+  uri?: string
+}
+
 export default defineNuxtComponent({
   name: 'LoginPage',
   setup() {
@@ -105,6 +125,8 @@ export default defineNuxtComponent({
       }),
       requires2fa: ref(false),
       challengeToken: ref(''),
+      webAuthnAvailable: ref(false),
+      totpAvailable: ref(false),
       showTotpDialog: ref(false),
       retryAfterSecondsLeft: ref(0),
       retryAfterTimer: ref<ReturnType<typeof setInterval> | null>(null),
@@ -117,10 +139,10 @@ export default defineNuxtComponent({
     getAuthUser(auth: unknown): Record<string, unknown> | null {
       if (!this.isRecord(auth)) return null
       const user = auth['user']
-      if (this.isRecord(user)) return user
       if (this.isRecord(user) && this.isRecord((user as Record<string, unknown>)['value'])) {
         return (user as Record<string, unknown>)['value'] as Record<string, unknown>
       }
+      if (this.isRecord(user)) return user
       return null
     },
     getErrorStatus(error: unknown): number | null {
@@ -235,11 +257,98 @@ export default defineNuxtComponent({
       }
       return this.normalizeRedirectUri(responseOrBaseUrl)
     },
+    isWebAuthnAvailable(payload: Record<string, unknown>): boolean {
+      const methods = Array.isArray(payload.methods) ? payload.methods.map((method) => `${method}`.toLowerCase()) : []
+      const preferredMethod = `${payload.method || ''}`.toLowerCase()
+      return (
+        typeof window !== 'undefined' &&
+        typeof window.PublicKeyCredential !== 'undefined' &&
+        (payload.webAuthnAvailable === true || methods.includes('webauthn') || preferredMethod === 'webauthn')
+      )
+    },
+    isTotpAvailable(payload: Record<string, unknown>): boolean {
+      const methods = Array.isArray(payload.methods) ? payload.methods.map((method) => `${method}`.toLowerCase()) : []
+      if (methods.length > 0) return methods.includes('totp')
+      return payload.totpAvailable === true || `${payload.method || ''}`.toLowerCase() === 'totp'
+    },
+    extractWebAuthnOptions(payload: Record<string, unknown>): PublicKeyCredentialRequestOptionsJSON | null {
+      const options = this.isRecord(payload.options) ? payload.options : payload
+      return typeof options.challenge === 'string' ? (options as unknown as PublicKeyCredentialRequestOptionsJSON) : null
+    },
+    setRefreshToken(auth: unknown, refreshToken: string) {
+      if (!this.isRecord(auth)) return
+      const tokenStrategy = this.isRecord(auth.tokenStrategy) ? auth.tokenStrategy : null
+      const refreshTokenStore = this.isRecord(tokenStrategy?.refreshToken) ? tokenStrategy.refreshToken : null
+      const set = refreshTokenStore?.set
+      if (typeof set === 'function') set(refreshToken)
+    },
+    applyAuthTokens(auth: unknown, response: TokenResponse) {
+      if (!response.access_token || !this.isRecord(auth)) return
+      const tokenStrategy = this.isRecord(auth.tokenStrategy) ? auth.tokenStrategy : null
+      const tokenStore = this.isRecord(tokenStrategy?.token) ? tokenStrategy.token : null
+      const setAccessToken = tokenStore?.set
+      if (typeof setAccessToken === 'function') setAccessToken(response.access_token)
+      if (response.refresh_token) this.setRefreshToken(auth, response.refresh_token)
+    },
     reset2faFlow() {
       this.requires2fa = false
       this.challengeToken = ''
+      this.webAuthnAvailable = false
+      this.totpAvailable = false
       this.formData.otpCode = ''
       this.showTotpDialog = false
+    },
+    async submitWebAuthn() {
+      if (!this.challengeToken) {
+        this.$q.notify({
+          type: 'negative',
+          message: 'Challenge 2FA manquant ou expiré',
+          position: 'top',
+        })
+        return
+      }
+
+      this.pending = true
+      try {
+        const auth = useAuth()
+        const begin = await this.$http.post('/core/auth/local/2fa/webauthn/begin', {
+          body: {
+            challengeToken: this.challengeToken,
+          },
+        })
+        const beginPayload = this.extractPayload(begin)
+        const options = this.extractWebAuthnOptions(beginPayload)
+        if (!options) throw new Error('Invalid WebAuthn begin payload')
+
+        const webAuthnResponse = (await startAuthentication(options)) as AuthenticationResponseJSON
+        const finish = await this.$http.post('/core/auth/local/2fa/webauthn/finish', {
+          body: {
+            challengeToken: this.challengeToken,
+            response: webAuthnResponse,
+          },
+        })
+        const responsePayload = this.extractPayload(finish) as TokenResponse
+        this.applyAuthTokens(auth, responsePayload)
+        await auth.fetchUser()
+
+        const authUser = this.getAuthUser(auth)
+        const uri = this.getPostLoginRedirect((this.isRecord(authUser) ? (authUser.baseURL as string | undefined) : undefined) || responsePayload.uri)
+        this.showTotpDialog = false
+        await this.$router.push(uri)
+      } catch (error) {
+        if (this.getErrorStatus(error) === 429) {
+          this.notifyTooManyAttempts(error, 'otp')
+          return
+        }
+        this.$q.notify({
+          type: 'negative',
+          message: 'Validation FIDO impossible. Utilisez le code 2FA.',
+          position: 'top',
+          timeout: 7000,
+        })
+      } finally {
+        this.pending = false
+      }
     },
     async submitTotp() {
       this.pending = true
@@ -290,10 +399,14 @@ export default defineNuxtComponent({
           if (preAuthPayload?.requires2fa) {
             this.requires2fa = true
             this.challengeToken = (preAuthPayload.challengeToken as string | undefined) || ''
+            this.webAuthnAvailable = this.isWebAuthnAvailable(preAuthPayload)
+            this.totpAvailable = this.isTotpAvailable(preAuthPayload)
             this.showTotpDialog = true
             this.$q.notify({
               type: 'info',
-              message: 'Entrez votre code 2FA pour finaliser la connexion.',
+              message: this.webAuthnAvailable
+                ? 'Utilisez votre clé FIDO ou votre code 2FA pour finaliser la connexion.'
+                : 'Entrez votre code 2FA pour finaliser la connexion.',
               position: 'top',
               timeout: 4000,
             })

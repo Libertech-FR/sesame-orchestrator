@@ -73,13 +73,15 @@ q-dialog(
                 strong Paramètres → Serveur SMTP
                 | .
             q-select.q-mt-md(
-              v-if="!isInternalTemplate && recipientSourceOptions.length > 1"
-              v-model="recipientAddressSource"
+              v-if="!isInternalTemplate && recipientSourceOptions.length > 0"
+              v-model="recipientAddressSources"
               :options="recipientSourceOptions"
-              label="Adresse du destinataire"
-              hint="Chemin JSON défini dans Paramètres → Serveur SMTP"
+              label="Adresse(s) du destinataire"
+              hint="Une ou plusieurs adresses (principal et/ou personnel)"
               outlined
               dense
+              multiple
+              use-chips
               emit-value
               map-options
               color="teal-7"
@@ -252,13 +254,15 @@ q-dialog(
               strong Paramètres → Serveur SMTP
               | .
           q-select.q-mt-md(
-            v-if="!isInternalTemplate && recipientSourceOptions.length > 1"
-            v-model="recipientAddressSource"
+            v-if="!isInternalTemplate && recipientSourceOptions.length > 0"
+            v-model="recipientAddressSources"
             :options="recipientSourceOptions"
-            label="Adresse du destinataire"
-            hint="Chemin JSON défini dans Paramètres → Serveur SMTP"
+            label="Adresse(s) du destinataire"
+            hint="Une ou plusieurs adresses (principal et/ou personnel)"
             outlined
             dense
+            multiple
+            use-chips
             emit-value
             map-options
             color="teal-7"
@@ -529,7 +533,7 @@ const availableVariables = ref<{ key: string; label?: string; description?: stri
 
 const mailPaths = ref<{ personnel: string; principal: string }>({ personnel: '', principal: '' })
 const mailPathsReady = ref(false)
-const recipientAddressSource = ref<'principal' | 'personnel' | null>(null)
+const recipientAddressSources = ref<('principal' | 'personnel')[]>([])
 
 const isInternalTemplate = computed(() => {
   const name = String(templateName.value || '').trim()
@@ -561,7 +565,7 @@ const canSendMailTemplate = computed(
     !isInternalTemplate.value &&
     mailPathsReady.value &&
     String(mailSubject.value || '').trim().length > 0 &&
-    (recipientAddressSource.value === 'principal' || recipientAddressSource.value === 'personnel'),
+    recipientAddressSources.value.length > 0,
 )
 
 const sendButtonTitle = computed(() => {
@@ -580,7 +584,7 @@ const sendButtonTitle = computed(() => {
   if (recipientSourceOptions.value.length === 0) {
     return 'Configurez au moins un chemin JSON (e-mail personnel ou principal) dans Paramètres → Serveur SMTP.'
   }
-  return "Choisissez l'adresse du destinataire (e-mail personnel ou principal)."
+  return "Sélectionnez au moins une adresse destinataire (e-mail personnel et/ou principal)."
 })
 
 const addVar = () => {
@@ -626,20 +630,17 @@ async function fetchMailPathsConfig() {
       personnel: String(d.recipientJsonPathEmailPersonnel || '').trim(),
       principal: String(d.recipientJsonPathEmailPrincipal || '').trim(),
     }
-    const per = mailPaths.value.personnel
-    const prin = mailPaths.value.principal
-    if (prin && per) {
-      recipientAddressSource.value = 'principal'
-    } else if (prin) {
-      recipientAddressSource.value = 'principal'
-    } else if (per) {
-      recipientAddressSource.value = 'personnel'
-    } else {
-      recipientAddressSource.value = null
+    const sources: ('principal' | 'personnel')[] = []
+    if (mailPaths.value.principal) {
+      sources.push('principal')
     }
+    if (mailPaths.value.personnel) {
+      sources.push('personnel')
+    }
+    recipientAddressSources.value = sources
   } catch {
     mailPaths.value = { personnel: '', principal: '' }
-    recipientAddressSource.value = null
+    recipientAddressSources.value = []
   } finally {
     mailPathsReady.value = true
   }
@@ -742,7 +743,7 @@ const syncIdentities = () => {
     template: templateName.value,
     subject: String(mailSubject.value || '').trim(),
     variables: variablesToSend.value,
-    recipientAddressSource: recipientAddressSource.value,
+    recipientAddressSources: recipientAddressSources.value,
   })
 }
 

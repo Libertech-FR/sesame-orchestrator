@@ -440,7 +440,7 @@ export default defineNuxtComponent({
                 template: data?.template,
                 subject: data?.subject,
                 variables: data?.variables,
-                ...(data?.recipientAddressSource ? { recipientAddressSource: data.recipientAddressSource } : {}),
+                ...(data?.recipientAddressSources?.length ? { recipientAddressSources: data.recipientAddressSources } : {}),
               },
             })
             this.$q.notify({

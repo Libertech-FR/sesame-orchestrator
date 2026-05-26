@@ -552,7 +552,12 @@ export default defineNuxtComponent({
 
     async sendTemplateMailToIdentities(
       identities,
-      data: { template?: string; subject?: string; variables?: Record<string, string>; recipientAddressSource?: string },
+      data: {
+        template?: string
+        subject?: string
+        variables?: Record<string, string>
+        recipientAddressSources?: ('principal' | 'personnel')[]
+      },
     ) {
       const ids = this.bulkIdsFromIdentities(identities)
       try {
@@ -562,7 +567,7 @@ export default defineNuxtComponent({
             template: data?.template,
             subject: data?.subject,
             variables: data?.variables,
-            ...(data?.recipientAddressSource ? { recipientAddressSource: data.recipientAddressSource } : {}),
+            ...(data?.recipientAddressSources?.length ? { recipientAddressSources: data.recipientAddressSources } : {}),
           },
         })
         const payload = (result as { _data?: { data?: { sent?: number; skipped?: number } } })._data?.data

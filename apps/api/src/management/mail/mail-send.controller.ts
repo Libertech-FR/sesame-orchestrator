@@ -25,7 +25,7 @@ export class MailSendController {
       template: body.template,
       subject: body.subject,
       variables: body.variables,
-      recipientAddressSource: body.recipientAddressSource,
+      recipientAddressSources: body.recipientAddressSources,
     });
     return res.status(HttpStatus.OK).json({ statusCode: HttpStatus.OK, data: result });
   }

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
-import { IsArray, IsIn, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import { ArrayMinSize, IsArray, IsIn, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class MailSendManyDto {
   @ApiProperty({ description: 'Ids des identities destinataires' })
@@ -23,11 +23,14 @@ export class MailSendManyDto {
 
   @ApiProperty({
     required: false,
+    isArray: true,
     enum: ['principal', 'personnel'],
     description:
-      'Si renseigné, adresse destinataire lue via le chemin JSON SMTP (e-mail principal ou e-mail personnel). Sinon, politique de mot de passe (emailAttribute).',
+      'Adresses destinataires via les chemins JSON SMTP (e-mail principal et/ou personnel). Plusieurs valeurs = envoi aux deux adresses lorsqu’elles existent.',
   })
   @IsOptional()
-  @IsIn(['principal', 'personnel'])
-  public recipientAddressSource?: 'principal' | 'personnel';
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsIn(['principal', 'personnel'], { each: true })
+  public recipientAddressSources?: ('principal' | 'personnel')[];
 }

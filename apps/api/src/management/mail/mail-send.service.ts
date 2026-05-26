@@ -7,6 +7,36 @@ import { MailadmService } from '~/settings/mailadm.service';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { isUserSendableMailTemplate } from './mail-templates.service';
 
+export type RecipientAddressSource = 'principal' | 'personnel';
+
+function normalizeEmailAddress(raw: unknown): string {
+  if (raw == null) {
+    return '';
+  }
+  if (Array.isArray(raw)) {
+    for (const item of raw) {
+      const email = normalizeEmailAddress(item);
+      if (email) {
+        return email;
+      }
+    }
+    return '';
+  }
+  const value = String(raw).trim();
+  return value.includes('@') ? value : '';
+}
+
+function collectRecipientEmails(identity: unknown, mailPaths: string[]): string[] {
+  const emails = new Set<string>();
+  for (const mailPath of mailPaths) {
+    const email = normalizeEmailAddress(get(identity, mailPath));
+    if (email) {
+      emails.add(email);
+    }
+  }
+  return [...emails];
+}
+
 @Injectable()
 export class MailSendService {
   private readonly logger = new Logger(MailSendService.name);
@@ -18,12 +48,53 @@ export class MailSendService {
     private readonly mailadmService: MailadmService,
   ) {}
 
+  private resolveMailPaths(args: {
+    recipientAddressSources?: RecipientAddressSource[];
+    principalPath: string;
+    personnelPath: string;
+    policyMailAttribute: string;
+  }): string[] {
+    const sources = Array.isArray(args.recipientAddressSources)
+      ? [...new Set(args.recipientAddressSources)]
+      : [];
+
+    if (!sources.length) {
+      if (!args.policyMailAttribute) {
+        throw new BadRequestException(
+          'Attribut mail alternatif non configuré (settings.passwordpolicies.emailAttribute)',
+        );
+      }
+      return [args.policyMailAttribute];
+    }
+
+    const mailPaths: string[] = [];
+    for (const source of sources) {
+      if (source === 'principal') {
+        if (!args.principalPath) {
+          throw new BadRequestException(
+            "Chemin JSON « e-mail principal » non configuré (paramètres → Serveur SMTP → Chemin JSON de l'e-mail principal).",
+          );
+        }
+        mailPaths.push(args.principalPath);
+      } else if (source === 'personnel') {
+        if (!args.personnelPath) {
+          throw new BadRequestException(
+            "Chemin JSON « e-mail personnel » non configuré (paramètres → Serveur SMTP → Chemin JSON de l'e-mail personnel).",
+          );
+        }
+        mailPaths.push(args.personnelPath);
+      }
+    }
+
+    return mailPaths;
+  }
+
   public async sendTemplateToIdentities(args: {
     ids: string[];
     template: string;
     subject: string;
     variables?: Record<string, string>;
-    recipientAddressSource?: 'principal' | 'personnel';
+    recipientAddressSources?: RecipientAddressSource[];
   }): Promise<{ sent: number; skipped: number }> {
     const template = String(args.template || '').trim();
     if (!template) {
@@ -50,30 +121,12 @@ export class MailSendService {
     const policies: any = await this.passwdadmService.getPolicies();
     const policyMailAttribute = String(policies?.emailAttribute || '');
 
-    const source = args.recipientAddressSource;
-    let mailPath: string;
-    if (source === 'principal') {
-      mailPath = principalPath;
-      if (!mailPath) {
-        throw new BadRequestException(
-          "Chemin JSON « e-mail principal » non configuré (paramètres → Serveur SMTP → Chemin JSON de l'e-mail principal).",
-        );
-      }
-    } else if (source === 'personnel') {
-      mailPath = personnelPath;
-      if (!mailPath) {
-        throw new BadRequestException(
-          "Chemin JSON « e-mail personnel » non configuré (paramètres → Serveur SMTP → Chemin JSON de l'e-mail personnel).",
-        );
-      }
-    } else {
-      mailPath = policyMailAttribute;
-      if (!mailPath) {
-        throw new BadRequestException(
-          'Attribut mail alternatif non configuré (settings.passwordpolicies.emailAttribute)',
-        );
-      }
-    }
+    const mailPaths = this.resolveMailPaths({
+      recipientAddressSources: args.recipientAddressSources,
+      principalPath,
+      personnelPath,
+      policyMailAttribute,
+    });
 
     const identities = await this.identities.model.find({ _id: { $in: args.ids }, state: IdentityState.SYNCED }).lean();
     if (!identities?.length) {
@@ -84,15 +137,15 @@ export class MailSendService {
     let skipped = 0;
 
     for (const identity of identities) {
-      const to = get(identity as any, mailPath) as string;
-      if (!to) {
+      const recipients = collectRecipientEmails(identity, mailPaths);
+      if (!recipients.length) {
         skipped++;
         continue;
       }
 
       try {
         await this.mailer.sendMail({
-          to,
+          to: recipients.length === 1 ? recipients[0] : recipients,
           subject,
           template,
           context: {

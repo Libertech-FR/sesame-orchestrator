@@ -3,7 +3,9 @@ import { AuthController } from '~/core/auth/auth.controller';
 describe('AuthController', () => {
   const createTokens = jest.fn();
   const authenticateWithLocal = jest.fn();
+  const getLocalBruteforceBlock = jest.fn();
   const isTotpEnabledForUser = jest.fn();
+  const hasWebAuthnKeyForUser = jest.fn();
   const createMfaChallenge = jest.fn();
   const verifyTotpChallenge = jest.fn();
   const getSessionData = jest.fn();
@@ -14,7 +16,9 @@ describe('AuthController', () => {
   const authService = {
     createTokens,
     authenticateWithLocal,
+    getLocalBruteforceBlock,
     isTotpEnabledForUser,
+    hasWebAuthnKeyForUser,
     createMfaChallenge,
     verifyTotpChallenge,
     getSessionData,
@@ -37,6 +41,9 @@ describe('AuthController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    getLocalBruteforceBlock.mockResolvedValue({ blocked: false, retryAfterSeconds: 0 });
+    hasWebAuthnKeyForUser.mockReturnValue(false);
+    isTotpEnabledForUser.mockReturnValue(false);
     controller = new AuthController({} as any, authService as any, rolesService as any);
   });
 

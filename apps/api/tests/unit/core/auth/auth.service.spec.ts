@@ -12,11 +12,15 @@ describe('AuthService', () => {
   const redisSet = jest.fn();
   const redisExpire = jest.fn();
   const redisDel = jest.fn();
+  const redisTtl = jest.fn();
+  const redisIncr = jest.fn();
   const redis = {
     get: redisGet,
     set: redisSet,
     expire: redisExpire,
     del: redisDel,
+    ttl: redisTtl,
+    incr: redisIncr,
   };
 
   const agentsFindOne = jest.fn();
@@ -48,6 +52,8 @@ describe('AuthService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    redisTtl.mockResolvedValue(-2);
+    redisIncr.mockResolvedValue(1);
     service = new AuthService(
       {} as any,
       agentsService as any,

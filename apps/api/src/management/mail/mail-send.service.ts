@@ -5,6 +5,7 @@ import { IdentitiesCrudService } from '~/management/identities/identities-crud.s
 import { PasswdadmService } from '~/settings/passwdadm.service';
 import { MailadmService } from '~/settings/mailadm.service';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
+import { isUserSendableMailTemplate } from './mail-templates.service';
 
 @Injectable()
 export class MailSendService {
@@ -27,6 +28,11 @@ export class MailSendService {
     const template = String(args.template || '').trim();
     if (!template) {
       throw new BadRequestException('Template requis');
+    }
+    if (!isUserSendableMailTemplate(template)) {
+      throw new BadRequestException(
+        'Template interne Sesame : mode lecture seule (aperçu uniquement, envoi manuel non autorisé).',
+      );
     }
     const subject = String(args.subject || '').trim();
     if (!subject) {

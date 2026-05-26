@@ -36,7 +36,18 @@ q-dialog(
               :loading="templatesLoading"
               color="teal-7"
             )
+            q-banner.q-mt-md(
+              v-if="isInternalTemplate"
+              rounded
+              dense
+              class="bg-blue-1 text-grey-9"
+            )
+              template(#avatar)
+                q-icon(name="mdi-eye-outline" color="primary")
+              .text-body2
+                | Mode lecture seule : template interne Sesame. L'aperçu est disponible ; l'envoi manuel n'est pas autorisé pour ce template.
             q-input.q-mt-md(
+              v-if="!isInternalTemplate"
               v-model="mailSubject"
               label="Sujet du mail"
               hint="Sujet affiché par le client mail (obligatoire)"
@@ -46,7 +57,7 @@ q-dialog(
               autocomplete="off"
             )
             q-banner.q-mt-md(
-              v-if="mailPathsReady && recipientSourceOptions.length === 0"
+              v-if="!isInternalTemplate && mailPathsReady && recipientSourceOptions.length === 0"
               rounded
               dense
               class="bg-orange-1 text-grey-9"
@@ -62,7 +73,7 @@ q-dialog(
                 strong Paramètres → Serveur SMTP
                 | .
             q-select.q-mt-md(
-              v-if="recipientSourceOptions.length > 1"
+              v-if="!isInternalTemplate && recipientSourceOptions.length > 1"
               v-model="recipientAddressSource"
               :options="recipientSourceOptions"
               label="Adresse du destinataire"
@@ -204,7 +215,18 @@ q-dialog(
             :loading="templatesLoading"
             color="teal-7"
           )
+          q-banner.q-mt-md(
+            v-if="isInternalTemplate"
+            rounded
+            dense
+            class="bg-blue-1 text-grey-9"
+          )
+            template(#avatar)
+              q-icon(name="mdi-eye-outline" color="primary")
+            .text-body2
+              | Mode lecture seule : template interne Sesame. L'aperçu est disponible ; l'envoi manuel n'est pas autorisé pour ce template.
           q-input.q-mt-md(
+            v-if="!isInternalTemplate"
             v-model="mailSubject"
             label="Sujet du mail"
             hint="Sujet affiché par le client mail (obligatoire)"
@@ -214,7 +236,7 @@ q-dialog(
             autocomplete="off"
           )
           q-banner.q-mt-md(
-            v-if="mailPathsReady && recipientSourceOptions.length === 0"
+            v-if="!isInternalTemplate && mailPathsReady && recipientSourceOptions.length === 0"
             rounded
             dense
             class="bg-orange-1 text-grey-9"
@@ -230,7 +252,7 @@ q-dialog(
               strong Paramètres → Serveur SMTP
               | .
           q-select.q-mt-md(
-            v-if="recipientSourceOptions.length > 1"
+            v-if="!isInternalTemplate && recipientSourceOptions.length > 1"
             v-model="recipientAddressSource"
             :options="recipientSourceOptions"
             label="Adresse du destinataire"
@@ -340,6 +362,18 @@ q-dialog(
         @click="cancelSync"
       )
       q-btn(
+        v-if="isInternalTemplate"
+        outline
+        no-caps
+        padding="sm lg"
+        color="grey-7"
+        icon-right="mdi-eye-outline"
+        label="Aperçu seul — envoi non disponible"
+        disable
+        :title="sendButtonTitle"
+      )
+      q-btn(
+        v-else
         unelevated
         no-caps
         padding="sm lg"
@@ -474,11 +508,13 @@ const checkboxLabel = computed(() => {
   return `Envoyer le mail à toutes les identités synchronisées (${props.allIdentitiesCount})`
 })
 
-const showSendAll = computed(() => {
-  const total = Number(props.allIdentitiesCount || 0)
-  const selected = selectedRows.value.length
-  return total > Math.max(selected, 1)
-})
+const SENDABLE_TEMPLATE_PREFIX = 'mail_'
+
+function isSendableTemplateName(name: string): boolean {
+  return String(name || '')
+    .trim()
+    .startsWith(SENDABLE_TEMPLATE_PREFIX)
+}
 
 const initAllIdentities = ref(false)
 const templateName = ref<string>('')
@@ -495,6 +531,20 @@ const mailPaths = ref<{ personnel: string; principal: string }>({ personnel: '',
 const mailPathsReady = ref(false)
 const recipientAddressSource = ref<'principal' | 'personnel' | null>(null)
 
+const isInternalTemplate = computed(() => {
+  const name = String(templateName.value || '').trim()
+  return name.length > 0 && !isSendableTemplateName(name)
+})
+
+const showSendAll = computed(() => {
+  if (isInternalTemplate.value) {
+    return false
+  }
+  const total = Number(props.allIdentitiesCount || 0)
+  const selected = selectedRows.value.length
+  return total > Math.max(selected, 1)
+})
+
 const recipientSourceOptions = computed(() => {
   const opts: { label: string; value: 'principal' | 'personnel' }[] = []
   if (mailPaths.value.personnel) {
@@ -508,6 +558,7 @@ const recipientSourceOptions = computed(() => {
 
 const canSendMailTemplate = computed(
   () =>
+    !isInternalTemplate.value &&
     mailPathsReady.value &&
     String(mailSubject.value || '').trim().length > 0 &&
     (recipientAddressSource.value === 'principal' || recipientAddressSource.value === 'personnel'),
@@ -516,6 +567,9 @@ const canSendMailTemplate = computed(
 const sendButtonTitle = computed(() => {
   if (canSendMailTemplate.value) {
     return ''
+  }
+  if (isInternalTemplate.value) {
+    return 'Template interne Sesame : aperçu uniquement, envoi non autorisé.'
   }
   if (!mailPathsReady.value) {
     return 'Chargement des paramètres SMTP…'
@@ -596,7 +650,16 @@ async function fetchTemplates() {
   try {
     const res = await (useNuxtApp() as any).$http.get('/management/mail/templates', { method: 'GET' })
     const list = res?._data?.data || []
-    templates.value = Array.isArray(list) ? list.map((t: string) => ({ label: t, value: t })) : []
+    templates.value = Array.isArray(list)
+      ? list.map((t: string) => {
+          const name = String(t || '').trim()
+          const sendable = isSendableTemplateName(name)
+          return {
+            label: sendable ? name : `${name} (interne — aperçu seul)`,
+            value: name,
+          }
+        })
+      : []
   } finally {
     templatesLoading.value = false
   }
@@ -637,7 +700,8 @@ async function refreshPreview() {
 onMounted(async () => {
   await Promise.all([fetchTemplatesConfig(), fetchTemplates(), fetchMailPathsConfig()])
   if (templates.value.length && !templates.value.some((t) => t.value === templateName.value)) {
-    templateName.value = templates.value[0].value
+    const firstSendable = templates.value.find((t) => isSendableTemplateName(t.value))
+    templateName.value = firstSendable?.value ?? templates.value[0].value
   }
   await refreshPreview()
 })

@@ -6,6 +6,15 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { parse } from 'yaml'
 import { resolveConfigVariables } from '~/_common/functions/resolve-config-variables.function'
 
+/** Préfixe des templates envoyables manuellement depuis l’UI (hors flux internes Sesame). */
+export const USER_SENDABLE_MAIL_TEMPLATE_PREFIX = 'mail_'
+
+export function isUserSendableMailTemplate(templateName: string): boolean {
+  return String(templateName || '')
+    .trim()
+    .startsWith(USER_SENDABLE_MAIL_TEMPLATE_PREFIX)
+}
+
 @Injectable()
 export class MailTemplatesService implements OnApplicationBootstrap {
   private readonly logger = new Logger(MailTemplatesService.name)
@@ -72,8 +81,14 @@ export class MailTemplatesService implements OnApplicationBootstrap {
       .map((e) => e.name)
       .filter((name) => name.endsWith('.hbs'))
       .map((name) => name.replace(/\.hbs$/, ''))
-      .filter((name) => name.startsWith('mail_'))
-      .sort((a, b) => a.localeCompare(b))
+      .sort((a, b) => {
+        const aSendable = isUserSendableMailTemplate(a)
+        const bSendable = isUserSendableMailTemplate(b)
+        if (aSendable !== bSendable) {
+          return aSendable ? -1 : 1
+        }
+        return a.localeCompare(b)
+      })
   }
 
   public async renderPreviewHtml(template: string, variables?: Record<string, unknown>): Promise<string> {

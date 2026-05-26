@@ -36,6 +36,15 @@ q-dialog(
               :loading="templatesLoading"
               color="teal-7"
             )
+            q-input.q-mt-md(
+              v-model="mailSubject"
+              label="Sujet du mail"
+              hint="Sujet affiché par le client mail (obligatoire)"
+              outlined
+              dense
+              color="teal-7"
+              autocomplete="off"
+            )
             q-banner.q-mt-md(
               v-if="mailPathsReady && recipientSourceOptions.length === 0"
               rounded
@@ -195,6 +204,15 @@ q-dialog(
             :loading="templatesLoading"
             color="teal-7"
           )
+          q-input.q-mt-md(
+            v-model="mailSubject"
+            label="Sujet du mail"
+            hint="Sujet affiché par le client mail (obligatoire)"
+            outlined
+            dense
+            color="teal-7"
+            autocomplete="off"
+          )
           q-banner.q-mt-md(
             v-if="mailPathsReady && recipientSourceOptions.length === 0"
             rounded
@@ -336,6 +354,7 @@ q-dialog(
 
 <script lang="ts" setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { watchDebounced } from '@vueuse/core'
 import { useDialogPluginComponent, useQuasar } from 'quasar'
 
 const props = defineProps({
@@ -463,6 +482,7 @@ const showSendAll = computed(() => {
 
 const initAllIdentities = ref(false)
 const templateName = ref<string>('')
+const mailSubject = ref<string>('')
 const templates = ref<{ label: string; value: string }[]>([])
 const templatesLoading = ref(false)
 const previewHtml = ref('')
@@ -489,6 +509,7 @@ const recipientSourceOptions = computed(() => {
 const canSendMailTemplate = computed(
   () =>
     mailPathsReady.value &&
+    String(mailSubject.value || '').trim().length > 0 &&
     (recipientAddressSource.value === 'principal' || recipientAddressSource.value === 'personnel'),
 )
 
@@ -498,6 +519,9 @@ const sendButtonTitle = computed(() => {
   }
   if (!mailPathsReady.value) {
     return 'Chargement des paramètres SMTP…'
+  }
+  if (String(mailSubject.value || '').trim().length === 0) {
+    return 'Renseignez le sujet du mail.'
   }
   if (recipientSourceOptions.value.length === 0) {
     return 'Configurez au moins un chemin JSON (e-mail personnel ou principal) dans Paramètres → Serveur SMTP.'
@@ -517,7 +541,7 @@ const variablesObject = computed(() => {
   const out: Record<string, string> = {}
   for (const row of variablesRows.value) {
     const k = String(row.key || '').trim()
-    if (!k) continue
+    if (!k || k === 'subject') continue
     out[k] = String(row.value ?? '')
   }
   return out
@@ -529,7 +553,7 @@ const variablesToSend = computed(() => {
   // Toujours envoyer les variables déclarées dans la config (avec leur défaut)
   for (const v of availableVariables.value) {
     const key = String(v?.key || '').trim()
-    if (!key) continue
+    if (!key || key === 'subject') continue
     base[key] = v.defaultValue !== undefined && v.defaultValue !== null ? String(v.defaultValue) : ''
   }
 
@@ -582,7 +606,7 @@ async function fetchTemplatesConfig() {
   try {
     const res = await (useNuxtApp() as any).$http.get('/management/mail/templates/config', { method: 'GET' })
     const vars = res?._data?.data?.variables || []
-    availableVariables.value = Array.isArray(vars) ? vars : []
+    availableVariables.value = Array.isArray(vars) ? vars.filter((v: { key?: string }) => String(v?.key || '').trim() !== 'subject') : []
   } catch {
     availableVariables.value = []
   }
@@ -597,6 +621,7 @@ async function refreshPreview() {
         template: templateName.value,
         variables: {
           ...variablesToSend.value,
+          subject: String(mailSubject.value || '').trim(),
           identity,
         },
       },
@@ -617,12 +642,13 @@ onMounted(async () => {
   await refreshPreview()
 })
 
-watch(
-  () => [templateName.value, variablesToSend.value],
-  async () => {
-    await refreshPreview()
+// Ne pas watcher variablesToSend (nouvel objet à chaque lecture) : boucle de re-renders + perte de focus/valeur sur q-input.
+watchDebounced(
+  [templateName, mailSubject, variablesRows, availableVariables],
+  () => {
+    void refreshPreview()
   },
-  { deep: true },
+  { debounce: 400, deep: true },
 )
 
 watch(
@@ -650,6 +676,7 @@ const syncIdentities = () => {
   onDialogOK({
     initAllIdentities: initAllIdentities.value,
     template: templateName.value,
+    subject: String(mailSubject.value || '').trim(),
     variables: variablesToSend.value,
     recipientAddressSource: recipientAddressSource.value,
   })

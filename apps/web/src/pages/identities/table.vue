@@ -550,13 +550,17 @@ export default defineNuxtComponent({
       }
     },
 
-    async sendTemplateMailToIdentities(identities, data: { template?: string; variables?: Record<string, string> }) {
+    async sendTemplateMailToIdentities(
+      identities,
+      data: { template?: string; subject?: string; variables?: Record<string, string>; recipientAddressSource?: string },
+    ) {
       const ids = this.bulkIdsFromIdentities(identities)
       try {
         const result = await this.$http.post('/management/mail/sendmany', {
           body: {
             ids,
             template: data?.template,
+            subject: data?.subject,
             variables: data?.variables,
             ...(data?.recipientAddressSource ? { recipientAddressSource: data.recipientAddressSource } : {}),
           },

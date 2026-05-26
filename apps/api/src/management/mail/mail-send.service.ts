@@ -20,6 +20,7 @@ export class MailSendService {
   public async sendTemplateToIdentities(args: {
     ids: string[];
     template: string;
+    subject: string;
     variables?: Record<string, string>;
     recipientAddressSource?: 'principal' | 'personnel';
   }): Promise<{ sent: number; skipped: number }> {
@@ -27,10 +28,15 @@ export class MailSendService {
     if (!template) {
       throw new BadRequestException('Template requis');
     }
+    const subject = String(args.subject || '').trim();
+    if (!subject) {
+      throw new BadRequestException('Sujet requis');
+    }
     const variables = (args.variables && typeof args.variables === 'object' ? args.variables : {}) as Record<
       string,
       any
     >;
+    const { subject: _subjectVar, ...templateVariables } = variables;
 
     const smtp = await this.mailadmService.getParams();
     const principalPath = String(smtp?.recipientJsonPathEmailPrincipal || '').trim();
@@ -81,11 +87,12 @@ export class MailSendService {
       try {
         await this.mailer.sendMail({
           to,
-          subject: variables?.subject || 'Notification',
+          subject,
           template,
           context: {
             identity,
-            ...variables,
+            subject,
+            ...templateVariables,
           },
         });
         sent++;

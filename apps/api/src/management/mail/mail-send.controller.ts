@@ -23,6 +23,7 @@ export class MailSendController {
     const result = await this.mailSend.sendTemplateToIdentities({
       ids: (body.ids || []).map((id) => String(id)),
       template: body.template,
+      subject: body.subject,
       variables: body.variables,
       recipientAddressSource: body.recipientAddressSource,
     });

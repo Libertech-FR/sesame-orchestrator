@@ -438,6 +438,7 @@ export default defineNuxtComponent({
               body: {
                 ids: [this.identity._id],
                 template: data?.template,
+                subject: data?.subject,
                 variables: data?.variables,
                 ...(data?.recipientAddressSource ? { recipientAddressSource: data.recipientAddressSource } : {}),
               },

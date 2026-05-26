@@ -15,6 +15,31 @@ export function isUserSendableMailTemplate(templateName: string): boolean {
     .startsWith(USER_SENDABLE_MAIL_TEMPLATE_PREFIX)
 }
 
+/** Valeurs fictives pour l’aperçu UI (variables runtime non prédictibles, ex. code de reset). */
+export const MAIL_TEMPLATE_PREVIEW_DEFAULTS: Record<string, unknown> = {
+  displayName: 'Jean Dupont (aperçu)',
+  uid: 'preview.user',
+  url: 'https://example.invalid/preview',
+  mail: 'preview@example.invalid',
+  code: '123456',
+  token: 'preview-token-exemple',
+  subject: 'Sujet (aperçu)',
+  appName: 'Sesame',
+  title: 'Titre (aperçu)',
+  message: 'Message exemple pour l’aperçu du template.',
+  ctaUrl: 'https://example.invalid/preview/action',
+  ctaLabel: 'Ouvrir (aperçu)',
+  hibpCount: 0,
+}
+
+/** Contexte Handlebars pour l’aperçu : défauts + variables fournies. */
+export function buildMailTemplatePreviewContext(variables?: Record<string, unknown>): Record<string, unknown> {
+  return {
+    ...MAIL_TEMPLATE_PREVIEW_DEFAULTS,
+    ...(variables && typeof variables === 'object' ? variables : {}),
+  }
+}
+
 @Injectable()
 export class MailTemplatesService implements OnApplicationBootstrap {
   private readonly logger = new Logger(MailTemplatesService.name)
@@ -96,15 +121,9 @@ export class MailTemplatesService implements OnApplicationBootstrap {
     const filePath = path.join(this.getTemplatesDir(), `${templateName}.hbs`)
     const source = await fs.readFile(filePath, 'utf8')
 
-    const compiled = Handlebars.compile(source, { strict: true })
-    return compiled({
-      // Valeurs minimales pour éviter les crash sur templates existants
-      displayName: 'Preview',
-      uid: 'preview',
-      url: 'https://example.invalid/initaccount/preview',
-      mail: 'preview@example.invalid',
-      ...(variables || {}),
-    })
+    // strict: false + défauts : l’aperçu ne doit pas échouer sur des variables runtime (ex. code reset).
+    const compiled = Handlebars.compile(source, { strict: false })
+    return compiled(buildMailTemplatePreviewContext(variables))
   }
 }
 

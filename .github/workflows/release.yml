@@ -47,7 +47,7 @@ jobs:
         run: yarn workspace @libertech-fr/sesame-orchestrator_api test
 
       - name: Build docker
-        uses: Libertech-FR/lt-actions/release@main
+        uses: ./.github/actions/release
         with:
           version_increment: ${{ github.event.inputs.version_increment }}
           build_docker_image: ${{ github.event.inputs.build_docker_image }}

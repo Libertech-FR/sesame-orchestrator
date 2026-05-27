@@ -112,21 +112,8 @@ export default defineNuxtPlugin((nuxtApp) => {
           user?.webAuthnEnabled === true &&
           typeof window !== 'undefined' &&
           typeof window.PublicKeyCredential !== 'undefined'
-        const shouldUseWebAuthn =
-          canUseWebAuthn &&
-          (user?.totpEnabled !== true ||
-            (await new Promise<boolean>((resolve) => {
-              $q.dialog({
-                title: 'Validation MFA requise',
-                message: 'Vous pouvez valider avec votre clé FIDO ou saisir un code TOTP.',
-                persistent: true,
-                color: 'warning',
-                ok: { label: 'Utiliser une clé FIDO', color: 'warning' },
-                cancel: { label: 'Code TOTP', flat: true, color: 'primary' },
-              })
-                .onOk(() => resolve(true))
-                .onCancel(() => resolve(false))
-            })))
+        // Prefer TOTP when both methods are available so users without a FIDO key can proceed immediately.
+        const shouldUseWebAuthn = canUseWebAuthn && user?.totpEnabled !== true
 
         if (shouldUseWebAuthn) {
           try {

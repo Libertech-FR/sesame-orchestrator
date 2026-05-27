@@ -1,9 +1,25 @@
 import { Logger } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
+import { Types } from 'mongoose'
 import { Command, CommandRunner, InquirerService, Question, QuestionSet, SubCommand } from 'nest-commander'
-import { AgentsCreateDto } from '~/core/agents/_dto/agents.dto'
+import { AgentsCreateDto, AgentsUpdateDto } from '~/core/agents/_dto/agents.dto'
 import { AgentsService } from '~/core/agents/agents.service'
 import { Agents } from './_schemas/agents.schema'
+
+function isTotpEnabledForAgentSecurity(security: Record<string, unknown>): boolean {
+  const otpKey = `${security.otpKey || ''}`.trim().replace(/\s+/g, '').toUpperCase()
+  if (!otpKey) return false
+  return /^[A-Z2-7]+=*$/.test(otpKey) && otpKey.length >= 16
+}
+
+function hasWebAuthnKeyForAgentSecurity(security: Record<string, unknown>): boolean {
+  const keys = security.u2fKey
+  if (!Array.isArray(keys)) return false
+  return keys.some((key) => {
+    const entry = key && typeof key === 'object' ? (key as Record<string, unknown>) : {}
+    return `${entry.credentialId || ''}`.trim() && `${entry.publicKey || ''}`.trim()
+  })
+}
 
 /**
  * Ensemble de questions interactives pour la création d'un agent.
@@ -137,6 +153,74 @@ export class AgentsCreateCommand extends CommandRunner {
   }
 }
 
+/**
+ * Supprime le MFA (TOTP + clés FIDO/WebAuthn) d'un agent.
+ *
+ * @example
+ * ```bash
+ * yarn console agents clear-mfa admin
+ * ```
+ */
+@SubCommand({ name: 'clear-mfa', arguments: '<username>' })
+export class AgentsClearMfaCommand extends CommandRunner {
+  private readonly logger = new Logger(AgentsClearMfaCommand.name)
+
+  public constructor(
+    protected moduleRef: ModuleRef,
+    private readonly agentsService: AgentsService,
+  ) {
+    super()
+  }
+
+  async run(inputs: string[], _options: unknown): Promise<void> {
+    const username = `${inputs[0] || ''}`.trim()
+    if (!username) {
+      console.error('Usage: yarn console agents clear-mfa <username>')
+      return
+    }
+
+    this.logger.log(`Clearing MFA for agent "${username}"...`)
+
+    try {
+      const agent = (await this.agentsService.findOne<Agents>({ username })) as Agents | null
+      if (!agent?._id) {
+        console.error(`Agent introuvable: ${username}`)
+        return
+      }
+
+      const currentSecurity =
+        agent.security && typeof agent.security === 'object'
+          ? typeof (agent.security as { toObject?: () => Record<string, unknown> }).toObject === 'function'
+            ? (agent.security as { toObject: () => Record<string, unknown> }).toObject()
+            : { ...(agent.security as unknown as Record<string, unknown>) }
+          : {}
+
+      const hadTotp = isTotpEnabledForAgentSecurity(currentSecurity)
+      const hadWebAuthn = hasWebAuthnKeyForAgentSecurity(currentSecurity)
+      const fidoKeyCount = Array.isArray(currentSecurity.u2fKey) ? currentSecurity.u2fKey.length : 0
+
+      if (!hadTotp && !hadWebAuthn) {
+        console.log(`Aucun MFA actif pour "${username}".`)
+        return
+      }
+
+      await this.agentsService.update(agent._id as Types.ObjectId, {
+        security: {
+          ...currentSecurity,
+          otpKey: '',
+          u2fKey: [],
+        },
+      } as AgentsUpdateDto)
+
+      console.log(`MFA désactivé pour "${username}".`)
+      if (hadTotp) console.log('- TOTP supprimé')
+      if (hadWebAuthn) console.log(`- ${fidoKeyCount} clé(s) FIDO/WebAuthn supprimée(s)`)
+    } catch (error) {
+      console.error('Erreur lors de la suppression du MFA', error)
+    }
+  }
+}
+
 @SubCommand({ name: 'list' })
 export class AgentsListCommand extends CommandRunner {
   private readonly logger = new Logger(AgentsListCommand.name)
@@ -176,9 +260,14 @@ export class AgentsListCommand extends CommandRunner {
  * ```bash
  * yarn run console agents create
  * yarn run console agents list
+ * yarn console agents clear-mfa <username>
  * ```
  */
-@Command({ name: 'agents', arguments: '<task>', subCommands: [AgentsCreateCommand, AgentsListCommand] })
+@Command({
+  name: 'agents',
+  arguments: '<task>',
+  subCommands: [AgentsCreateCommand, AgentsListCommand, AgentsClearMfaCommand],
+})
 export class AgentsCommand extends CommandRunner {
   /**
    * Constructeur de la commande agents

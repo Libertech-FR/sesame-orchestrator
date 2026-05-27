@@ -27,7 +27,7 @@ import { AuditsModule } from '../audits/audits.module';
         ...configService.get<JwtModuleOptions>('jwt.options', {}),
       }),
     }),
-    AgentsModule,
+    forwardRef(() => AgentsModule),
     RolesModule,
     AuditsModule,
     forwardRef(() => KeyringsModule),

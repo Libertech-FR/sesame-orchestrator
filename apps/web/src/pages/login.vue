@@ -62,8 +62,32 @@ q-dialog(v-model='showTotpDialog' persistent)
   q-card(style='min-width: 380px; max-width: 95vw')
     q-card-section
       .text-h6 Vérification 2FA
-      .text-caption.text-grey-7 Utilisez votre clé FIDO ou entrez le code TOTP à 6 chiffres de votre application.
-    q-card-section.q-pt-none(v-if='webAuthnAvailable')
+      .text-caption.text-grey-7 {{ mfaDialogCaption }}
+    q-card-section.q-pt-none(v-if='totpAvailable')
+      q-input(
+        ref='otpInput'
+        v-model='formData.otpCode'
+        label='Code TOTP (6 chiffres)'
+        maxlength='6'
+        inputmode='numeric'
+        autocomplete='one-time-code'
+        :readonly='pending || retryAfterSecondsLeft > 0'
+        outlined
+        autofocus
+        @keyup.enter='submitTotp'
+      )
+    q-card-section.q-pt-none(v-if='webAuthnAvailable && totpAvailable')
+      q-separator.q-my-sm
+      .text-caption.text-grey-7.text-center ou, si vous disposez d'une clé FIDO
+      q-btn.full-width.q-mt-sm(
+        flat
+        color='primary'
+        icon='mdi-usb'
+        :loading='pending'
+        :disable='pending || retryAfterSecondsLeft > 0'
+        @click='submitWebAuthn'
+      ) Utiliser une clé FIDO
+    q-card-section.q-pt-none(v-else-if='webAuthnAvailable')
       q-btn.full-width(
         color='primary'
         icon='mdi-usb'
@@ -72,16 +96,6 @@ q-dialog(v-model='showTotpDialog' persistent)
         @click='submitWebAuthn'
         unelevated
       ) Utiliser une clé FIDO
-      q-separator.q-my-md
-    q-card-section.q-pt-none(v-if='totpAvailable')
-      q-input(
-        v-model='formData.otpCode'
-        label='Code 2FA (6 chiffres)'
-        maxlength='6'
-        autocomplete='one-time-code'
-        :readonly='pending || retryAfterSecondsLeft > 0'
-        outlined
-      )
     q-card-actions(align='right')
       q-btn(flat color='primary' :disable='pending || retryAfterSecondsLeft > 0' @click='reset2faFlow') Annuler
       q-btn(
@@ -89,7 +103,7 @@ q-dialog(v-model='showTotpDialog' persistent)
         color='positive'
         icon='mdi-check-circle-outline'
         :loading='pending'
-        :disable='pending || retryAfterSecondsLeft > 0'
+        :disable='pending || retryAfterSecondsLeft > 0 || !formData.otpCode.trim()'
         @click='submitTotp'
         unelevated
       ) {{ retryAfterSecondsLeft > 0 ? `Réessayez dans ${retryAfterSecondsLeft}s` : 'Vérifier' }}
@@ -131,6 +145,29 @@ export default defineNuxtComponent({
       retryAfterSecondsLeft: ref(0),
       retryAfterTimer: ref<ReturnType<typeof setInterval> | null>(null),
     }
+  },
+  computed: {
+    mfaDialogCaption(): string {
+      if (this.totpAvailable && this.webAuthnAvailable) {
+        return 'Entrez le code à 6 chiffres de votre application d’authentification.'
+      }
+      if (this.totpAvailable) {
+        return 'Entrez le code à 6 chiffres de votre application d’authentification.'
+      }
+      if (this.webAuthnAvailable) {
+        return 'Utilisez votre clé FIDO pour finaliser la connexion.'
+      }
+      return 'Finalisez la vérification à deux facteurs.'
+    },
+  },
+  watch: {
+    showTotpDialog(isOpen: boolean) {
+      if (!isOpen || !this.totpAvailable) return
+      this.$nextTick(() => {
+        const input = this.$refs.otpInput as { focus?: () => void } | undefined
+        input?.focus?.()
+      })
+    },
   },
   methods: {
     isRecord(value: unknown): value is Record<string, unknown> {
@@ -230,16 +267,87 @@ export default defineNuxtComponent({
     },
     extractPayload(response: unknown): Record<string, unknown> {
       const base = this.isRecord(response) ? response : {}
+      const layers: Record<string, unknown>[] = [base]
+      for (const key of ['data', '_data', 'body'] as const) {
+        const nested = base[key]
+        if (this.isRecord(nested)) layers.push(nested)
+        if (this.isRecord(nested) && this.isRecord(nested.data)) layers.push(nested.data)
+        if (this.isRecord(nested) && this.isRecord(nested._data)) layers.push(nested._data)
+      }
+
+      const merged: Record<string, unknown> = {}
+      let hasAuthFields = false
+      for (const layer of layers) {
+        const keys = [
+          'requires2fa',
+          'challengeToken',
+          'methods',
+          'method',
+          'totpAvailable',
+          'webAuthnAvailable',
+          'access_token',
+          'refresh_token',
+          'uri',
+          'options',
+          'challengeId',
+        ] as const
+        for (const field of keys) {
+          if (field in layer) {
+            merged[field] = layer[field]
+            hasAuthFields = true
+          }
+        }
+      }
+      if (hasAuthFields) return merged
+
       const baseData = this.isRecord(base.data) ? base.data : {}
       const base_Data = this.isRecord(base._data) ? base._data : {}
       const candidates: unknown[] = [baseData, base_Data, baseData.data, base_Data.data, base]
       for (const candidate of candidates) {
         if (!candidate || typeof candidate !== 'object') continue
-        if ('requires2fa' in candidate || 'challengeToken' in candidate || 'access_token' in candidate || 'uri' in candidate) {
+        if (
+          'requires2fa' in candidate ||
+          'challengeToken' in candidate ||
+          'methods' in candidate ||
+          'access_token' in candidate ||
+          'uri' in candidate
+        ) {
           return candidate as Record<string, unknown>
         }
       }
       return (this.isRecord(base.data) ? base.data : null) || (this.isRecord(base._data) ? base._data : null) || base
+    },
+    isBrowserWebAuthnSupported(): boolean {
+      return typeof window !== 'undefined' && typeof window.PublicKeyCredential !== 'undefined'
+    },
+    isWebAuthnOffered(payload: Record<string, unknown>): boolean {
+      const methods = Array.isArray(payload.methods) ? payload.methods.map((method) => `${method}`.toLowerCase()) : []
+      const preferredMethod = `${payload.method || ''}`.toLowerCase()
+      return (
+        payload.webAuthnAvailable === true ||
+        methods.includes('webauthn') ||
+        preferredMethod === 'webauthn'
+      )
+    },
+    applyMfaFromPayload(payload: Record<string, unknown>) {
+      const totpOffered = this.isTotpAvailable(payload)
+      const webAuthnOffered = this.isWebAuthnOffered(payload)
+      this.totpAvailable = totpOffered || (Boolean(payload.requires2fa) && !totpOffered && !webAuthnOffered)
+      this.webAuthnAvailable = webAuthnOffered && this.isBrowserWebAuthnSupported()
+    },
+    async refreshMfaMethods() {
+      const preAuthResponse = await this.$http.post('/core/auth/local/preflight', {
+        body: {
+          username: this.formData.username,
+          password: this.formData.password,
+        },
+      })
+      const preAuthPayload = this.extractPayload(preAuthResponse)
+      if (!preAuthPayload?.requires2fa) {
+        throw new Error('MFA challenge unavailable')
+      }
+      this.challengeToken = (preAuthPayload.challengeToken as string | undefined) || ''
+      this.applyMfaFromPayload(preAuthPayload)
     },
     normalizeRedirectUri(uri?: string): string {
       const fallback = '/'
@@ -257,19 +365,11 @@ export default defineNuxtComponent({
       }
       return this.normalizeRedirectUri(responseOrBaseUrl)
     },
-    isWebAuthnAvailable(payload: Record<string, unknown>): boolean {
-      const methods = Array.isArray(payload.methods) ? payload.methods.map((method) => `${method}`.toLowerCase()) : []
-      const preferredMethod = `${payload.method || ''}`.toLowerCase()
-      return (
-        typeof window !== 'undefined' &&
-        typeof window.PublicKeyCredential !== 'undefined' &&
-        (payload.webAuthnAvailable === true || methods.includes('webauthn') || preferredMethod === 'webauthn')
-      )
-    },
     isTotpAvailable(payload: Record<string, unknown>): boolean {
+      if (payload.totpAvailable === true) return true
       const methods = Array.isArray(payload.methods) ? payload.methods.map((method) => `${method}`.toLowerCase()) : []
       if (methods.length > 0) return methods.includes('totp')
-      return payload.totpAvailable === true || `${payload.method || ''}`.toLowerCase() === 'totp'
+      return `${payload.method || ''}`.toLowerCase() === 'totp'
     },
     extractWebAuthnOptions(payload: Record<string, unknown>): PublicKeyCredentialRequestOptionsJSON | null {
       const options = this.isRecord(payload.options) ? payload.options : payload
@@ -399,14 +499,13 @@ export default defineNuxtComponent({
           if (preAuthPayload?.requires2fa) {
             this.requires2fa = true
             this.challengeToken = (preAuthPayload.challengeToken as string | undefined) || ''
-            this.webAuthnAvailable = this.isWebAuthnAvailable(preAuthPayload)
-            this.totpAvailable = this.isTotpAvailable(preAuthPayload)
+            this.applyMfaFromPayload(preAuthPayload)
             this.showTotpDialog = true
             this.$q.notify({
               type: 'info',
-              message: this.webAuthnAvailable
-                ? 'Utilisez votre clé FIDO ou votre code 2FA pour finaliser la connexion.'
-                : 'Entrez votre code 2FA pour finaliser la connexion.',
+              message: this.totpAvailable
+                ? 'Entrez votre code TOTP à 6 chiffres pour finaliser la connexion.'
+                : 'Utilisez votre clé FIDO pour finaliser la connexion.',
               position: 'top',
               timeout: 4000,
             })
@@ -419,6 +518,16 @@ export default defineNuxtComponent({
             },
           })
         } else {
+          try {
+            await this.refreshMfaMethods()
+          } catch {
+            this.$q.notify({
+              type: 'negative',
+              message: 'Impossible de charger les méthodes 2FA. Réessayez.',
+              position: 'top',
+            })
+            return
+          }
           this.showTotpDialog = true
           return
         }

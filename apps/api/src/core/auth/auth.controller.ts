@@ -291,6 +291,8 @@ export class AuthController extends AbstractController {
         return res.status(HttpStatus.OK).json({
           requires2fa: true,
           challengeToken,
+          totpAvailable: totpEnabled,
+          webAuthnAvailable,
           method: webAuthnAvailable ? 'webauthn' : 'totp',
           methods: [webAuthnAvailable ? 'webauthn' : null, totpEnabled ? 'totp' : null].filter(Boolean),
         });
@@ -379,6 +381,8 @@ export class AuthController extends AbstractController {
     return res.status(HttpStatus.OK).json({
       requires2fa: true,
       challengeToken: preflight.challengeToken,
+      totpAvailable: preflight.totpAvailable,
+      webAuthnAvailable: preflight.webAuthnAvailable,
       method: preflight.webAuthnAvailable ? 'webauthn' : 'totp',
       methods: [preflight.webAuthnAvailable ? 'webauthn' : null, preflight.totpAvailable ? 'totp' : null].filter(
         Boolean,

@@ -144,17 +144,24 @@ export class MailSendService {
       }
 
       try {
-        await this.mailer.sendMail({
-          to: recipients.length === 1 ? recipients[0] : recipients,
-          subject,
-          template,
-          context: {
-            identity,
+        // Envoyer un mail par destinataire.
+        // MailDev (et certains SMTP) affichent souvent un seul message pour plusieurs RCPT TO ;
+        // ici on force 1 message par adresse pour un comportement UI attendu.
+        let sentForIdentity = 0;
+        for (const to of recipients) {
+          await this.mailer.sendMail({
+            to,
             subject,
-            ...templateVariables,
-          },
-        });
-        sent++;
+            template,
+            context: {
+              identity,
+              subject,
+              ...templateVariables,
+            },
+          });
+          sentForIdentity++;
+        }
+        sent += sentForIdentity;
       } catch (e) {
         this.logger.warn(
           `Failed to send template <${template}> to identity <${(identity as any)?._id}>: ${e?.message || e}`,

@@ -39,7 +39,7 @@
     "console": "yarn workspace @libertech-fr/sesame-orchestrator_api console"
   },
   "devDependencies": {
-    "turbo": "^2.3.3"
+    "turbo": "^2.9.15"
   },
-  "packageManager": "yarn@1.22.19"
+  "packageManager": "yarn@1.22.22"
 }

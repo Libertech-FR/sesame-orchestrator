@@ -3,6 +3,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Post,
   Query,
   Req,
   Res,
@@ -16,6 +17,7 @@ import { AbstractController } from '~/_common/abstracts/abstract.controller'
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
 import { Lifecycle } from './_schemas/lifecycle.schema'
 import { LifecycleCrudService } from './lifecycle-crud.service'
+import { LifecycleHooksService } from './lifecycle-hooks.service'
 import { LifecycleCacheInterceptor } from './_interceptors/lifecycle-cache.interceptor'
 import { UseRoles } from '~/_common/decorators/use-roles.decorator'
 import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types'
@@ -56,6 +58,7 @@ export class LifecycleController extends AbstractController {
    */
   public constructor(
     protected readonly _service: LifecycleCrudService,
+    private readonly lifecycleHooksService: LifecycleHooksService,
   ) {
     super()
   }
@@ -87,6 +90,26 @@ export class LifecycleController extends AbstractController {
    *   total: 2
    * }
    */
+  @Post('identity/:identityId/force')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiOperation({ summary: 'Forcer la réexécution du cycle de vie courant' })
+  @ApiParam({ name: 'identityId', description: 'Identifiant de l\'identité' })
+  public async forceLifecycle(
+    @Param('identityId', ObjectIdValidationPipe) identityId: Types.ObjectId,
+    @Res() res: Response,
+  ): Promise<Response> {
+    await this.lifecycleHooksService.forceLifecycleEvent(identityId)
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: 'Cycle de vie réexécuté',
+    })
+  }
+
   @Get('identity/:identityId')
   @UseRoles({
     resource: '/management/lifecycle',

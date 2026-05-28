@@ -156,6 +156,22 @@
                   span(v-text='stateItem.label')
                   | &nbsp;
                   small(v-text='("(" + stateItem.key + ")")')
+            q-separator
+            q-item(
+              clickable
+              v-close-popup
+              @click="forceLifecycleExecution()"
+              :disable="loadingForceLifecycle"
+            )
+              q-item-section(avatar)
+                q-icon(
+                  :name="loadingForceLifecycle ? 'mdi-loading' : 'mdi-replay'"
+                  :class="{ 'mdi-spinner-parent': loadingForceLifecycle }"
+                  color="purple-8"
+                )
+              q-item-section
+                q-item-label Forcer l'exécution du cycle de vie
+                q-item-label(caption) Réapplique les scripts backend pour l'état courant
         q-separator(v-for='_ in 2' :key='_' vertical)
         q-btn-dropdown(:class="[$q.dark.isActive ? 'text-white' : 'text-black']" dropdown-icon="mdi-dots-vertical" unelevated dense)
           q-list(dense)
@@ -242,6 +258,7 @@ export default defineNuxtComponent({
       validationsModal: false,
       resetPasswordModal: false,
       loadingSwitchStatus: false,
+      loadingForceLifecycle: false,
     }
   },
   async setup() {
@@ -314,6 +331,49 @@ export default defineNuxtComponent({
           icon: 'mdi-alert-circle-outline',
         })
       }
+    },
+    async forceLifecycleExecution() {
+      this.$q
+        .dialog({
+          title: 'Confirmation',
+          message:
+            "Voulez-vous forcer la réexécution du cycle de vie courant ? Les scripts backend seront relancés comme lors d'un nouveau changement d'état.",
+          persistent: true,
+          ok: {
+            push: true,
+            color: 'positive',
+            label: 'Forcer',
+          },
+          cancel: {
+            push: true,
+            color: 'negative',
+            label: 'Annuler',
+          },
+        })
+        .onOk(async () => {
+          this.loadingForceLifecycle = true
+          try {
+            await this.$http.post(`/management/lifecycle/identity/${this.identity._id}/force`)
+            this.$q.notify({
+              message: 'La réexécution du cycle de vie a été lancée',
+              color: 'positive',
+              position: 'top-right',
+              icon: 'mdi-check-circle-outline',
+            })
+            ;(this as any).refresh()
+          } catch (error: any) {
+            this.$q.notify({
+              message:
+                'Impossible de forcer la réexécution du cycle de vie : ' +
+                (error?.response?._data?.message || error?.message || 'erreur inconnue'),
+              color: 'negative',
+              position: 'top-right',
+              icon: 'mdi-alert-circle-outline',
+            })
+          } finally {
+            this.loadingForceLifecycle = false
+          }
+        })
     },
     async doChangePassword() {
       try {

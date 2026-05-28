@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { Types } from 'mongoose'
 import { OnEvent } from '@nestjs/event-emitter'
 import { CronJob } from 'cron'
 import dayjs from 'dayjs'
@@ -435,8 +436,26 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * // Si une règle OFFICIAL -> MANUAL existe et match
    * // L'identité est automatiquement transitionnée vers MANUAL
    */
-  private async fireLifecycleEvent(before: Identities, after: Identities): Promise<void> {
-    const lifecycleChanged = !!before && before.lifecycle !== after.lifecycle
+  /**
+   * Force la réexécution des effets d'un changement de cycle de vie sans modifier l'état courant.
+   *
+   * Utile pour rejouer les scripts backend lorsque la configuration a évolué après le dernier passage.
+   */
+  public async forceLifecycleEvent(identityId: Types.ObjectId): Promise<void> {
+    const identity = await this.identitiesService.findById<Identities>(identityId)
+    if (!identity) {
+      throw new NotFoundException('Identity not found')
+    }
+
+    await this.fireLifecycleEvent(identity, identity, { force: true })
+  }
+
+  private async fireLifecycleEvent(
+    before: Identities,
+    after: Identities,
+    options?: { force?: boolean },
+  ): Promise<void> {
+    const lifecycleChanged = options?.force || (!!before && before.lifecycle !== after.lifecycle)
 
     if (lifecycleChanged) {
       await this.create({

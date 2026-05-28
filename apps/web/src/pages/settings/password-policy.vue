@@ -103,7 +103,7 @@
           q-tooltip.text-body2(anchor="bottom middle" self="top middle" :offset="[0, 8]" v-else-if="!hibpKeyStatus.valid")
             span(v-text="hibpKeyStatus.reason || 'Clé SESAME_PASSWORD_HISTORY_HIBP_KEY invalide'")
           q-tooltip.text-body2(anchor="bottom middle" self="top middle" :offset="[0, 8]" v-else)
-            | Active le stockage des empreintes SHA-1 chiffrées (non réversibles) dans l'historique des mots de passe pour permettre le re-check planifié.
+            | Active le stockage d’empreintes SHA-1 chiffrées (chiffrées/déchiffrables côté serveur via SESAME_PASSWORD_HISTORY_HIBP_KEY) dans l'historique des mots de passe pour permettre le re-check planifié.
         q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
           :disable='!hasPermission("/settings/passwdadm", "update")'
           dense

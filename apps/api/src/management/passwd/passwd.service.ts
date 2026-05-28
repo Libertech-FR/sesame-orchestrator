@@ -56,6 +56,12 @@ export class PasswdService extends AbstractService {
 
   public static readonly TOKEN_ALGORITHM = 'aes-256-gcm';
 
+  protected readonly BRUTEFORCE_FAIL_PREFIX = 'passwd:bf:fail';
+  protected readonly BRUTEFORCE_BLOCK_PREFIX = 'passwd:bf:block';
+  protected readonly BRUTEFORCE_THRESHOLD = 5;
+  protected readonly BRUTEFORCE_FAIL_WINDOW_SECONDS = 6 * 60 * 60;
+  protected readonly BRUTEFORCE_COOLDOWN_STEPS_SECONDS = [60, 300, 1800, 3600];
+
   public constructor(
     protected readonly backends: BackendsService,
     protected readonly identities: IdentitiesCrudService,
@@ -232,7 +238,21 @@ export class PasswdService extends AbstractService {
   }
 
   //Changement du password
-  public async change(passwdDto: ChangePasswordDto): Promise<[Jobs, any]> {
+  public async change(passwdDto: ChangePasswordDto, clientIp?: string | null): Promise<[Jobs, any]> {
+    const ip = this.normalizeClientIp(clientIp);
+    const uid = `${passwdDto?.uid || ''}`.trim();
+    const block = await this.getChangePasswordBruteforceBlock({ uid, ip });
+    if (block.blocked) {
+      throw new HttpException(
+        {
+          message: 'Too many password change attempts. Please retry later.',
+          retryAfterSeconds: block.retryAfterSeconds,
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+
+    let shouldCountFailure = false;
     try {
       const identity = (await this.identities.findOne({
         'inetOrgPerson.uid': passwdDto.uid,
@@ -253,6 +273,7 @@ export class PasswdService extends AbstractService {
       }
       await this.passwordHistory.assertNotReused(identity._id, passwdDto.newPassword);
       //tout est ok en envoie au backend
+      shouldCountFailure = true;
       const result = await this.backends.executeJob(
         ActionType.IDENTITY_PASSWORD_CHANGE,
         identity._id,
@@ -274,11 +295,27 @@ export class PasswdService extends AbstractService {
       await this.identities.model.updateOne({ _id: identity._id }, { dataStatus: DataStatusEnum.ACTIVE });
       await this.passwordHistory.recordPassword(identity._id, passwdDto.newPassword, 'change');
       await this.updatePasswordUsageExpiration(identity._id);
+      await this.clearChangePasswordBruteforceState({ uid, ip });
       return result;
     } catch (e) {
+      if (e instanceof HttpException && e.getStatus?.() === HttpStatus.TOO_MANY_REQUESTS) throw e;
+
       let job = undefined;
       let _debug = undefined;
       this.logger.error('Error while changing password. ' + e + ` (uid=${passwdDto?.uid})`);
+
+      if (shouldCountFailure) {
+        const failure = await this.registerChangePasswordBruteforceFailure({ uid, ip });
+        if (failure.blocked) {
+          throw new HttpException(
+            {
+              message: 'Too many password change attempts. Please retry later.',
+              retryAfterSeconds: failure.retryAfterSeconds,
+            },
+            HttpStatus.TOO_MANY_REQUESTS,
+          );
+        }
+      }
 
       if (e?.response?.status === HttpStatus.BAD_REQUEST) {
         job = {};
@@ -297,6 +334,74 @@ export class PasswdService extends AbstractService {
         _debug,
       });
     }
+  }
+
+  protected normalizeClientIp(clientIp?: string | null): string | null {
+    if (!clientIp || typeof clientIp !== 'string') return null;
+    let value = clientIp.trim();
+    if (!value) return null;
+    if (value.startsWith('::ffff:')) value = value.slice(7);
+    const zoneIdx = value.indexOf('%');
+    if (zoneIdx > -1) value = value.slice(0, zoneIdx);
+    if (value === '::1') return '127.0.0.1';
+    return value;
+  }
+
+  protected hashKeyPart(value: string): string {
+    return crypto.createHash('sha256').update(value).digest('hex').slice(0, 32);
+  }
+
+  protected getChangePasswordBruteforceFailKey(params: { uid: string; ip: string | null }): string {
+    const ipPart = this.hashKeyPart(params.ip || 'n/a');
+    const uidPart = this.hashKeyPart(`${params.uid || ''}`.trim().toLowerCase());
+    return [this.BRUTEFORCE_FAIL_PREFIX, ipPart, uidPart].join(':');
+  }
+
+  protected getChangePasswordBruteforceBlockKey(params: { uid: string; ip: string | null }): string {
+    const ipPart = this.hashKeyPart(params.ip || 'n/a');
+    const uidPart = this.hashKeyPart(`${params.uid || ''}`.trim().toLowerCase());
+    return [this.BRUTEFORCE_BLOCK_PREFIX, ipPart, uidPart].join(':');
+  }
+
+  public async getChangePasswordBruteforceBlock(params: {
+    uid: string;
+    ip: string | null;
+  }): Promise<{ blocked: boolean; retryAfterSeconds: number }> {
+    const blockKey = this.getChangePasswordBruteforceBlockKey(params);
+    const ttl = await this.redis.ttl(blockKey);
+    const retryAfterSeconds = Number.isFinite(ttl) && ttl > 0 ? ttl : 0;
+    return { blocked: retryAfterSeconds > 0, retryAfterSeconds };
+  }
+
+  public async registerChangePasswordBruteforceFailure(params: {
+    uid: string;
+    ip: string | null;
+  }): Promise<{ count: number; blocked: boolean; retryAfterSeconds: number }> {
+    const failKey = this.getChangePasswordBruteforceFailKey(params);
+    const count = await this.redis.incr(failKey);
+    if (count === 1) {
+      await this.redis.expire(failKey, this.BRUTEFORCE_FAIL_WINDOW_SECONDS);
+    }
+
+    if (count < this.BRUTEFORCE_THRESHOLD) {
+      return { count, blocked: false, retryAfterSeconds: 0 };
+    }
+
+    const stepIndex = Math.min(
+      this.BRUTEFORCE_COOLDOWN_STEPS_SECONDS.length - 1,
+      Math.max(count - this.BRUTEFORCE_THRESHOLD, 0),
+    );
+    const cooldownSeconds =
+      this.BRUTEFORCE_COOLDOWN_STEPS_SECONDS[stepIndex] ?? this.BRUTEFORCE_COOLDOWN_STEPS_SECONDS.at(-1) ?? 60;
+
+    const blockKey = this.getChangePasswordBruteforceBlockKey(params);
+    await this.redis.set(blockKey, `${count}`, 'EX', cooldownSeconds);
+    return { count, blocked: true, retryAfterSeconds: cooldownSeconds };
+  }
+
+  public async clearChangePasswordBruteforceState(params: { uid: string; ip: string | null }): Promise<void> {
+    await this.redis.del(this.getChangePasswordBruteforceFailKey(params));
+    await this.redis.del(this.getChangePasswordBruteforceBlockKey(params));
   }
 
   // Genere un token pour les autres methodes

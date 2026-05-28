@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Logger, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Logger, Post, Req, Res } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { Document } from 'mongoose';
@@ -12,6 +12,8 @@ import { PasswdadmService } from '~/settings/passwdadm.service';
 import { ChangePasswordDto } from './_dto/change-password.dto';
 import { ResetPasswordDto } from './_dto/reset-password.dto';
 import { PasswdService } from './passwd.service';
+import { resolveClientIp } from '~/_common/functions/resolve-client-ip';
+import { HttpException } from '@nestjs/common';
 
 @Controller('passwd')
 @ApiTags('management/passwd')
@@ -26,21 +28,36 @@ export class PasswdController {
   @Post('change')
   @ApiOperation({ summary: 'Execute un job de changement de mot de passe sur le/les backends' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Mot de passe synchronisé sur le/les backends' })
-  public async change(@Body() body: ChangePasswordDto, @Res() res: Response): Promise<Response> {
+  public async change(@Req() req: any, @Body() body: ChangePasswordDto, @Res() res: Response): Promise<Response> {
     const debug = {};
 
-    const [, data] = await this.passwdService.change(body);
-    this.logger.log(`Call passwd change for : ${body.uid}`);
+    try {
+      const [, data] = await this.passwdService.change(body, resolveClientIp(req) ?? null);
+      this.logger.log(`Call passwd change for : ${body.uid}`);
 
-    if (process.env.NODE_ENV === 'development') {
-      debug['_debug'] = data;
+      if (process.env.NODE_ENV === 'development') {
+        debug['_debug'] = data;
+      }
+
+      return res.status(HttpStatus.OK).json({
+        message: 'Password changed',
+        status: 0,
+        ...debug,
+      });
+    } catch (e) {
+      if (e instanceof HttpException && e.getStatus?.() === HttpStatus.TOO_MANY_REQUESTS) {
+        const payload = e.getResponse() as any;
+        const retryAfterSeconds =
+          payload && typeof payload === 'object' && Number.isFinite(Number(payload.retryAfterSeconds))
+            ? Number(payload.retryAfterSeconds)
+            : 0;
+        if (retryAfterSeconds > 0) {
+          res.set('Retry-After', `${retryAfterSeconds}`);
+        }
+        return res.status(HttpStatus.TOO_MANY_REQUESTS).json(payload);
+      }
+      throw e;
     }
-
-    return res.status(HttpStatus.OK).json({
-      message: 'Password changed',
-      status: 0,
-      ...debug,
-    });
   }
 
   @Post('resetbycode')

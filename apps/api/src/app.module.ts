@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
+import { SesameQueueModule } from '~/_common/queue/sesame-queue.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CoreModule } from './core/core.module';
 import { ManagementModule } from './management/management.module';
@@ -114,17 +115,22 @@ import { MfaGuard } from './_common/guards/mfa.guard';
         options: config.get<RedisOptions>('ioredis.options'),
       }),
     }),
-    BullModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        connection: {
-          host: configService.get('ioredis.host'),
-          port: configService.get('ioredis.port'),
-        },
-        blockingConnection: true,
-      }),
-    }),
+    ...(process.env['SESAME_MS_BETA'] !== '1'
+      ? [
+          BullModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: async (configService: ConfigService) => ({
+              connection: {
+                host: configService.get('ioredis.host'),
+                port: configService.get('ioredis.port'),
+              },
+              blockingConnection: true,
+            }),
+          }),
+        ]
+      : []),
+    SesameQueueModule.register(),
     AccessControlModule.forRootAsync({
       imports: [CoreModule],
       inject: [AclRuntimeService],

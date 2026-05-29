@@ -14,6 +14,7 @@ import { readFileSync } from 'fs'
 import * as http from 'http'
 import * as https from 'https'
 import { ShutdownObserver } from './_common/observers/shutdown.observer'
+import { SesameIoAdapter } from './_common/adapters/sesame-io.adapter'
 import { useContainer } from 'class-validator'
 
 declare const module: any;
@@ -64,27 +65,22 @@ declare const module: any;
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true })
 
+  const shutdownObserver = app.get(ShutdownObserver)
+  const httpServer = http.createServer(server)
+  const ioAdapter = new SesameIoAdapter(httpServer)
+
+  app.useWebSocketAdapter(ioAdapter)
   await app.init()
 
-  const shutdownObserver = app.get(ShutdownObserver)
-  const httpServer = http.createServer(server).listen(4000)
-
-  // Set timeout to 0 for SSE connections
-  httpServer.timeout = 0
-  httpServer.keepAliveTimeout = 0
-  httpServer.headersTimeout = 0
-
+  httpServer.listen(4000)
   shutdownObserver.addHttpServer(httpServer)
   logger.log(`Sesame - Orchestrator is READY on <http://127.0.0.1:4000> !`)
 
   if (cfg.application?.https?.enabled) {
-    const httpsServer = https.createServer(extraOptions.httpsOptions!, server).listen(4443)
+    const httpsServer = https.createServer(extraOptions.httpsOptions!, server)
 
-    // Set timeout to 0 for SSE connections
-    httpsServer.timeout = 0
-    httpsServer.keepAliveTimeout = 0
-    httpsServer.headersTimeout = 0
-
+    ioAdapter.attachToServer(httpsServer)
+    httpsServer.listen(4443)
     shutdownObserver.addHttpServer(httpsServer)
     logger.log(`Sesame - Orchestrator is READY on <https://127.0.0.1:4443> !`)
   }

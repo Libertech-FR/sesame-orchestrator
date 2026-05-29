@@ -21,7 +21,7 @@ q-layout(view="hHh LpR lff" style="margin-top: -1px;")
 <script lang="ts">
 import { IdentityState } from '~/constants/enums'
 import { useIdentityStateStore } from '~/stores/identityState'
-import ReconnectingEventSource from 'reconnecting-eventsource'
+import { io, type Socket } from 'socket.io-client'
 
 export default defineNuxtComponent({
   name: 'DefaultLayout',
@@ -34,7 +34,8 @@ export default defineNuxtComponent({
   },
   data() {
     return {
-      es: null as ReconnectingEventSource | null,
+      socket: null as Socket | null,
+      stopAuthWatch: null as (() => void) | null,
       removeRouteBeforeEachGuard: null as (() => void) | null,
       removeRouteAfterEachHook: null as (() => void) | null,
       removeRouteErrorHook: null as (() => void) | null,
@@ -104,44 +105,16 @@ export default defineNuxtComponent({
       }
 
       try {
-        const daemonPackageResponse = await $http.$post('/core/backends/execute', {
-          query: {
-            async: 'false',
-            disableLogs: 'true',
-            timeoutDiscard: 'true',
-            syncTimeout: '3000',
-          },
-          method: 'POST',
-          body: {
-            action: 'DUMP_PACKAGE_CONFIG',
-          },
-        }) as {
-          response?: {
-            data?: Array<{
-              version?: string
-            }> | {
-              package?: {
-                version?: string
-              }
-              version?: string
-            }
-            package?: {
-              version?: string
-            }
-            version?: string
-          }
+        const daemonStatusResponse = await $http.$get('/core/backends/daemon/status') as {
+          online?: boolean
+          version?: string
         }
 
-        const daemonResponseData = daemonPackageResponse?.response?.data
-        const daemonResponseDataVersion = Array.isArray(daemonResponseData)
-          ? daemonResponseData?.[0]?.version
-          : daemonResponseData?.package?.version || daemonResponseData?.version
+        if (!daemonStatusResponse?.online) {
+          return
+        }
 
-        const daemonCurrentVersion =
-          daemonResponseDataVersion ||
-          daemonPackageResponse?.response?.package?.version ||
-          daemonPackageResponse?.response?.version ||
-          '0.0.0'
+        const daemonCurrentVersion = daemonStatusResponse.version || '0.0.0'
 
         const daemonUpdateResponse = await $http.$get(`/get-update/sesame-daemon?current=${encodeURIComponent(daemonCurrentVersion)}`) as {
           data?: {
@@ -165,10 +138,57 @@ export default defineNuxtComponent({
       this.eventSeamlessCurrent = 0
       this.eventSeamless = true
     },
-    async onmessage(event) {
-      try {
-        const data = JSON.parse(event.data)
+    connectBackendsSocket(auth: ReturnType<typeof useAuth>): void {
+      const connect = () => {
+        const id = auth.user?._id
+        const key = auth.user?.sseToken
+        if (!id || !key) {
+          return
+        }
 
+        this.disconnectBackendsSocket()
+
+        const apiOrigin = resolveSocketApiOrigin()
+
+        this.socket = io(`${apiOrigin}/core/backends`, {
+          path: '/socket.io',
+          query: { id: String(id), key: String(key) },
+          transports: ['polling', 'websocket'],
+          reconnectionAttempts: 10,
+        })
+        this.socket.on('message', this.onJobMessage.bind(this))
+        this.socket.on('connect_error', () => {
+          if (!auth.user?.sseToken) {
+            this.disconnectBackendsSocket()
+          }
+        })
+      }
+
+      if (auth.user?._id && auth.user?.sseToken) {
+        connect()
+        return
+      }
+
+      this.stopAuthWatch = watch(
+        () => [auth.user?._id, auth.user?.sseToken],
+        () => {
+          if (auth.user?._id && auth.user?.sseToken) {
+            this.stopAuthWatch?.()
+            this.stopAuthWatch = null
+            connect()
+          }
+        },
+      )
+    },
+    disconnectBackendsSocket(): void {
+      if (this.socket) {
+        this.socket.removeAllListeners()
+        this.socket.disconnect()
+        this.socket = null
+      }
+    },
+    async onJobMessage(data: { channel: string; payload: { jobId?: string } }) {
+      try {
         if (/^job:/.test(data.channel)) {
           if (this.eventSeamlessTotal === 0) {
             await this.identityStateStore.fetchAllStateCount()
@@ -179,12 +199,16 @@ export default defineNuxtComponent({
         switch (data.channel) {
           case 'job:added':
             this.eventSeamless = true
-            this.eventSeamlessCurrentJobs[data.payload.jobId] = data.payload
+            if (data.payload?.jobId) {
+              this.eventSeamlessCurrentJobs[data.payload.jobId] = data.payload
+            }
             break
 
           case 'job:failed':
           case 'job:completed':
-            delete this.eventSeamlessCurrentJobs[data.payload.jobId]
+            if (data.payload?.jobId) {
+              delete this.eventSeamlessCurrentJobs[data.payload.jobId]
+            }
             this.eventSeamlessCurrent++
 
             if (this.eventSeamlessCurrent >= this.eventSeamlessTotal) {
@@ -216,12 +240,7 @@ export default defineNuxtComponent({
       this.$q.loadingBar.stop()
     })
 
-    const esUrl = new URL(window.location.origin + '/api/core/backends/sse')
-    esUrl.searchParams.append('id', '' + auth.user?._id)
-    esUrl.searchParams.append('key', '' + auth.user?.sseToken)
-
-    this.es = new ReconnectingEventSource(esUrl)
-    this.es.onmessage = this.onmessage.bind(this)
+    this.connectBackendsSocket(auth)
 
     this.fetchVersions()
   },
@@ -231,9 +250,9 @@ export default defineNuxtComponent({
     this.removeRouteErrorHook?.()
     this.$q.loadingBar.stop()
 
-    if (this.es) {
-      this.es.close()
-    }
+    this.stopAuthWatch?.()
+    this.stopAuthWatch = null
+    this.disconnectBackendsSocket()
   },
 })
 </script>

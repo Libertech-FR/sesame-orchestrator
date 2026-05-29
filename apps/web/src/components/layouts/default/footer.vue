@@ -30,22 +30,29 @@
         small.gt-xs Orchestrator&nbsp;
         small.text-grey-7(v-text="orchestratorVersion?.currentVersion ? ('v' + orchestratorVersion?.currentVersion) : 'N/A'")
       q-separator.q-mx-sm(vertical inset style="width: 2px;")
-      a(
-        :href="daemonVersion?.currentVersion ? 'https://github.com/Libertech-FR/sesame-daemon/releases/tag/' + daemonVersion?.currentVersion : 'javascript:void(0)'"
-        :target="daemonVersion?.currentVersion ? '_blank' : undefined"
-        rel="noopener noreferrer"
-        style="color: inherit; text-decoration: none;"
-      )
-        q-tooltip.text-body2(
-          v-if="daemonVersion?.currentVersion"
-          anchor="top middle"
-          self="bottom middle"
+      .row.items-center.no-wrap(style="margin: 0 !important;")
+        a(
+          :href="daemonVersion?.currentVersion ? 'https://github.com/Libertech-FR/sesame-daemon/releases/tag/' + daemonVersion?.currentVersion : 'javascript:void(0)'"
+          :target="daemonVersion?.currentVersion ? '_blank' : undefined"
+          rel="noopener noreferrer"
+          style="color: inherit; text-decoration: none;"
         )
-          | Version de Daemon actuellement installée : {{ daemonVersion?.currentVersion ? ('v' + daemonVersion?.currentVersion) : 'N/A' }}.
-          br
-          small.text-caption Cliquez pour ouvrir la page de version et consulter les notes de publication.
-        small.gt-xs Daemon&nbsp;
-        small.text-grey-7(v-text="daemonVersion?.currentVersion ? ('v' + daemonVersion?.currentVersion) : 'N/A'")
+          q-tooltip.text-body2(
+            v-if="daemonVersion?.currentVersion"
+            anchor="top middle"
+            self="bottom middle"
+          )
+            | Version de Daemon actuellement installée : {{ daemonVersion?.currentVersion ? ('v' + daemonVersion?.currentVersion) : 'N/A' }}.
+            br
+            small.text-caption Cliquez pour ouvrir la page de version et consulter les notes de publication.
+          small.gt-xs Daemon&nbsp;
+          small.text-grey-7(v-text="daemonVersion?.currentVersion ? ('v' + daemonVersion?.currentVersion) : 'N/A'")
+        q-icon.q-mr-xs.cursor-help.q-ml-xs(
+          :name="daemonStatusIcon"
+          :color="daemonStatusColor"
+          size="16px"
+        )
+          q-tooltip.text-body2(anchor="top middle" self="bottom middle") {{ daemonStatusTooltip }}
       q-separator.q-mx-sm(v-if='orchestratorVersion?.updateAvailable || daemonVersion?.updateAvailable' vertical inset style="width: 2px;")
       q-btn.q-px-xs(
         v-show="orchestratorVersion?.updateAvailable"
@@ -118,9 +125,67 @@ export default defineNuxtComponent({
       debugNetworkPayload.value ? JSON.stringify(debugNetworkPayload.value, null, 2) : '',
     )
 
+    const daemonStatus = ref({
+      online: false,
+      pingMs: null as number | null,
+      checking: true,
+    })
+    let daemonStatusTimer: ReturnType<typeof setInterval> | null = null
+
+    const fetchDaemonStatus = async () => {
+      daemonStatus.value.checking = true
+      try {
+        const { $http } = useNuxtApp()
+        const response = (await $http.$get('/core/backends/daemon/status')) as {
+          online?: boolean
+          pingMs?: number | null
+          data?: { online?: boolean; pingMs?: number | null }
+        }
+        const payload = response?.data ?? response
+        daemonStatus.value = {
+          online: Boolean(payload?.online),
+          pingMs: payload?.pingMs ?? null,
+          checking: false,
+        }
+      } catch {
+        daemonStatus.value = { online: false, pingMs: null, checking: false }
+      }
+    }
+
+    const daemonStatusIcon = computed(() => {
+      if (daemonStatus.value.checking) return 'mdi-circle-outline'
+      return daemonStatus.value.online ? 'mdi-circle' : 'mdi-circle'
+    })
+
+    const daemonStatusColor = computed(() => {
+      if (daemonStatus.value.checking) return 'grey-6'
+      return daemonStatus.value.online ? 'positive' : 'negative'
+    })
+
+    const daemonStatusTooltip = computed(() => {
+      if (daemonStatus.value.checking) return 'Vérification du daemon…'
+      if (daemonStatus.value.online && daemonStatus.value.pingMs !== null) {
+        return `Ping : ${daemonStatus.value.pingMs} ms`
+      }
+      return 'Daemon indisponible'
+    })
+
+    onMounted(() => {
+      void fetchDaemonStatus()
+      daemonStatusTimer = setInterval(() => void fetchDaemonStatus(), 20_000)
+    })
+
+    onUnmounted(() => {
+      if (daemonStatusTimer) clearInterval(daemonStatusTimer)
+    })
+
     return {
       orchestratorVersion,
       daemonVersion,
+      daemonStatus,
+      daemonStatusIcon,
+      daemonStatusColor,
+      daemonStatusTooltip,
       debug,
       debugDialog,
       debugNetworkLoading,

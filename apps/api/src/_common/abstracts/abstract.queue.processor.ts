@@ -1,19 +1,19 @@
-import { Queue, QueueEvents, ConnectionOptions } from 'bullmq';
 import { AbstractService, AbstractServiceContext } from './abstract.service';
-import { getRedisConnectionToken } from '@nestjs-modules/ioredis';
-import { Redis } from 'ioredis';
 import { OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SesameQueueAdapter } from '~/_common/interfaces/sesame-job.interface';
+import { SESAME_QUEUE } from '~/_common/queue/sesame-queue.constants';
 
 export abstract class AbstractQueueProcessor extends AbstractService implements OnModuleInit {
   protected config: ConfigService;
+  protected sesameQueue: SesameQueueAdapter;
 
-  private redis: Redis;
-  protected _queue: Queue;
-  public queueEvents: QueueEvents;
+  public get queue(): SesameQueueAdapter {
+    return this.sesameQueue;
+  }
 
-  public get queue(): Queue {
-    return this._queue;
+  public get queueEvents(): SesameQueueAdapter['events'] {
+    return this.sesameQueue.events;
   }
 
   public constructor(context?: AbstractServiceContext) {
@@ -23,13 +23,7 @@ export abstract class AbstractQueueProcessor extends AbstractService implements 
 
   public async onModuleInit() {
     this.config = this.moduleRef.get<ConfigService>(ConfigService, { strict: false });
-    this.redis = this.moduleRef.get<Redis>(getRedisConnectionToken(), { strict: false });
-
-    this._queue = new Queue(this.config.get<string>('application.nameQueue'), {
-      connection: this.redis as unknown as ConnectionOptions,
-    });
-    this.queueEvents = new QueueEvents(this.config.get<string>('application.nameQueue'), {
-      connection: this.redis as unknown as ConnectionOptions,
-    });
+    this.sesameQueue = this.moduleRef.get<SesameQueueAdapter>(SESAME_QUEUE, { strict: false });
+    await this.sesameQueue.connect();
   }
 }

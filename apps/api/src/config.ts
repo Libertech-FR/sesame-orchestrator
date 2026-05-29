@@ -44,6 +44,11 @@ export const validationSchema = Joi.object({
     .string()
     .default('sesame'),
 
+  SESAME_MS_BETA: Joi
+    .string()
+    .valid('0', '1')
+    .default('0'),
+
   SESAME_HTTPS_ENABLED: Joi
     .string()
     .valid('0', '1', 'true', 'false', 'on', 'off')
@@ -210,6 +215,8 @@ export interface ConfigInstance {
     lang: string
     logLevel: string
     nameQueue: string
+    /** Transport Redis microservice NestJS (remplace BullMQ côté API/daemon). */
+    msBeta: boolean
     /** Si true, Express applique trust proxy (1 hop) pour les adresses IP client derrière un proxy. */
     trustProxy: boolean
     bodyParser: {
@@ -311,6 +318,7 @@ export default (): ConfigInstance => ({
     lang: process.env['LANG'] || 'en',
     logLevel: process.env['SESAME_LOG_LEVEL'] || 'info',
     nameQueue: process.env['SESAME_NAME_QUEUE'] || 'sesame',
+    msBeta: process.env['SESAME_MS_BETA'] === '1',
     trustProxy: /^(1|true|on|yes)$/i.test(process.env['SESAME_TRUST_PROXY'] || ''),
     bodyParser: {
       limit: '500mb',

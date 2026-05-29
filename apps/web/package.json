@@ -61,6 +61,7 @@
     "radash": "^12.1.1",
     "reconnecting-eventsource": "^1.6.4",
     "sass": "^1.92.1",
+    "socket.io-client": "^4.8.3",
     "typescript": "^5.9.2",
     "vite-plugin-pug": "^0.4.1",
     "vue": "^3.4.14",

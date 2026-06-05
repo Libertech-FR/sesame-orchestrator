@@ -21,7 +21,7 @@ import {
   SearchFilterOptions,
   SearchFilterSchema,
 } from '@tacxou/nestjs_module_restools/search-filter-schema';
-import { ObjectIdValidationPipe } from '@tacxou/nestjs_module_restools/mongoose';
+import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
 import { Response } from 'express';
 import { Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';

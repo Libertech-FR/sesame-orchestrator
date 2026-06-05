@@ -14,7 +14,7 @@ import {
   SearchFilterOptions,
   SearchFilterSchema,
 } from '@tacxou/nestjs_module_restools/search-filter-schema';
-import { ObjectIdValidationPipe } from '@tacxou/nestjs_module_restools/mongoose';
+import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
 import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator';
 import { Types } from 'mongoose';
 import { ApiUpdateDecorator } from '~/_common/decorators/api-update.decorator';

@@ -1,30 +1,11 @@
 import { resolve } from 'path'
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'fs'
-import { fileURLToPath } from 'node:url'
 import openapiTS, { astToString, COMMENT_HEADER } from 'openapi-typescript'
 import { defineNuxtConfig } from 'nuxt/config'
 import * as consola from 'consola'
 import setupApp from './src/server/extension.setup'
 
-const WEB_ROOT = fileURLToPath(new URL('.', import.meta.url))
-const CLIENT_MANIFEST_STUB = 'export default {}\n'
-
-/** SPA (`ssr:false`) : Nitro dev peut importer un manifest absent après prepare/reload. */
-function ensureClientManifestStub(rootDir = WEB_ROOT): void {
-  const clientManifestPath = resolve(rootDir, '.nuxt/dist/server/client.manifest.mjs')
-
-  if (existsSync(clientManifestPath)) {
-    return
-  }
-
-  mkdirSync(resolve(rootDir, '.nuxt/dist/server'), { recursive: true })
-  writeFileSync(clientManifestPath, CLIENT_MANIFEST_STUB)
-  consola.info('[Nuxt] Created missing client.manifest.mjs stub')
-}
-
 const SESAME_APP_API_URL = process.env.SESAME_APP_API_URL || 'http://localhost:4002'
-/** URL API exposée au navigateur (WebSocket). Ex. http://mactacx:4002 si SESAME_APP_API_URL pointe vers 127.0.0.1:4000. */
-const SESAME_APP_PUBLIC_API_URL = process.env.SESAME_APP_PUBLIC_API_URL || ''
 const SESAME_ALLOWED_HOSTS = process.env.SESAME_ALLOWED_HOSTS ? process.env.SESAME_ALLOWED_HOSTS.split(',') : []
 const IS_DEV = process.env.NODE_ENV === 'development'
 
@@ -95,7 +76,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       release: process.env.npm_package_name + '@' + process.env.npm_package_version,
-      socketApiUrl: SESAME_APP_PUBLIC_API_URL,
       sentry: {
         dsn: process.env.SESAME_SENTRY_DSN,
       },
@@ -261,7 +241,19 @@ export default defineNuxtConfig({
     typescriptBundlerResolution: true,
   },
   nitro: {
+    experimental: {
+      websocket: false,
+    },
     routeRules: {
+      '/api/core/backends/sse': {
+        proxy: `${SESAME_APP_API_URL}/core/backends/sse`,
+        // Disable compression and caching for SSE
+        headers: {
+          'Cache-Control': 'no-cache, no-transform',
+          'Connection': 'keep-alive',
+          'X-Accel-Buffering': 'no', // Disable buffering in nginx
+        },
+      },
       '/api/**': {
         proxy: `${SESAME_APP_API_URL}/**`,
       },
@@ -280,39 +272,18 @@ export default defineNuxtConfig({
     storesDirs: ['~/stores'],
   },
   hooks: {
-    'nitro:init': (nitro) => {
-      try {
-        ensureClientManifestStub(nitro.options.rootDir)
-      } catch (error) {
-        consola.warn('[Nuxt] Unable to ensure client.manifest.mjs stub (nitro:init)', error)
-      }
-    },
-    'nitro:build:before': (nitro) => {
-      try {
-        ensureClientManifestStub(nitro.options.rootDir)
-      } catch (error) {
-        consola.warn('[Nuxt] Unable to ensure client.manifest.mjs stub (nitro:build:before)', error)
-      }
-    },
-    listen: () => {
-      try {
-        ensureClientManifestStub(WEB_ROOT)
-      } catch (error) {
-        consola.warn('[Nuxt] Unable to ensure client.manifest.mjs stub (listen)', error)
-      }
-    },
-    close: () => {
-      try {
-        ensureClientManifestStub(WEB_ROOT)
-      } catch (error) {
-        consola.warn('[Nuxt] Unable to ensure client.manifest.mjs stub (close)', error)
-      }
-    },
     ready: async (nuxt) => {
+      // Nuxt (Nitro) en SPA (`ssr:false`) peut parfois importer un client manifest absent en dev,
+      // ce qui casse toutes les requêtes. On crée un stub si nécessaire.
       try {
-        ensureClientManifestStub(nuxt.options.rootDir)
+        const clientManifestPath = resolve(process.cwd(), '.nuxt/dist/server/client.manifest.mjs')
+        if (!existsSync(clientManifestPath)) {
+          mkdirSync(resolve(process.cwd(), '.nuxt/dist/server'), { recursive: true })
+          writeFileSync(clientManifestPath, 'export default {}\\n')
+          consola.info('[Nuxt] Created missing client.manifest.mjs stub')
+        }
       } catch (error) {
-        consola.warn('[Nuxt] Unable to ensure client.manifest.mjs stub (ready)', error)
+        consola.warn('[Nuxt] Unable to ensure client.manifest.mjs stub', error)
       }
 
       const forceOpenapiRefresh = /true|on|yes|1/i.test(`${process.env.SESAME_FORCE_OPENAPI_TYPES_REFRESH}`)

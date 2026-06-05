@@ -7,6 +7,9 @@ type UiConfigPayload = {
   identitiesColumns?: {
     entries?: Record<string, unknown>[]
   }
+  identitiesSearchFields?: {
+    fields?: string[]
+  }
 }
 
 export default defineNuxtPlugin(async () => {
@@ -24,6 +27,10 @@ export default defineNuxtPlugin(async () => {
 
     mutableAppConfig.identitiesColumns = {
       entries: payload?.identitiesColumns?.entries || [],
+    }
+
+    mutableAppConfig.identitiesSearchFields = {
+      fields: payload?.identitiesSearchFields?.fields || [],
     }
   } catch (error) {
     console.debug('[Nuxt] Error while loading ui config', error)

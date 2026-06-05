@@ -20,7 +20,12 @@ q-page.container.q-pa-sm
         dense
         outlined
       )
-    sesame-core-pan-filters(:columns='columns' mode='complex' :placeholder='"Rechercher par nom, prénom, email, ..."')
+    sesame-core-pan-filters(
+      :columns='columns'
+      mode='complex'
+      :placeholder='"Rechercher par nom, prénom, email, ..."'
+      :searchFieldsHint='searchFieldsHint'
+    )
     q-table(
         :rows-per-page-options="[20,50,0]"
         :columns="fieldsName"
@@ -48,12 +53,15 @@ export default defineNuxtComponent({
     const route = useRoute()
     const { columns, visibleColumns, columnsType } = useColumnsIdentites()
     const { countFilters, hasFilters, getFilters, removeFilter } = useFiltersQuery(columns)
+    const { getSearchFieldsQuery, buildSearchFieldsHint } = useIdentitySearchFields()
+    const searchFieldsHint = computed(() => buildSearchFieldsHint(columns.value))
 
     let rowsData = null
     const queryWithoutRead = computed(() => {
       const { read, ...rest } = route.query
       return {
         limit: 9999,
+        ...getSearchFieldsQuery(),
         ...rest,
       }
     })
@@ -109,6 +117,7 @@ export default defineNuxtComponent({
       visibleColumns,
       columns,
       columnsType,
+      searchFieldsHint,
       fieldsName,
       identities,
       pending,

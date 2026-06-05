@@ -33,7 +33,7 @@ describe('IdentitiesCrudController invitation expiration filter', () => {
     };
     const options = { limit: 10, skip: 0, sort: {} };
 
-    await controller.search(res as any, '', { initState: InitStatesEnum.SENT } as any, options, 'false');
+    await controller.search(res as any, '', { initState: InitStatesEnum.SENT } as any, options, 'false', undefined);
 
     expect(service.findAndCount).toHaveBeenCalledWith(
       {

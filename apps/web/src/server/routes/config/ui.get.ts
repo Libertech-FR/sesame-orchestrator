@@ -18,10 +18,27 @@ type UiConfigPayload = {
   identitiesColumns: {
     entries: IdentityColumnEntry[]
   }
+  identitiesSearchFields: {
+    fields: string[]
+  }
 }
 
 function asArray(value: unknown): Record<string, unknown>[] {
   return Array.isArray(value) ? (value as Record<string, unknown>[]) : []
+}
+
+function asStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .map((entry) => {
+      if (typeof entry === 'string') return entry.trim()
+      if (entry && typeof entry === 'object' && 'name' in entry) {
+        return `${(entry as { name?: unknown }).name ?? ''}`.trim()
+      }
+      return ''
+    })
+    .filter(Boolean)
 }
 
 function asBoolean(value: unknown): boolean | undefined {
@@ -80,6 +97,7 @@ export default defineEventHandler(async () => {
 
   const menusFile = await readYamlFile('./config/menus.yml')
   const identitiesColumnsFile = await readYamlFile('./config/identities-columns.yml')
+  const identitiesSearchFieldsFile = await readYamlFile('./config/identities-search-fields.yml')
 
   return {
     menus: {
@@ -89,6 +107,9 @@ export default defineEventHandler(async () => {
     },
     identitiesColumns: {
       entries: asArray(identitiesColumnsFile.entries),
+    },
+    identitiesSearchFields: {
+      fields: asStringArray(identitiesSearchFieldsFile.fields),
     },
   } satisfies UiConfigPayload
 })

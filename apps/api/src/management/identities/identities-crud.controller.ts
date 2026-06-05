@@ -28,6 +28,7 @@ import {
   INIT_INVITATION_EXPIRED_QUERY_PARAM,
   parseInitInvitationExpiredQuery,
 } from '~/management/passwd/init-invitation-expiration.helper';
+import { mergeIdentitySearchFields } from '~/management/identities/identities-search-fields.helper';
 
 @ApiTags('management/identities')
 @Controller('identities')
@@ -49,14 +50,6 @@ export class IdentitiesCrudController extends AbstractController {
     metadata: 1,
     dataStatus: 1,
     lifecycle: 1,
-  };
-
-  protected static readonly searchFields: PartialProjectionType<any> = {
-    'inetOrgPerson.cn': 1,
-    'inetOrgPerson.givenName': 1,
-    'inetOrgPerson.sn': 1,
-    'inetOrgPerson.mail': 1,
-    'inetOrgPerson.employeeType': 1,
   };
 
   @Post()
@@ -152,6 +145,7 @@ export class IdentitiesCrudController extends AbstractController {
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @SearchFilterOptions({ allowUnlimited: true }) searchFilterOptions: FilterOptions,
     @Query(INIT_INVITATION_EXPIRED_QUERY_PARAM) initInvitationExpired: string,
+    @Query('searchFields') searchFields: string | string[],
   ): Promise<
     Response<{
       statusCode: number;
@@ -172,8 +166,9 @@ export class IdentitiesCrudController extends AbstractController {
     }
 
     if (search && search.trim().length > 0) {
+      const effectiveSearchFields = mergeIdentitySearchFields(searchFields);
       const searchRequest = {};
-      searchRequest['$or'] = Object.keys(IdentitiesCrudController.searchFields)
+      searchRequest['$or'] = Object.keys(effectiveSearchFields)
         .map((key) => {
           return { [key]: { $regex: `^${search}`, $options: 'i' } };
         })

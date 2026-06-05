@@ -1,0 +1,5 @@
+# Champs de recherche textuelle supplémentaires (en plus des champs par défaut côté API).
+# Ne pas dupliquer : inetOrgPerson.cn, givenName, sn, mail, employeeType, employeeNumber.
+fields:
+  - inetOrgPerson.uid
+  - additionalFields.attributes.supannPerson.edupersonprincipalname

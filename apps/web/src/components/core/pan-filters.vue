@@ -16,6 +16,48 @@ q-toolbar(dense flat)
         autofocus
         stacked-label
       )
+        template(v-if='searchFieldsHint' #append)
+          q-btn.search-fields-hint-btn(
+            flat
+            dense
+            round
+            size='sm'
+            icon='mdi-information-outline'
+            color='grey-7'
+            aria-label='Champs de recherche'
+            @click.stop
+          )
+            q-tooltip(anchor='top middle' self='bottom middle') Cliquer pour afficher les champs de recherche disponibles
+            q-menu.search-fields-hint-menu(
+              anchor='top middle'
+              self='bottom middle'
+              :offset='[0, 8]'
+            )
+              .search-fields-hint
+                .search-fields-hint__title Champs de recherche
+                //- .search-fields-hint__hint.text-caption Cliquer à l’extérieur pour fermer
+                .search-fields-hint__section
+                  .search-fields-hint__section-title Par défaut
+                  .search-fields-hint__field(
+                    v-for='field in searchFieldsHint.defaultFields'
+                    :key='field.path'
+                  )
+                    template(v-if='field.label !== field.path')
+                      .search-fields-hint__label {{ field.label }}
+                      .search-fields-hint__path {{ field.path }}
+                    .search-fields-hint__path.search-fields-hint__path--solo(v-else) {{ field.path }}
+                .search-fields-hint__section(
+                  v-if='searchFieldsHint.extraFields.length'
+                )
+                  .search-fields-hint__section-title Configuration
+                  .search-fields-hint__field(
+                    v-for='field in searchFieldsHint.extraFields'
+                    :key='field.path'
+                  )
+                    template(v-if='field.label !== field.path')
+                      .search-fields-hint__label {{ field.label }}
+                      .search-fields-hint__path {{ field.path }}
+                    .search-fields-hint__path.search-fields-hint__path--solo(v-else) {{ field.path }}
       q-space(v-if='mode === "advanced"')
       q-btn-group(flat)
         q-btn.q-ml-sm(
@@ -132,6 +174,14 @@ export default defineComponent({
       required: false,
       default: () => [],
     },
+    searchFieldsHint: {
+      type: Object as PropType<{
+        defaultFields: { path: string; label: string }[]
+        extraFields: { path: string; label: string }[]
+      }>,
+      required: false,
+      default: undefined,
+    },
   },
   setup({ columns, columnsType }) {
     const { countFilters, hasFilters, getFilters, removeFilter, removeAllFilters } = useFiltersQuery(ref(columns), ref(columnsType))
@@ -184,3 +234,83 @@ export default defineComponent({
   },
 })
 </script>
+
+<style lang="scss">
+.search-fields-hint-btn {
+  margin-right: -4px;
+}
+
+.search-fields-hint-menu {
+  max-width: min(28rem, 92vw);
+  background-color: var(--q-secondary) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  user-select: text;
+  cursor: text;
+}
+
+.search-fields-hint {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  color: #fff;
+  user-select: text;
+
+  &__title {
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+  }
+
+  &__hint {
+    opacity: 0.75;
+    margin-bottom: 0.5rem;
+    user-select: none;
+  }
+
+  &__section {
+    & + & {
+      margin-top: 0.625rem;
+      padding-top: 0.625rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.22);
+    }
+  }
+
+  &__section-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 0.35rem;
+  }
+
+  &__field {
+    padding: 0.2rem 0 0.35rem 0.5rem;
+    border-left: 2px solid rgba(255, 255, 255, 0.45);
+
+    & + & {
+      margin-top: 0.15rem;
+    }
+  }
+
+  &__label {
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    font-weight: 500;
+  }
+
+  &__path {
+    margin-top: 0.1rem;
+    font-size: 0.7rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.82);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    &--solo {
+      margin-top: 0;
+      font-size: 0.75rem;
+    }
+  }
+}
+</style>

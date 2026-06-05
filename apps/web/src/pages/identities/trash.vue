@@ -15,7 +15,13 @@ q-page.grid
     row-key='_id'
   )
     template(#top-table)
-      sesame-core-pan-filters(:columns='columns' :columnsType='columnsType' mode='complex' :placeholder='"Rechercher par nom, prénom, email, ..."')
+      sesame-core-pan-filters(
+        :columns='columns'
+        :columnsType='columnsType'
+        mode='complex'
+        :placeholder='"Rechercher par nom, prénom, email, ..."'
+        :searchFieldsHint='searchFieldsHint'
+      )
 
     template(#body-cell-states="props")
       q-td
@@ -66,6 +72,8 @@ export default defineNuxtComponent({
     const { getStateValue, fetchAllStateCount } = useIdentityStateStore()
     const { getStateName } = useIdentityStates()
     const { countFilters, hasFilters, getFilters, removeFilter } = useFiltersQuery(columns)
+    const { buildSearchFieldsHint } = useIdentitySearchFields()
+    const searchFieldsHint = computed(() => buildSearchFieldsHint(columns.value))
 
     const computedQuery = computed(() => {
       return {
@@ -110,6 +118,7 @@ export default defineNuxtComponent({
       columns,
       visibleColumns,
       columnsType,
+      searchFieldsHint,
     }
   },
   computed: {

@@ -69,9 +69,12 @@ export function usePagination(options?: { name?: string }) {
     await paginationQuery()
   }
 
-  const useHttpPaginationOptions = (): { query: Ref<{ [key: string]: any }>, immediate?: boolean, watch: MultiWatchSources | false } => {
+  const useHttpPaginationOptions = (
+    extraQuery: Record<string, unknown> = {},
+  ): { query: Ref<{ [key: string]: any }>, immediate?: boolean, watch: MultiWatchSources | false } => {
     const query = ref({
       ...getDefaults(),
+      ...extraQuery,
       ...$route.query,
     })
 
@@ -82,11 +85,15 @@ export function usePagination(options?: { name?: string }) {
     }
   }
 
-  const useHttpPaginationReactive = async ({ query }, execute = () => { }) => {
+  const useHttpPaginationReactive = async (
+    { query },
+    execute = () => { },
+    extraQuery: Record<string, unknown> = {},
+  ) => {
     let pendingController: AbortController | null = null
 
     watchDebounced(
-      () => ({ ...getDefaults(), ...$route.query }),
+      () => ({ ...getDefaults(), ...extraQuery, ...$route.query }),
       async (newQuery) => {
         if (JSON.stringify(newQuery) !== JSON.stringify(query.value)) {
           query.value = newQuery

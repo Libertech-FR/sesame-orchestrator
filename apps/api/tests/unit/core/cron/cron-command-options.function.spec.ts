@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common'
 import {
+  buildConsoleCommandPreview,
   buildCronCommandArgs,
   validateCronTaskOptions,
 } from '~/core/cron/_functions/cron-command-options.function'
@@ -19,7 +20,7 @@ jest.mock('~/_common/decorators/cron-console-handler.decorator', () => ({
       command: 'lifecycle execute',
       label: 'Exécution du cycle de vie',
       arguments: [
-        { name: 'source', type: 'string', positional: true },
+        { name: 'source', type: 'string', flag: '--source', required: true },
       ],
     },
     {
@@ -45,6 +46,10 @@ describe('cron-command-options', () => {
     expect(() => validateCronTaskOptions('agents-list', { limit: 500 })).toThrow(BadRequestException)
   })
 
+  it('should reject missing required options', () => {
+    expect(() => validateCronTaskOptions('lifecycle-execute', {})).toThrow(BadRequestException)
+  })
+
   it('should build flag and positional CLI args from handler schema', () => {
     expect(buildCronCommandArgs('identities-pwned-recheck', { limit: 500 })).toEqual({
       positionalArgs: [],
@@ -52,8 +57,17 @@ describe('cron-command-options', () => {
     })
 
     expect(buildCronCommandArgs('lifecycle-execute', { source: '01-etd' })).toEqual({
-      positionalArgs: ['01-etd'],
-      flagArgs: [],
+      positionalArgs: [],
+      flagArgs: ["--source='01-etd'"],
     })
+  })
+
+  it('should build console command preview from handler command and flags', () => {
+    expect(buildConsoleCommandPreview('lifecycle-execute', { source: '01-etd' })).toBe(
+      "yarn run console lifecycle execute --source='01-etd'",
+    )
+    expect(buildConsoleCommandPreview('identities-pwned-recheck', { limit: 1 })).toBe(
+      "yarn run console identities pwned recheck --limit='1'",
+    )
   })
 })

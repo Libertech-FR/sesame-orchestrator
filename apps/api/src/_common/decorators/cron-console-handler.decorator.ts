@@ -5,13 +5,15 @@ export const CRON_CONSOLE_HANDLER_METADATA = 'sesame:cron-console-handler'
 export type CronConsoleHandlerArgumentType = 'string' | 'number' | 'boolean'
 
 export interface CronConsoleHandlerArgument {
-  /** Nom de l'argument (`limit` → `--limit`, ou argument positionnel si `positional: true`). */
+  /** Nom de l'argument dans options cron / options CLI. */
   name: string
   label?: string
   description?: string
   type?: CronConsoleHandlerArgumentType
   default?: string | number | boolean
   required?: boolean
+  /** Flag CLI (ex. `--source`). Par défaut : `--${name}`. */
+  flag?: string
   /** Passe la valeur comme argument positionnel après la commande console. */
   positional?: boolean
 }

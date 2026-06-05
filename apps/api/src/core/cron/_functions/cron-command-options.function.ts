@@ -8,6 +8,24 @@ function getHandlerDescriptor(handler: string) {
   return getCronConsoleHandlers().find((entry) => entry.handler === handler)
 }
 
+export function resolveCronConsoleArgumentFlag(argument: CronConsoleHandlerArgument): string {
+  return argument.flag || `--${argument.name}`
+}
+
+export function buildConsoleCommandPreview(
+  handler: string,
+  options?: Record<string, unknown> | null,
+): string {
+  const descriptor = getHandlerDescriptor(handler)
+  if (!descriptor) {
+    return ''
+  }
+
+  const commandWords = descriptor.command.split(/\s+/).filter(Boolean)
+  const { positionalArgs, flagArgs } = buildCronCommandArgs(handler, options)
+  return ['yarn', 'run', 'console', ...commandWords, ...positionalArgs, ...flagArgs].join(' ')
+}
+
 function assertArgumentType(argument: CronConsoleHandlerArgument, value: unknown, handler: string): void {
   if (value === undefined || value === null || value === '') {
     return
@@ -107,9 +125,12 @@ export function buildCronCommandArgs(
     : Object.entries(options).filter(([key]) => !positionalSchema.some((argument) => argument.name === key))
 
   for (const [key, value] of flagEntries) {
+    const argument = flagSchema.find((entry) => entry.name === key)
+    const flag = argument ? resolveCronConsoleArgumentFlag(argument) : `--${key}`
+
     if (typeof value === 'boolean') {
       if (value) {
-        flagArgs.push(`--${key}`)
+        flagArgs.push(flag)
       }
       continue
     }
@@ -119,11 +140,11 @@ export function buildCronCommandArgs(
     }
 
     if (typeof value === 'object') {
-      flagArgs.push(`--${key}='${JSON.stringify(value)}'`)
+      flagArgs.push(`${flag}='${JSON.stringify(value)}'`)
       continue
     }
 
-    flagArgs.push(`--${key}='${String(value)}'`)
+    flagArgs.push(`${flag}='${String(value)}'`)
   }
 
   return { positionalArgs, flagArgs }

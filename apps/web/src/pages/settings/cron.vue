@@ -236,6 +236,7 @@ type CronConsoleHandlerArgument = {
   type?: 'string' | 'number' | 'boolean'
   default?: string | number | boolean
   required?: boolean
+  flag?: string
   positional?: boolean
 }
 
@@ -582,38 +583,33 @@ export default defineNuxtComponent({
       this.syncArgumentsFromHandler(false)
     },
     buildCommandPreview(handler: string, argumentsMap: Record<string, string | number | boolean>): string {
-      if (!handler) {
+      const descriptor = this.getHandlerDescriptor(handler)
+      if (!descriptor?.command) {
         return ''
       }
 
-      const descriptor = this.getHandlerDescriptor(handler)
-      const schema = descriptor?.arguments || []
-      const positionalSchema = schema.filter((argument) => argument.positional)
-      const flagSchema = schema.filter((argument) => !argument.positional)
-      const parts = ['yarn', 'run', 'console', ...handler.split('-')]
+      const parts = ['yarn', 'run', 'console', ...descriptor.command.split(/\s+/).filter(Boolean)]
 
-      for (const argument of positionalSchema) {
+      for (const argument of descriptor.arguments || []) {
         const value = argumentsMap[argument.name]
-        if (value !== '' && value !== null && value !== undefined) {
-          parts.push(String(value))
-        }
-      }
-
-      const flagEntries = flagSchema.length
-        ? flagSchema.map((argument) => [argument.name, argumentsMap[argument.name]] as const)
-        : Object.entries(argumentsMap || {}).filter(([key]) => !positionalSchema.some((argument) => argument.name === key))
-
-      for (const [key, value] of flagEntries) {
         if (value === '' || value === null || value === undefined) {
           continue
         }
+
+        if (argument.positional) {
+          parts.push(String(value))
+          continue
+        }
+
+        const flag = argument.flag || `--${argument.name}`
         if (typeof value === 'boolean') {
           if (value) {
-            parts.push(`--${key}`)
+            parts.push(flag)
           }
           continue
         }
-        parts.push(`--${key}='${String(value)}'`)
+
+        parts.push(`${flag}=${String(value)}`)
       }
 
       return parts.join(' ')

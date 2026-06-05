@@ -119,6 +119,7 @@ export async function loadLifecycleRules(): Promise<ConfigRulesObjectSchemaDTO[]
     }
 
     lifecycleRules.push(schema)
+    schema.ruleFileBasename = file.replace(/\.(ya?ml)$/i, '')
     logger.debug(`Lifecycle activated from file: ${file}`)
   }
 

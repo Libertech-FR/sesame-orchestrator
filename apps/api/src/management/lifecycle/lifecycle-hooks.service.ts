@@ -10,6 +10,7 @@ import { AbstractLifecycleService } from './_abstracts/abstract.lifecycle.servic
 import { ConfigRulesObjectSchemaDTO } from './_dto/config-rules.dto'
 import { loadCustomStates } from './_functions/load-custom-states.function'
 import { loadLifecycleRules } from './_functions/load-lifecycle-rules.function'
+import { validateLifecycleCronRules } from './_functions/validate-lifecycle-cron-rules.function'
 import { resolveConfigVariables } from '~/_common/functions/resolve-config-variables.function'
 
 @Injectable()
@@ -214,21 +215,32 @@ export class LifecycleHooksService extends AbstractLifecycleService {
     }
   }
 
-  public async executeCronForSource(source: string): Promise<void> {
+  public async executeCronForSource(source: string): Promise<boolean> {
     this.logger.log(`Executing lifecycle rules for source <${source}>...`)
 
     const lifecycleRules = await this.ensureLifecycleCacheFresh()
+    const ruleSet = lifecycleRules.find((rules) => rules.ruleFileBasename === source)
 
-    for (const lfr of lifecycleRules) {
-      for (const idRule of lfr.identities) {
-        console.log('Checking identity rule sources:', idRule)
-        if (idRule.sources.includes(source as any) && idRule.trigger === -1) {
-          await this.handleCron({ lifecycleRules: [lfr], ignoreTrigger: true })
-        }
-      }
+    if (!ruleSet) {
+      this.logger.warn(`Fichier de règles lifecycle introuvable pour <${source}> (configs/lifecycle/rules/${source}.yml).`)
+      return false
     }
 
-    this.logger.log(`Execution of lifecycle rules for source <${source}> completed.`)
+    const validation = validateLifecycleCronRules(source, ruleSet.identities)
+    if (validation.executable) {
+      await this.handleCron({
+        lifecycleRules: [{ ...ruleSet, identities: validation.rules }],
+        ignoreTrigger: true,
+      })
+
+      this.logger.log(`Execution of lifecycle rules for source <${source}> completed.`)
+      return true
+    }
+
+    for (const warning of validation.warnings) {
+      this.logger.warn(warning)
+    }
+    return false
   }
 
   public async executeCronForAllSources(): Promise<void> {

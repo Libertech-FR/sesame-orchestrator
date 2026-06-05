@@ -329,4 +329,9 @@ export class ConfigRulesObjectSchemaDTO {
   @ValidateNested({ each: true })
   @Type(() => ConfigRulesObjectIdentitiesDTO)
   public identities: ConfigRulesObjectIdentitiesDTO[]
+
+  /** Nom du fichier YAML sans extension (ex. `01-etd`). Renseigné au chargement. */
+  @IsOptional()
+  @IsString()
+  public ruleFileBasename?: string
 }

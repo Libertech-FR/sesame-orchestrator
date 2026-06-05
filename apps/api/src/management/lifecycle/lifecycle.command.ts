@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
-import { Command, CommandRunner, InquirerService, SubCommand } from 'nest-commander'
+import { Command, CommandRunner, InquirerService, Option, SubCommand } from 'nest-commander'
 import { CronConsoleHandler } from '~/_common/decorators/cron-console-handler.decorator'
 import { LifecycleCrudService } from './lifecycle-crud.service'
 import { LifecycleHooksService } from './lifecycle-hooks.service'
@@ -83,9 +83,10 @@ export class LifecycleListCommand extends CommandRunner {
     {
       name: 'source',
       label: 'Source lifecycle',
-      description: 'Identifiant de source (ex. 01-etd). Laisser vide pour exécuter toutes les sources.',
+      description: 'Nom du fichier de règles sans extension (ex. 01-etd → configs/lifecycle/rules/01-etd.yml).',
       type: 'string',
-      positional: true,
+      flag: '--source',
+      required: true,
     },
   ],
 })
@@ -102,29 +103,39 @@ export class LifecycleExecuteCommand extends CommandRunner {
     super()
   }
 
-  async run(inputs: string[], options: any): Promise<void> {
+  async run(_inputs: string[], options: LifecycleExecuteOptions): Promise<void> {
     this.logger.log('Démarrage de la commande d\'exécution du cycle de vie...')
 
-    const source = inputs[0]
+    const source = `${options?.source || ''}`.trim()
     if (!source) {
-      this.logger.log('Aucune source de cycle de vie spécifiée. Exécution pour toutes les sources...')
-
-      try {
-        await this.lifecycleHooksService.executeCronForAllSources()
-        this.logger.log(`Exécution du cycle de vie pour toutes les sources terminée avec succès.`)
-      } catch (error) {
-        this.logger.error(`Erreur lors de l'exécution du cycle de vie pour toutes les sources: ${error.message}`)
-      }
+      console.error('Usage: yarn run console lifecycle execute --source=<source>')
       return
     }
 
     try {
-      await this.lifecycleHooksService.executeCronForSource(source)
+      const executed = await this.lifecycleHooksService.executeCronForSource(source)
+      if (!executed) {
+        process.exitCode = 1
+        return
+      }
       this.logger.log(`Exécution du cycle de vie pour la source '${source}' terminée avec succès.`)
     } catch (error) {
       this.logger.error(`Erreur lors de l'exécution du cycle de vie pour la source '${source}': ${error.message}`)
     }
   }
+
+  @Option({
+    flags: '--source <source>',
+    description: 'Nom du fichier de règles lifecycle sans extension (ex. 01-etd).',
+    required: true,
+  })
+  parseSource(val: string): string {
+    return `${val || ''}`.trim()
+  }
+}
+
+type LifecycleExecuteOptions = {
+  source: string
 }
 
 /**
@@ -144,7 +155,7 @@ export class LifecycleExecuteCommand extends CommandRunner {
  * @example
  * // Utilisation en ligne de commande
  * yarn run console lifecycle list
- * yarn run console lifecycle <autre-sous-commande>
+ * yarn run console lifecycle execute --source=01-etd
  */
 @Command({ name: 'lifecycle', arguments: '<task>', subCommands: [LifecycleListCommand, LifecycleExecuteCommand] })
 export class LifecycleCommand extends CommandRunner {

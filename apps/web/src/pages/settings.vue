@@ -13,6 +13,8 @@ q-dialog(
       q-btn(flat @click="drawer = !drawer" round dense icon="mdi-menu")
       q-toolbar-title Paramètres
       sesame-core-help-buttons(size='sm')
+      q-separator.q-mx-sm(vertical dark inset v-if="debug")
+      sesame-core-app-debug-buttons(v-if="debug" size="sm" color="orange-8")
       q-separator.q-mx-sm(vertical dark inset)
       q-btn(icon="mdi-close" flat round dense to='/')
         q-tooltip.text-body2(anchor="top middle" self="bottom middle") Fermer
@@ -95,6 +97,7 @@ export default defineNuxtComponent({
     })
 
     const drawer = ref(true)
+    const { debug } = useDebug()
 
     const navItemsInternal = ref<NavItem[]>([
       {
@@ -184,6 +187,7 @@ export default defineNuxtComponent({
     return {
       tab,
       drawer,
+      debug,
       navItems,
       bottomNavItems,
       router,

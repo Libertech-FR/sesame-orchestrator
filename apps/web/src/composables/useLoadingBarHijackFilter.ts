@@ -2,7 +2,6 @@
 const BACKGROUND_URL_PARTS = [
   '/socket.io',
   '/core/backends/sync-progress',
-  '/core/backends/daemon/status',
 ]
 
 /**

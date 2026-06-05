@@ -1,5 +1,12 @@
 import { Logger, UnauthorizedException } from '@nestjs/common';
-import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  ConnectedSocket,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { hash } from 'crypto';
 import { Server, Socket } from 'socket.io';
 import { Public } from '~/_common/decorators/public.decorator';
@@ -10,7 +17,15 @@ import { BackendsService } from './backends.service';
 
 type JobChannel = 'job:added' | 'job:completed' | 'job:failed' | 'job:progress' | 'job:active';
 
+type DaemonStatusPayload = {
+  online: boolean;
+  pingMs: number | null;
+  error?: string;
+  version?: string;
+};
+
 const IDENTITY_JOB_TYPES = [ActionType.IDENTITY_UPDATE, ActionType.IDENTITY_CREATE, ActionType.IDENTITY_DELETE];
+const DAEMON_STATUS_INTERVAL_MS = 20_000;
 
 @Public()
 @WebSocketGateway({
@@ -20,6 +35,9 @@ const IDENTITY_JOB_TYPES = [ActionType.IDENTITY_UPDATE, ActionType.IDENTITY_CREA
 export class BackendsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(BackendsGateway.name);
   private readonly clientSubscriptions = new Map<string, () => void>();
+  private lastDaemonStatus: DaemonStatusPayload | null = null;
+  private daemonStatusInterval: NodeJS.Timeout | null = null;
+  private daemonStatusPingInFlight = false;
 
   @WebSocketServer()
   server: Server;
@@ -50,6 +68,10 @@ export class BackendsGateway implements OnGatewayConnection, OnGatewayDisconnect
 
       const cleanup = this.subscribeClient(client);
       this.clientSubscriptions.set(client.id, cleanup);
+      this.ensureDaemonStatusWatcher();
+      if (this.lastDaemonStatus) {
+        this.emitDaemonStatus(client, this.lastDaemonStatus);
+      }
       this.logger.debug(`WebSocket connected: ${client.id}`);
     } catch {
       client.disconnect(true);
@@ -60,7 +82,18 @@ export class BackendsGateway implements OnGatewayConnection, OnGatewayDisconnect
     const cleanup = this.clientSubscriptions.get(client.id);
     cleanup?.();
     this.clientSubscriptions.delete(client.id);
+    this.stopDaemonStatusWatcherIfIdle();
     this.logger.debug(`WebSocket disconnected: ${client.id}`);
+  }
+
+  @SubscribeMessage('daemon:status')
+  public async handleDaemonStatusRequest(@ConnectedSocket() client: Socket): Promise<void> {
+    if (this.lastDaemonStatus) {
+      this.emitDaemonStatus(client, this.lastDaemonStatus);
+      return;
+    }
+
+    await this.refreshDaemonStatus();
   }
 
   private subscribeClient(client: Socket): () => void {
@@ -121,5 +154,67 @@ export class BackendsGateway implements OnGatewayConnection, OnGatewayDisconnect
       this.backendsService.queueEvents.off('completed', onCompleted);
       this.backendsService.queueEvents.off('failed', onFailed);
     };
+  }
+
+  private ensureDaemonStatusWatcher(): void {
+    if (this.daemonStatusInterval) {
+      return;
+    }
+
+    void this.refreshDaemonStatus();
+    this.daemonStatusInterval = setInterval(() => void this.refreshDaemonStatus(), DAEMON_STATUS_INTERVAL_MS);
+  }
+
+  private stopDaemonStatusWatcherIfIdle(): void {
+    const connectedClients = this.server?.sockets?.sockets?.size ?? 0;
+    if (connectedClients > 0) {
+      return;
+    }
+
+    if (this.daemonStatusInterval) {
+      clearInterval(this.daemonStatusInterval);
+      this.daemonStatusInterval = null;
+    }
+  }
+
+  private async refreshDaemonStatus(): Promise<void> {
+    if (this.daemonStatusPingInFlight) {
+      return;
+    }
+
+    this.daemonStatusPingInFlight = true;
+    try {
+      const status = await this.backendsService.pingDaemon();
+      this.lastDaemonStatus = status;
+      this.broadcastDaemonStatus(status);
+    } catch (err) {
+      this.logger.error(`Daemon status refresh failed: ${err}`, BackendsGateway.name);
+    } finally {
+      this.daemonStatusPingInFlight = false;
+    }
+  }
+
+  private emitDaemonStatus(client: Socket, status: DaemonStatusPayload): void {
+    try {
+      client.emit('message', { channel: 'daemon:status', payload: status });
+      this.logger.debug(`Emit to <daemon:status> with data <${JSON.stringify(status)}>`, BackendsGateway.name);
+    } catch (err) {
+      this.logger.error(
+        `Emit error from <daemon:status> with data <${JSON.stringify(status)}>. Error: ${err}`,
+        BackendsGateway.name,
+      );
+    }
+  }
+
+  private broadcastDaemonStatus(status: DaemonStatusPayload): void {
+    try {
+      this.server.emit('message', { channel: 'daemon:status', payload: status });
+      this.logger.debug(`Broadcast <daemon:status> with data <${JSON.stringify(status)}>`, BackendsGateway.name);
+    } catch (err) {
+      this.logger.error(
+        `Broadcast error from <daemon:status> with data <${JSON.stringify(status)}>. Error: ${err}`,
+        BackendsGateway.name,
+      );
+    }
   }
 }

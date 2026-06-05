@@ -219,6 +219,7 @@
 <script lang="ts">
 import type { LocationQueryValue } from 'vue-router'
 import { reactive, ref } from 'vue'
+import { attachSocketIoDebug } from '~/composables/useSocketIoDebug'
 import { io, type Socket } from 'socket.io-client'
 import { NewTargetId } from '~/constants/variables'
 
@@ -601,6 +602,7 @@ export default defineNuxtComponent({
         transports: ['polling'],
         reconnectionAttempts: 10,
       })
+      attachSocketIoDebug(this.logsSocket, '/core/cron')
 
       this.logsSocket.on('connect', () => {
         this.logsSocketConnected = true

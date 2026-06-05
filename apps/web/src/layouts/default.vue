@@ -16,12 +16,14 @@ q-layout(view="hHh LpR lff" style="margin-top: -1px;")
           q-space
           q-btn(flat round icon="mdi-close" v-close-popup)
   sesame-layouts-default-footer
+  sesame-core-app-debug-panels
 </template>
 
 <script lang="ts">
 import { IdentityState } from '~/constants/enums'
 import { useIdentityStateStore } from '~/stores/identityState'
 import { loadingBarDefaults } from '~/composables/useLoadingBarHijackFilter'
+import { attachSocketIoDebug } from '~/composables/useSocketIoDebug'
 import { io, type Socket } from 'socket.io-client'
 
 export default defineNuxtComponent({
@@ -31,6 +33,7 @@ export default defineNuxtComponent({
       syncing: this.syncing,
       orchestratorVersion: this.orchestratorVersion,
       daemonVersion: this.daemonVersion,
+      daemonStatus: this.daemonStatus,
     }
   },
   data() {
@@ -56,6 +59,12 @@ export default defineNuxtComponent({
         lastVersion: null,
         updateAvailable: false,
       },
+      daemonStatus: {
+        online: false,
+        pingMs: null as number | null,
+        checking: true,
+      },
+      lastDaemonVersionChecked: null as string | null,
     }
   },
   async setup() {
@@ -101,18 +110,10 @@ export default defineNuxtComponent({
         console.error(error)
       }
 
+    },
+    async fetchDaemonUpdateInfo(version: string): Promise<void> {
       try {
-        const daemonStatusResponse = await $http.$get('/core/backends/daemon/status') as {
-          online?: boolean
-          version?: string
-        }
-
-        if (!daemonStatusResponse?.online) {
-          return
-        }
-
-        const daemonCurrentVersion = daemonStatusResponse.version || '0.0.0'
-
+        const daemonCurrentVersion = version || '0.0.0'
         const daemonUpdateResponse = await $http.$get(`/get-update/sesame-daemon?current=${encodeURIComponent(daemonCurrentVersion)}`) as {
           data?: {
             currentVersion?: string
@@ -128,6 +129,18 @@ export default defineNuxtComponent({
         })
       } catch (error) {
         console.error(error)
+      }
+    },
+    applyDaemonStatus(payload: { online?: boolean; pingMs?: number | null; version?: string }): void {
+      Object.assign(this.daemonStatus, {
+        online: Boolean(payload?.online),
+        pingMs: payload?.pingMs ?? null,
+        checking: false,
+      })
+
+      if (payload?.online && payload?.version && this.lastDaemonVersionChecked !== payload.version) {
+        this.lastDaemonVersionChecked = payload.version
+        void this.fetchDaemonUpdateInfo(payload.version)
       }
     },
     syncing(payload: { count: number }) {
@@ -151,8 +164,17 @@ export default defineNuxtComponent({
           transports: ['polling'],
           reconnectionAttempts: 10,
         })
-        this.socket.on('message', this.onJobMessage.bind(this))
+        attachSocketIoDebug(this.socket, '/core/backends')
+        this.socket.on('connect', () => {
+          Object.assign(this.daemonStatus, { checking: true })
+          this.socket?.emit('daemon:status')
+        })
+        this.socket.on('disconnect', () => {
+          Object.assign(this.daemonStatus, { online: false, pingMs: null, checking: true })
+        })
+        this.socket.on('message', this.onSocketMessage.bind(this))
         this.socket.on('connect_error', () => {
+          Object.assign(this.daemonStatus, { online: false, pingMs: null, checking: true })
           if (!auth.user?.sseToken) {
             this.disconnectBackendsSocket()
           }
@@ -182,8 +204,13 @@ export default defineNuxtComponent({
         this.socket = null
       }
     },
-    async onJobMessage(data: { channel: string; payload: { jobId?: string } }) {
+    async onSocketMessage(data: { channel: string; payload: { jobId?: string; online?: boolean; pingMs?: number | null; version?: string } }) {
       try {
+        if (data.channel === 'daemon:status') {
+          this.applyDaemonStatus(data.payload)
+          return
+        }
+
         if (/^job:/.test(data.channel)) {
           if (this.eventSeamlessTotal === 0) {
             await this.identityStateStore.fetchAllStateCount()

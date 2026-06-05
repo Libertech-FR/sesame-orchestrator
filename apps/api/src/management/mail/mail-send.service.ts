@@ -54,9 +54,7 @@ export class MailSendService {
     personnelPath: string;
     policyMailAttribute: string;
   }): string[] {
-    const sources = Array.isArray(args.recipientAddressSources)
-      ? [...new Set(args.recipientAddressSources)]
-      : [];
+    const sources = Array.isArray(args.recipientAddressSources) ? [...new Set(args.recipientAddressSources)] : [];
 
     if (!sources.length) {
       if (!args.policyMailAttribute) {

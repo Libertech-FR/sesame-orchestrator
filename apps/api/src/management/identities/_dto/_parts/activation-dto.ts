@@ -5,10 +5,10 @@ import { DataStatusEnum } from '../../_enums/data-status';
 export class ActivationDto {
   @IsMongoId()
   @ApiProperty({ example: '66d80ab41821baca9bf965b2', description: 'Id of identity', type: String })
-  public id: string
+  public id: string;
 
   @IsIn([DataStatusEnum.ACTIVE, DataStatusEnum.INACTIVE], {
-    message: 'Le statut doit être ACTIVE ou INACTIVE.'
+    message: 'Le statut doit être ACTIVE ou INACTIVE.',
   })
   @ApiProperty({
     example: DataStatusEnum.ACTIVE,
@@ -16,5 +16,5 @@ export class ActivationDto {
     enum: [DataStatusEnum.ACTIVE, DataStatusEnum.INACTIVE],
     type: Number,
   })
-  public status: DataStatusEnum
+  public status: DataStatusEnum;
 }

@@ -127,12 +127,15 @@ export class AppController extends AbstractController {
 
     let lastVersion = '0.0.0';
     let updateAvailable = false;
-    let data = await this.appService.getProjectUpdate(project);
+    const data = await this.appService.getProjectUpdate(project);
 
     if (data) {
       lastVersion = data.tag_name.replace(/^v/, '');
       const [lastMajor, lastMinor, lastPatch] = lastVersion.split('.').map(Number);
-      updateAvailable = lastMajor > currentMajor || (lastMajor === currentMajor && lastMinor > currentMinor) || (lastMajor === currentMajor && lastMinor === currentMinor && lastPatch > currentPatch);
+      updateAvailable =
+        lastMajor > currentMajor ||
+        (lastMajor === currentMajor && lastMinor > currentMinor) ||
+        (lastMajor === currentMajor && lastMinor === currentMinor && lastPatch > currentPatch);
     }
 
     return res.json({
@@ -159,8 +162,8 @@ export class AppController extends AbstractController {
    * // Lance une erreur "My first Sentry error!"
    * ```
    */
-  @Get("/debug-sentry")
+  @Get('/debug-sentry')
   getError() {
-    throw new Error("My first Sentry error!");
+    throw new Error('My first Sentry error!');
   }
 }

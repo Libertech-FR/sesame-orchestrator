@@ -1,25 +1,25 @@
-import { Logger } from '@nestjs/common'
-import { ModuleRef } from '@nestjs/core'
-import { Types } from 'mongoose'
-import { Command, CommandRunner, InquirerService, Question, QuestionSet, SubCommand } from 'nest-commander'
-import { CronConsoleHandler } from '~/_common/decorators/cron-console-handler.decorator'
-import { AgentsCreateDto, AgentsUpdateDto } from '~/core/agents/_dto/agents.dto'
-import { AgentsService } from '~/core/agents/agents.service'
-import { Agents } from './_schemas/agents.schema'
+import { Logger } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { Types } from 'mongoose';
+import { Command, CommandRunner, InquirerService, Question, QuestionSet, SubCommand } from 'nest-commander';
+import { CronConsoleHandler } from '~/_common/decorators/cron-console-handler.decorator';
+import { AgentsCreateDto, AgentsUpdateDto } from '~/core/agents/_dto/agents.dto';
+import { AgentsService } from '~/core/agents/agents.service';
+import { Agents } from './_schemas/agents.schema';
 
 function isTotpEnabledForAgentSecurity(security: Record<string, unknown>): boolean {
-  const otpKey = `${security.otpKey || ''}`.trim().replace(/\s+/g, '').toUpperCase()
-  if (!otpKey) return false
-  return /^[A-Z2-7]+=*$/.test(otpKey) && otpKey.length >= 16
+  const otpKey = `${security.otpKey || ''}`.trim().replace(/\s+/g, '').toUpperCase();
+  if (!otpKey) return false;
+  return /^[A-Z2-7]+=*$/.test(otpKey) && otpKey.length >= 16;
 }
 
 function hasWebAuthnKeyForAgentSecurity(security: Record<string, unknown>): boolean {
-  const keys = security.u2fKey
-  if (!Array.isArray(keys)) return false
+  const keys = security.u2fKey;
+  if (!Array.isArray(keys)) return false;
   return keys.some((key) => {
-    const entry = key && typeof key === 'object' ? (key as Record<string, unknown>) : {}
-    return `${entry.credentialId || ''}`.trim() && `${entry.publicKey || ''}`.trim()
-  })
+    const entry = key && typeof key === 'object' ? (key as Record<string, unknown>) : {};
+    return `${entry.credentialId || ''}`.trim() && `${entry.publicKey || ''}`.trim();
+  });
 }
 
 /**
@@ -44,7 +44,7 @@ export class AgentCreateQuestions {
     name: 'username',
   })
   parseUsername(val: string) {
-    return val
+    return val;
   }
 
   /**
@@ -58,7 +58,7 @@ export class AgentCreateQuestions {
     name: 'email',
   })
   parseEmail(val: string) {
-    return val
+    return val;
   }
 
   /**
@@ -74,7 +74,7 @@ export class AgentCreateQuestions {
     type: 'password',
   })
   parsePassword(val: string) {
-    return val
+    return val;
   }
 
   @Question({
@@ -82,12 +82,12 @@ export class AgentCreateQuestions {
     name: 'allowedNetworks',
   })
   parseAllowedNetworks(val: string) {
-    const raw = `${val || ''}`.trim()
-    if (!raw) return []
+    const raw = `${val || ''}`.trim();
+    if (!raw) return [];
     return raw
       .split(',')
       .map((item) => `${item || ''}`.trim())
-      .filter((item) => item.length > 0)
+      .filter((item) => item.length > 0);
   }
 }
 
@@ -108,7 +108,7 @@ export class AgentCreateQuestions {
  */
 @SubCommand({ name: 'create' })
 export class AgentsCreateCommand extends CommandRunner {
-  private readonly logger = new Logger(AgentsCreateCommand.name)
+  private readonly logger = new Logger(AgentsCreateCommand.name);
 
   /**
    * Constructeur de la commande de création d'agent
@@ -122,7 +122,7 @@ export class AgentsCreateCommand extends CommandRunner {
     private readonly inquirer: InquirerService,
     private readonly agentsService: AgentsService,
   ) {
-    super()
+    super();
   }
 
   /**
@@ -134,22 +134,25 @@ export class AgentsCreateCommand extends CommandRunner {
    * @param _options Options passées à la commande
    */
   async run(_inputs: string[], _options: any): Promise<void> {
-    this.logger.log('Starting agent creation process...')
+    this.logger.log('Starting agent creation process...');
     // Pose les questions définies dans AgentCreateQuestions pour obtenir les données de l'agent
-    const agent = await this.inquirer.ask<AgentsCreateDto & { allowedNetworks?: string[] }>('agent-create-questions', undefined)
+    const agent = await this.inquirer.ask<AgentsCreateDto & { allowedNetworks?: string[] }>(
+      'agent-create-questions',
+      undefined,
+    );
     try {
       if (Array.isArray((agent as any).allowedNetworks) && (agent as any).allowedNetworks.length > 0) {
-        ;(agent as any).security = {
+        (agent as any).security = {
           ...(agent as any).security,
           allowedNetworks: (agent as any).allowedNetworks,
-        }
+        };
       }
-      delete (agent as any).allowedNetworks
+      delete (agent as any).allowedNetworks;
       // Crée l'agent avec les données collectées
-      await this.agentsService.create(agent)
-      console.log('Agent created successfully')
+      await this.agentsService.create(agent);
+      console.log('Agent created successfully');
     } catch (error) {
-      console.error('Error creating agent', error)
+      console.error('Error creating agent', error);
     }
   }
 }
@@ -164,29 +167,29 @@ export class AgentsCreateCommand extends CommandRunner {
  */
 @SubCommand({ name: 'clear-mfa', arguments: '<username>' })
 export class AgentsClearMfaCommand extends CommandRunner {
-  private readonly logger = new Logger(AgentsClearMfaCommand.name)
+  private readonly logger = new Logger(AgentsClearMfaCommand.name);
 
   public constructor(
     protected moduleRef: ModuleRef,
     private readonly agentsService: AgentsService,
   ) {
-    super()
+    super();
   }
 
   async run(inputs: string[], _options: unknown): Promise<void> {
-    const username = `${inputs[0] || ''}`.trim()
+    const username = `${inputs[0] || ''}`.trim();
     if (!username) {
-      console.error('Usage: yarn console agents clear-mfa <username>')
-      return
+      console.error('Usage: yarn console agents clear-mfa <username>');
+      return;
     }
 
-    this.logger.log(`Clearing MFA for agent "${username}"...`)
+    this.logger.log(`Clearing MFA for agent "${username}"...`);
 
     try {
-      const agent = (await this.agentsService.findOne<Agents>({ username })) as Agents | null
+      const agent = (await this.agentsService.findOne<Agents>({ username })) as Agents | null;
       if (!agent?._id) {
-        console.error(`Agent introuvable: ${username}`)
-        return
+        console.error(`Agent introuvable: ${username}`);
+        return;
       }
 
       const currentSecurity =
@@ -194,30 +197,33 @@ export class AgentsClearMfaCommand extends CommandRunner {
           ? typeof (agent.security as { toObject?: () => Record<string, unknown> }).toObject === 'function'
             ? (agent.security as { toObject: () => Record<string, unknown> }).toObject()
             : { ...(agent.security as unknown as Record<string, unknown>) }
-          : {}
+          : {};
 
-      const hadTotp = isTotpEnabledForAgentSecurity(currentSecurity)
-      const hadWebAuthn = hasWebAuthnKeyForAgentSecurity(currentSecurity)
-      const fidoKeyCount = Array.isArray(currentSecurity.u2fKey) ? currentSecurity.u2fKey.length : 0
+      const hadTotp = isTotpEnabledForAgentSecurity(currentSecurity);
+      const hadWebAuthn = hasWebAuthnKeyForAgentSecurity(currentSecurity);
+      const fidoKeyCount = Array.isArray(currentSecurity.u2fKey) ? currentSecurity.u2fKey.length : 0;
 
       if (!hadTotp && !hadWebAuthn) {
-        console.log(`Aucun MFA actif pour "${username}".`)
-        return
+        console.log(`Aucun MFA actif pour "${username}".`);
+        return;
       }
 
-      await this.agentsService.update(agent._id as Types.ObjectId, {
-        security: {
-          ...currentSecurity,
-          otpKey: '',
-          u2fKey: [],
-        },
-      } as AgentsUpdateDto)
+      await this.agentsService.update(
+        agent._id as Types.ObjectId,
+        {
+          security: {
+            ...currentSecurity,
+            otpKey: '',
+            u2fKey: [],
+          },
+        } as AgentsUpdateDto,
+      );
 
-      console.log(`MFA désactivé pour "${username}".`)
-      if (hadTotp) console.log('- TOTP supprimé')
-      if (hadWebAuthn) console.log(`- ${fidoKeyCount} clé(s) FIDO/WebAuthn supprimée(s)`)
+      console.log(`MFA désactivé pour "${username}".`);
+      if (hadTotp) console.log('- TOTP supprimé');
+      if (hadWebAuthn) console.log(`- ${fidoKeyCount} clé(s) FIDO/WebAuthn supprimée(s)`);
     } catch (error) {
-      console.error('Erreur lors de la suppression du MFA', error)
+      console.error('Erreur lors de la suppression du MFA', error);
     }
   }
 }
@@ -229,27 +235,30 @@ export class AgentsClearMfaCommand extends CommandRunner {
 })
 @SubCommand({ name: 'list' })
 export class AgentsListCommand extends CommandRunner {
-  private readonly logger = new Logger(AgentsListCommand.name)
+  private readonly logger = new Logger(AgentsListCommand.name);
 
   public constructor(
     protected moduleRef: ModuleRef,
     private readonly agentsService: AgentsService,
   ) {
-    super()
+    super();
   }
 
   async run(_inputs: string[], _options: any): Promise<void> {
-    this.logger.log('Listing agents...')
+    this.logger.log('Listing agents...');
     try {
-      const agents = await this.agentsService.find<Agents>({})
-      console.table(agents.map((agent: any) => ({
-        username: agent.username,
-        email: agent.email,
-        displayName: agent.displayName,
-        currentState: agent.state.current,
-      })), ['username', 'email', 'displayName', 'currentState'])
+      const agents = await this.agentsService.find<Agents>({});
+      console.table(
+        agents.map((agent: any) => ({
+          username: agent.username,
+          email: agent.email,
+          displayName: agent.displayName,
+          currentState: agent.state.current,
+        })),
+        ['username', 'email', 'displayName', 'currentState'],
+      );
     } catch (error) {
-      console.error('Error listing agents', error)
+      console.error('Error listing agents', error);
     }
   }
 }
@@ -281,7 +290,7 @@ export class AgentsCommand extends CommandRunner {
    * @param moduleRef Référence au module NestJS
    */
   public constructor(protected moduleRef: ModuleRef) {
-    super()
+    super();
   }
 
   /**
@@ -291,5 +300,5 @@ export class AgentsCommand extends CommandRunner {
    * @param _inputs Arguments passés à la commande
    * @param _options Options passées à la commande
    */
-  async run(_inputs: string[], _options: any): Promise<void> { }
+  async run(_inputs: string[], _options: any): Promise<void> {}
 }

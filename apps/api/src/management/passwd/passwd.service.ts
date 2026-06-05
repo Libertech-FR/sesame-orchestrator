@@ -35,7 +35,7 @@ import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 import { SentMessageInfo } from 'nodemailer';
 import { PasswordHistoryService } from '~/management/password-history/password-history.service';
 import { PasswordPoliciesDto } from '~/settings/_dto/password-policy.dto';
-import { FilterOptions } from '~/_common/restools';
+import { FilterOptions } from '@tacxou/nestjs_module_restools/search-filter-schema';
 import { buildExpiredInitInvitationFilter } from '~/management/passwd/init-invitation-expiration.helper';
 
 interface TokenData {

@@ -1,4 +1,4 @@
-import { validateLifecycleCronRules } from '~/management/lifecycle/_functions/validate-lifecycle-cron-rules.function'
+import { validateLifecycleCronRules } from '~/management/lifecycle/_functions/validate-lifecycle-cron-rules.function';
 
 describe('validateLifecycleCronRules', () => {
   it('should accept rules with trigger=-1', () => {
@@ -8,13 +8,13 @@ describe('validateLifecycleCronRules', () => {
         trigger: -1,
         target: 'I',
       } as any,
-    ])
+    ]);
 
-    expect(result.executable).toBe(true)
+    expect(result.executable).toBe(true);
     if (result.executable) {
-      expect(result.rules).toHaveLength(1)
+      expect(result.rules).toHaveLength(1);
     }
-  })
+  });
 
   it('should reject rules without trigger=-1', () => {
     const result = validateLifecycleCronRules('01-etd', [
@@ -27,7 +27,7 @@ describe('validateLifecycleCronRules', () => {
         sources: ['D'],
         target: 'I',
       } as any,
-    ])
+    ]);
 
     expect(result).toEqual({
       executable: false,
@@ -37,6 +37,6 @@ describe('validateLifecycleCronRules', () => {
         '  • sources [I, W] → trigger=5',
         '  • sources [D] → trigger=non défini',
       ],
-    })
-  })
-})
+    });
+  });
+});

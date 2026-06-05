@@ -13,9 +13,9 @@ import { BackendsService } from '~/core/backends/backends.service';
 import { construct, omit } from 'radash';
 import { toPlainAndCrush } from '~/_common/functions/to-plain-and-crush';
 import { createHash } from 'node:crypto';
-import { PasswdadmService } from "~/settings/passwdadm.service";
-import { DataStatusEnum } from "~/management/identities/_enums/data-status";
-import { JobState } from "~/core/jobs/_enums/state.enum";
+import { PasswdadmService } from '~/settings/passwdadm.service';
+import { DataStatusEnum } from '~/management/identities/_enums/data-status';
+import { JobState } from '~/core/jobs/_enums/state.enum';
 import { inetOrgPersonDto } from './_dto/_parts/inetOrgPerson.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ConfigService } from '@nestjs/config';
@@ -74,7 +74,9 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
     }
 
     if (error instanceof ValidationSchemaException) {
-      this.logger.warn(`${logPrefix} Validation handleValidationError schema error. ${JSON.stringify(error.getValidations())}`);
+      this.logger.warn(
+        `${logPrefix} Validation handleValidationError schema error. ${JSON.stringify(error.getValidations())}`,
+      );
       identity.additionalFields.validations = error.getValidations();
 
       this.logger.warn(`${logPrefix} State set to TO_COMPLETE.`);
@@ -180,7 +182,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
    * @returns La représentation string stable de l'objet
    */
   private stableStringify(obj) {
-    if (typeof obj !== "object" || obj === null) {
+    if (typeof obj !== 'object' || obj === null) {
       return JSON.stringify(obj);
     }
 
@@ -188,9 +190,10 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
       return `[${obj.map(this.stableStringify).join(',')}]`;
     }
 
-    return `{${Object.keys(obj).sort().map(key =>
-      JSON.stringify(key) + ':' + this.stableStringify(obj[key])
-    ).join(',')}}`;
+    return `{${Object.keys(obj)
+      .sort()
+      .map((key) => JSON.stringify(key) + ':' + this.stableStringify(obj[key]))
+      .join(',')}}`;
   }
 
   /**
@@ -253,9 +256,9 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
     if (statusChanged) {
       // le dataStatus à changé on envoye l info aux backend et on enregistre l identité
       // Envoi du status au backend
-      let statusBackend = true
+      let statusBackend = true;
       if (status == DataStatusEnum.INACTIVE || status == DataStatusEnum.PASSWORDNEEDTOBECHANGED) {
-        statusBackend = false
+        statusBackend = false;
       }
       const result = await this.backends.activationIdentity(identity._id.toString(), statusBackend);
       if (result.state === JobState.COMPLETED) {
@@ -300,7 +303,6 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
       await super.update(identity._id, identity);
 
       this.logger.log(`Password change requested for identity ${id}`);
-
     } catch (error) {
       // Gestion spécifique des erreurs déjà connues
       if (error instanceof BadRequestException || error instanceof HttpException) {
@@ -347,7 +349,6 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
 
       // Vérification avec email si celui-ci est fourni et non vide
       if (data.inetOrgPerson.hasOwnProperty('mail') && data.inetOrgPerson.mail !== '') {
-
         // Validation du format email
         if (typeof data.inetOrgPerson.mail !== 'string') {
           throw new BadRequestException('Invalid email format');
@@ -355,27 +356,23 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
 
         // Filtre pour vérifier UID ou email
         const filterWithMail = {
-          '_id': { $ne: objectId },
-          'deletedFlag': { $ne: true },
-          $or: [
-            { 'inetOrgPerson.uid': data.inetOrgPerson.uid },
-            { 'inetOrgPerson.mail': data.inetOrgPerson.mail }
-          ]
+          _id: { $ne: objectId },
+          deletedFlag: { $ne: true },
+          $or: [{ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, { 'inetOrgPerson.mail': data.inetOrgPerson.mail }],
         };
         duplicates = await this._model.find(filterWithMail).exec();
       } else {
         // Filtre pour vérifier seulement l'UID
         const filterUidOnly = {
-          '_id': { $ne: objectId },
-          'deletedFlag': { $ne: true },
-          'inetOrgPerson.uid': data.inetOrgPerson.uid
+          _id: { $ne: objectId },
+          deletedFlag: { $ne: true },
+          'inetOrgPerson.uid': data.inetOrgPerson.uid,
         };
         duplicates = await this._model.find(filterUidOnly).exec();
       }
 
       // Retourne true si aucun doublon n'est trouvé
       return duplicates.length === 0;
-
     } catch (error) {
       this.logger.error(`Error checking mail and UID uniqueness for ID "${data._id}": ${error.message}`);
       throw new HttpException('Failed to check mail and UID uniqueness', 500);
@@ -389,10 +386,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
    * @param data - Les données contenant l'email à vérifier
    * @returns true si l'email est unique, false sinon
    */
-  protected async checkMail(
-    identity: Identities | null,
-    data: IdentitiesUpsertDto | any,
-  ): Promise<boolean> {
+  protected async checkMail(identity: Identities | null, data: IdentitiesUpsertDto | any): Promise<boolean> {
     // Validation des paramètres d'entrée
     if (!data?.inetOrgPerson) {
       throw new BadRequestException('inetOrgPerson data is required for mail check');
@@ -415,9 +409,9 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
       if (identity) {
         // Vérification pour une identité existante (mise à jour)
         const updateFilter = {
-          '_id': { $ne: identity._id },
-          'state': { $ne: IdentityState.DONT_SYNC },
-          'deletedFlag': { $ne: true },
+          _id: { $ne: identity._id },
+          state: { $ne: IdentityState.DONT_SYNC },
+          deletedFlag: { $ne: true },
           'inetOrgPerson.mail': identity.inetOrgPerson.mail,
         };
         duplicateCount = await this._model.countDocuments(updateFilter).exec();
@@ -431,7 +425,6 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
 
       // Retourne true si l'email est unique (aucun doublon trouvé)
       return duplicateCount === 0;
-
     } catch (error) {
       this.logger.error(`Error checking email uniqueness for email "${emailToCheck}": ${error.message}`);
       throw new HttpException('Failed to check email uniqueness', 500);
@@ -445,10 +438,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
    * @param data - Les données contenant l'UID à vérifier
    * @returns true si l'UID est unique, false sinon
    */
-  protected async checkUid(
-    identity: Identities | null,
-    data: IdentitiesUpsertDto | any,
-  ): Promise<boolean> {
+  protected async checkUid(identity: Identities | null, data: IdentitiesUpsertDto | any): Promise<boolean> {
     // Validation des paramètres d'entrée
     if (!data?.inetOrgPerson?.uid) {
       throw new BadRequestException('UID is required for uniqueness check');
@@ -466,9 +456,9 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
       if (identity) {
         // Vérification pour une identité existante (mise à jour)
         const updateFilter = {
-          '_id': { $ne: identity._id },
-          'state': { $ne: IdentityState.DONT_SYNC },
-          'deletedFlag': { $ne: true },
+          _id: { $ne: identity._id },
+          state: { $ne: IdentityState.DONT_SYNC },
+          deletedFlag: { $ne: true },
           'inetOrgPerson.uid': identity?.inetOrgPerson?.uid,
         };
         duplicateCount = await this._model.countDocuments(updateFilter).exec();
@@ -482,7 +472,6 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
 
       // Retourne true si l'UID est unique (aucun doublon trouvé)
       return duplicateCount === 0;
-
     } catch (error) {
       this.logger.error(`Error checking UID uniqueness for UID "${uidToCheck}": ${error.message}`);
       throw new HttpException('Failed to check UID uniqueness', 500);

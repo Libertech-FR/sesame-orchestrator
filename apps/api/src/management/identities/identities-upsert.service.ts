@@ -18,13 +18,13 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
     extra = {
       force: false,
       ...extra,
-    }
+    };
     data = this.transformNullsToString(data);
     const identity = await this.model.findOne<Identities>(filters).exec();
     this.logger.log(`Upserting identity with filters ${JSON.stringify(filters)}`);
     const crushedUpdate = toPlainAndCrush(omit(data || {}, ['$setOnInsert']));
     const crushedSetOnInsert = toPlainAndCrush(data.$setOnInsert || {});
-    let employeeNumber = ""
+    let employeeNumber = '';
     if (data?.$setOnInsert?.inetOrgPerson?.employeeNumber) {
       employeeNumber = data.$setOnInsert.inetOrgPerson.employeeNumber[0];
     } else {
@@ -51,7 +51,11 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
     //controle si l identité est fusionnée si c est la bonne à mettre à jour puisqu elle a 2 employeeNumber
     //bug #54 si primaryEmployeeNumber = "" considéré comme non null
     if (identity !== null) {
-      if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== '' && identity.primaryEmployeeNumber !== employeeNumber) {
+      if (
+        identity.primaryEmployeeNumber !== null &&
+        identity.primaryEmployeeNumber !== '' &&
+        identity.primaryEmployeeNumber !== employeeNumber
+      ) {
         throw new HttpException('Secondary identity', HttpStatus.SEE_OTHER);
       }
     }
@@ -67,13 +71,13 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       this.logger.log(`${logPrefix} Starting additionalFields transformation.`);
       await this._validation.transform(data.additionalFields);
       this.logger.log(`${logPrefix} Starting additionalFields validation.`);
-      let validations = await this._validation.validate(data.additionalFields, true);
+      const validations = await this._validation.validate(data.additionalFields, true);
       //validation email and uid
-      if (await this.checkMail(identity, data) === false) {
-        validations['inetOrgPerson.mail'] = "Email déjà présent dans une autre identité"
+      if ((await this.checkMail(identity, data)) === false) {
+        validations['inetOrgPerson.mail'] = 'Email déjà présent dans une autre identité';
       }
-      if (await this.checkUid(identity, data) === false) {
-        validations['inetOrgPerson.uid'] = "Uid déjà présent dans une autre identité"
+      if ((await this.checkUid(identity, data)) === false) {
+        validations['inetOrgPerson.uid'] = 'Uid déjà présent dans une autre identité';
       }
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
       this.logger.log(`Validations : ${JSON.stringify(validations)}`);
@@ -85,32 +89,41 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       crushedUpdate['additionalFields.validations'] = data.additionalFields.validations;
     }
     //validation email and uid
-    if (await this.checkMail(identity, data) === false) {
-      crushedUpdate['additionalFields.validations']['inetOrgPerson'] = { mail: "Email déjà présent dans une autre identité" }
+    if ((await this.checkMail(identity, data)) === false) {
+      crushedUpdate['additionalFields.validations']['inetOrgPerson'] = {
+        mail: 'Email déjà présent dans une autre identité',
+      };
       crushedUpdate['state'] = IdentityState.TO_COMPLETE;
     }
-    if (await this.checkUid(identity, data) === false) {
-      crushedUpdate['additionalFields.validations']['inetOrgPerson'] = { uid: "Uid déjà présent dans une autre identité" }
+    if ((await this.checkUid(identity, data)) === false) {
+      crushedUpdate['additionalFields.validations']['inetOrgPerson'] = {
+        uid: 'Uid déjà présent dans une autre identité',
+      };
       crushedUpdate['state'] = IdentityState.TO_COMPLETE;
     }
 
-    const fingerprint = await this.previewFingerprint(
-      data,
-    );
+    const fingerprint = await this.previewFingerprint(data);
 
     await this.checkFingerprint(filters, fingerprint, extra);
 
-    this.logger.verbose('identities upsert data: ' + JSON.stringify({
-      $setOnInsert: {
-        ...crushedSetOnInsert,
-        // 'state': IdentityState.TO_CREATE,
-      },
-      $set: {
-        ...crushedUpdate,
-        'additionalFields.objectClasses': data.additionalFields.objectClasses,
-        lastSync: new Date(),
-      },
-    }, null, 2));
+    this.logger.verbose(
+      'identities upsert data: ' +
+        JSON.stringify(
+          {
+            $setOnInsert: {
+              ...crushedSetOnInsert,
+              // 'state': IdentityState.TO_CREATE,
+            },
+            $set: {
+              ...crushedUpdate,
+              'additionalFields.objectClasses': data.additionalFields.objectClasses,
+              lastSync: new Date(),
+            },
+          },
+          null,
+          2,
+        ),
+    );
 
     const upserted = await super.upsert(
       filters,

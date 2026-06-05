@@ -11,7 +11,7 @@ import validSchema from './_config/validSchema';
 import ajvErrors from 'ajv-errors';
 import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
 import { additionalFieldsPartDto } from '../_dto/_parts/additionalFields.dto';
-import { ConfigService } from "@nestjs/config";
+import { ConfigService } from '@nestjs/config';
 
 /**
  * Service responsible for validating identities.
@@ -28,7 +28,6 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     this.ajv.addFormat('number', /^\d*$/);
     this.validateSchema = this.ajv.compile(validSchema);
     this.logger = new Logger(IdentitiesValidationService.name);
-
   }
 
   public onApplicationBootstrap(): void {
@@ -72,7 +71,9 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     return null;
   }
 
-  public async transform(data: Partial<AdditionalFieldsPart | additionalFieldsPartDto> = {}): Promise<Partial<AdditionalFieldsPart | additionalFieldsPartDto>> {
+  public async transform(
+    data: Partial<AdditionalFieldsPart | additionalFieldsPartDto> = {},
+  ): Promise<Partial<AdditionalFieldsPart | additionalFieldsPartDto>> {
     if (!data.objectClasses) {
       data.objectClasses = [];
     }
@@ -90,7 +91,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
       await this.transformAttribute(key, attributes[key], attributes);
     }
 
-    return data
+    return data;
   }
 
   /**
@@ -103,13 +104,12 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     const attributesKeys = Object.keys(attributes);
     for (const objectclass of objectClasses) {
       if (!attributesKeys.includes(objectclass)) {
-        this.logger.log(objectclass + " attribute not found creating");
+        this.logger.log(objectclass + ' attribute not found creating');
         await this.createAttributes(objectclass, data);
       }
     }
   }
   private async createAttributes(key: string, data: any) {
-
     // Validate the key to prevent prototype pollution
     if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
       this.logger.error('Invalid key: ' + key);
@@ -122,7 +122,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     }
     const schema: any = parse(readFileSync(path, 'utf8'));
     //creation de la clé
-    data.attributes[key] = {}
+    data.attributes[key] = {};
     for (const [index, def] of Object.entries(schema?.properties || {})) {
       switch ((def as any).type) {
         case 'array':
@@ -150,7 +150,6 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
    * @param data
    */
   public async transformAttribute(key: string, attribute: any, data: any) {
-
     const path = this.resolveConfigPath(key);
     if (path === null) {
       this.logger.error('schema for ' + key + ' does not exist');
@@ -176,7 +175,7 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
                     data[key][index][elems] = String(data[key][index][elems]);
                     break;
                   case 'number':
-                    data[key][index][elems] = await this.transformNumber(data[key][index][elems])
+                    data[key][index][elems] = await this.transformNumber(data[key][index][elems]);
                     break;
                 }
               }
@@ -189,14 +188,14 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
           }
           if (typeof data[key][index] !== 'number') {
             //on ne convertit pas si la chaine est vide
-            if (typeof data[key][index] === 'string' && data[key][index] !== "") {
-              data[key][index] = await this.transformNumber(data[key][index])
+            if (typeof data[key][index] === 'string' && data[key][index] !== '') {
+              data[key][index] = await this.transformNumber(data[key][index]);
             }
           }
           break;
         case 'string':
           if (typeof data[key][index] === 'undefined' || data[key][index] === null) {
-            data[key][index] = "";
+            data[key][index] = '';
           }
           if (typeof data[key][index] !== 'string') {
             data[key][index] = String(data[key][index]);
@@ -213,21 +212,24 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
    */
   private async transformNumber(value) {
     if (typeof value === 'string') {
-      const tr = parseFloat(value)
+      const tr = parseFloat(value);
       if (!isNaN(tr)) {
-        return tr
+        return tr;
       } else {
-        return 0
+        return 0;
       }
     }
-    return value
+    return value;
   }
   /**
    * Validates additional fields for identities.
    * @param data - The additional fields data to validate.
    * @returns A promise that resolves if validation succeeds, or rejects with validation errors.
    */
-  public async validate(data: AdditionalFieldsPart | additionalFieldsPartDto, callException: boolean = true): Promise<object> {
+  public async validate(
+    data: AdditionalFieldsPart | additionalFieldsPartDto,
+    callException: boolean = true,
+  ): Promise<object> {
     if (!data.objectClasses) {
       data.objectClasses = [];
     }
@@ -319,12 +321,12 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
         switch (schema['properties'][required]['type']) {
           case 'array':
             if (!schema['properties'][required]['minItems']) {
-              schema['properties'][required]['minItems'] = 1
+              schema['properties'][required]['minItems'] = 1;
             }
             break;
           case 'string':
             if (!schema['properties'][required]['minLength']) {
-              schema['properties'][required]['minLength'] = 1
+              schema['properties'][required]['minLength'] = 1;
             }
             break;
         }
@@ -362,13 +364,13 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
     const ok = await this.ajv.validate(schema, data[key]);
     if (ok === false) {
       const retErrors = {};
-      await this.translateAjv(this.ajv.errors)
+      await this.translateAjv(this.ajv.errors);
       for (const err of this.ajv.errors) {
-        retErrors[err['instancePath'].substring(1)] = err['instancePath'].substring(1) + ' ' + err['message']
+        retErrors[err['instancePath'].substring(1)] = err['instancePath'].substring(1) + ' ' + err['message'];
       }
-      return (retErrors)
+      return retErrors;
     }
-    return null
+    return null;
   }
 
   public async findAll(): Promise<any> {
@@ -447,12 +449,12 @@ export class IdentitiesValidationService implements OnApplicationBootstrap {
   private async translateAjv(messages) {
     switch (this.config.get('application.lang')) {
       case 'en':
-        break
+        break;
       case 'fr':
       case 'fr_FR.UTF-8':
       case 'fr_FR':
-        localize.fr(messages)
-        break
+        localize.fr(messages);
+        break;
     }
   }
 }

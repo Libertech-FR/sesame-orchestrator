@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpStatus, Logger, Post, Req, Res } from '@nest
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { Document } from 'mongoose';
-import { FilterOptions, SearchFilterOptions } from '~/_common/restools';
+import { FilterOptions, SearchFilterOptions } from '@tacxou/nestjs_module_restools/search-filter-schema';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
 import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';

@@ -1,1 +1,1 @@
-export const FACTORYDRIVE_MODULE_OPTIONS_TOKEN = 'FactorydriveModuleOptionsToken'
+export const FACTORYDRIVE_MODULE_OPTIONS_TOKEN = 'FactorydriveModuleOptionsToken';

@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags, PartialType } from '@nestjs/swagger';
-import { FilterSchema, SearchFilterSchema } from '~/_common/restools';
+import { FilterSchema, SearchFilterSchema } from '@tacxou/nestjs_module_restools/search-filter-schema';
 import { Response } from 'express';
 import { Document, Types, isValidObjectId } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
@@ -90,10 +90,15 @@ export class IdentitiesUpsertController extends AbstractController {
 
     //TODO: check if the filters are valid and if the body is equal to filters
 
-    const [code, data] = await this._service.upsertWithFingerprint<Identities>(filters, body, {
-      errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),
-      upsert: /true|on|yes|1/i.test(upsert),
-    }, { force });
+    const [code, data] = await this._service.upsertWithFingerprint<Identities>(
+      filters,
+      body,
+      {
+        errorOnNotFound: /true|on|yes|1/i.test(errorOnNotFound),
+        upsert: /true|on|yes|1/i.test(upsert),
+      },
+      { force },
+    );
 
     // If the state is TO_COMPLETE, the identity is created but additional fields are missing or invalid
     // Else the state is TO_VALIDATE, we return a 201 status code

@@ -120,8 +120,8 @@ import { MfaGuard } from './_common/guards/mfa.guard';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
-        const uri = configService.get<string>('ioredis.uri')
-        const redisOptions = redisOptionsFromUri(uri)
+        const uri = configService.get<string>('ioredis.uri');
+        const redisOptions = redisOptionsFromUri(uri);
 
         return {
           connection: {
@@ -132,7 +132,7 @@ import { MfaGuard } from './_common/guards/mfa.guard';
             ...(typeof redisOptions.db === 'number' ? { db: redisOptions.db } : {}),
           },
           blockingConnection: true,
-        }
+        };
       },
     }),
     SesameQueueModule.register(),

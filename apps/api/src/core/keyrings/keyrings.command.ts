@@ -22,7 +22,10 @@ export class KeyringsCreateQuestions {
     name: 'roles',
   })
   parseRoles(val: string) {
-    const roles = val?.split(',').map((role) => role.trim()).filter((role) => role !== '');
+    const roles = val
+      ?.split(',')
+      .map((role) => role.trim())
+      .filter((role) => role !== '');
 
     if (roles.length === 0) {
       return ['admin'];
@@ -36,13 +39,13 @@ export class KeyringsCreateQuestions {
     name: 'allowedNetworks',
   })
   parseAllowedNetworks(val: string) {
-    const raw = `${val || ''}`.trim()
-    if (!raw) return ['0.0.0.0/0']
+    const raw = `${val || ''}`.trim();
+    if (!raw) return ['0.0.0.0/0'];
     const values = raw
       .split(',')
       .map((item) => `${item || ''}`.trim())
-      .filter((item) => item.length > 0)
-    return values.length > 0 ? values : ['0.0.0.0/0']
+      .filter((item) => item.length > 0);
+    return values.length > 0 ? values : ['0.0.0.0/0'];
   }
 }
 
@@ -107,13 +110,14 @@ export class KeyringsListCommand extends CommandRunner {
     try {
       const keyrings = (await this.keyringsService.find<Keyrings>({})) as unknown as Keyrings[];
       console.table(
-        keyrings.map((keyring) => ({
-          name: keyring.name,
-          suspendedAt: keyring.suspendedAt ? dayjs(keyring.suspendedAt).format('DD/MM/YYYY HH:mm:ss') : 'Never',
-          roles: keyring.roles.length > 0 ? keyring.roles : ['admin'],
-          allowedNetworks: keyring.allowedNetworks.length > 0 ? keyring.allowedNetworks : ['0.0.0.0/0'],
-        }))
-        .sort((a, b) => a.name.localeCompare(b.name)),
+        keyrings
+          .map((keyring) => ({
+            name: keyring.name,
+            suspendedAt: keyring.suspendedAt ? dayjs(keyring.suspendedAt).format('DD/MM/YYYY HH:mm:ss') : 'Never',
+            roles: keyring.roles.length > 0 ? keyring.roles : ['admin'],
+            allowedNetworks: keyring.allowedNetworks.length > 0 ? keyring.allowedNetworks : ['0.0.0.0/0'],
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
       );
     } catch (error) {
       console.error('Error listing keyrings', error);
@@ -148,7 +152,11 @@ export class KeyringsDeleteCommand extends CommandRunner {
   }
 }
 
-@Command({ name: 'keyrings', arguments: '<task>', subCommands: [KeyringsCreateCommand, KeyringsListCommand, KeyringsDeleteCommand] })
+@Command({
+  name: 'keyrings',
+  arguments: '<task>',
+  subCommands: [KeyringsCreateCommand, KeyringsListCommand, KeyringsDeleteCommand],
+})
 export class KeyringsCommand extends CommandRunner {
   public constructor(protected moduleRef: ModuleRef) {
     super();

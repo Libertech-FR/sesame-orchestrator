@@ -1,14 +1,18 @@
-import { Injectable } from '@nestjs/common'
-import { Query, Types } from 'mongoose'
-import { FilterOptions } from '~/_common/restools'
-import { IdentityLifecycleDefault, IdentityLifecycleDefaultList, IdentityLifecycleState } from '../identities/_enums/lifecycle.enum'
-import { Lifecycle, LifecycleRefId } from './_schemas/lifecycle.schema'
-import { loadCustomStates } from './_functions/load-custom-states.function'
-import { AbstractLifecycleService } from './_abstracts/abstract.lifecycle.service'
+import { Injectable } from '@nestjs/common';
+import { Query, Types } from 'mongoose';
+import { FilterOptions } from '@tacxou/nestjs_module_restools/search-filter-schema';
+import {
+  IdentityLifecycleDefault,
+  IdentityLifecycleDefaultList,
+  IdentityLifecycleState,
+} from '../identities/_enums/lifecycle.enum';
+import { Lifecycle, LifecycleRefId } from './_schemas/lifecycle.schema';
+import { loadCustomStates } from './_functions/load-custom-states.function';
+import { AbstractLifecycleService } from './_abstracts/abstract.lifecycle.service';
 
 type LifecycleHistoryOptions = FilterOptions & {
-  populateRefId?: boolean
-}
+  populateRefId?: boolean;
+};
 
 /**
  * Service CRUD de gestion du cycle de vie des identités
@@ -27,7 +31,7 @@ type LifecycleHistoryOptions = FilterOptions & {
  */
 @Injectable()
 export class LifecycleCrudService extends AbstractLifecycleService {
-  private _lastStatesCacheRefresh?: number
+  private _lastStatesCacheRefresh?: number;
 
   /**
    * Initialise le service en chargeant les états personnalisés
@@ -41,12 +45,12 @@ export class LifecycleCrudService extends AbstractLifecycleService {
    * via les méthodes publiques du service.
    */
   public async onModuleInit(): Promise<void> {
-    this.logger.verbose('Initializing LifecycleService (CRUD)...')
+    this.logger.verbose('Initializing LifecycleService (CRUD)...');
 
-    await this.refreshCustomStatesCache()
-    this._lastStatesCacheRefresh = Date.now()
+    await this.refreshCustomStatesCache();
+    this._lastStatesCacheRefresh = Date.now();
 
-    this.logger.log('LifecycleService (CRUD) initialized')
+    this.logger.log('LifecycleService (CRUD) initialized');
   }
 
   /**
@@ -70,10 +74,10 @@ export class LifecycleCrudService extends AbstractLifecycleService {
    * dans les méthodes publiques du service.
    */
   private async refreshCustomStatesCache(): Promise<void> {
-    const { customStates, stateFileAge } = await loadCustomStates()
-    this.customStates = customStates
-    this._stateFileAge = stateFileAge
-    this.logger.debug('Lifecycle (CRUD) custom states cache refreshed.')
+    const { customStates, stateFileAge } = await loadCustomStates();
+    this.customStates = customStates;
+    this._stateFileAge = stateFileAge;
+    this.logger.debug('Lifecycle (CRUD) custom states cache refreshed.');
   }
 
   /**
@@ -81,11 +85,11 @@ export class LifecycleCrudService extends AbstractLifecycleService {
    * @param ttlMs Durée de validité du cache en millisecondes (par défaut 60s)
    */
   public async ensureStatesCacheFresh(ttlMs: number = 60_000): Promise<void> {
-    const now = Date.now()
-    if (!this._lastStatesCacheRefresh || (now - this._lastStatesCacheRefresh) > ttlMs) {
-      await this.refreshCustomStatesCache()
-      this._lastStatesCacheRefresh = now
-      this.logger.verbose(`Lifecycle (CRUD) custom states cache ensured (TTL=${ttlMs}ms).`)
+    const now = Date.now();
+    if (!this._lastStatesCacheRefresh || now - this._lastStatesCacheRefresh > ttlMs) {
+      await this.refreshCustomStatesCache();
+      this._lastStatesCacheRefresh = now;
+      this.logger.verbose(`Lifecycle (CRUD) custom states cache ensured (TTL=${ttlMs}ms).`);
     }
   }
 
@@ -113,12 +117,9 @@ export class LifecycleCrudService extends AbstractLifecycleService {
    * // ]
    */
   public getAllAvailableStates(): Array<IdentityLifecycleState> {
-    const allStates: Array<IdentityLifecycleState> = [
-      ...IdentityLifecycleDefaultList,
-      ...this.customStates,
-    ]
+    const allStates: Array<IdentityLifecycleState> = [...IdentityLifecycleDefaultList, ...this.customStates];
 
-    return allStates
+    return allStates;
   }
 
   /**
@@ -137,10 +138,10 @@ export class LifecycleCrudService extends AbstractLifecycleService {
    * // ['A', 'O', 'M', 'X', 'C', 'D', ...]
    */
   public getAllAvailableStateKeys(): string[] {
-    const defaultKeys = Object.values(IdentityLifecycleDefault)
-    const customKeys = this.customStates.map(state => state.key)
+    const defaultKeys = Object.values(IdentityLifecycleDefault);
+    const customKeys = this.customStates.map((state) => state.key);
 
-    return [...defaultKeys, ...customKeys]
+    return [...defaultKeys, ...customKeys];
   }
 
   /**
@@ -159,7 +160,7 @@ export class LifecycleCrudService extends AbstractLifecycleService {
    * // [{ key: 'C', label: 'Custom', description: '...' }]
    */
   public getCustomStates(): IdentityLifecycleState[] {
-    return [...this.customStates]
+    return [...this.customStates];
   }
 
   /**
@@ -175,7 +176,7 @@ export class LifecycleCrudService extends AbstractLifecycleService {
    * // ['C', 'D', 'E']
    */
   public getCustomStateKeys(): string[] {
-    return this.customStates.map(state => state.key)
+    return this.customStates.map((state) => state.key);
   }
 
   /**
@@ -207,7 +208,7 @@ export class LifecycleCrudService extends AbstractLifecycleService {
     refId: Types.ObjectId,
     options?: LifecycleHistoryOptions,
   ): Promise<[number, Query<Array<Lifecycle>, Lifecycle, any, Lifecycle>[]]> {
-    const shouldPopulateRefId = options?.populateRefId !== false
+    const shouldPopulateRefId = options?.populateRefId !== false;
     const result = await this.find<Lifecycle>({ refId }, null, {
       ...(shouldPopulateRefId ? { populate: LifecycleRefId } : {}),
       sort: {
@@ -216,10 +217,10 @@ export class LifecycleCrudService extends AbstractLifecycleService {
       },
       skip: options?.skip || 0,
       limit: options?.limit || 100,
-    })
-    const total = await this.count({ refId })
+    });
+    const total = await this.count({ refId });
 
-    return [total, result]
+    return [total, result];
   }
 
   /**
@@ -255,9 +256,9 @@ export class LifecycleCrudService extends AbstractLifecycleService {
       {
         $sort: { _id: 1 },
       },
-    ])
+    ]);
 
-    return stats
+    return stats;
   }
 
   /**
@@ -289,8 +290,8 @@ export class LifecycleCrudService extends AbstractLifecycleService {
     options?: FilterOptions,
     lifecycle?: string,
   ): Promise<[number, Query<Array<Lifecycle>, Lifecycle, any, Lifecycle>[]]> {
-    const searchFilter = lifecycle ? { lifecycle } : {}
-    const total = await this.count(searchFilter)
+    const searchFilter = lifecycle ? { lifecycle } : {};
+    const total = await this.count(searchFilter);
     const result = await this.find<Lifecycle>(searchFilter, null, {
       populate: 'refId',
       sort: {
@@ -299,8 +300,8 @@ export class LifecycleCrudService extends AbstractLifecycleService {
       },
       skip: options?.skip || 0,
       limit: options?.limit || 100,
-    })
+    });
 
-    return [total, result]
+    return [total, result];
   }
 }

@@ -20,26 +20,29 @@ export function AcGuard(): Type<CanActivate> {
     }
 
     protected isUnProtected(context: ExecutionContext): boolean {
-      return this.__reflector.getAllAndOverride<boolean>(META_UNPROTECTED, [
-        context.getClass(),
-        context.getHandler(),
-      ]);
+      return this.__reflector.getAllAndOverride<boolean>(META_UNPROTECTED, [context.getClass(), context.getHandler()]);
     }
 
     public async canActivate(context: ExecutionContext): Promise<boolean> {
-      const request = context.switchToHttp().getRequest<Request & { user: Express.User & (ApiSession | ConsoleSession) }>();
-      const roleOrRoles = await this.getUserRoles(context)
-      const roles = Array.isArray(roleOrRoles) ? roleOrRoles : [roleOrRoles]
+      const request = context
+        .switchToHttp()
+        .getRequest<Request & { user: Express.User & (ApiSession | ConsoleSession) }>();
+      const roleOrRoles = await this.getUserRoles(context);
+      const roles = Array.isArray(roleOrRoles) ? roleOrRoles : [roleOrRoles];
 
       if (roles.includes(AC_ADMIN_ROLE)) {
-        this.logger.verbose(`User <${request.user._id}, ${request.user.username}> wants to access <${request.method}::${request.route.path}>. Roles: [${roles.join(', ')}] -> [is allowed]`);
+        this.logger.verbose(
+          `User <${request.user._id}, ${request.user.username}> wants to access <${request.method}::${request.route.path}>. Roles: [${roles.join(', ')}] -> [is allowed]`,
+        );
         return true;
       }
 
-      const result = this.isUnProtected(context) || await super.canActivate(context);
+      const result = this.isUnProtected(context) || (await super.canActivate(context));
 
       if (request.user) {
-        this.logger.verbose(`User <${request.user._id}, ${request.user.username}> wants to access <${request.method}::${request.route.path}>. Roles: [${roles.join(', ')}] -> [${result ? 'is allowed' : 'is not allowed'}]`);
+        this.logger.verbose(
+          `User <${request.user._id}, ${request.user.username}> wants to access <${request.method}::${request.route.path}>. Roles: [${roles.join(', ')}] -> [${result ? 'is allowed' : 'is not allowed'}]`,
+        );
       }
 
       return result;

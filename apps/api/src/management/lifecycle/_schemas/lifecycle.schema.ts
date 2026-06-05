@@ -1,7 +1,7 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document, Types } from 'mongoose'
-import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
-import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecycle.enum'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Types } from 'mongoose';
+import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
+import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecycle.enum';
 
 /**
  * Type de document Mongoose pour les événements de cycle de vie
@@ -10,7 +10,7 @@ import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecyc
  * @description Combine le schéma Lifecycle avec le type Document de Mongoose,
  * fournissant l'accès aux méthodes et propriétés du document MongoDB.
  */
-export type LifecycleDocument = Lifecycle & Document
+export type LifecycleDocument = Lifecycle & Document;
 
 /**
  * Nom de la propriété de référence vers l'identité
@@ -22,7 +22,7 @@ export type LifecycleDocument = Lifecycle & Document
  * @example
  * LifecycleModel.findOne({ [LifecycleRefId]: identityId })
  */
-export const LifecycleRefId = 'refId'
+export const LifecycleRefId = 'refId';
 
 /**
  * Schéma Mongoose pour les événements de cycle de vie
@@ -69,7 +69,7 @@ export class Lifecycle extends AbstractSchema {
     ref: 'Identities',
     required: true,
   })
-  public refId: Types.ObjectId
+  public refId: Types.ObjectId;
 
   /**
    * État du cycle de vie
@@ -89,7 +89,7 @@ export class Lifecycle extends AbstractSchema {
     type: String,
     required: true,
   })
-  public lifecycle: IdentityLifecycleDefault | string
+  public lifecycle: IdentityLifecycleDefault | string;
 
   /**
    * Date de l'événement de cycle de vie
@@ -109,7 +109,7 @@ export class Lifecycle extends AbstractSchema {
     type: Date,
     default: Date.now,
   })
-  public date: Date
+  public date: Date;
 }
 
 /**
@@ -123,4 +123,4 @@ export class Lifecycle extends AbstractSchema {
  * // Utilisation dans un module
  * MongooseModule.forFeature([{ name: Lifecycle.name, schema: LifecycleSchema }])
  */
-export const LifecycleSchema = SchemaFactory.createForClass(Lifecycle)
+export const LifecycleSchema = SchemaFactory.createForClass(Lifecycle);

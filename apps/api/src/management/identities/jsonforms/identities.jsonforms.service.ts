@@ -182,10 +182,7 @@ export class IdentitiesJsonformsService extends AbstractService implements OnApp
     return [result, files.length];
   }
 
-  public async findOne(
-    schema: string,
-    options?: { mode?: string; employeeType?: string }
-  ): Promise<[string, any]> {
+  public async findOne(schema: string, options?: { mode?: string; employeeType?: string }): Promise<[string, any]> {
     const { mode = 'create', employeeType = '' } = options || {};
     if (schema.endsWith('.yml')) schema = schema.replace('.yml', '');
 
@@ -198,7 +195,7 @@ export class IdentitiesJsonformsService extends AbstractService implements OnApp
 
     let finalPath = null;
     const filePath = filePaths.find((path) => {
-      const resolved = this.resolveJsonFormPath(path)
+      const resolved = this.resolveJsonFormPath(path);
       if (!resolved) return null;
       finalPath = resolved;
 

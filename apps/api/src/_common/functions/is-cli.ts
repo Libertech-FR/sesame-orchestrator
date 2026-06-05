@@ -1,6 +1,6 @@
-import path from 'node:path'
-import { Abstract, DynamicModule, ForwardReference, Provider, Type } from '@nestjs/common'
-import { isArray } from 'radash'
+import path from 'node:path';
+import { Abstract, DynamicModule, ForwardReference, Provider, Type } from '@nestjs/common';
+import { isArray } from 'radash';
 
 /**
  * Vérifie si le point d'entrée actuel est le mode console.
@@ -16,10 +16,9 @@ import { isArray } from 'radash'
  * 2. process.argv[1] (premier argument du processus)
  */
 export function isConsoleEntrypoint(): boolean {
-  const entry =
-    (require?.main?.filename ?? process.argv[1] ?? '').toLowerCase()
-  const base = path.basename(entry)
-  return /^(console)\.(t|j)s$/.test(base)
+  const entry = (require?.main?.filename ?? process.argv[1] ?? '').toLowerCase();
+  const base = path.basename(entry);
+  return /^(console)\.(t|j)s$/.test(base);
 }
 
 /**
@@ -65,12 +64,22 @@ export function isConsoleEntrypoint(): boolean {
  * ```
  */
 export function useOnCli<
-  T = Provider
-  | (Type<any> | DynamicModule | Promise<DynamicModule> | ForwardReference<any>)
-  | (string | symbol | Function | Provider | DynamicModule | Promise<DynamicModule> | ForwardReference<any> | Abstract<any>),
+  T =
+    | Provider
+    | (Type<any> | DynamicModule | Promise<DynamicModule> | ForwardReference<any>)
+    | (
+        | string
+        | symbol
+        | Function
+        | Provider
+        | DynamicModule
+        | Promise<DynamicModule>
+        | ForwardReference<any>
+        | Abstract<any>
+      ),
 >(items: T | T[]): T[] {
   if (isConsoleEntrypoint()) {
-    return isArray(items) ? items : [items]
+    return isArray(items) ? items : [items];
   }
-  return []
+  return [];
 }

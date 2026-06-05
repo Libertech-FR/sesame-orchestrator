@@ -1,7 +1,7 @@
-import { RuntimeException } from 'node-exceptions'
+import { RuntimeException } from 'node-exceptions';
 
 export class UnknownException extends RuntimeException {
-  public raw: Error
+  public raw: Error;
 
   public constructor(err: Error, errorCode: string, path: string) {
     super(
@@ -11,7 +11,7 @@ export class UnknownException extends RuntimeException {
             ${err.stack}`,
       500,
       'E_UNKNOWN',
-    )
-    this.raw = err
+    );
+    this.raw = err;
   }
 }

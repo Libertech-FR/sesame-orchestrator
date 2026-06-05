@@ -1,4 +1,4 @@
-import { LogLevel } from '@nestjs/common'
+import { LogLevel } from '@nestjs/common';
 
 /**
  * Retourne un tableau de niveaux de log NestJS basé sur le niveau spécifié.
@@ -44,9 +44,9 @@ export function getLogLevel(logLevel?: string): LogLevel[] {
     info: ['error', 'fatal', 'warn', 'log'],
     debug: ['error', 'fatal', 'warn', 'log', 'debug'],
     verbose: ['error', 'fatal', 'warn', 'log', 'debug', 'verbose'],
-  }
+  };
 
-  return logLevelMap[logLevel] || logLevelMap['info']
+  return logLevelMap[logLevel] || logLevelMap['info'];
 }
 
 /**
@@ -59,7 +59,7 @@ export function getLogLevel(logLevel?: string): LogLevel[] {
  * @type {LogLevel[]}
  * @default ['error', 'fatal', 'warn', 'log']
  */
-export const DEFAULT_LOG_LEVEL: LogLevel[] = getLogLevel('info')
+export const DEFAULT_LOG_LEVEL: LogLevel[] = getLogLevel('info');
 
 /**
  * Niveau de log minimal pour les commandes console.
@@ -76,4 +76,4 @@ export const DEFAULT_LOG_LEVEL: LogLevel[] = getLogLevel('info')
  * le bruit dans les logs et garder une sortie propre et lisible.
  * Correspond au niveau 'warn' qui inclut warn, error et fatal.
  */
-export const CONSOLE_LOG_LEVEL: LogLevel[] = getLogLevel('warn')
+export const CONSOLE_LOG_LEVEL: LogLevel[] = getLogLevel('warn');

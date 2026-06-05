@@ -1,18 +1,17 @@
-import { Logger } from "@nestjs/common"
-import { InjectConnection, InjectModel } from "@nestjs/mongoose"
-import { Connection, Model } from "mongoose"
-import { isNumber } from "radash"
+import { Logger } from '@nestjs/common';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { Connection, Model } from 'mongoose';
+import { isNumber } from 'radash';
 
 export default class LifeCycle1752765731 {
-  private readonly logger = new Logger(LifeCycle1752765731.name)
+  private readonly logger = new Logger(LifeCycle1752765731.name);
 
-  public constructor(@InjectConnection() private mongo: Connection) {
-  }
+  public constructor(@InjectConnection() private mongo: Connection) {}
 
   public async up(): Promise<void> {
-    this.logger.log('LifeCycle1752765731 up started')
+    this.logger.log('LifeCycle1752765731 up started');
 
-    await this._migrateLifeCycleToChar()
+    await this._migrateLifeCycleToChar();
   }
 
   private async _migrateLifeCycleToChar(): Promise<void> {
@@ -48,7 +47,9 @@ export default class LifeCycle1752765731 {
             identity.lifecycle = 'D'; // DELETED
             break;
           default:
-            this.logger.warn(`Unknown lifecycle value ${lifecycle} for identity ${identity._id} ! Applying default ACTIVE`);
+            this.logger.warn(
+              `Unknown lifecycle value ${lifecycle} for identity ${identity._id} ! Applying default ACTIVE`,
+            );
             identity.lifecycle = 'A'; // ACTIVE
             break;
         }
@@ -59,7 +60,7 @@ export default class LifeCycle1752765731 {
             $set: {
               lifecycle: identity.lifecycle,
               ignoreLifecycle: false,
-            }
+            },
           },
         );
       }

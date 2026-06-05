@@ -1,7 +1,20 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { Type, Transform } from 'class-transformer'
-import { IsArray, IsNotEmpty, IsNumber, IsObject, IsOptional, ValidateNested, registerDecorator, ValidationOptions, ValidationArguments, isString, isNumber, IsString } from 'class-validator'
-import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecycle.enum'
+import { ApiProperty } from '@nestjs/swagger';
+import { Type, Transform } from 'class-transformer';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  ValidateNested,
+  registerDecorator,
+  ValidationOptions,
+  ValidationArguments,
+  isString,
+  isNumber,
+  IsString,
+} from 'class-validator';
+import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecycle.enum';
 
 /**
  * Convertit les valeurs de déclencheur temporel en secondes
@@ -24,16 +37,16 @@ import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecyc
  * transformTriggerToSeconds('45s')   // retourne 45
  */
 function transformTriggerToSeconds(value: number | string): number | undefined {
-  let isValid = false
-  const secondsInDay = 24 * 60 * 60
+  let isValid = false;
+  const secondsInDay = 24 * 60 * 60;
 
   if (value === undefined || value === null) {
-    return undefined
+    return undefined;
   }
 
   if (value === -1) {
-    isValid = true
-    return -1
+    isValid = true;
+    return -1;
   }
 
   /**
@@ -42,19 +55,21 @@ function transformTriggerToSeconds(value: number | string): number | undefined {
    * - Pour les chaînes : doit correspondre au format '\d+[dms]' (nombre suivi de d, m ou s)
    */
   if (isNumber(value)) {
-    isValid = value > 0
+    isValid = value > 0;
   } else if (isString(value)) {
-    const timeRegex = /^\d+[dms]$/
+    const timeRegex = /^\d+[dms]$/;
     if (timeRegex.test(value)) {
       // Extraction de la partie numérique et vérification de sa validité
-      const numberPart = value.replace(/[dms]$/, '')
-      const num = parseInt(numberPart, 10)
-      isValid = num > 0
+      const numberPart = value.replace(/[dms]$/, '');
+      const num = parseInt(numberPart, 10);
+      isValid = num > 0;
     }
   }
 
   if (!isValid) {
-    throw new Error('Le déclencheur doit être un nombre (jours) ou une chaîne temporelle avec unité (ex: "90d", "10m", "45s")')
+    throw new Error(
+      'Le déclencheur doit être un nombre (jours) ou une chaîne temporelle avec unité (ex: "90d", "10m", "45s")',
+    );
   }
 
   /**
@@ -70,10 +85,10 @@ function transformTriggerToSeconds(value: number | string): number | undefined {
      *   pour supporter les triggers explicitement fournis en secondes (ex: 2592000)
      */
     if (value >= secondsInDay) {
-      return value
+      return value;
     }
 
-    return value * secondsInDay
+    return value * secondsInDay;
   }
 
   /**
@@ -83,29 +98,29 @@ function transformTriggerToSeconds(value: number | string): number | undefined {
    * - 's' (secondes) : valeur inchangée
    */
   if (isString(value)) {
-    const match = value.match(/^(\d+)([dms])$/)
+    const match = value.match(/^(\d+)([dms])$/);
     if (match) {
-      const numValue = parseInt(match[1], 10)
-      const unit = match[2]
+      const numValue = parseInt(match[1], 10);
+      const unit = match[2];
 
       switch (unit) {
         case 'd': // jours
-          return numValue * 24 * 60 * 60
+          return numValue * 24 * 60 * 60;
 
         case 'm': // minutes
-          return numValue * 60
+          return numValue * 60;
 
         case 's': // secondes
-          return numValue
+          return numValue;
 
         default:
-          throw new Error(`Unité de temps non supportée : ${unit}`)
+          throw new Error(`Unité de temps non supportée : ${unit}`);
       }
     }
   }
 
   // Tentative de conversion en nombre si aucun format ne correspond
-  return Number(value) || undefined
+  return Number(value) || undefined;
 }
 
 /**
@@ -137,23 +152,27 @@ function ValidateRulesOrTrigger(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(_: any, args: ValidationArguments) {
-          const obj = args.object as ConfigRulesObjectIdentitiesDTO
+          const obj = args.object as ConfigRulesObjectIdentitiesDTO;
 
           /**
            * Vérification de la présence de 'rules' ou 'trigger' :
            * - 'rules' doit être un objet avec au moins une clé
            * - 'trigger' doit être un nombre défini et non nul
            */
-          const hasRules = obj.rules !== undefined && obj.rules !== null && (typeof obj.rules === 'object' && Object.keys(obj.rules).length > 0)
-          const hasTrigger = obj.trigger !== undefined && obj.trigger !== null
-          return hasRules || hasTrigger
+          const hasRules =
+            obj.rules !== undefined &&
+            obj.rules !== null &&
+            typeof obj.rules === 'object' &&
+            Object.keys(obj.rules).length > 0;
+          const hasTrigger = obj.trigger !== undefined && obj.trigger !== null;
+          return hasRules || hasTrigger;
         },
         defaultMessage(_: ValidationArguments) {
-          return 'Au moins rules ou trigger doit être fourni'
-        }
-      }
-    })
-  }
+          return 'Au moins rules ou trigger doit être fourni';
+        },
+      },
+    });
+  };
 }
 
 /**
@@ -190,14 +209,14 @@ export class ConfigRulesObjectIdentitiesDTO {
   @ApiProperty({
     type: String,
     enum: IdentityLifecycleDefault,
-    description: 'États source du cycle de vie de l\'identité',
+    description: "États source du cycle de vie de l'identité",
     example: IdentityLifecycleDefault.OFFICIAL,
     required: true,
   })
   @IsArray()
   @IsNotEmpty()
   @IsString({ each: true })
-  public sources: IdentityLifecycleDefault[]
+  public sources: IdentityLifecycleDefault[];
 
   /**
    * Clé de date utilisée pour calculer le déclencheur temporel
@@ -211,7 +230,7 @@ export class ConfigRulesObjectIdentitiesDTO {
    */
   @IsOptional()
   @IsString()
-  public dateKey: string = 'lastSync'
+  public dateKey: string = 'lastSync';
 
   /**
    * Règles de filtrage conditionnelles pour l'application de la transition
@@ -224,7 +243,7 @@ export class ConfigRulesObjectIdentitiesDTO {
    */
   @IsOptional()
   @IsObject()
-  public rules: object
+  public rules: object;
 
   /**
    * Mutations à appliquer lors de la transition d'état
@@ -238,7 +257,7 @@ export class ConfigRulesObjectIdentitiesDTO {
    */
   @IsOptional()
   @IsObject()
-  public mutation: object
+  public mutation: object;
 
   /**
    * Déclencheur temporel de la transition en secondes
@@ -255,13 +274,13 @@ export class ConfigRulesObjectIdentitiesDTO {
   @ApiProperty({
     oneOf: [
       { type: 'number', description: 'Nombre représentant des jours ou -1 pour le trigger depuis une tâche' },
-      { type: 'string', description: 'Chaîne temporelle avec unité (d=jours, m=minutes, s=secondes)' }
+      { type: 'string', description: 'Chaîne temporelle avec unité (d=jours, m=minutes, s=secondes)' },
     ],
     required: false,
     description: 'Déclencheur temporel en nombre (jours) ou chaîne avec unité, ou -1 pour le trigger depuis une tâche',
-    examples: [90, '90d', '10m', '45s', -1]
+    examples: [90, '90d', '10m', '45s', -1],
   })
-  public trigger: number
+  public trigger: number;
 
   /**
    * État cible du cycle de vie après la transition
@@ -276,11 +295,11 @@ export class ConfigRulesObjectIdentitiesDTO {
   @ApiProperty({
     type: String,
     enum: IdentityLifecycleDefault,
-    description: 'État cible du cycle de vie pour l\'identité',
+    description: "État cible du cycle de vie pour l'identité",
     example: IdentityLifecycleDefault.MANUAL,
     required: true,
   })
-  public target: IdentityLifecycleDefault
+  public target: IdentityLifecycleDefault;
 }
 
 /**
@@ -328,10 +347,10 @@ export class ConfigRulesObjectSchemaDTO {
   })
   @ValidateNested({ each: true })
   @Type(() => ConfigRulesObjectIdentitiesDTO)
-  public identities: ConfigRulesObjectIdentitiesDTO[]
+  public identities: ConfigRulesObjectIdentitiesDTO[];
 
   /** Nom du fichier YAML sans extension (ex. `01-etd`). Renseigné au chargement. */
   @IsOptional()
   @IsString()
-  public ruleFileBasename?: string
+  public ruleFileBasename?: string;
 }

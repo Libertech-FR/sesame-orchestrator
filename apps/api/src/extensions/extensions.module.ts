@@ -1,6 +1,6 @@
-import { DynamicModule, Logger, Module, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common'
-import { RouterModule } from '@nestjs/core'
-import serviceSetup from '~/extensions/extensions.service.setup'
+import { DynamicModule, Logger, Module, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
+import { RouterModule } from '@nestjs/core';
+import serviceSetup from '~/extensions/extensions.service.setup';
 
 /**
  * Module de gestion et de chargement des extensions.
@@ -48,7 +48,7 @@ export class ExtensionsModule implements OnModuleInit, OnApplicationBootstrap {
    * @returns {Promise<void>}
    */
   public async onModuleInit(): Promise<void> {
-    Logger.log('All extensions is initialized', ExtensionsModule.name)
+    Logger.log('All extensions is initialized', ExtensionsModule.name);
   }
 
   /**
@@ -61,7 +61,7 @@ export class ExtensionsModule implements OnModuleInit, OnApplicationBootstrap {
    * @returns {Promise<void>}
    */
   public async onApplicationBootstrap(): Promise<void> {
-    Logger.log('Extensions registered !', ExtensionsModule.name)
+    Logger.log('Extensions registered !', ExtensionsModule.name);
   }
 
   /**
@@ -92,7 +92,7 @@ export class ExtensionsModule implements OnModuleInit, OnApplicationBootstrap {
    * - Fin d'initialisation : Log info via onModuleInit()
    */
   public static async register(): Promise<DynamicModule> {
-    const modules = await serviceSetup()
+    const modules = await serviceSetup();
 
     return {
       module: this,
@@ -105,6 +105,6 @@ export class ExtensionsModule implements OnModuleInit, OnApplicationBootstrap {
           },
         ]),
       ],
-    }
+    };
   }
 }

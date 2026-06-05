@@ -30,14 +30,14 @@ export abstract class AbstractService {
     this.logger = new Logger(this.serviceName);
     this.eventEmitter = context?.eventEmitter;
 
-    this._customModuleName = context?.moduleName
-    this._customServiceName = context?.serviceName
+    this._customModuleName = context?.moduleName;
+    this._customServiceName = context?.serviceName;
   }
 
   protected get request():
     | (Request & {
       user?: Express.User & any // eslint-disable-line
-    })
+      })
     | null {
     return this._req || RequestContext.currentContext?.req;
   }

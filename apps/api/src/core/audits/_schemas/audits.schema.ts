@@ -1,8 +1,8 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document, Types } from 'mongoose'
-import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
-import { AgentPart, AgentPartSchema } from './_parts/agent.parts.schema'
-import { ChangesType } from '~/_common/plugins/mongoose/history.plugin'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Types } from 'mongoose';
+import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
+import { AgentPart, AgentPartSchema } from './_parts/agent.parts.schema';
+import { ChangesType } from '~/_common/plugins/mongoose/history.plugin';
 
 /**
  * Énumération des types d'opérations auditées.
@@ -25,7 +25,7 @@ export enum AuditOperation {
 /**
  * Type combiné pour les documents d'audit avec les fonctionnalités Mongoose.
  */
-export type AuditsDocument = Audits & Document
+export type AuditsDocument = Audits & Document;
 
 /**
  * Schéma Mongoose principal pour les audits.
@@ -82,7 +82,7 @@ export class Audits extends AbstractSchema {
     type: String,
     required: true,
   })
-  public coll!: string
+  public coll!: string;
 
   /**
    * Identifiant unique du document audité dans sa collection.
@@ -94,7 +94,7 @@ export class Audits extends AbstractSchema {
     type: Types.ObjectId,
     required: true,
   })
-  public documentId!: Types.ObjectId
+  public documentId!: Types.ObjectId;
 
   /**
    * Type d'opération effectuée sur le document.
@@ -108,7 +108,7 @@ export class Audits extends AbstractSchema {
     required: true,
     enum: AuditOperation,
   })
-  public op!: 'insert' | 'update' | 'delete' | 'replace' | 'authentication'
+  public op!: 'insert' | 'update' | 'delete' | 'replace' | 'authentication';
 
   /**
    * Agent (utilisateur ou système) qui a effectué l'opération.
@@ -121,7 +121,7 @@ export class Audits extends AbstractSchema {
     type: AgentPartSchema,
     required: true,
   })
-  public agent!: AgentPart
+  public agent!: AgentPart;
 
   /**
    * État complet du document après l'opération.
@@ -132,7 +132,7 @@ export class Audits extends AbstractSchema {
    * @optional
    */
   @Prop({ type: Object })
-  public data?: Document
+  public data?: Document;
 
   /**
    * Détail des changements effectués lors d'une mise à jour.
@@ -143,7 +143,7 @@ export class Audits extends AbstractSchema {
    * @optional
    */
   @Prop({ type: Array, of: Object })
-  public changes?: ChangesType[]
+  public changes?: ChangesType[];
 
   /**
    * Adresse IP source associée à l'action auditée.
@@ -154,10 +154,10 @@ export class Audits extends AbstractSchema {
    * @optional
    */
   @Prop({ type: String })
-  public ip?: string
+  public ip?: string;
 }
 
 /**
  * Factory pour créer le schéma Mongoose à partir de la classe Audits.
  */
-export const AuditsSchema = SchemaFactory.createForClass(Audits)
+export const AuditsSchema = SchemaFactory.createForClass(Audits);

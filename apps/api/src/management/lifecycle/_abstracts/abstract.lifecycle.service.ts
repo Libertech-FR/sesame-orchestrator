@@ -1,37 +1,40 @@
-import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema'
-import { LifecycleSource } from '../_interfaces/lifecycle-sources.interface'
-import { LifecycleStateDTO } from '../_dto/config-states.dto'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
-import { Lifecycle } from '../_schemas/lifecycle.schema'
-import { IdentitiesCrudService } from '~/management/identities/identities-crud.service'
-import { Injectable, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common'
-import { BackendsService } from '~/core/backends/backends.service'
-import { SchedulerRegistry } from '@nestjs/schedule'
-import { ConfigService } from '@nestjs/config'
+import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
+import { LifecycleSource } from '../_interfaces/lifecycle-sources.interface';
+import { LifecycleStateDTO } from '../_dto/config-states.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Lifecycle } from '../_schemas/lifecycle.schema';
+import { IdentitiesCrudService } from '~/management/identities/identities-crud.service';
+import { Injectable, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
+import { BackendsService } from '~/core/backends/backends.service';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export abstract class AbstractLifecycleService extends AbstractServiceSchema<Lifecycle> implements OnModuleInit, OnApplicationBootstrap {
+export abstract class AbstractLifecycleService
+  extends AbstractServiceSchema<Lifecycle>
+  implements OnModuleInit, OnApplicationBootstrap
+{
   /**
    * Map des sources de cycle de vie et leurs règles associées
    * @protected
    * @type {LifecycleSource}
    */
-  protected lifecycleSources: LifecycleSource = {}
+  protected lifecycleSources: LifecycleSource = {};
 
   /**
    * Liste des états personnalisés chargés depuis states.yml
    * @protected
    * @type {LifecycleStateDTO[]}
    */
-  protected customStates: LifecycleStateDTO[] = []
+  protected customStates: LifecycleStateDTO[] = [];
 
   /**
    * Timestamp de la dernière modification du fichier states.yml
    * @protected
    * @type {number}
    */
-  protected _stateFileAge = 0
+  protected _stateFileAge = 0;
 
   /**
    * Constructeur du service de cycle de vie
@@ -49,7 +52,7 @@ export abstract class AbstractLifecycleService extends AbstractServiceSchema<Lif
     protected readonly schedulerRegistry: SchedulerRegistry,
     protected readonly configService: ConfigService,
   ) {
-    super()
+    super();
   }
 
   /**
@@ -59,7 +62,7 @@ export abstract class AbstractLifecycleService extends AbstractServiceSchema<Lif
    * @description Utilisé pour le cache HTTP des états de cycle de vie
    */
   public get stateFileAge(): number {
-    return this._stateFileAge
+    return this._stateFileAge;
   }
 
   /**
@@ -82,14 +85,16 @@ export abstract class AbstractLifecycleService extends AbstractServiceSchema<Lif
    * // }
    */
   public listLifecycleSources(): LifecycleSource {
-    return this.lifecycleSources
+    return this.lifecycleSources;
   }
 
   public async onModuleInit(): Promise<void> {
-    this.logger.warn(`LifecycleService (abstract) onModuleInit called - this should be implemented in subclasses !`)
+    this.logger.warn(`LifecycleService (abstract) onModuleInit called - this should be implemented in subclasses !`);
   }
 
   public async onApplicationBootstrap(): Promise<void> {
-    this.logger.warn(`LifecycleService (abstract) onApplicationBootstrap called - this should be implemented in subclasses !`)
+    this.logger.warn(
+      `LifecycleService (abstract) onApplicationBootstrap called - this should be implemented in subclasses !`,
+    );
   }
 }

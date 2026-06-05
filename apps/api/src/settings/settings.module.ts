@@ -10,9 +10,11 @@ import { PasswdadmService } from '~/settings/passwdadm.service';
 import { PasswdadmController } from '~/settings/passwdadm.controller';
 import { MailadmService } from '~/settings/mailadm.service';
 import { MailadmController } from '~/settings/mailadm.controller';
+import { ConfigurationService } from '~/settings/configuration.service';
+import { ConfigurationController } from '~/settings/configuration.controller';
 
 @Module({
-  exports: [SmsadmService, PasswdadmService, MailadmService],
+  exports: [SmsadmService, PasswdadmService, MailadmService, ConfigurationService],
   imports: [
     MongooseModule.forFeatureAsync([
       {
@@ -21,8 +23,8 @@ import { MailadmController } from '~/settings/mailadm.controller';
       },
     ]),
   ],
-  providers: [SettingsService, SmsadmService, PasswdadmService, MailadmService],
-  controllers: [SettingsController, SmsadmController, PasswdadmController, MailadmController],
+  providers: [SettingsService, SmsadmService, PasswdadmService, MailadmService, ConfigurationService],
+  controllers: [SettingsController, SmsadmController, PasswdadmController, MailadmController, ConfigurationController],
 })
 export class SettingsModule {
   public static register(): DynamicModule {

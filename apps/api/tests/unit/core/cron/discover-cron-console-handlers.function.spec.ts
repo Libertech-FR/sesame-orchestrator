@@ -1,7 +1,4 @@
-import {
-  CronConsoleHandler,
-  getCronConsoleHandlers,
-} from '~/_common/decorators/cron-console-handler.decorator'
+import { CronConsoleHandler, getCronConsoleHandlers } from '~/_common/decorators/cron-console-handler.decorator';
 
 describe('CronConsoleHandler', () => {
   it('should register handlers when decorating command classes', () => {
@@ -20,7 +17,7 @@ describe('CronConsoleHandler', () => {
     })
     class TestCronCommand {}
 
-    expect(TestCronCommand).toBeDefined()
+    expect(TestCronCommand).toBeDefined();
     expect(getCronConsoleHandlers()).toEqual(
       expect.arrayContaining([
         {
@@ -37,6 +34,6 @@ describe('CronConsoleHandler', () => {
           ],
         },
       ]),
-    )
-  })
-})
+    );
+  });
+});

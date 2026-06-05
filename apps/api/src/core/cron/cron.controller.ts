@@ -1,20 +1,33 @@
-
-import { Body, ConflictException, Controller, DefaultValuePipe, Get, HttpStatus, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, Res } from '@nestjs/common'
-import { ApiTags } from '@nestjs/swagger'
-import { CronService } from './cron.service'
-import { Response } from 'express'
-import { UseRoles } from '~/_common/decorators/use-roles.decorator'
-import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types'
-import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator'
-import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper'
-import { CronDto, CronUpdateDto } from './_dto/cron.dto'
-import { PartialProjectionType } from '~/_common/types/partial-projection.type'
-import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator'
-import { IsBoolean } from 'class-validator'
+import {
+  Body,
+  ConflictException,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { CronService } from './cron.service';
+import { Response } from 'express';
+import { UseRoles } from '~/_common/decorators/use-roles.decorator';
+import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
+import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
+import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper';
+import { CronDto, CronUpdateDto } from './_dto/cron.dto';
+import { PartialProjectionType } from '~/_common/types/partial-projection.type';
+import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator';
+import { IsBoolean } from 'class-validator';
 
 class UpdateCronEnabledBody {
   @IsBoolean()
-  enabled: boolean
+  enabled: boolean;
 }
 
 /**
@@ -25,13 +38,13 @@ class UpdateCronEnabledBody {
 @ApiTags('cron')
 @Controller('cron')
 export class CronController {
-  public constructor(private readonly cronService: CronService) { }
+  public constructor(private readonly cronService: CronService) {}
 
   protected static readonly projection: PartialProjectionType<CronDto> = {
     name: 1,
     description: 1,
     schedule: 1,
-  }
+  };
 
   /**
    * Endpoint pour rechercher et lister les tâches cron configurées.
@@ -58,13 +71,13 @@ export class CronController {
     const [data, total] = await this.cronService.search(search, {
       page,
       limit,
-    })
+    });
 
     return res.json({
       statusCode: HttpStatus.OK,
       data,
       total,
-    })
+    });
   }
 
   @Get('handlers')
@@ -77,7 +90,7 @@ export class CronController {
     return res.json({
       statusCode: HttpStatus.OK,
       data: this.cronService.getConsoleHandlers(),
-    })
+    });
   }
 
   @Get(':name')
@@ -87,19 +100,16 @@ export class CronController {
     possession: AC_DEFAULT_POSSESSION,
   })
   @ApiReadResponseDecorator(CronDto)
-  public async read(
-    @Param('name') name: string,
-    @Res() res: Response,
-  ): Promise<Response> {
-    const data = await this.cronService.read(name)
+  public async read(@Param('name') name: string, @Res() res: Response): Promise<Response> {
+    const data = await this.cronService.read(name);
     if (!data) {
-      throw new NotFoundException(`Cron task <${name}> not found`)
+      throw new NotFoundException(`Cron task <${name}> not found`);
     }
 
     return res.json({
       statusCode: HttpStatus.OK,
       data,
-    })
+    });
   }
 
   @Get(':name/logs')
@@ -113,12 +123,12 @@ export class CronController {
     @Query('tail', new DefaultValuePipe(500), ParseIntPipe) tail: number,
     @Res() res: Response,
   ): Promise<Response> {
-    const data = await this.cronService.readLogs(name, tail)
+    const data = await this.cronService.readLogs(name, tail);
 
     return res.json({
       statusCode: HttpStatus.OK,
       data,
-    })
+    });
   }
 
   @Patch(':name/enabled')
@@ -132,15 +142,15 @@ export class CronController {
     @Body() body: UpdateCronEnabledBody,
     @Res() res: Response,
   ): Promise<Response> {
-    const data = await this.cronService.setEnabled(name, body.enabled)
+    const data = await this.cronService.setEnabled(name, body.enabled);
     if (!data) {
-      throw new NotFoundException(`Cron task <${name}> not found`)
+      throw new NotFoundException(`Cron task <${name}> not found`);
     }
 
     return res.json({
       statusCode: HttpStatus.OK,
       data,
-    })
+    });
   }
 
   @Patch(':name')
@@ -155,15 +165,15 @@ export class CronController {
     @Body() body: CronUpdateDto,
     @Res() res: Response,
   ): Promise<Response> {
-    const data = await this.cronService.update(name, body)
+    const data = await this.cronService.update(name, body);
     if (!data) {
-      throw new NotFoundException(`Cron task <${name}> not found`)
+      throw new NotFoundException(`Cron task <${name}> not found`);
     }
 
     return res.json({
       statusCode: HttpStatus.OK,
       data,
-    })
+    });
   }
 
   @Post(':name/run-immediately')
@@ -172,16 +182,13 @@ export class CronController {
     action: AC_ACTIONS.UPDATE,
     possession: AC_DEFAULT_POSSESSION,
   })
-  public async runImmediately(
-    @Param('name') name: string,
-    @Res() res: Response,
-  ): Promise<Response> {
-    const status = await this.cronService.runImmediately(name)
+  public async runImmediately(@Param('name') name: string, @Res() res: Response): Promise<Response> {
+    const status = await this.cronService.runImmediately(name);
     if (status === 'not_found') {
-      throw new NotFoundException(`Cron task <${name}> not found`)
+      throw new NotFoundException(`Cron task <${name}> not found`);
     }
     if (status === 'busy') {
-      throw new ConflictException('Another run-immediately task is already in progress')
+      throw new ConflictException('Another run-immediately task is already in progress');
     }
 
     return res.json({
@@ -191,6 +198,6 @@ export class CronController {
         launched: true,
         status: 'in_progress',
       },
-    })
+    });
   }
 }

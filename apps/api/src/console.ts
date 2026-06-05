@@ -1,8 +1,8 @@
-import { CommandFactory } from 'nest-commander'
-import configInstance from '~/config'
-import { CONSOLE_LOG_LEVEL } from './_common/functions/get-log-level'
-import { AppModule } from './app.module'
-import { InternalLogger } from './core/logger/internal.logger'
+import { CommandFactory } from 'nest-commander';
+import configInstance from '~/config';
+import { CONSOLE_LOG_LEVEL } from './_common/functions/get-log-level';
+import { AppModule } from './app.module';
+import { InternalLogger } from './core/logger/internal.logger';
 
 /**
  * Point d'entrée de l'interface en ligne de commande (CLI) de l'application.
@@ -47,21 +47,21 @@ import { InternalLogger } from './core/logger/internal.logger'
       logLevel: CONSOLE_LOG_LEVEL, // Silencieux au démarrage des commandes console
       mongoose: cfg?.mongoose,
     });
-    logger.log(`Starting CLI with log level <${cfg?.application?.logLevel || 'info'}>`)
+    logger.log(`Starting CLI with log level <${cfg?.application?.logLevel || 'info'}>`);
     const app = await CommandFactory.runWithoutClosing(AppModule, {
       logger,
       errorHandler: (err) => {
         if (err instanceof Error && 'code' in err && err.code === 'commander.help') {
-          process.exit(0)
+          process.exit(0);
         }
-        console.error(err)
-        process.exit(1)
+        console.error(err);
+        process.exit(1);
       },
-    })
-    await app.close()
+    });
+    await app.close();
   } catch (err) {
-    console.error(err)
-    process.exit(255)
+    console.error(err);
+    process.exit(255);
   }
-  process.exit(0)
-})()
+  process.exit(0);
+})();

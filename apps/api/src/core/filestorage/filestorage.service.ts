@@ -37,32 +37,32 @@ export class FilestorageService extends AbstractServiceSchema<Filestorage> {
   protected readonly reservedChars = ['\\', '?', '%', '*', ':', '|', '"', '<', '>', '#'];
 
   private resolveLocalDiskFilePath(namespace: string, location: string): string | null {
-    const diskRoot = this.config.get<string>(`factorydrive.options.disks.${namespace}.config.root`)
-    if (!diskRoot) return null
+    const diskRoot = this.config.get<string>(`factorydrive.options.disks.${namespace}.config.root`);
+    if (!diskRoot) return null;
 
-    const absoluteRoot = path.resolve(diskRoot)
-    const normalizedLocation = path.posix.normalize(`/${location}`).replace(/^\/+/, '')
-    const absoluteFilePath = path.resolve(absoluteRoot, normalizedLocation)
+    const absoluteRoot = path.resolve(diskRoot);
+    const normalizedLocation = path.posix.normalize(`/${location}`).replace(/^\/+/, '');
+    const absoluteFilePath = path.resolve(absoluteRoot, normalizedLocation);
 
     if (absoluteFilePath !== absoluteRoot && !absoluteFilePath.startsWith(`${absoluteRoot}${path.sep}`)) {
-      throw new BadRequestException(`Invalid file path outside of disk root: ${location}`)
+      throw new BadRequestException(`Invalid file path outside of disk root: ${location}`);
     }
 
-    return absoluteFilePath
+    return absoluteFilePath;
   }
 
   private async getDiskStreamWithFallback(namespace: string, path: string): Promise<NodeJS.ReadableStream> {
     try {
-      return await this.storage.getDisk(namespace).getStream(path)
+      return await this.storage.getDisk(namespace).getStream(path);
     } catch (e) {
       // Workaround for @tacxou/nestjs_module_factorydrive + fs-extra ESM interop bug.
-      const message = e instanceof Error ? e.message : `${e}`
+      const message = e instanceof Error ? e.message : `${e}`;
       if (message.includes('createReadStream is not a function') || message.includes('readFile is not a function')) {
-        const absoluteFilePath = this.resolveLocalDiskFilePath(namespace, path)
-        if (!absoluteFilePath) throw e
-        return createReadStream(absoluteFilePath)
+        const absoluteFilePath = this.resolveLocalDiskFilePath(namespace, path);
+        if (!absoluteFilePath) throw e;
+        return createReadStream(absoluteFilePath);
       }
-      throw e
+      throw e;
     }
   }
 

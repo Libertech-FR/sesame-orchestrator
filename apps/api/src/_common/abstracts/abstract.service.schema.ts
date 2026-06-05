@@ -20,7 +20,10 @@ import mongodb from 'mongodb';
 import { omit } from 'radash';
 
 @Injectable()
-export abstract class AbstractServiceSchema<T extends AbstractSchema | Document = AbstractSchema | Document> extends AbstractService implements ServiceSchemaInterface {
+export abstract class AbstractServiceSchema<T extends AbstractSchema | Document = AbstractSchema | Document>
+  extends AbstractService
+  implements ServiceSchemaInterface
+{
   protected abstract _model: Model<T>;
 
   protected constructor(context?: AbstractServiceContext) {

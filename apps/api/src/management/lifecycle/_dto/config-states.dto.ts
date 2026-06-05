@@ -1,6 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator'
-import { Type } from 'class-transformer'
+import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
 /**
  * DTO représentant un état individuel du cycle de vie
@@ -33,12 +33,12 @@ export class LifecycleStateDTO {
   @IsString()
   @ApiProperty({
     type: String,
-    description: 'Clé unique de l\'état (un seul caractère)',
+    description: "Clé unique de l'état (un seul caractère)",
     example: 'A',
     maxLength: 1,
     required: true,
   })
-  public key: string
+  public key: string;
 
   /**
    * Label lisible de l'état
@@ -53,11 +53,11 @@ export class LifecycleStateDTO {
   @IsString()
   @ApiProperty({
     type: String,
-    description: 'Label/nom de l\'état',
+    description: "Label/nom de l'état",
     example: 'En Attente',
     required: true,
   })
-  public label: string
+  public label: string;
 
   /**
    * Description détaillée de l'état avec correspondances supann
@@ -73,11 +73,11 @@ export class LifecycleStateDTO {
   @IsString()
   @ApiProperty({
     type: String,
-    description: 'Description détaillée de l\'état avec correspondances supann',
+    description: "Description détaillée de l'état avec correspondances supann",
     example: 'supannRessourceEtat : {COMPTE} A SupannAnticipe',
     required: true,
   })
-  public description: string
+  public description: string;
 
   /**
    * Icône Material Design associée à l'état
@@ -93,11 +93,11 @@ export class LifecycleStateDTO {
   @IsString()
   @ApiProperty({
     type: String,
-    description: 'Icône associée à l\'état (optionnel)',
+    description: "Icône associée à l'état (optionnel)",
     example: 'mdi-account-clock',
     required: false,
   })
-  public icon?: string
+  public icon?: string;
 
   /**
    * Couleur hexadécimale associée à l'état
@@ -113,11 +113,11 @@ export class LifecycleStateDTO {
   @IsString()
   @ApiProperty({
     type: String,
-    description: 'Couleur associée à l\'état (optionnel, en hexadécimal)',
+    description: "Couleur associée à l'état (optionnel, en hexadécimal)",
     example: '#f0ad4e',
     required: false,
   })
-  public color?: string
+  public color?: string;
 }
 
 /**
@@ -173,5 +173,5 @@ export class ConfigStatesDTO {
     description: 'Liste des états de cycle de vie disponibles',
     required: true,
   })
-  public states: LifecycleStateDTO[]
+  public states: LifecycleStateDTO[];
 }

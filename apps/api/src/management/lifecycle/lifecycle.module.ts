@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common'
-import { MongooseModule } from '@nestjs/mongoose'
-import { Lifecycle, LifecycleSchema } from './_schemas/lifecycle.schema'
-import { LifecycleController } from './lifecycle.controller'
-import { LifecycleCrudService } from './lifecycle-crud.service'
-import { LifecycleHooksService } from './lifecycle-hooks.service'
-import { IdentitiesModule } from '../identities/identities.module'
-import { useOnCli } from '~/_common/functions/is-cli'
-import { LifecycleCommand } from './lifecycle.command'
-import { BackendsModule } from '~/core/backends/backends.module'
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Lifecycle, LifecycleSchema } from './_schemas/lifecycle.schema';
+import { LifecycleController } from './lifecycle.controller';
+import { LifecycleCrudService } from './lifecycle-crud.service';
+import { LifecycleHooksService } from './lifecycle-hooks.service';
+import { IdentitiesModule } from '../identities/identities.module';
+import { useOnCli } from '~/_common/functions/is-cli';
+import { LifecycleCommand } from './lifecycle.command';
+import { BackendsModule } from '~/core/backends/backends.module';
 
 /**
  * Module de gestion du cycle de vie des identités
@@ -43,13 +43,11 @@ import { BackendsModule } from '~/core/backends/backends.module'
     // Service de gestion des automatisations et événements
     LifecycleHooksService,
     // Commandes CLI enregistrées uniquement en mode console
-    ...useOnCli([
-      ...LifecycleCommand.registerWithSubCommands(),
-    ]),
+    ...useOnCli([...LifecycleCommand.registerWithSubCommands()]),
   ],
   // Contrôleur REST exposant les endpoints API
   controllers: [LifecycleController],
   // Services exportés pour utilisation dans d'autres modules
   exports: [LifecycleCrudService, LifecycleHooksService],
 })
-export class LifecycleModule { }
+export class LifecycleModule {}

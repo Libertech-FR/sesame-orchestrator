@@ -1,7 +1,7 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger'
-import { IsDateString, IsMongoId, IsNotEmpty } from 'class-validator'
-import { Types } from 'mongoose'
-import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecycle.enum'
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IsDateString, IsMongoId, IsNotEmpty } from 'class-validator';
+import { Types } from 'mongoose';
+import { IdentityLifecycleDefault } from '~/management/identities/_enums/lifecycle.enum';
 
 /**
  * DTO pour la création d'un événement de cycle de vie
@@ -30,11 +30,11 @@ export class LifecycleCreateDto {
    * @example '507f1f77bcf86cd799439011'
    */
   @ApiProperty({
-    description: 'Référence vers l\'identité',
+    description: "Référence vers l'identité",
     type: String,
   })
   @IsNotEmpty()
-  public refId: Types.ObjectId
+  public refId: Types.ObjectId;
 
   /**
    * État du cycle de vie
@@ -51,7 +51,7 @@ export class LifecycleCreateDto {
     enum: IdentityLifecycleDefault,
   })
   @IsNotEmpty()
-  public lifecycle: IdentityLifecycleDefault | string
+  public lifecycle: IdentityLifecycleDefault | string;
 
   /**
    * Date de l'événement de cycle de vie
@@ -64,11 +64,11 @@ export class LifecycleCreateDto {
    * @example '2025-11-26T10:00:00Z'
    */
   @ApiProperty({
-    description: 'Date de l\'événement de cycle de vie',
+    description: "Date de l'événement de cycle de vie",
     type: Date,
   })
   @IsDateString()
-  public date: Date
+  public date: Date;
 }
 
 /**
@@ -99,7 +99,7 @@ export class LifecycleDto extends LifecycleCreateDto {
    */
   @IsMongoId()
   @ApiProperty({ type: String })
-  public _id: string
+  public _id: string;
 }
 
 /**
@@ -116,4 +116,4 @@ export class LifecycleDto extends LifecycleCreateDto {
  *   date: '2025-11-27T10:00:00Z'
  * }
  */
-export class LifecycleUpdateDto extends PartialType(LifecycleCreateDto) { }
+export class LifecycleUpdateDto extends PartialType(LifecycleCreateDto) {}

@@ -1,0 +1,130 @@
+# Exemple de déploiement production Sesame Orchestrator (API + Web dans un seul conteneur).
+# Les volumes listés correspondent au catalogue affiché dans Paramètres → Configuration.
+#
+# Prérequis :
+#   docker network create sesame
+#   docker network create reverse   # si reverse-proxy externe
+#
+# Démarrage :
+#   docker compose -f docker-compose.prod.yml up -d
+
+name: sesame
+
+services:
+  sesame-orchestrator:
+    container_name: sesame-orchestrator
+    image: ghcr.io/libertech-fr/sesame-orchestrator:${DOCKER_TAG:-latest}
+    restart: unless-stopped
+    env_file:
+      - .env
+      - ./apps/api/.env
+      - ./apps/web/.env
+    depends_on:
+      sesame-mongo:
+        condition: service_healthy
+      sesame-redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      SESAME_CONTAINER_NAME: sesame-orchestrator
+      SESAME_API_ROOT_DIR: /data/apps/api
+      GIT_BRANCH: ${GIT_BRANCH:-unknown}
+      GIT_COMMIT: ${GIT_COMMIT:-unknown}
+      DOCKER_TAG: ${DOCKER_TAG:-latest}
+      SESAME_REDIS_URI: redis://sesame-redis:6379/0
+      SESAME_MONGO_URI: mongodb://sesame-mongo:27017/sesame
+      SESAME_MONGO_CONTAINER_NAME: sesame-mongo
+      SESAME_REDIS_CONTAINER_NAME: sesame-redis
+    labels:
+      com.docker.compose.project: sesame
+      com.docker.compose.service: sesame-orchestrator
+      libertech.sesame.component: orchestrator
+    volumes:
+      # Socket Docker (lecture seule) : inspection des volumes/labels dans Paramètres → Configuration
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Volumes API (orchestrator)
+      - ./configs/sesame-orchestrator/jsonforms:/data/apps/api/configs/identities/jsonforms
+      - ./configs/sesame-orchestrator/lifecycle:/data/apps/api/configs/lifecycle
+      - ./configs/sesame-orchestrator/cron:/data/apps/api/configs/cron
+      - ./configs/sesame-orchestrator/storage:/data/apps/api/storage
+      - ./configs/sesame-orchestrator/logs:/data/apps/api/logs
+      - ./configs/sesame-orchestrator/mail-templates:/data/apps/api/templates
+      - ./configs/sesame-orchestrator/validations:/data/apps/api/configs/identities/validations
+      # Volumes Web (app-manager / frontal Nuxt)
+      - ./configs/sesame-app-manager/config:/data/apps/web/config
+      - ./configs/sesame-app-manager/statics:/data/apps/web/src/public/config
+      # Certificats TLS partagés
+      - ./certificates:/data/certificates
+    expose:
+      - "3000" # Web (Nuxt)
+      - "4000" # API (NestJS)
+    # Décommenter si pas de reverse-proxy sur le réseau « reverse » :
+    # ports:
+    #   - "127.0.0.1:3002:3000"
+    #   - "127.0.0.1:4002:4000"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "require('http').get('http://127.0.0.1:4000/health',(r)=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    networks:
+      - sesame
+      - reverse
+
+  sesame-mongo:
+    image: mongo:7.0
+    container_name: sesame-mongo
+    restart: unless-stopped
+    command: --wiredTigerCacheSizeGB 1.5
+    labels:
+      com.docker.compose.project: sesame
+      com.docker.compose.service: sesame-mongo
+      libertech.sesame.component: mongodb
+    volumes:
+      - ./db:/data/db
+    ports:
+      - "127.0.0.1:27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - sesame
+
+  sesame-redis:
+    image: redis:7-alpine
+    container_name: sesame-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    labels:
+      com.docker.compose.project: sesame
+      com.docker.compose.service: sesame-redis
+      libertech.sesame.component: redis
+    volumes:
+      - sesame-redis-data:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    networks:
+      - sesame
+
+volumes:
+  sesame-redis-data:
+
+networks:
+  sesame:
+    external: true
+  reverse:
+    external: true

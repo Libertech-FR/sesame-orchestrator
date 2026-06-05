@@ -16,6 +16,8 @@ APP_NAME = "sesame-orchestrator"
 # ce qui casse les binaires optionnels (ex. oxc-parser / Nuxt). Nom sans guillemets (APP_NAME en contient).
 NODE_MODULES_VOLUME = sesame-orchestrator-node-modules
 PLATFORM = "linux/amd64"
+# Socket Docker en lecture seule : inspection des volumes/labels du conteneur courant
+DOCKER_SOCKET_MOUNT = -v /var/run/docker.sock:/var/run/docker.sock:ro
 
 include .env
 
@@ -28,6 +30,8 @@ COMMON_NAME = localhost
 DAYS_VALID = 365
 
 SESAME_SENTRY_DSN ?= ""
+SESAME_MONGO_CONTAINER_NAME ?= $(BASE_NAME)-mongodb
+SESAME_REDIS_CONTAINER_NAME ?= $(BASE_NAME)-redis
 
 $(shell mkdir -p $(CERT_DIR))
 
@@ -48,11 +52,15 @@ build: ## Build the container
 
 simulation: ## Start production environment in simulation mode
 	@docker run --rm -it \
+		$(DOCKER_SOCKET_MOUNT) \
 		-e NODE_ENV=production \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
 		-e GIT_BRANCH=$(GIT_BRANCH) \
 		-e GIT_COMMIT=$(GIT_COMMIT) \
 		-e DOCKER_TAG=$(DOCKER_TAG) \
+		-e SESAME_CONTAINER_NAME=$(APP_NAME) \
+		-e SESAME_MONGO_CONTAINER_NAME=$(SESAME_MONGO_CONTAINER_NAME) \
+		-e SESAME_REDIS_CONTAINER_NAME=$(SESAME_REDIS_CONTAINER_NAME) \
 		--add-host host.docker.internal:host-gateway \
 		--platform $(PLATFORM) \
 		--network dev \
@@ -76,11 +84,15 @@ simulation: ## Start production environment in simulation mode
 
 prod: ## Start production environment
 	@docker run --rm -it \
+		$(DOCKER_SOCKET_MOUNT) \
 		-e NODE_ENV=production \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
 		-e GIT_BRANCH=$(GIT_BRANCH) \
 		-e GIT_COMMIT=$(GIT_COMMIT) \
 		-e DOCKER_TAG=$(DOCKER_TAG) \
+		-e SESAME_CONTAINER_NAME=$(APP_NAME) \
+		-e SESAME_MONGO_CONTAINER_NAME=$(SESAME_MONGO_CONTAINER_NAME) \
+		-e SESAME_REDIS_CONTAINER_NAME=$(SESAME_REDIS_CONTAINER_NAME) \
 		--add-host host.docker.internal:host-gateway \
 		--platform $(PLATFORM) \
 		--network dev \
@@ -96,11 +108,15 @@ prod: ## Start production environment
 dev: ## Start development environment
 	@mkdir -p $(CURDIR)/apps/api/logs/handlers
 	@docker run --rm -it \
+		$(DOCKER_SOCKET_MOUNT) \
 		-e NODE_ENV=development \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
 		-e GIT_BRANCH=$(GIT_BRANCH) \
 		-e GIT_COMMIT=$(GIT_COMMIT) \
 		-e DOCKER_TAG=$(DOCKER_TAG) \
+		-e SESAME_CONTAINER_NAME=$(APP_NAME) \
+		-e SESAME_MONGO_CONTAINER_NAME=$(SESAME_MONGO_CONTAINER_NAME) \
+		-e SESAME_REDIS_CONTAINER_NAME=$(SESAME_REDIS_CONTAINER_NAME) \
 		--add-host host.docker.internal:host-gateway \
 		--platform $(PLATFORM) \
 		--network dev \
@@ -118,6 +134,7 @@ dev: ## Start development environment
 
 debug: ## Start debug environment
 	@docker run --rm -it \
+		$(DOCKER_SOCKET_MOUNT) \
 		-e NODE_ENV=development \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
 		-e GIT_BRANCH=$(GIT_BRANCH) \
@@ -151,6 +168,7 @@ install: ## Install dependencies
 
 exec: ## Run a shell in the container
 	@docker run -it --rm \
+		$(DOCKER_SOCKET_MOUNT) \
 		-e NODE_ENV=development \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
 		--add-host host.docker.internal:host-gateway \

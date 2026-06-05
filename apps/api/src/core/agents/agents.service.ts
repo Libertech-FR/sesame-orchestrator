@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Agents } from '~/core/agents/_schemas/agents.schema'
-import { Document, Model, ModifyResult, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose'
-import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema'
-import { AgentsCreateDto } from './_dto/agents.dto'
-import { hash } from 'argon2'
-import { randomBytes } from 'node:crypto'
-import { SecurityPartDTO } from './_dto/parts/security.part.dto'
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Agents } from '~/core/agents/_schemas/agents.schema';
+import { Document, Model, ModifyResult, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose';
+import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
+import { AgentsCreateDto } from './_dto/agents.dto';
+import { hash } from 'argon2';
+import { randomBytes } from 'node:crypto';
+import { SecurityPartDTO } from './_dto/parts/security.part.dto';
 
 /**
  * Service de gestion des agents.
@@ -33,7 +33,7 @@ export class AgentsService extends AbstractServiceSchema<Agents> {
    * @param {Model<Agents>} _model - Le modèle Mongoose pour la collection des agents
    */
   constructor(@InjectModel(Agents.name) protected _model: Model<Agents>) {
-    super()
+    super();
   }
 
   /**
@@ -63,11 +63,11 @@ export class AgentsService extends AbstractServiceSchema<Agents> {
     data?: AgentsCreateDto,
     options?: SaveOptions,
   ): Promise<Document<T, any, T>> {
-    data.password = await hash(data.password)
-    data.security = (data.security || {}) as SecurityPartDTO
-    data.security.secretKey = randomBytes(32).toString('hex')
+    data.password = await hash(data.password);
+    data.security = (data.security || {}) as SecurityPartDTO;
+    data.security.secretKey = randomBytes(32).toString('hex');
 
-    return await super.create(data, options)
+    return await super.create(data, options);
   }
 
   /**
@@ -102,14 +102,14 @@ export class AgentsService extends AbstractServiceSchema<Agents> {
     options?: QueryOptions<T>,
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
     // Hachage du mot de passe si présent
-    if (update.password) update.password = await hash(update.password)
-    if (update.$set?.password) update.$set.password = await hash(update.$set.password)
+    if (update.password) update.password = await hash(update.password);
+    if (update.$set?.password) update.$set.password = await hash(update.$set.password);
 
     // Log si le mot de passe est mis à jour
     if (update.password || update.$set?.password) {
-      this.logger.verbose(`Updating password for agent with ID: ${_id}`)
+      this.logger.verbose(`Updating password for agent with ID: ${_id}`);
     }
 
-    return await super.update(_id, update, options)
+    return await super.update(_id, update, options);
   }
 }

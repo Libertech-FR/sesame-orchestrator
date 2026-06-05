@@ -1,14 +1,19 @@
-import { Controller, Get, HttpStatus, Param, Query, Res } from '@nestjs/common'
-import { AbstractController } from '~/_common/abstracts/abstract.controller'
-import { ApiTags } from '@nestjs/swagger'
-import { PartialProjectionType } from '~/_common/types/partial-projection.type'
-import { AuditsService } from '~/core/audits/audits.service'
-import { UseRoles } from '~/_common/decorators/use-roles.decorator'
-import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types'
-import { FilterOptions, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '~/_common/restools'
-import { Response } from 'express'
-import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
-import { Types } from 'mongoose'
+import { Controller, Get, HttpStatus, Param, Query, Res } from '@nestjs/common';
+import { AbstractController } from '~/_common/abstracts/abstract.controller';
+import { ApiTags } from '@nestjs/swagger';
+import { PartialProjectionType } from '~/_common/types/partial-projection.type';
+import { AuditsService } from '~/core/audits/audits.service';
+import { UseRoles } from '~/_common/decorators/use-roles.decorator';
+import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
+import {
+  FilterOptions,
+  FilterSchema,
+  SearchFilterOptions,
+  SearchFilterSchema,
+} from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { Response } from 'express';
+import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
+import { Types } from 'mongoose';
 
 /**
  * Contrôleur pour la gestion des audits et de l'historique des enregistrements.
@@ -45,7 +50,7 @@ export class AuditsController extends AbstractController {
     'changes.path': 1,
     'changes.type': 1,
     metadata: 1,
-  }
+  };
 
   protected static readonly detailProjection: PartialProjectionType<any> = {
     coll: 1,
@@ -55,7 +60,7 @@ export class AuditsController extends AbstractController {
     agent: 1,
     changes: 1,
     metadata: 1,
-  }
+  };
 
   protected static readonly searchFields: PartialProjectionType<any> = {
     coll: 1,
@@ -66,7 +71,7 @@ export class AuditsController extends AbstractController {
     'changes.path': 1,
     'changes.value': 1,
     'changes.oldValue': 1,
-  }
+  };
 
   /**
    * Constructeur du contrôleur AuditsController.
@@ -74,7 +79,7 @@ export class AuditsController extends AbstractController {
    * @param {AuditsService} _service - Le service de gestion des audits
    */
   public constructor(private readonly _service: AuditsService) {
-    super()
+    super();
   }
 
   @Get('collections')
@@ -84,11 +89,11 @@ export class AuditsController extends AbstractController {
     possession: AC_DEFAULT_POSSESSION,
   })
   public async collections(@Res() res: Response): Promise<Response> {
-    const data = await this._service.getCollections()
+    const data = await this._service.getCollections();
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,
-    })
+    });
   }
 
   @Get()
@@ -104,37 +109,43 @@ export class AuditsController extends AbstractController {
     @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
   ): Promise<Response> {
-    const searchFilter = {}
+    const searchFilter = {};
 
     if (search && search.trim().length > 0) {
-      const searchRequest = {}
-      searchRequest['$or'] = Object.keys(AuditsController.searchFields).map((key) => {
-        return { [key]: { $regex: `^${search}`, $options: 'i' } }
-      }).filter((item) => item !== undefined)
-      searchFilter['$and'] = [searchRequest]
-      searchFilter['$and'].push(searchFilterSchema)
+      const searchRequest = {};
+      searchRequest['$or'] = Object.keys(AuditsController.searchFields)
+        .map((key) => {
+          return { [key]: { $regex: `^${search}`, $options: 'i' } };
+        })
+        .filter((item) => item !== undefined);
+      searchFilter['$and'] = [searchRequest];
+      searchFilter['$and'].push(searchFilterSchema);
     } else {
-      Object.assign(searchFilter, searchFilterSchema)
+      Object.assign(searchFilter, searchFilterSchema);
     }
 
     if (coll && coll.trim().length > 0) {
-      searchFilter['coll'] = coll.trim()
+      searchFilter['coll'] = coll.trim();
     } else {
       // Par défaut (aucun filtre "coll"), on masque les audits d'authentification.
       // Ils restent accessibles dès qu'on filtre explicitement sur coll=auth.
       if (Array.isArray(searchFilter['$and'])) {
-        searchFilter['$and'].push({ coll: { $ne: 'auth' } })
+        searchFilter['$and'].push({ coll: { $ne: 'auth' } });
       } else if (!('coll' in searchFilter)) {
-        searchFilter['coll'] = { $ne: 'auth' }
+        searchFilter['coll'] = { $ne: 'auth' };
       }
     }
 
-    const [data, total] = await this._service.findAndCount(searchFilter, AuditsController.projection, searchFilterOptions)
+    const [data, total] = await this._service.findAndCount(
+      searchFilter,
+      AuditsController.projection,
+      searchFilterOptions,
+    );
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,
       data,
-    })
+    });
   }
 
   @Get(':coll/:documentId')
@@ -156,12 +167,12 @@ export class AuditsController extends AbstractController {
       } as any,
       AuditsController.projection,
       searchFilterOptions,
-    )
+    );
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,
       data,
-    })
+    });
   }
 
   @Get(':_id([0-9a-fA-F]{24})')
@@ -174,10 +185,10 @@ export class AuditsController extends AbstractController {
     @Param('_id', ObjectIdValidationPipe) _id: Types.ObjectId,
     @Res() res: Response,
   ): Promise<Response> {
-    const data = await this._service.findById(_id, AuditsController.detailProjection)
+    const data = await this._service.findById(_id, AuditsController.detailProjection);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,
-    })
+    });
   }
 }

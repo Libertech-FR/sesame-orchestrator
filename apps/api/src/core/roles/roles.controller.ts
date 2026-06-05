@@ -11,10 +11,10 @@ import { PartialProjectionType } from '~/_common/types/partial-projection.type';
 import {
   FilterOptions,
   FilterSchema,
-  ObjectIdValidationPipe,
   SearchFilterOptions,
   SearchFilterSchema,
-} from '~/_common/restools';
+} from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { ObjectIdValidationPipe } from '@tacxou/nestjs_module_restools/mongoose';
 import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator';
 import { Types } from 'mongoose';
 import { ApiUpdateDecorator } from '~/_common/decorators/api-update.decorator';

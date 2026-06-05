@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { Type } from 'class-transformer'
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -11,28 +11,28 @@ import {
   ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
-} from 'class-validator'
+} from 'class-validator';
 
 @ValidatorConstraint({ name: 'isStringArrayOrObject', async: false })
 class IsStringArrayOrObject implements ValidatorConstraintInterface {
   public validate(value: any, args: ValidationArguments) {
-    if (!value) return true // Optional field
+    if (!value) return true; // Optional field
 
     // Vérifie si c'est un tableau de strings
     if (Array.isArray(value)) {
-      return value.every((item) => typeof item === 'string')
+      return value.every((item) => typeof item === 'string');
     }
 
     // Vérifie si c'est un objet (mais pas un tableau ou null)
     if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      return true
+      return true;
     }
 
-    return false
+    return false;
   }
 
   defaultMessage(args: ValidationArguments) {
-    return 'options doit être soit un tableau de strings, soit un objet clé-valeur'
+    return 'options doit être soit un tableau de strings, soit un objet clé-valeur';
   }
 }
 
@@ -51,7 +51,7 @@ export class CronTaskDTO {
     example: 'Task Lifecycle Cleanup',
     required: true,
   })
-  name: string
+  name: string;
 
   @IsString()
   @IsNotEmpty()
@@ -61,7 +61,7 @@ export class CronTaskDTO {
     example: 'Cleans up old task lifecycle entries from the database.',
     required: true,
   })
-  description: string
+  description: string;
 
   @IsBoolean()
   @ApiProperty({
@@ -70,7 +70,7 @@ export class CronTaskDTO {
     example: true,
     required: true,
   })
-  enabled: boolean
+  enabled: boolean;
 
   @IsString()
   @IsNotEmpty()
@@ -80,7 +80,7 @@ export class CronTaskDTO {
     example: '*/5 * * * *',
     required: true,
   })
-  schedule: string
+  schedule: string;
 
   @IsString()
   @IsNotEmpty()
@@ -90,7 +90,7 @@ export class CronTaskDTO {
     example: 'agents-create',
     required: true,
   })
-  handler: string
+  handler: string;
 
   /**
    * Options de la tâche : soit un tableau de strings (args), soit un objet clé-valeur
@@ -108,12 +108,9 @@ export class CronTaskDTO {
       { type: 'object', additionalProperties: true },
     ],
     description: 'Options CLI transmises au handler (arguments déclarés via @CronConsoleHandler)',
-    examples: [
-      { limit: 500 },
-      { source: '01-etd' },
-    ],
+    examples: [{ limit: 500 }, { source: '01-etd' }],
   })
-  options?: string[] | Record<string, any>
+  options?: string[] | Record<string, any>;
 }
 
 export class ConfigTaskDTO {
@@ -144,5 +141,5 @@ export class ConfigTaskDTO {
     description: 'Liste des tâches cron configurées',
     required: true,
   })
-  public tasks: CronTaskDTO[]
+  public tasks: CronTaskDTO[];
 }

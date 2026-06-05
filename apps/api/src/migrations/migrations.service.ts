@@ -1,13 +1,13 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
-import { glob } from 'glob'
-import chalk from 'chalk'
-import { ModuleRef } from '@nestjs/core'
-import { startLoader, stopLoader } from './migration-loader.function'
-import { readFile, writeFile, mkdir } from 'fs/promises'
-import { posix, dirname } from 'path'
-import { ConfigService } from '@nestjs/config'
-import { Connection } from 'mongoose'
-import { InjectConnection } from '@nestjs/mongoose'
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { glob } from 'glob';
+import chalk from 'chalk';
+import { ModuleRef } from '@nestjs/core';
+import { startLoader, stopLoader } from './migration-loader.function';
+import { readFile, writeFile, mkdir } from 'fs/promises';
+import { posix, dirname } from 'path';
+import { ConfigService } from '@nestjs/config';
+import { Connection } from 'mongoose';
+import { InjectConnection } from '@nestjs/mongoose';
 
 /**
  * Service de gestion des migrations de base de données
@@ -24,10 +24,10 @@ import { InjectConnection } from '@nestjs/mongoose'
  */
 @Injectable()
 export class MigrationsService implements OnModuleInit {
-  private readonly logger = new Logger(`${chalk.bold.red(MigrationsService.name)}\x1b[33m`)
+  private readonly logger = new Logger(`${chalk.bold.red(MigrationsService.name)}\x1b[33m`);
 
-  protected lockLocation: string
-  protected migrations = new Map<string, any>()
+  protected lockLocation: string;
+  protected migrations = new Map<string, any>();
 
   /**
    * Constructeur du service de migrations
@@ -41,11 +41,11 @@ export class MigrationsService implements OnModuleInit {
     private readonly moduleRef: ModuleRef,
     private readonly config: ConfigService,
   ) {
-    const storageRoot = this.config.get<string>('factorydrive.options.disks.local.config.root', '/tmp')
-    this.lockLocation = posix.join(storageRoot, 'migrations.lock')
-    this.logger.debug(`Migration lock file location: ${this.lockLocation}`)
-    this.logger.debug(`Storage root: ${storageRoot}`)
-    this.logger.debug(`Process CWD: ${process.cwd()}`)
+    const storageRoot = this.config.get<string>('factorydrive.options.disks.local.config.root', '/tmp');
+    this.lockLocation = posix.join(storageRoot, 'migrations.lock');
+    this.logger.debug(`Migration lock file location: ${this.lockLocation}`);
+    this.logger.debug(`Storage root: ${storageRoot}`);
+    this.logger.debug(`Process CWD: ${process.cwd()}`);
   }
 
   /**
@@ -59,15 +59,15 @@ export class MigrationsService implements OnModuleInit {
    * 3. Exécutant les migrations nécessaires
    */
   public async onModuleInit(): Promise<void> {
-    this.logger.debug(chalk.yellow('Migrations service initialized.'))
-    this.logger.debug(chalk.yellow('Lock file location: ' + this.lockLocation))
-    const currentTimestamp = await this._checkMigrationLockFile()
-    this.logger.debug(chalk.yellow('Checking migrations files...'))
-    await this._loadMigrationsFiles(currentTimestamp)
+    this.logger.debug(chalk.yellow('Migrations service initialized.'));
+    this.logger.debug(chalk.yellow('Lock file location: ' + this.lockLocation));
+    const currentTimestamp = await this._checkMigrationLockFile();
+    this.logger.debug(chalk.yellow('Checking migrations files...'));
+    await this._loadMigrationsFiles(currentTimestamp);
 
-    const loader = startLoader('Migration en cours...')
-    await this._executeMigrations()
-    stopLoader(loader)
+    const loader = startLoader('Migration en cours...');
+    await this._executeMigrations();
+    stopLoader(loader);
   }
 
   /**
@@ -81,51 +81,53 @@ export class MigrationsService implements OnModuleInit {
    * dans la base de données. Synchronise également la base de données si nécessaire.
    */
   private async _checkMigrationLockFile(): Promise<number> {
-    let currentTimestamp = 0
+    let currentTimestamp = 0;
 
     try {
-      const migration = await readFile(this.lockLocation, 'utf-8')
-      currentTimestamp = parseInt(migration, 10)
-      this.logger.log(chalk.blue(`Migration lock state is <${currentTimestamp}> !`))
+      const migration = await readFile(this.lockLocation, 'utf-8');
+      currentTimestamp = parseInt(migration, 10);
+      this.logger.log(chalk.blue(`Migration lock state is <${currentTimestamp}> !`));
     } catch (error) {
-      this.logger.warn(chalk.red('No migration lock file found.'))
+      this.logger.warn(chalk.red('No migration lock file found.'));
     }
 
-    const dbMigration = await this.mongo.collection('migrations').findOne({}, { sort: { timestamp: -1 } })
+    const dbMigration = await this.mongo.collection('migrations').findOne({}, { sort: { timestamp: -1 } });
 
     if (currentTimestamp === 0) {
       if (dbMigration) {
         try {
-          this.logger.warn(chalk.yellow('No migration lock file found. Creating one with the last migration timestamp...'))
-          const lockDir = dirname(this.lockLocation)
-          await mkdir(lockDir, { recursive: true })
-          await writeFile(this.lockLocation, dbMigration.timestamp.toString())
-          this.logger.log(chalk.green('Migration lock file created.'))
+          this.logger.warn(
+            chalk.yellow('No migration lock file found. Creating one with the last migration timestamp...'),
+          );
+          const lockDir = dirname(this.lockLocation);
+          await mkdir(lockDir, { recursive: true });
+          await writeFile(this.lockLocation, dbMigration.timestamp.toString());
+          this.logger.log(chalk.green('Migration lock file created.'));
         } catch (error) {
-          this.logger.error(chalk.red('Error while creating migration lock file !'))
+          this.logger.error(chalk.red('Error while creating migration lock file !'));
         }
       } else {
         try {
-          const lockDir = dirname(this.lockLocation)
-          await mkdir(lockDir, { recursive: true })
-          await writeFile(this.lockLocation, currentTimestamp.toString())
-          this.logger.log(chalk.green('Migration lock file created.'))
+          const lockDir = dirname(this.lockLocation);
+          await mkdir(lockDir, { recursive: true });
+          await writeFile(this.lockLocation, currentTimestamp.toString());
+          this.logger.log(chalk.green('Migration lock file created.'));
         } catch (error) {
-          this.logger.error(chalk.red('Error while creating migration lock file !'))
+          this.logger.error(chalk.red('Error while creating migration lock file !'));
         }
       }
     }
 
     if (!dbMigration && currentTimestamp !== 0) {
-      this.logger.error(chalk.red('Database is not up to date with the migrations files !'))
+      this.logger.error(chalk.red('Database is not up to date with the migrations files !'));
       await this.mongo.collection('migrations').insertOne({
         timestamp: currentTimestamp,
         comment: 'Synchronization with the migration lock file',
-      })
-      this.logger.log(chalk.green('Database updated with the current migration lock file !'))
+      });
+      this.logger.log(chalk.green('Database updated with the current migration lock file !'));
     }
 
-    return currentTimestamp
+    return currentTimestamp;
   }
 
   /**
@@ -142,40 +144,46 @@ export class MigrationsService implements OnModuleInit {
     let files = await glob(`./jobs/*.js`, {
       cwd: __dirname,
       root: __dirname,
-    })
+    });
 
     files = files.filter((file) => {
-      const [timestampMatch] = file.match(/\d{10,}/) || []
+      const [timestampMatch] = file.match(/\d{10,}/) || [];
 
       if (!timestampMatch) {
-        this.logger.warn(chalk.yellow(`Migration ${chalk.bold('<' + file.replace(/.js$/, '') + '>')} does not have a timestamp in the filename !`))
-        return
+        this.logger.warn(
+          chalk.yellow(
+            `Migration ${chalk.bold('<' + file.replace(/.js$/, '') + '>')} does not have a timestamp in the filename !`,
+          ),
+        );
+        return;
       }
 
       if (parseInt(timestampMatch) <= currentTimestamp) {
-        this.logger.debug(chalk.yellow(`Migration ${chalk.bold('<' + file.replace(/.js$/, '') + '>')} are already executed !`))
-        return false
+        this.logger.debug(
+          chalk.yellow(`Migration ${chalk.bold('<' + file.replace(/.js$/, '') + '>')} are already executed !`),
+        );
+        return false;
       }
 
-      return true
-    })
+      return true;
+    });
 
     files = files.sort((a, b) => {
-      const [aTimestamp] = a.match(/\d{10,}/) || []
-      const [bTimestamp] = b.match(/\d{10,}/) || []
+      const [aTimestamp] = a.match(/\d{10,}/) || [];
+      const [bTimestamp] = b.match(/\d{10,}/) || [];
 
-      return parseInt(aTimestamp) - parseInt(bTimestamp)
-    })
+      return parseInt(aTimestamp) - parseInt(bTimestamp);
+    });
 
     for (const file of files) {
-      const migration = await import(`${__dirname}/${file}`)
+      const migration = await import(`${__dirname}/${file}`);
 
       if (!migration.default) {
-        this.logger.log(chalk.yellow(`Migration ${chalk.bold('<' + file + '>')} does not have a default export !`))
-        return
+        this.logger.log(chalk.yellow(`Migration ${chalk.bold('<' + file + '>')} does not have a default export !`));
+        return;
       }
 
-      this.migrations.set(file, migration)
+      this.migrations.set(file, migration);
     }
   }
 
@@ -191,39 +199,39 @@ export class MigrationsService implements OnModuleInit {
    */
   private async _executeMigrations(): Promise<void> {
     if (this.migrations.size === 0) {
-      this.logger.log(chalk.green('No migrations to execute.'))
+      this.logger.log(chalk.green('No migrations to execute.'));
       return;
     }
 
     if (!this.migrations.size) {
-      this.logger.log(chalk.blue('No migrations to execute.'))
+      this.logger.log(chalk.blue('No migrations to execute.'));
       return;
     }
 
     for (const key of this.migrations.keys()) {
-      const [migrationTimestamp] = key.match(/\d{10,}/) || []
+      const [migrationTimestamp] = key.match(/\d{10,}/) || [];
 
-      const migration = this.migrations.get(key)
-      const instance = await this.moduleRef.create(migration.default)
+      const migration = this.migrations.get(key);
+      const instance = await this.moduleRef.create(migration.default);
 
       if (typeof instance.up !== 'function') {
-        this.logger.log(chalk.yellow(`Migration ${chalk.bold('<' + key + '>')} does not have an up method !`))
-        break
+        this.logger.log(chalk.yellow(`Migration ${chalk.bold('<' + key + '>')} does not have an up method !`));
+        break;
       }
 
       try {
-        this.logger.log(chalk.yellow(`Running migration ${chalk.bold('<' + key + '>')}...`))
-        await instance.up()
+        this.logger.log(chalk.yellow(`Running migration ${chalk.bold('<' + key + '>')}...`));
+        await instance.up();
       } catch (e) {
-        this.logger.error(chalk.red(`Error while running migration ${chalk.bold('<' + key + '>')} !`))
-        this.logger.error(e.message, e.stack)
-        return
+        this.logger.error(chalk.red(`Error while running migration ${chalk.bold('<' + key + '>')} !`));
+        this.logger.error(e.message, e.stack);
+        return;
       }
 
-      this._writeMigrationLockFile(key, migrationTimestamp)
+      this._writeMigrationLockFile(key, migrationTimestamp);
     }
 
-    this.logger.log(chalk.blue('All migrations done.'))
+    this.logger.log(chalk.blue('All migrations done.'));
   }
 
   /**
@@ -241,24 +249,24 @@ export class MigrationsService implements OnModuleInit {
   private async _writeMigrationLockFile(migrationKey: string, migrationTimestamp: string): Promise<void> {
     try {
       // Ensure the directory exists before writing the file
-      const lockDir = dirname(this.lockLocation)
-      this.logger.debug(`Creating directory: ${lockDir}`)
-      await mkdir(lockDir, { recursive: true })
+      const lockDir = dirname(this.lockLocation);
+      this.logger.debug(`Creating directory: ${lockDir}`);
+      await mkdir(lockDir, { recursive: true });
 
-      this.logger.debug(`Writing migration lock file to: ${this.lockLocation}`)
-      await writeFile(this.lockLocation, migrationTimestamp)
+      this.logger.debug(`Writing migration lock file to: ${this.lockLocation}`);
+      await writeFile(this.lockLocation, migrationTimestamp);
       await this.mongo.collection('migrations').insertOne({
         timestamp: parseInt(migrationTimestamp),
         comment: `Migration ${migrationKey} executed`,
-      })
-      this.logger.log(chalk.blue(`Migration ${chalk.bold('<' + migrationKey + '>')} done.`))
+      });
+      this.logger.log(chalk.blue(`Migration ${chalk.bold('<' + migrationKey + '>')} done.`));
     } catch (e) {
-      this.logger.error(chalk.red(`Error while updating migration lock file !`))
-      this.logger.error(`Lock file path: ${this.lockLocation}`)
-      this.logger.error(`Lock file directory: ${dirname(this.lockLocation)}`)
-      this.logger.error(e)
+      this.logger.error(chalk.red(`Error while updating migration lock file !`));
+      this.logger.error(`Lock file path: ${this.lockLocation}`);
+      this.logger.error(`Lock file directory: ${dirname(this.lockLocation)}`);
+      this.logger.error(e);
 
-      throw new Error('Error while updating migration lock file !')
+      throw new Error('Error while updating migration lock file !');
     }
   }
 
@@ -269,52 +277,52 @@ export class MigrationsService implements OnModuleInit {
    */
   public async forceRun(selector: string): Promise<void> {
     if (!selector || typeof selector !== 'string') {
-      throw new Error('Missing migration selector (timestamp or filename)')
+      throw new Error('Missing migration selector (timestamp or filename)');
     }
 
-    let files = await glob(`./jobs/*.js`, {
+    const files = await glob(`./jobs/*.js`, {
       cwd: __dirname,
       root: __dirname,
-    })
+    });
 
-    const normalizedSelector = selector.trim()
-    const selectorTimestamp = (normalizedSelector.match(/\d{10,}/) || [])[0]
+    const normalizedSelector = selector.trim();
+    const selectorTimestamp = (normalizedSelector.match(/\d{10,}/) || [])[0];
 
     const matches = files.filter((file) => {
       if (normalizedSelector.includes('/') || normalizedSelector.includes('.js')) {
-        return file.endsWith(normalizedSelector.replace(/^.*jobs\//, 'jobs/'))
+        return file.endsWith(normalizedSelector.replace(/^.*jobs\//, 'jobs/'));
       }
       if (selectorTimestamp) {
-        return file.includes(selectorTimestamp)
+        return file.includes(selectorTimestamp);
       }
-      return false
-    })
+      return false;
+    });
 
     if (matches.length === 0) {
-      throw new Error(`No migration file found for selector <${selector}>`)
+      throw new Error(`No migration file found for selector <${selector}>`);
     }
     if (matches.length > 1) {
-      throw new Error(`Multiple migrations match selector <${selector}>: ${matches.join(', ')}`)
+      throw new Error(`Multiple migrations match selector <${selector}>: ${matches.join(', ')}`);
     }
 
-    const key = matches[0]
-    const [migrationTimestamp] = key.match(/\d{10,}/) || []
+    const key = matches[0];
+    const [migrationTimestamp] = key.match(/\d{10,}/) || [];
     if (!migrationTimestamp) {
-      throw new Error(`Selected migration <${key}> has no timestamp in filename`)
+      throw new Error(`Selected migration <${key}> has no timestamp in filename`);
     }
 
-    const migration = await import(`${__dirname}/${key}`)
+    const migration = await import(`${__dirname}/${key}`);
     if (!migration?.default) {
-      throw new Error(`Migration <${key}> does not have a default export`)
+      throw new Error(`Migration <${key}> does not have a default export`);
     }
 
-    const instance = await this.moduleRef.create(migration.default)
+    const instance = await this.moduleRef.create(migration.default);
     if (typeof instance.up !== 'function') {
-      throw new Error(`Migration <${key}> does not have an up method`)
+      throw new Error(`Migration <${key}> does not have an up method`);
     }
 
-    this.logger.warn(chalk.yellow(`Forcing migration ${chalk.bold('<' + key + '>')}...`))
-    await instance.up()
-    await this._writeMigrationLockFile(key, migrationTimestamp)
+    this.logger.warn(chalk.yellow(`Forcing migration ${chalk.bold('<' + key + '>')}...`));
+    await instance.up();
+    await this._writeMigrationLockFile(key, migrationTimestamp);
   }
 }

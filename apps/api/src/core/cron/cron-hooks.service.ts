@@ -1,343 +1,345 @@
-import { Injectable, Logger } from '@nestjs/common'
-import { CronExpression, SchedulerRegistry } from '@nestjs/schedule'
-import { CronJob } from 'cron'
-import { spawn } from 'child_process'
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { isConsoleEntrypoint } from '~/_common/functions/is-cli'
-import { CronTaskDTO } from './_dto/config-task.dto'
-import { loadcronTasks } from './_functions/load-cron-tasks.function'
-import { ConfigService } from '@nestjs/config'
-import { createHandlerLogger } from '~/_common/functions/handler-logger'
-import { resolveConfigVariables } from '~/_common/functions/resolve-config-variables.function'
-import { buildCronCommandArgs } from './_functions/cron-command-options.function'
+import { Injectable, Logger } from '@nestjs/common';
+import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
+import { spawn } from 'child_process';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { isConsoleEntrypoint } from '~/_common/functions/is-cli';
+import { CronTaskDTO } from './_dto/config-task.dto';
+import { loadcronTasks } from './_functions/load-cron-tasks.function';
+import { ConfigService } from '@nestjs/config';
+import { createHandlerLogger } from '~/_common/functions/handler-logger';
+import { resolveConfigVariables } from '~/_common/functions/resolve-config-variables.function';
+import { buildCronCommandArgs } from './_functions/cron-command-options.function';
 
 @Injectable()
 export class CronHooksService {
-  private readonly logger = new Logger(CronHooksService.name)
-  private manualRunInProgress = false
-  private manualRunTaskName: string | null = null
+  private readonly logger = new Logger(CronHooksService.name);
+  private manualRunInProgress = false;
+  private manualRunTaskName: string | null = null;
 
-  private cronHandlerExpression = '0 * * * *' // Toutes les heures
+  private cronHandlerExpression = '0 * * * *'; // Toutes les heures
 
   /**
    * Liste des tâches cron chargées depuis cron/*.yml
    * @protected
    * @type {CronTaskDTO[]}
    */
-  protected cronTasks: CronTaskDTO[] = []
+  protected cronTasks: CronTaskDTO[] = [];
 
   /**
    * Timestamp de la dernière modification des fichiers cron/*.yml
    * @protected
    * @type {number}
    */
-  protected _cronTaskFileAge = 0
+  protected _cronTaskFileAge = 0;
 
   public getCronTasks(): CronTaskDTO[] {
-    return this.cronTasks
+    return this.cronTasks;
   }
 
   public constructor(
     private configService: ConfigService,
     private schedulerRegistry: SchedulerRegistry,
   ) {
-    this.logger.log('CronHooksService initialized')
+    this.logger.log('CronHooksService initialized');
 
-    this.cronHandlerExpression = this.configService.get<string>('cron.handlerExpression', CronExpression.EVERY_HOUR)
+    this.cronHandlerExpression = this.configService.get<string>('cron.handlerExpression', CronExpression.EVERY_HOUR);
   }
 
   public async onModuleInit(): Promise<void> {
-    this.logger.log('CronHooksService module initialized')
+    this.logger.log('CronHooksService module initialized');
 
-    let files = []
-    let defaultFiles = []
-    const configDir = `${process.cwd()}/configs/cron`
+    let files = [];
+    let defaultFiles = [];
+    const configDir = `${process.cwd()}/configs/cron`;
 
     if (!existsSync(configDir)) {
-      this.logger.warn(`Creating missing directory: ${configDir}`)
-      mkdirSync(configDir, { recursive: true })
+      this.logger.warn(`Creating missing directory: ${configDir}`);
+      mkdirSync(configDir, { recursive: true });
     }
 
     try {
-      files = readdirSync(`${process.cwd()}/configs/cron`)
-      defaultFiles = readdirSync(`${process.cwd()}/defaults/cron`)
+      files = readdirSync(`${process.cwd()}/configs/cron`);
+      defaultFiles = readdirSync(`${process.cwd()}/defaults/cron`);
     } catch (error) {
-      this.logger.error('Error reading cron files', error.message, error.stack)
+      this.logger.error('Error reading cron files', error.message, error.stack);
     }
 
     for (const file of defaultFiles) {
       if (!files.includes(file)) {
         try {
-          const defaultFile = readFileSync(`${process.cwd()}/defaults/cron/${file}`, 'utf-8')
-          writeFileSync(`${process.cwd()}/configs/cron/${file}`, defaultFile)
-          this.logger.warn(`Copied default cron file: ${file}`)
+          const defaultFile = readFileSync(`${process.cwd()}/defaults/cron/${file}`, 'utf-8');
+          writeFileSync(`${process.cwd()}/configs/cron/${file}`, defaultFile);
+          this.logger.warn(`Copied default cron file: ${file}`);
         } catch (error) {
-          this.logger.error(`Error copying default cron file: ${file}`, error.message, error.stack)
+          this.logger.error(`Error copying default cron file: ${file}`, error.message, error.stack);
         }
       }
     }
 
-    this.logger.log('CronHooksService (hooks) initialized')
+    this.logger.log('CronHooksService (hooks) initialized');
   }
 
   public async onApplicationBootstrap(): Promise<void> {
-    this.logger.verbose('Bootstrap CronHooksService application...')
+    this.logger.verbose('Bootstrap CronHooksService application...');
 
-    this.cronTasks = await this.refreshCronTasksFileCache()
-    this._cronTaskFileAge = Date.now()
+    this.cronTasks = await this.refreshCronTasksFileCache();
+    this._cronTaskFileAge = Date.now();
 
-    this.logger.debug('Cron tasks:', JSON.stringify(this.cronTasks, null, 2))
+    this.logger.debug('Cron tasks:', JSON.stringify(this.cronTasks, null, 2));
 
     if (isConsoleEntrypoint()) {
-      this.logger.debug('Skipping CronHooksService bootstrap in console mode.')
-      return
+      this.logger.debug('Skipping CronHooksService bootstrap in console mode.');
+      return;
     }
 
-    const job = new CronJob(this.cronHandlerExpression, this.handleCron.bind(this))
-    this.schedulerRegistry.addCronJob(`cron-trigger`, job)
-    this.logger.warn(`Cron trigger cron job scheduled with expression: <${this.cronHandlerExpression}>`)
-    job.start()
-    await job.fireOnTick()
+    const job = new CronJob(this.cronHandlerExpression, this.handleCron.bind(this));
+    this.schedulerRegistry.addCronJob(`cron-trigger`, job);
+    this.logger.warn(`Cron trigger cron job scheduled with expression: <${this.cronHandlerExpression}>`);
+    job.start();
+    await job.fireOnTick();
 
-    this.logger.log('CronHooksService (bootstrap) initialized')
+    this.logger.log('CronHooksService (bootstrap) initialized');
   }
 
   public async syncCronJobs(): Promise<void> {
-    await this.handleCron()
+    await this.handleCron();
   }
 
   public async runTaskNow(name: string): Promise<'started' | 'not_found' | 'busy'> {
     if (this.manualRunInProgress) {
-      this.logger.warn(`Manual run ignored for <${name}>: another task is already running (<${this.manualRunTaskName}>)`)
-      return 'busy'
+      this.logger.warn(
+        `Manual run ignored for <${name}>: another task is already running (<${this.manualRunTaskName}>)`,
+      );
+      return 'busy';
     }
 
-    let currentTask = this.cronTasks.find((task) => task.name === name)
+    let currentTask = this.cronTasks.find((task) => task.name === name);
     if (!currentTask) {
-      await this.refreshCronTasksFileCache()
-      currentTask = this.cronTasks.find((task) => task.name === name)
+      await this.refreshCronTasksFileCache();
+      currentTask = this.cronTasks.find((task) => task.name === name);
     }
 
     if (!currentTask) {
-      return 'not_found'
+      return 'not_found';
     }
 
-    this.logger.warn(`Running cron task manually: ${currentTask.name}`)
-    this.manualRunInProgress = true
-    this.manualRunTaskName = currentTask.name
+    this.logger.warn(`Running cron task manually: ${currentTask.name}`);
+    this.manualRunInProgress = true;
+    this.manualRunTaskName = currentTask.name;
 
     // Fire-and-forget: the HTTP caller should get an immediate response.
     void this.executeHandlerCommand(currentTask.name, currentTask.handler, currentTask.options)
       .then(() => {
-        this.logger.log(`Manual cron task <${currentTask.name}> finished`)
+        this.logger.log(`Manual cron task <${currentTask.name}> finished`);
       })
       .catch((error) => {
-        this.logger.error(`Manual cron task <${currentTask.name}> failed`, error?.message || error)
+        this.logger.error(`Manual cron task <${currentTask.name}> failed`, error?.message || error);
       })
       .finally(() => {
-        this.manualRunInProgress = false
-        this.manualRunTaskName = null
-      })
+        this.manualRunInProgress = false;
+        this.manualRunTaskName = null;
+      });
 
-    return 'started'
+    return 'started';
   }
 
   private async handleCron(): Promise<void> {
-    this.logger.verbose('Syncing cron tasks jobs from configs/cron/*.yml')
+    this.logger.verbose('Syncing cron tasks jobs from configs/cron/*.yml');
 
     // Capture previous tasks to detect option changes
-    const previousTasks = new Map<string, CronTaskDTO>()
+    const previousTasks = new Map<string, CronTaskDTO>();
     for (const t of this.cronTasks) {
-      previousTasks.set(`cron-task-${t.name}`, t)
+      previousTasks.set(`cron-task-${t.name}`, t);
     }
 
     // Refresh cache to ensure we work with latest tasks
     try {
-      await this.refreshCronTasksFileCache()
+      await this.refreshCronTasksFileCache();
     } catch (err) {
-      this.logger.error('Error refreshing cron tasks cache before sync', err?.message || err)
+      this.logger.error('Error refreshing cron tasks cache before sync', err?.message || err);
     }
 
-    const desiredTasks = new Map<string, CronTaskDTO>()
+    const desiredTasks = new Map<string, CronTaskDTO>();
     for (const task of this.cronTasks) {
-      const jobName = `cron-task-${task.name}`
-      desiredTasks.set(jobName, task)
+      const jobName = `cron-task-${task.name}`;
+      desiredTasks.set(jobName, task);
     }
 
     // Inspecte les jobs existants dans le SchedulerRegistry
-    let existingJobs: Map<string, CronJob> = new Map()
+    let existingJobs: Map<string, CronJob> = new Map();
     try {
       // SchedulerRegistry exposes getCronJobs()
       // @ts-ignore - depending on Nest version typings
-      existingJobs = this.schedulerRegistry.getCronJobs()
+      existingJobs = this.schedulerRegistry.getCronJobs();
     } catch (err) {
-      this.logger.error('Error while retrieving existing cron jobs from registry', err?.message || err)
+      this.logger.error('Error while retrieving existing cron jobs from registry', err?.message || err);
     }
 
     // Supprimer les jobs qui ne sont plus dans les tâches désirées
     for (const [name, job] of existingJobs) {
-      if (!name.startsWith('cron-task-')) continue
+      if (!name.startsWith('cron-task-')) continue;
 
-      const desired = desiredTasks.get(name)
-      const previous = previousTasks.get(name)
+      const desired = desiredTasks.get(name);
+      const previous = previousTasks.get(name);
       if (!desired) {
         try {
-          job.stop()
+          job.stop();
         } catch (e) {
-          this.logger.warn(`Failed to stop removed cron job <${name}>: ${e?.message || e}`)
+          this.logger.warn(`Failed to stop removed cron job <${name}>: ${e?.message || e}`);
         }
         try {
-          this.schedulerRegistry.deleteCronJob(name)
-          this.logger.log(`Removed cron job not present in configs: ${name}`)
+          this.schedulerRegistry.deleteCronJob(name);
+          this.logger.log(`Removed cron job not present in configs: ${name}`);
         } catch (e) {
-          this.logger.error(`Error deleting cron job <${name}> from registry:`, e?.message || e)
+          this.logger.error(`Error deleting cron job <${name}> from registry:`, e?.message || e);
         }
-        continue
+        continue;
       }
 
       // Si la tâche est désactivée, arrêter et supprimer le job
       if (!desired.enabled) {
         try {
-          job.stop()
+          job.stop();
         } catch (e) {
-          this.logger.warn(`Failed to stop disabled cron job <${name}>: ${e?.message || e}`)
+          this.logger.warn(`Failed to stop disabled cron job <${name}>: ${e?.message || e}`);
         }
         try {
-          this.schedulerRegistry.deleteCronJob(name)
-          this.logger.log(`Disabled cron job removed from registry: ${name}`)
+          this.schedulerRegistry.deleteCronJob(name);
+          this.logger.log(`Disabled cron job removed from registry: ${name}`);
         } catch (e) {
-          this.logger.error(`Error deleting disabled cron job <${name}>:`, e?.message || e)
+          this.logger.error(`Error deleting disabled cron job <${name}>:`, e?.message || e);
         }
-        continue
+        continue;
       }
 
       // Si les options ont changé, recréer le job pour prendre en compte les nouvelles options
       try {
-        const prevOptions = previous ? previous.options : undefined
-        const newOptions = desired.options
-        const prevSerialized = prevOptions ? JSON.stringify(prevOptions) : ''
-        const newSerialized = newOptions ? JSON.stringify(newOptions) : ''
+        const prevOptions = previous ? previous.options : undefined;
+        const newOptions = desired.options;
+        const prevSerialized = prevOptions ? JSON.stringify(prevOptions) : '';
+        const newSerialized = newOptions ? JSON.stringify(newOptions) : '';
         if (prevSerialized !== newSerialized) {
           try {
-            job.stop()
-          } catch (_) { }
+            job.stop();
+          } catch (_) {}
           try {
-            this.schedulerRegistry.deleteCronJob(name)
-          } catch (_) { }
-          this.logger.log(`Cron job <${name}> options changed, recreating with new options`)
-          const recreated = this.buildCronJobForTask(desired)
-          this.schedulerRegistry.addCronJob(name, recreated)
-          recreated.start()
-          continue
+            this.schedulerRegistry.deleteCronJob(name);
+          } catch (_) {}
+          this.logger.log(`Cron job <${name}> options changed, recreating with new options`);
+          const recreated = this.buildCronJobForTask(desired);
+          this.schedulerRegistry.addCronJob(name, recreated);
+          recreated.start();
+          continue;
         }
       } catch (e) {
-        this.logger.warn(`Error while comparing options for cron job <${name}>: ${e?.message || e}`)
+        this.logger.warn(`Error while comparing options for cron job <${name}>: ${e?.message || e}`);
       }
 
       // Si la tâche existe et est activée, vérifier le changement de planification
       try {
-        const currentSchedule = job && job.cronTime && job.cronTime.source ? job.cronTime.source : (job && job.toString ? job.toString() : '')
+        const currentSchedule =
+          job && job.cronTime && job.cronTime.source ? job.cronTime.source : job && job.toString ? job.toString() : '';
         if (currentSchedule && desired.schedule && currentSchedule !== desired.schedule) {
           // restart with new schedule
-          job.stop()
-          this.schedulerRegistry.deleteCronJob(name)
-          this.logger.log(`Cron job <${name}> schedule changed, recreating with <${desired.schedule}>`)
-          const newJob = this.buildCronJobForTask(desired)
-          this.schedulerRegistry.addCronJob(name, newJob)
-          newJob.start()
+          job.stop();
+          this.schedulerRegistry.deleteCronJob(name);
+          this.logger.log(`Cron job <${name}> schedule changed, recreating with <${desired.schedule}>`);
+          const newJob = this.buildCronJobForTask(desired);
+          this.schedulerRegistry.addCronJob(name, newJob);
+          newJob.start();
         }
       } catch (e) {
-        this.logger.warn(`Could not compare schedule for cron job <${name}>, recreating: ${e?.message || e}`)
+        this.logger.warn(`Could not compare schedule for cron job <${name}>, recreating: ${e?.message || e}`);
         try {
-          job.stop()
-        } catch (_) { }
+          job.stop();
+        } catch (_) {}
         try {
-          this.schedulerRegistry.deleteCronJob(name)
-        } catch (_) { }
-        const newJob = this.buildCronJobForTask(desired)
-        this.schedulerRegistry.addCronJob(name, newJob)
-        newJob.start()
+          this.schedulerRegistry.deleteCronJob(name);
+        } catch (_) {}
+        const newJob = this.buildCronJobForTask(desired);
+        this.schedulerRegistry.addCronJob(name, newJob);
+        newJob.start();
       }
     }
 
     // Create missing jobs for enabled tasks
     for (const [jobName, task] of desiredTasks) {
-      if (!task.enabled) continue
+      if (!task.enabled) continue;
       if (this.schedulerRegistry.doesExist && this.schedulerRegistry.doesExist('cron', jobName)) {
         // already handled schedule changes above
-        continue
+        continue;
       }
 
       try {
-        const job = this.buildCronJobForTask(task)
-        this.schedulerRegistry.addCronJob(jobName, job)
-        job.start()
-        this.logger.log(`Scheduled cron task job: ${jobName} with schedule: ${task.schedule}`)
+        const job = this.buildCronJobForTask(task);
+        this.schedulerRegistry.addCronJob(jobName, job);
+        job.start();
+        this.logger.log(`Scheduled cron task job: ${jobName} with schedule: ${task.schedule}`);
       } catch (e) {
-        this.logger.error(`Failed to schedule cron job <${jobName}>:`, e?.message || e)
+        this.logger.error(`Failed to schedule cron job <${jobName}>:`, e?.message || e);
       }
     }
   }
 
   private buildCronJobForTask(task: CronTaskDTO): CronJob {
     const job = new CronJob(task.schedule, async (): Promise<void> => {
-      this.logger.log(`Executing cron task: ${task.name} with handler: ${task.handler}`)
+      this.logger.log(`Executing cron task: ${task.name} with handler: ${task.handler}`);
       try {
-        const current = this.cronTasks.find((t) => t.name === task.name)
-        const options = current?.options
-        await this.executeHandlerCommand(task.name, task.handler, options)
+        const current = this.cronTasks.find((t) => t.name === task.name);
+        const options = current?.options;
+        await this.executeHandlerCommand(task.name, task.handler, options);
       } catch (err) {
-        this.logger.error(`Error executing cron task <${task.name}>:`, err?.message || err)
+        this.logger.error(`Error executing cron task <${task.name}>:`, err?.message || err);
       }
-    })
-    return job
+    });
+    return job;
   }
 
   private async executeHandlerCommand(name: string, handler: string, options?: Record<string, any>): Promise<void> {
-    const resolvedOptions = await resolveConfigVariables(options)
-    const { positionalArgs, flagArgs } = buildCronCommandArgs(handler, resolvedOptions)
+    const resolvedOptions = await resolveConfigVariables(options);
+    const { positionalArgs, flagArgs } = buildCronCommandArgs(handler, resolvedOptions);
 
-    const cmd = 'yarn'
-    const cmdArgs = ['run', 'console', ...handler.split('-'), ...positionalArgs, ...flagArgs]
+    const cmd = 'yarn';
+    const cmdArgs = ['run', 'console', ...handler.split('-'), ...positionalArgs, ...flagArgs];
 
-    const handlerLogger = createHandlerLogger(this.configService, name)
-    this.logger.log(`Spawning command: ${cmd} ${cmdArgs.join(' ')}`)
+    const handlerLogger = createHandlerLogger(this.configService, name);
+    this.logger.log(`Spawning command: ${cmd} ${cmdArgs.join(' ')}`);
 
     await new Promise<void>((resolve, reject) => {
-      const child = spawn(cmd, cmdArgs, { shell: true, cwd: process.cwd(), env: process.env })
+      const child = spawn(cmd, cmdArgs, { shell: true, cwd: process.cwd(), env: process.env });
 
-      child.stdout?.on('data', (chunk) => handlerLogger.log(chunk.toString()))
-      child.stderr?.on('data', (chunk) => handlerLogger.error(chunk.toString()))
+      child.stdout?.on('data', (chunk) => handlerLogger.log(chunk.toString()));
+      child.stderr?.on('data', (chunk) => handlerLogger.error(chunk.toString()));
 
       child.on('error', (err) => {
-        handlerLogger.close()
-        this.logger.error(`Failed to spawn handler command <${handler}>: ${err?.message || err}`)
-        reject(err)
-      })
+        handlerLogger.close();
+        this.logger.error(`Failed to spawn handler command <${handler}>: ${err?.message || err}`);
+        reject(err);
+      });
 
       child.on('close', (code) => {
-        handlerLogger.close()
+        handlerLogger.close();
         if (code === 0) {
-          this.logger.log(`Handler command <${handler}> completed successfully`)
-          resolve()
+          this.logger.log(`Handler command <${handler}> completed successfully`);
+          resolve();
         } else {
-          const err = new Error(`Handler command <${handler}> exited with code ${code}`)
-          this.logger.error(err.message)
-          reject(err)
+          const err = new Error(`Handler command <${handler}> exited with code ${code}`);
+          this.logger.error(err.message);
+          reject(err);
         }
-      })
-    })
+      });
+    });
   }
 
-
   private async refreshCronTasksFileCache(): Promise<CronTaskDTO[]> {
-    const { cronTasks, cronTaskFileAge } = await loadcronTasks()
+    const { cronTasks, cronTaskFileAge } = await loadcronTasks();
 
     // Met à jour le cache interne
-    this.cronTasks = cronTasks
-    this._cronTaskFileAge = cronTaskFileAge
+    this.cronTasks = cronTasks;
+    this._cronTaskFileAge = cronTaskFileAge;
 
-    this.logger.debug('Cron cache refreshed (tasks, file age).')
-    return cronTasks
+    this.logger.debug('Cron cache refreshed (tasks, file age).');
+    return cronTasks;
   }
 }

@@ -36,4 +36,4 @@ import { AuditsModule } from '../audits/audits.module';
   providers: [AuthService, JwtStrategy, LocalStrategy],
   exports: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}

@@ -1,6 +1,6 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document } from 'mongoose'
-import { AgentState, AgentStateList } from '~/core/agents/_enum/agent-state.enum'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+import { AgentState, AgentStateList } from '~/core/agents/_enum/agent-state.enum';
 
 /**
  * Schéma Mongoose pour la partie état des agents.
@@ -67,7 +67,7 @@ export class StatePart extends Document {
     enum: AgentStateList,
     default: AgentState.PENDING,
   })
-  public current: number
+  public current: number;
 
   /**
    * Date du dernier changement d'état.
@@ -81,7 +81,7 @@ export class StatePart extends Document {
     type: Date,
     default: new Date(),
   })
-  public lastChangedAt?: Date
+  public lastChangedAt?: Date;
 
   /**
    * Date de début de suspension.
@@ -92,7 +92,7 @@ export class StatePart extends Document {
    * @optional
    */
   @Prop({ type: Date })
-  public suspendedAt?: Date
+  public suspendedAt?: Date;
 
   /**
    * Date de fin de suspension.
@@ -104,7 +104,7 @@ export class StatePart extends Document {
    * @example ISODate("2025-12-31T23:59:59Z")
    */
   @Prop({ type: Date })
-  public suspendedUntil?: Date
+  public suspendedUntil?: Date;
 
   /**
    * Raison de la suspension.
@@ -115,10 +115,10 @@ export class StatePart extends Document {
    * @example "Violation de la politique de sécurité", "Inactivité prolongée"
    */
   @Prop({ type: String })
-  public suspendedReason?: string
+  public suspendedReason?: string;
 }
 
 /**
  * Factory pour créer le schéma Mongoose à partir de la classe StatePart.
  */
-export const StatePartSchema = SchemaFactory.createForClass(StatePart)
+export const StatePartSchema = SchemaFactory.createForClass(StatePart);

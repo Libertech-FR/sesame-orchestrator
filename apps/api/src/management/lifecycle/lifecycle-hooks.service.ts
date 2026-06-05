@@ -1,21 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
-import { Types } from 'mongoose'
-import { OnEvent } from '@nestjs/event-emitter'
-import { CronJob } from 'cron'
-import dayjs from 'dayjs'
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { isConsoleEntrypoint } from '~/_common/functions/is-cli'
-import { Identities } from '../identities/_schemas/identities.schema'
-import { AbstractLifecycleService } from './_abstracts/abstract.lifecycle.service'
-import { ConfigRulesObjectSchemaDTO } from './_dto/config-rules.dto'
-import { loadCustomStates } from './_functions/load-custom-states.function'
-import { loadLifecycleRules } from './_functions/load-lifecycle-rules.function'
-import { validateLifecycleCronRules } from './_functions/validate-lifecycle-cron-rules.function'
-import { resolveConfigVariables } from '~/_common/functions/resolve-config-variables.function'
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Types } from 'mongoose';
+import { OnEvent } from '@nestjs/event-emitter';
+import { CronJob } from 'cron';
+import dayjs from 'dayjs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { isConsoleEntrypoint } from '~/_common/functions/is-cli';
+import { Identities } from '../identities/_schemas/identities.schema';
+import { AbstractLifecycleService } from './_abstracts/abstract.lifecycle.service';
+import { ConfigRulesObjectSchemaDTO } from './_dto/config-rules.dto';
+import { loadCustomStates } from './_functions/load-custom-states.function';
+import { loadLifecycleRules } from './_functions/load-lifecycle-rules.function';
+import { validateLifecycleCronRules } from './_functions/validate-lifecycle-cron-rules.function';
+import { resolveConfigVariables } from '~/_common/functions/resolve-config-variables.function';
 
 @Injectable()
 export class LifecycleHooksService extends AbstractLifecycleService {
-  private _lastLifecycleCacheRefresh?: number
+  private _lastLifecycleCacheRefresh?: number;
 
   /**
    * Initialise le service lors du chargement du module
@@ -38,45 +38,45 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * // Crée configs/lifecycle/rules/*.yml depuis defaults/ si absent
    */
   public async onModuleInit(): Promise<void> {
-    let files = []
-    let filesRules = []
-    let defaultFiles = []
-    let defaultFilesRules = []
+    let files = [];
+    let filesRules = [];
+    let defaultFiles = [];
+    let defaultFilesRules = [];
 
-    this.logger.verbose('Initializing LifecycleService...')
+    this.logger.verbose('Initializing LifecycleService...');
 
     // Ensure config directories exist
-    const configDir = `${process.cwd()}/configs/lifecycle`
-    const configRulesDir = `${process.cwd()}/configs/lifecycle/rules`
+    const configDir = `${process.cwd()}/configs/lifecycle`;
+    const configRulesDir = `${process.cwd()}/configs/lifecycle/rules`;
 
     if (!existsSync(configDir)) {
-      this.logger.warn(`Creating missing directory: ${configDir}`)
-      mkdirSync(configDir, { recursive: true })
+      this.logger.warn(`Creating missing directory: ${configDir}`);
+      mkdirSync(configDir, { recursive: true });
     }
 
     if (!existsSync(configRulesDir)) {
-      this.logger.warn(`Creating missing directory: ${configRulesDir}`)
-      mkdirSync(configRulesDir, { recursive: true })
+      this.logger.warn(`Creating missing directory: ${configRulesDir}`);
+      mkdirSync(configRulesDir, { recursive: true });
     }
 
     try {
-      files = readdirSync(`${process.cwd()}/configs/lifecycle`)
-      defaultFiles = readdirSync(`${process.cwd()}/defaults/lifecycle`)
+      files = readdirSync(`${process.cwd()}/configs/lifecycle`);
+      defaultFiles = readdirSync(`${process.cwd()}/defaults/lifecycle`);
 
-      filesRules = readdirSync(`${process.cwd()}/configs/lifecycle/rules`)
-      defaultFilesRules = readdirSync(`${process.cwd()}/defaults/lifecycle/rules`)
+      filesRules = readdirSync(`${process.cwd()}/configs/lifecycle/rules`);
+      defaultFilesRules = readdirSync(`${process.cwd()}/defaults/lifecycle/rules`);
     } catch (error) {
-      this.logger.error('Error reading lifecycle validations files', error.message, error.stack)
+      this.logger.error('Error reading lifecycle validations files', error.message, error.stack);
     }
 
     for (const file of defaultFiles) {
       if (!files.includes(file)) {
         try {
-          const defaultFile = readFileSync(`${process.cwd()}/defaults/lifecycle/${file}`, 'utf-8')
-          writeFileSync(`${process.cwd()}/configs/lifecycle/${file}`, defaultFile)
-          this.logger.warn(`Copied default validation file: ${file}`)
+          const defaultFile = readFileSync(`${process.cwd()}/defaults/lifecycle/${file}`, 'utf-8');
+          writeFileSync(`${process.cwd()}/configs/lifecycle/${file}`, defaultFile);
+          this.logger.warn(`Copied default validation file: ${file}`);
         } catch (error) {
-          this.logger.error(`Error copying default validation file: ${file}`, error.message, error.stack)
+          this.logger.error(`Error copying default validation file: ${file}`, error.message, error.stack);
         }
       }
     }
@@ -85,17 +85,17 @@ export class LifecycleHooksService extends AbstractLifecycleService {
       for (const file of defaultFilesRules) {
         if (!files.includes(file)) {
           try {
-            const defaultFile = readFileSync(`${process.cwd()}/defaults/lifecycle/rules/${file}`, 'utf-8')
-            writeFileSync(`${process.cwd()}/configs/lifecycle/rules/${file}`, defaultFile)
-            this.logger.warn(`Copied default validation file: ${file}`)
+            const defaultFile = readFileSync(`${process.cwd()}/defaults/lifecycle/rules/${file}`, 'utf-8');
+            writeFileSync(`${process.cwd()}/configs/lifecycle/rules/${file}`, defaultFile);
+            this.logger.warn(`Copied default validation file: ${file}`);
           } catch (error) {
-            this.logger.error(`Error copying default validation file: ${file}`, error.message, error.stack)
+            this.logger.error(`Error copying default validation file: ${file}`, error.message, error.stack);
           }
         }
       }
     }
 
-    this.logger.log('LifecycleService (hooks) initialized')
+    this.logger.log('LifecycleService (hooks) initialized');
   }
 
   /**
@@ -121,39 +121,39 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * // Charge les règles depuis configs/lifecycle/rules
    */
   public async onApplicationBootstrap(): Promise<void> {
-    this.logger.verbose('Bootstrap LifecycleService application...')
+    this.logger.verbose('Bootstrap LifecycleService application...');
 
     // Initialisation / rafraîchissement du cache (règles, états, sources)
-    const lifecycleRules = await this.refreshLifecycleCache()
-    this._lastLifecycleCacheRefresh = Date.now()
+    const lifecycleRules = await this.refreshLifecycleCache();
+    this._lastLifecycleCacheRefresh = Date.now();
 
-    this.logger.debug('Lifecycle sources loaded:', JSON.stringify(this.lifecycleSources, null, 2))
+    this.logger.debug('Lifecycle sources loaded:', JSON.stringify(this.lifecycleSources, null, 2));
 
     if (isConsoleEntrypoint()) {
-      this.logger.debug('Skipping LifecycleService bootstrap in console mode.')
-      return
+      this.logger.debug('Skipping LifecycleService bootstrap in console mode.');
+      return;
     }
 
-    const cronExpression = this.configService.get<string>('lifecycle.triggerCronExpression') || '*/5 * * * *'
-    const job = new CronJob(cronExpression, this.handleCron.bind(this, { lifecycleRules }))
-    this.schedulerRegistry.addCronJob(`lifecycle-trigger`, job)
-    this.logger.warn(`Lifecycle trigger cron job scheduled with expression: <${cronExpression}>`)
+    const cronExpression = this.configService.get<string>('lifecycle.triggerCronExpression') || '*/5 * * * *';
+    const job = new CronJob(cronExpression, this.handleCron.bind(this, { lifecycleRules }));
+    this.schedulerRegistry.addCronJob(`lifecycle-trigger`, job);
+    this.logger.warn(`Lifecycle trigger cron job scheduled with expression: <${cronExpression}>`);
 
     job.addCallback(async (): Promise<void> => {
       // check cache yml files before logging
       await this.refreshLifecycleCache().catch((err) => {
-        this.logger.error('Error while refreshing lifecycle cache in cron callback', err?.message, err?.stack)
-      })
+        this.logger.error('Error while refreshing lifecycle cache in cron callback', err?.message, err?.stack);
+      });
 
-      const now = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
-      this.logger.debug(`Lifecycle trigger cron job executed at <${now}> !`)
+      const now = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss');
+      this.logger.debug(`Lifecycle trigger cron job executed at <${now}> !`);
 
-      const nextDate = dayjs(job.nextDate().toJSDate()).format('YYYY-MM-DD HH:mm:ss')
-      this.logger.verbose(`Next execution at <${nextDate}>`)
-    })
-    job.start()
+      const nextDate = dayjs(job.nextDate().toJSDate()).format('YYYY-MM-DD HH:mm:ss');
+      this.logger.verbose(`Next execution at <${nextDate}>`);
+    });
+    job.start();
 
-    this.logger.log('LifecycleService bootstraped')
+    this.logger.log('LifecycleService bootstraped');
   }
 
   /**
@@ -165,28 +165,28 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * @returns {Promise<ConfigRulesObjectSchemaDTO[]>} Les règles de cycle de vie chargées
    */
   private async refreshLifecycleCache(): Promise<ConfigRulesObjectSchemaDTO[]> {
-    const lifecycleRules = await loadLifecycleRules()
-    const { customStates, stateFileAge } = await loadCustomStates()
+    const lifecycleRules = await loadLifecycleRules();
+    const { customStates, stateFileAge } = await loadCustomStates();
 
     // Met à jour le cache interne
-    this.customStates = customStates
-    this._stateFileAge = stateFileAge
+    this.customStates = customStates;
+    this._stateFileAge = stateFileAge;
 
     // Reconstruit la table des sources -> règles
-    this.lifecycleSources = {}
+    this.lifecycleSources = {};
     for (const lfr of lifecycleRules) {
       for (const idRule of lfr.identities) {
         for (const source of idRule.sources) {
           if (!this.lifecycleSources[source]) {
-            this.lifecycleSources[source] = []
+            this.lifecycleSources[source] = [];
           }
-          this.lifecycleSources[source].push(idRule)
+          this.lifecycleSources[source].push(idRule);
         }
       }
     }
 
-    this.logger.debug('Lifecycle cache refreshed (sources, states, rules).')
-    return lifecycleRules
+    this.logger.debug('Lifecycle cache refreshed (sources, states, rules).');
+    return lifecycleRules;
   }
 
   /**
@@ -195,68 +195,70 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * @returns Les règles actuelles (rechargées si nécessaire)
    */
   public async ensureLifecycleCacheFresh(ttlMs: number = 60_000): Promise<ConfigRulesObjectSchemaDTO[]> {
-    const now = Date.now()
-    if (!this._lastLifecycleCacheRefresh || (now - this._lastLifecycleCacheRefresh) > ttlMs) {
-      const rules = await this.refreshLifecycleCache()
-      this._lastLifecycleCacheRefresh = now
-      this.logger.verbose(`Lifecycle hooks cache ensured (TTL=${ttlMs}ms).`)
-      return rules
+    const now = Date.now();
+    if (!this._lastLifecycleCacheRefresh || now - this._lastLifecycleCacheRefresh > ttlMs) {
+      const rules = await this.refreshLifecycleCache();
+      this._lastLifecycleCacheRefresh = now;
+      this.logger.verbose(`Lifecycle hooks cache ensured (TTL=${ttlMs}ms).`);
+      return rules;
     }
-    return await loadLifecycleRules() // return current rules from files without rebuilding sources
+    return await loadLifecycleRules(); // return current rules from files without rebuilding sources
   }
 
   public executeCronNow(): void {
-    const job = this.schedulerRegistry.getCronJob(`lifecycle-trigger`)
+    const job = this.schedulerRegistry.getCronJob(`lifecycle-trigger`);
     if (job) {
-      this.logger.log('Executing lifecycle trigger cron job immediately...')
-      job.fireOnTick()
+      this.logger.log('Executing lifecycle trigger cron job immediately...');
+      job.fireOnTick();
     } else {
-      this.logger.warn('No lifecycle trigger cron job found to execute.')
+      this.logger.warn('No lifecycle trigger cron job found to execute.');
     }
   }
 
   public async executeCronForSource(source: string): Promise<boolean> {
-    this.logger.log(`Executing lifecycle rules for source <${source}>...`)
+    this.logger.log(`Executing lifecycle rules for source <${source}>...`);
 
-    const lifecycleRules = await this.ensureLifecycleCacheFresh()
-    const ruleSet = lifecycleRules.find((rules) => rules.ruleFileBasename === source)
+    const lifecycleRules = await this.ensureLifecycleCacheFresh();
+    const ruleSet = lifecycleRules.find((rules) => rules.ruleFileBasename === source);
 
     if (!ruleSet) {
-      this.logger.warn(`Fichier de règles lifecycle introuvable pour <${source}> (configs/lifecycle/rules/${source}.yml).`)
-      return false
+      this.logger.warn(
+        `Fichier de règles lifecycle introuvable pour <${source}> (configs/lifecycle/rules/${source}.yml).`,
+      );
+      return false;
     }
 
-    const validation = validateLifecycleCronRules(source, ruleSet.identities)
+    const validation = validateLifecycleCronRules(source, ruleSet.identities);
     if (validation.executable) {
       await this.handleCron({
         lifecycleRules: [{ ...ruleSet, identities: validation.rules }],
         ignoreTrigger: true,
-      })
+      });
 
-      this.logger.log(`Execution of lifecycle rules for source <${source}> completed.`)
-      return true
+      this.logger.log(`Execution of lifecycle rules for source <${source}> completed.`);
+      return true;
     }
 
     for (const warning of validation.warnings) {
-      this.logger.warn(warning)
+      this.logger.warn(warning);
     }
-    return false
+    return false;
   }
 
   public async executeCronForAllSources(): Promise<void> {
-    this.logger.log(`Executing lifecycle rules for all sources...`)
+    this.logger.log(`Executing lifecycle rules for all sources...`);
 
-    const lifecycleRules = await this.ensureLifecycleCacheFresh()
+    const lifecycleRules = await this.ensureLifecycleCacheFresh();
 
     for (const lfr of lifecycleRules) {
       for (const idRule of lfr.identities) {
         if (idRule.trigger === -1) {
-          await this.handleCron({ lifecycleRules: [lfr], ignoreTrigger: true })
+          await this.handleCron({ lifecycleRules: [lfr], ignoreTrigger: true });
         }
       }
     }
 
-    this.logger.log(`Execution of lifecycle rules for all sources completed.`)
+    this.logger.log(`Execution of lifecycle rules for all sources completed.`);
   }
 
   /**
@@ -283,22 +285,26 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * // Trouve les identités OFFICIAL depuis > 90 jours
    * // Les transition vers MANUAL
    */
-  private async handleCron(
-    { lifecycleRules, ignoreTrigger = false }: { lifecycleRules: ConfigRulesObjectSchemaDTO[], ignoreTrigger: boolean },
-  ): Promise<void> {
-    this.logger.debug(`Running lifecycle trigger cron job...`)
+  private async handleCron({
+    lifecycleRules,
+    ignoreTrigger = false,
+  }: {
+    lifecycleRules: ConfigRulesObjectSchemaDTO[];
+    ignoreTrigger: boolean;
+  }): Promise<void> {
+    this.logger.debug(`Running lifecycle trigger cron job...`);
 
     for (const lfr of lifecycleRules) {
       for (const idRule of lfr.identities) {
         if (typeof idRule.trigger === 'number' && (idRule.trigger > 0 || ignoreTrigger)) {
-          const dateKey = idRule.dateKey || 'lastSync'
-          const resolvedRules = await resolveConfigVariables(idRule.rules ?? {})
-          const resolvedMutation = await resolveConfigVariables(idRule.mutation ?? {})
+          const dateKey = idRule.dateKey || 'lastSync';
+          const resolvedRules = await resolveConfigVariables(idRule.rules ?? {});
+          const resolvedMutation = await resolveConfigVariables(idRule.mutation ?? {});
 
           try {
-            const checkDate = new Date(Date.now() - (idRule.trigger * 1000))
-            const filterDate = {}
-            filterDate[dateKey] = { $lte: checkDate }
+            const checkDate = new Date(Date.now() - idRule.trigger * 1000);
+            const filterDate = {};
+            filterDate[dateKey] = { $lte: checkDate };
 
             const req = {
               ...resolvedRules,
@@ -311,11 +317,13 @@ export class LifecycleHooksService extends AbstractLifecycleService {
               // [dateKey]: {
               //   $lte: new Date(Date.now() - (idRule.trigger * 1000)),
               // },
-            }
-            const identities = await this.identitiesService.model.find(req)
-            this.logger.log(`Found ${identities.length} identities to process for trigger in source <${idRule.sources}>`)
-            this.logger.verbose(`identities process triggered`, JSON.stringify(idRule, null, 2))
-            this.logger.verbose(`identities process request`, JSON.stringify(req, null, 2))
+            };
+            const identities = await this.identitiesService.model.find(req);
+            this.logger.log(
+              `Found ${identities.length} identities to process for trigger in source <${idRule.sources}>`,
+            );
+            this.logger.verbose(`identities process triggered`, JSON.stringify(idRule, null, 2));
+            this.logger.verbose(`identities process request`, JSON.stringify(req, null, 2));
 
             for (const identity of identities) {
               const updated = await this.identitiesService.model.findOneAndUpdate(
@@ -328,27 +336,32 @@ export class LifecycleHooksService extends AbstractLifecycleService {
                   },
                 },
                 { new: true },
-              )
+              );
 
               if (updated) {
                 await this.create({
                   refId: identity._id,
                   lifecycle: idRule.target,
                   date: new Date(),
-                })
+                });
 
-                this.logger.log(`Identity <${identity._id}> updated to lifecycle <${idRule.target}> by trigger from source <${idRule.sources}>`)
+                this.logger.log(
+                  `Identity <${identity._id}> updated to lifecycle <${idRule.target}> by trigger from source <${idRule.sources}>`,
+                );
               }
             }
-
           } catch (error) {
-            this.logger.error(`Error in lifecycle trigger job for source <${idRule.sources}>:`, error.message, error.stack)
+            this.logger.error(
+              `Error in lifecycle trigger job for source <${idRule.sources}>:`,
+              error.message,
+              error.stack,
+            );
           }
         }
       }
     }
 
-    this.logger.log(`Lifecycle trigger cron job completed.`)
+    this.logger.log(`Lifecycle trigger cron job completed.`);
   }
 
   /**
@@ -374,15 +387,15 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * // await identitiesService.update(id, { lifecycle: 'MANUAL' })
    */
   @OnEvent('management.identities.service.afterUpdate')
-  public async handle(event: { updated: Identities, before?: Identities }): Promise<void> {
-    this.logger.verbose(`Handling identity update event for identity <${event.updated._id}>`)
+  public async handle(event: { updated: Identities; before?: Identities }): Promise<void> {
+    this.logger.verbose(`Handling identity update event for identity <${event.updated._id}>`);
 
     if (!event.updated || !event.updated._id) {
-      this.logger.warn('No valid identity found in event data')
-      return
+      this.logger.warn('No valid identity found in event data');
+      return;
     }
 
-    await this.fireLifecycleEvent(event.before, event.updated)
+    await this.fireLifecycleEvent(event.before, event.updated);
   }
 
   /**
@@ -407,15 +420,15 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * // await identitiesService.upsert(filter, data)
    */
   @OnEvent('management.identities.service.afterUpsert')
-  public async handleOrderCreatedEvent(event: { result: Identities, before?: Identities }): Promise<void> {
-    this.logger.verbose(`Handling identity upsert event for identity <${event.result._id}>`)
+  public async handleOrderCreatedEvent(event: { result: Identities; before?: Identities }): Promise<void> {
+    this.logger.verbose(`Handling identity upsert event for identity <${event.result._id}>`);
 
     if (!event.result || !event.result._id) {
-      this.logger.warn('No valid identity found in event data')
-      return
+      this.logger.warn('No valid identity found in event data');
+      return;
     }
 
-    await this.fireLifecycleEvent(event.before, event.result)
+    await this.fireLifecycleEvent(event.before, event.result);
   }
 
   /**
@@ -454,19 +467,19 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * Utile pour rejouer les scripts backend lorsque la configuration a évolué après le dernier passage.
    */
   public async forceLifecycleEvent(identityId: Types.ObjectId): Promise<void> {
-    const identity = await this.identitiesService.findById<Identities>(identityId)
+    const identity = await this.identitiesService.findById<Identities>(identityId);
     if (!identity) {
-      throw new NotFoundException('Identity not found')
+      throw new NotFoundException('Identity not found');
     }
 
-    await this.fireLifecycleEvent(identity, identity, { force: true })
+    await this.fireLifecycleEvent(identity, identity, { force: true });
   }
 
   private isOperationalStateOnlyChange(before: Identities | undefined, after: Identities): boolean {
     if (!before) {
-      return false
+      return false;
     }
-    return before.lifecycle === after.lifecycle && before.state !== after.state
+    return before.lifecycle === after.lifecycle && before.state !== after.state;
   }
 
   private async fireLifecycleEvent(
@@ -474,13 +487,13 @@ export class LifecycleHooksService extends AbstractLifecycleService {
     after: Identities,
     options?: { force?: boolean },
   ): Promise<void> {
-    const lifecycleChanged = options?.force || (!!before && before.lifecycle !== after.lifecycle)
+    const lifecycleChanged = options?.force || (!!before && before.lifecycle !== after.lifecycle);
 
     if (!options?.force && this.isOperationalStateOnlyChange(before, after)) {
       this.logger.debug(
         `Identity <${after._id}> operational state changed (${before.state} -> ${after.state}), skipping lifecycle backend jobs`,
-      )
-      return
+      );
+      return;
     }
 
     if (lifecycleChanged) {
@@ -488,22 +501,24 @@ export class LifecycleHooksService extends AbstractLifecycleService {
         refId: after._id,
         lifecycle: after.lifecycle,
         date: new Date(),
-      })
-      this.logger.debug(`Lifecycle event manualy recorded for identity <${after._id}>: ${after.lifecycle}`)
+      });
+      this.logger.debug(`Lifecycle event manualy recorded for identity <${after._id}>: ${after.lifecycle}`);
       // If the lifecycle has changed, we need to process the new lifecycle
     }
 
     if (this.lifecycleSources[after.lifecycle]) {
-      this.logger.debug(`Processing lifecycle sources for identity <${after._id}> with lifecycle <${after.lifecycle}>`)
+      this.logger.debug(`Processing lifecycle sources for identity <${after._id}> with lifecycle <${after.lifecycle}>`);
 
       for (const lcs of this.lifecycleSources[after.lifecycle]) {
-        this.logger.verbose(`Processing lifecycle source <${after.lifecycle}> with rules: ${JSON.stringify(lcs.rules)}`)
-        const resolvedRules = await resolveConfigVariables(lcs.rules ?? {})
-        const resolvedMutation = await resolveConfigVariables(lcs.mutation ?? {})
+        this.logger.verbose(
+          `Processing lifecycle source <${after.lifecycle}> with rules: ${JSON.stringify(lcs.rules)}`,
+        );
+        const resolvedRules = await resolveConfigVariables(lcs.rules ?? {});
+        const resolvedMutation = await resolveConfigVariables(lcs.mutation ?? {});
 
         if (lcs.trigger) {
-          this.logger.debug(`Skipping lifecycle source <${after.lifecycle}> with trigger: ${lcs.trigger}`)
-          continue // Skip processing if it's a trigger-based rule
+          this.logger.debug(`Skipping lifecycle source <${after.lifecycle}> with trigger: ${lcs.trigger}`);
+          continue; // Skip processing if it's a trigger-based rule
         }
 
         const res = await this.identitiesService.model.findOneAndUpdate(
@@ -522,31 +537,33 @@ export class LifecycleHooksService extends AbstractLifecycleService {
           {
             new: true, // Return the updated document
             upsert: false, // Do not create a new document if no match is found
-          }
-        )
+          },
+        );
 
         if (!res) {
-          this.logger.debug(`No identity found matching rules for lifecycle <${after.lifecycle}>`)
-          continue
+          this.logger.debug(`No identity found matching rules for lifecycle <${after.lifecycle}>`);
+          continue;
         }
 
         await this.create({
           refId: after._id,
           lifecycle: lcs.target,
           date: new Date(),
-        })
+        });
 
-        const identities = res._id ? [{ id: res._id.toString(), before: after, after: res }] : []
-        await this.backendsService.lifecycleChangedIdentities(identities)
+        const identities = res._id ? [{ id: res._id.toString(), before: after, after: res }] : [];
+        await this.backendsService.lifecycleChangedIdentities(identities);
 
-        this.logger.log(`Identity <${res._id}> updated to lifecycle <${lcs.target}> based on rules from source <${after.lifecycle}>`)
-        return
+        this.logger.log(
+          `Identity <${res._id}> updated to lifecycle <${lcs.target}> based on rules from source <${after.lifecycle}>`,
+        );
+        return;
       }
     }
 
     if (lifecycleChanged) {
-      const identities = after._id ? [{ id: after._id.toString(), before, after }] : []
-      await this.backendsService.lifecycleChangedIdentities(identities)
+      const identities = after._id ? [{ id: after._id.toString(), before, after }] : [];
+      await this.backendsService.lifecycleChangedIdentities(identities);
     }
   }
 }

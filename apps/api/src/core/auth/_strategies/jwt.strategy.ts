@@ -33,7 +33,9 @@ function resolveAllowedNetworksFromVerifiedIdentity(verified: unknown): string[]
   const fromSecurity = Array.isArray(v?.security?.allowedNetworks) ? (v.security.allowedNetworks as string[]) : null;
   if (fromSecurity && fromSecurity.length > 0) return fromSecurity;
 
-  const fromIdentitySecurity = Array.isArray(v?.identity?.security?.allowedNetworks) ? (v.identity.security.allowedNetworks as string[]) : null;
+  const fromIdentitySecurity = Array.isArray(v?.identity?.security?.allowedNetworks)
+    ? (v.identity.security.allowedNetworks as string[])
+    : null;
   if (fromIdentitySecurity && fromIdentitySecurity.length > 0) return fromIdentitySecurity;
 
   return null;

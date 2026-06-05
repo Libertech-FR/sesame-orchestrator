@@ -1,4 +1,4 @@
-import { Injectable, OnApplicationShutdown } from "@nestjs/common";
+import { Injectable, OnApplicationShutdown } from '@nestjs/common';
 import * as http from 'http';
 
 @Injectable()

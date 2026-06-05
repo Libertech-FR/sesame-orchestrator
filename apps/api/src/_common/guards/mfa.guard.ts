@@ -17,7 +17,9 @@ export class MfaGuard implements CanActivate {
     ]);
     if (!requiresMfa) return true;
 
-    const request = context.switchToHttp().getRequest<{ user?: { mfaVerified?: boolean; mfaVerifiedAt?: number | null } }>();
+    const request = context
+      .switchToHttp()
+      .getRequest<{ user?: { mfaVerified?: boolean; mfaVerifiedAt?: number | null } }>();
     if (!request?.user?.mfaVerified) throw new ForbiddenException('MFA required');
 
     const maxAgeSeconds = this.config.get<number>('application.mfaStepUpMaxAgeSeconds');

@@ -1,6 +1,16 @@
 import { AbstractIdentitiesService } from '~/management/identities/abstract-identities.service';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
-import { Document, FilterQuery, ModifyResult, MongooseBaseQueryOptions, Query, QueryOptions, SaveOptions, Types, UpdateQuery } from 'mongoose';
+import {
+  Document,
+  FilterQuery,
+  ModifyResult,
+  MongooseBaseQueryOptions,
+  Query,
+  QueryOptions,
+  SaveOptions,
+  Types,
+  UpdateQuery,
+} from 'mongoose';
 import { ValidationConfigException, ValidationSchemaException } from '~/_common/errors/ValidationException';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
@@ -22,12 +32,12 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
       this.logger.log(`${logPrefix} Starting additionalFields transformation.`);
       if (data.hasOwnProperty('metadata')) {
         //suppresion de la clé metadata
-        delete (data.metadata);
+        delete data.metadata;
       }
 
       await this._validation.transform(data.additionalFields || {});
 
-      let validationsAdFields = await this._validation.validate(data.additionalFields || {});
+      const validationsAdFields = await this._validation.validate(data.additionalFields || {});
 
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
       this.logger.log(`Validations Additional fields: ${validationsAdFields}`);
@@ -48,18 +58,18 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     }
 
     await this.checkInetOrgPersonJpegPhoto(data);
-    if (await this.checkMailAndUid(data) === false) {
+    if ((await this.checkMailAndUid(data)) === false) {
       this.logger.error('Uid ou mail déjà présent dans une autre identité');
-      throw new HttpException("Uid ou mail déjà présent dans une autre identité", 400);
+      throw new HttpException('Uid ou mail déjà présent dans une autre identité', 400);
     }
     this.logger.log(`${logPrefix} Starting inetOrgPerson validation.`);
     const check = {
       objectClasses: ['inetOrgPerson'],
-      attributes: { 'inetOrgPerson': data.inetOrgPerson }
-    }
+      attributes: { inetOrgPerson: data.inetOrgPerson },
+    };
     //pour la validation le employeeNumber doit exister on en met un avec une valeur par defaut
-    check.attributes.inetOrgPerson.employeeNumber = ["1"];
-    let validations = await this._validation.validate(check);
+    check.attributes.inetOrgPerson.employeeNumber = ['1'];
+    const validations = await this._validation.validate(check);
     const created: Document<T, any, T> = await super.create(data, options);
     return created;
   }
@@ -78,7 +88,7 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
       this.logger.log(`${logPrefix} Starting additionalFields transformation.`);
       if (update.hasOwnProperty('metadata')) {
         //suppresion de la clé metadata
-        delete (update.metadata);
+        delete update.metadata;
       }
 
       await this._validation.transform(update.additionalFields);
@@ -86,10 +96,10 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
       this.logger.log(`${logPrefix} Starting inetOrgPerson validation.`);
       const check = {
         objectClasses: ['inetOrgPerson'],
-        attributes: { 'inetOrgPerson': update.inetOrgPerson }
-      }
-      let validationsInetOrg = await this._validation.validate(check);
-      let validationsAdFields = await this._validation.validate(update.additionalFields);
+        attributes: { inetOrgPerson: update.inetOrgPerson },
+      };
+      const validationsInetOrg = await this._validation.validate(check);
+      const validationsAdFields = await this._validation.validate(update.additionalFields);
 
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
       this.logger.log(`Validations InetOrgPerson: ${validationsInetOrg}`);
@@ -110,9 +120,9 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
       }
     }
     // check mail and Uid
-    if (await this.checkMailAndUid(update) === false) {
+    if ((await this.checkMailAndUid(update)) === false) {
       this.logger.error('Uid ou mail déjà présent dans une autre identité');
-      throw new HttpException("Uid ou mail déjà présent dans une autre identité", 400);
+      throw new HttpException('Uid ou mail déjà présent dans une autre identité', 400);
     }
     // if (update.state === IdentityState.TO_COMPLETE) {
     update = { ...update, state: IdentityState.TO_VALIDATE };
@@ -134,10 +144,14 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     lifecycle: IdentityLifecycleDefault | string,
     options?: QueryOptions<T> & { rawResult: true },
   ): Promise<ModifyResult<Query<T, T, any, T>>> {
-    const updated = await super.update(_id, {
-      lifecycle,
-      lastLifecycleUpdate: new Date(),
-    }, options);
+    const updated = await super.update(
+      _id,
+      {
+        lifecycle,
+        lastLifecycleUpdate: new Date(),
+      },
+      options,
+    );
     return updated;
   }
 
@@ -158,7 +172,10 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     const identities = await this._model.find({ _id: { $in: body.ids } }).exec();
     if (identities.some((identity) => identity.state !== body.originState)) {
       // throw new HttpException("Toutes les identités ne sont pas dans l'état attendu.", 400);
-      this.logger.warn("Toutes les identités ne sont pas dans l'état attendu." + JSON.stringify(identities.map(i => ({ id: i._id, state: i.state }))));
+      this.logger.warn(
+        "Toutes les identités ne sont pas dans l'état attendu." +
+          JSON.stringify(identities.map((i) => ({ id: i._id, state: i.state }))),
+      );
     }
 
     if (identities.length === 0) {
@@ -183,20 +200,30 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     return deleted;
   }
 
-  public async countAll<T extends AbstractSchema | Document>(filters: {
-    [key: string]: FilterQuery<T>;
-  }, options?: (CountOptions & MongooseBaseQueryOptions<T>) | null) {
+  public async countAll<T extends AbstractSchema | Document>(
+    filters: {
+      [key: string]: FilterQuery<T>;
+    },
+    options?: (CountOptions & MongooseBaseQueryOptions<T>) | null,
+  ) {
     if (Object.keys(filters).length >= COUNT_ALL_MAX_ITERATIONS) {
       throw new BadRequestException(`Too many filters (max: ${COUNT_ALL_MAX_ITERATIONS})`);
     }
 
     const entries = Object.entries(filters);
-    const results = await Promise.all(entries.map(([key, filter]) =>
-      this._model.countDocuments({
-        ...filter,
-        deletedFlag: { $ne: true },
-      }, options as any).then(count => [key, count])
-    ));
+    const results = await Promise.all(
+      entries.map(([key, filter]) =>
+        this._model
+          .countDocuments(
+            {
+              ...filter,
+              deletedFlag: { $ne: true },
+            },
+            options as any,
+          )
+          .then((count) => [key, count]),
+      ),
+    );
 
     return Object.fromEntries(results);
   }

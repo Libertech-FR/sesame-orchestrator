@@ -1,12 +1,12 @@
-import { Controller, Get, HttpStatus, Param, Res } from '@nestjs/common'
-import { ApiParam, ApiTags } from '@nestjs/swagger'
-import { Response } from 'express'
-import { Types } from 'mongoose'
-import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
-import { UseRoles } from '~/_common/decorators/use-roles.decorator'
-import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types'
-import { PasswordHistoryService } from './password-history.service'
-import { PasswdadmService } from '~/settings/passwdadm.service'
+import { Controller, Get, HttpStatus, Param, Res } from '@nestjs/common';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
+import { Types } from 'mongoose';
+import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
+import { UseRoles } from '~/_common/decorators/use-roles.decorator';
+import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
+import { PasswordHistoryService } from './password-history.service';
+import { PasswdadmService } from '~/settings/passwdadm.service';
 
 @ApiTags('management/password-history')
 @Controller('password-history')
@@ -27,17 +27,17 @@ export class PasswordHistoryController {
     @Param('identityId', ObjectIdValidationPipe) identityId: Types.ObjectId,
     @Res() res: Response,
   ): Promise<Response> {
-    const policies: any = await this.passwdadmService.getPolicies()
+    const policies: any = await this.passwdadmService.getPolicies();
     if (!policies?.passwordHistoryEnabled) {
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
         data: [],
         message: 'Historique des mots de passe désactivé par la politique',
-      })
+      });
     }
 
-    const historyCount = Number(policies?.passwordHistoryCount || 0)
-    const limit = Number.isFinite(historyCount) && historyCount > 0 ? historyCount : 0
+    const historyCount = Number(policies?.passwordHistoryCount || 0);
+    const limit = Number.isFinite(historyCount) && historyCount > 0 ? historyCount : 0;
 
     const rows = limit
       ? await this.passwordHistoryService.model
@@ -54,19 +54,18 @@ export class PasswordHistoryController {
             hibpSha1Enc: 1,
           })
           .lean()
-      : []
+      : [];
 
     const safeRows = (rows || []).map((row: any) => {
-      const hasHibpFingerprint = !!row?.hibpSha1Enc
-      const { hibpSha1Enc: _hibpSha1Enc, ...rest } = row || {}
-      return { ...rest, hasHibpFingerprint }
-    })
+      const hasHibpFingerprint = !!row?.hibpSha1Enc;
+      const { hibpSha1Enc: _hibpSha1Enc, ...rest } = row || {};
+      return { ...rest, hasHibpFingerprint };
+    });
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: safeRows,
       total: safeRows.length,
-    })
+    });
   }
 }
-

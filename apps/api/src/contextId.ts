@@ -1,6 +1,6 @@
-import { INestApplicationContext } from '@nestjs/common'
-import { ModuleRef } from '@nestjs/core/injector/module-ref'
-import { ContextIdFactory } from '@nestjs/core'
+import { INestApplicationContext } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core/injector/module-ref';
+import { ContextIdFactory } from '@nestjs/core';
 
 /**
  * Crée un contexte de requête avec un ID utilisateur par défaut
@@ -26,7 +26,7 @@ import { ContextIdFactory } from '@nestjs/core'
  * });
  */
 export const seedRequestContextId = <T extends { user?: any }>(app: INestApplicationContext | ModuleRef, req?: T) => {
-  const contextId = ContextIdFactory.create()
+  const contextId = ContextIdFactory.create();
   app.registerRequestByContextId(
     {
       ...req,
@@ -37,5 +37,5 @@ export const seedRequestContextId = <T extends { user?: any }>(app: INestApplica
     },
     contextId,
   );
-  return contextId
-}
+  return contextId;
+};

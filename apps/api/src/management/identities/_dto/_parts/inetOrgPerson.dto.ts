@@ -25,7 +25,7 @@ export class inetOrgPersonCreateDto {
         userCertificate: partial.userCertificate || null,
         jpegPhoto: partial.jpegPhoto || null,
 
-        ...partial
+        ...partial,
       });
     } catch (error) {
       console.error('inetOrgPersonCreateDto.initForFingerprint', error);
@@ -86,7 +86,7 @@ export class inetOrgPersonCreateDto {
   @IsOptional()
   public labeledURI?: string;
 
-  @ValidateIf(o => {
+  @ValidateIf((o) => {
     return o.mail && o.mail.length > 0;
   })
   @IsEmail()
@@ -141,6 +141,6 @@ export class inetOrgPersonCreateDto {
   // public photo?: string;
 }
 
-export class inetOrgPersonDto extends inetOrgPersonCreateDto { }
+export class inetOrgPersonDto extends inetOrgPersonCreateDto {}
 
-export class inetOrgPersonUpdateDto extends PartialType(inetOrgPersonCreateDto) { }
+export class inetOrgPersonUpdateDto extends PartialType(inetOrgPersonCreateDto) {}

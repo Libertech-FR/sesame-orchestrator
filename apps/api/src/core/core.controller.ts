@@ -1,6 +1,6 @@
-import { Controller } from '@nestjs/common'
-import { CoreService } from './core.service'
-import { ApiTags } from '@nestjs/swagger'
+import { Controller } from '@nestjs/common';
+import { CoreService } from './core.service';
+import { ApiTags } from '@nestjs/swagger';
 
 /**
  * Contrôleur principal du module Core.
@@ -29,8 +29,8 @@ import { ApiTags } from '@nestjs/swagger'
 export class CoreController {
   /**
    * Constructeur du contrôleur CoreController.
-   * 
+   *
    * @param {CoreService} _service - Le service Core pour la logique métier
    */
-  public constructor(private readonly _service: CoreService) { }
+  public constructor(private readonly _service: CoreService) {}
 }

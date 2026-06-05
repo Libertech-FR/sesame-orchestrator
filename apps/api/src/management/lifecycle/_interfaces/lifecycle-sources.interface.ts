@@ -1,4 +1,4 @@
-import { ConfigRulesObjectIdentitiesDTO } from '../_dto/config-rules.dto'
+import { ConfigRulesObjectIdentitiesDTO } from '../_dto/config-rules.dto';
 
 /**
  * Interface représentant les sources de cycle de vie et leurs règles associées
@@ -14,5 +14,5 @@ import { ConfigRulesObjectIdentitiesDTO } from '../_dto/config-rules.dto'
  * }
  */
 export interface LifecycleSource {
-  [source: string]: Partial<ConfigRulesObjectIdentitiesDTO>[]
+  [source: string]: Partial<ConfigRulesObjectIdentitiesDTO>[];
 }

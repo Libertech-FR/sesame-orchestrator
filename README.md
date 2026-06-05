@@ -6,7 +6,6 @@
   <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/libertech-fr/sesame-orchestrator/total">
   <img alt="GitHub" src="https://img.shields.io/github/license/libertech-fr/sesame-orchestrator">
   <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/libertech-fr/sesame-orchestrator">
-  <a href="https://github.com/Libertech-Fr/sesame-orchestrator/actions/workflows/release.yml?event=workflow_dispatch"><img alt="GitHub contributors" src="https://github.com/Libertech-Fr/sesame-orchestrator/actions/workflows/release.yml/badge.svg"></a>
 </p>
 <br>
 

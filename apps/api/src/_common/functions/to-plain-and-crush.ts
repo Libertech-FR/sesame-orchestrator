@@ -1,5 +1,5 @@
-import { objectify, isObject, isArray, get } from 'radash'
-import { ClassTransformOptions, instanceToPlain } from 'class-transformer'
+import { objectify, isObject, isArray, get } from 'radash';
+import { ClassTransformOptions, instanceToPlain } from 'class-transformer';
 
 /**
  * Extrait récursivement tous les chemins de propriétés d'un objet sous forme de notation à points.
@@ -57,26 +57,26 @@ import { ClassTransformOptions, instanceToPlain } from 'class-transformer'
  * ```
  */
 export const keys = <TValue extends object>(value: TValue): string[] => {
-  if (!value) return []
+  if (!value) return [];
 
   const getKeys = (nested: any, paths: string[]): string[] => {
     if (isObject(nested)) {
-      return Object.entries(nested).flatMap(([k, v]) => getKeys(v, [...paths, k]))
+      return Object.entries(nested).flatMap(([k, v]) => getKeys(v, [...paths, k]));
     }
 
     if (isArray(nested)) {
       if (nested.length > 0 && ['string', 'number', 'boolean'].includes(typeof nested[0])) {
-        return nested.flatMap((item) => getKeys(item, paths))
+        return nested.flatMap((item) => getKeys(item, paths));
       }
 
-      return nested.flatMap((item, i) => getKeys(item, [...paths, `${i}`]))
+      return nested.flatMap((item, i) => getKeys(item, [...paths, `${i}`]));
     }
 
-    return [paths.join('.')]
-  }
+    return [paths.join('.')];
+  };
 
-  return getKeys(value, [])
-}
+  return getKeys(value, []);
+};
 
 /**
  * Convertit un objet ou une instance de classe en objet plat avec notation pointée.
@@ -140,5 +140,5 @@ export const toPlainAndCrush = <TValue extends object>(value: TValue, options?: 
     keys(instanceToPlain(value, options)),
     (k) => k,
     (k) => get(value, k),
-  )
-}
+  );
+};

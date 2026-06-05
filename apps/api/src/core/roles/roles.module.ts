@@ -1,10 +1,10 @@
-import { Module } from '@nestjs/common'
-import { DiscoveryModule } from '@nestjs/core'
-import { MongooseModule } from '@nestjs/mongoose'
-import { Roles, RolesSchema } from './_schemas/roles.schema'
-import { RolesService } from './roles.service'
-import { RolesController } from './roles.controller'
-import { AclRuntimeService } from './acl-runtime.service'
+import { Module } from '@nestjs/common';
+import { DiscoveryModule } from '@nestjs/core';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Roles, RolesSchema } from './_schemas/roles.schema';
+import { RolesService } from './roles.service';
+import { RolesController } from './roles.controller';
+import { AclRuntimeService } from './acl-runtime.service';
 
 @Module({
   imports: [
@@ -20,4 +20,4 @@ import { AclRuntimeService } from './acl-runtime.service'
   controllers: [RolesController],
   exports: [RolesService, AclRuntimeService],
 })
-export class RolesModule { }
+export class RolesModule {}

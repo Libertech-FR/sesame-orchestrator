@@ -1,4 +1,4 @@
-import { ValidationError } from 'class-validator'
+import { ValidationError } from 'class-validator';
 
 /**
  * Formate les erreurs de validation pour une meilleure lisibilité
@@ -25,29 +25,36 @@ import { ValidationError } from 'class-validator'
  * // • Property 'identities[0].trigger': must be a number (constraint: isNumber)
  * // • Property 'identities[1].sources': should not be empty (constraint: isNotEmpty)
  */
-export function formatValidationErrors(errors: ValidationError[], file: string, basePath: string = '', isInArrayContext: boolean = false): string {
+export function formatValidationErrors(
+  errors: ValidationError[],
+  file: string,
+  basePath: string = '',
+  isInArrayContext: boolean = false,
+): string {
   const formatError = (error: ValidationError, currentPath: string, inArrayContext: boolean): string[] => {
-    let propertyPath = currentPath
+    let propertyPath = currentPath;
 
     /**
      * Check if error.property is defined, not null, not empty, and not the string 'undefined'.
      * If it is, we construct the property path based on whether we are in an array context or not.
      * If it is an array context, we use the index notation; otherwise, we use dot notation.
      */
-    if (error.property !== undefined &&
+    if (
+      error.property !== undefined &&
       error.property !== null &&
       error.property !== '' &&
-      error.property !== 'undefined') {
+      error.property !== 'undefined'
+    ) {
       if (inArrayContext && !isNaN(Number(error.property))) {
         // C'est un index d'array
-        propertyPath = currentPath ? `${currentPath}[${error.property}]` : `[${error.property}]`
+        propertyPath = currentPath ? `${currentPath}[${error.property}]` : `[${error.property}]`;
       } else {
         // C'est une propriété normale
-        propertyPath = currentPath ? `${currentPath}.${error.property}` : error.property
+        propertyPath = currentPath ? `${currentPath}.${error.property}` : error.property;
       }
     }
 
-    const errorMessages: string[] = []
+    const errorMessages: string[] = [];
 
     /**
      * Check if error.constraints is defined and not empty.
@@ -55,8 +62,8 @@ export function formatValidationErrors(errors: ValidationError[], file: string, 
      */
     if (error.constraints) {
       Object.entries(error.constraints).forEach(([constraintKey, message]) => {
-        errorMessages.push(`Property '${propertyPath}': ${message} (constraint: ${constraintKey})`)
-      })
+        errorMessages.push(`Property '${propertyPath}': ${message} (constraint: ${constraintKey})`);
+      });
     }
 
     /**
@@ -64,19 +71,19 @@ export function formatValidationErrors(errors: ValidationError[], file: string, 
      * We check if the error has children and if they are defined.
      */
     if (error.children && error.children.length > 0) {
-      const isNextLevelArray = Array.isArray(error.value)
-      error.children.forEach(childError => {
-        errorMessages.push(...formatError(childError, propertyPath, isNextLevelArray))
-      })
+      const isNextLevelArray = Array.isArray(error.value);
+      error.children.forEach((childError) => {
+        errorMessages.push(...formatError(childError, propertyPath, isNextLevelArray));
+      });
     }
 
-    return errorMessages
-  }
+    return errorMessages;
+  };
 
-  const allErrorMessages: string[] = []
-  errors.forEach(error => {
-    allErrorMessages.push(...formatError(error, basePath, isInArrayContext))
-  })
+  const allErrorMessages: string[] = [];
+  errors.forEach((error) => {
+    allErrorMessages.push(...formatError(error, basePath, isInArrayContext));
+  });
 
-  return allErrorMessages.map(msg => `• ${msg}`).join('\n')
+  return allErrorMessages.map((msg) => `• ${msg}`).join('\n');
 }

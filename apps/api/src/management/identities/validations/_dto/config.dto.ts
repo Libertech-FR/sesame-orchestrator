@@ -1,4 +1,4 @@
-import {IsString, ArrayNotEmpty, ValidateNested, IsEnum, IsBoolean, IsOptional} from 'class-validator';
+import { IsString, ArrayNotEmpty, ValidateNested, IsEnum, IsBoolean, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ConfigObjectType } from '../_enums/config.object';
 

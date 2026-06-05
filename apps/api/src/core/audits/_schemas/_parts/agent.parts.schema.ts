@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document, Types } from 'mongoose'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Types } from 'mongoose';
 
 /**
  * Schéma Mongoose pour la partie Agent des audits.
@@ -39,7 +39,7 @@ export class AgentPart extends Document {
    * @example "agents", "users", "system"
    */
   @Prop({ type: String, required: true })
-  public $ref: string
+  public $ref: string;
 
   /**
    * Identifiant unique de l'agent dans sa collection.
@@ -47,7 +47,7 @@ export class AgentPart extends Document {
    * @type {Types.ObjectId}
    */
   @Prop({ type: Types.ObjectId, required: true })
-  public id: Types.ObjectId
+  public id: Types.ObjectId;
 
   /**
    * Nom ou identifiant lisible de l'agent.
@@ -57,10 +57,10 @@ export class AgentPart extends Document {
    * @optional
    */
   @Prop({ type: String })
-  public name?: string
+  public name?: string;
 }
 
 /**
  * Factory pour créer le schéma Mongoose à partir de la classe AgentPart.
  */
-export const AgentPartSchema = SchemaFactory.createForClass(AgentPart)
+export const AgentPartSchema = SchemaFactory.createForClass(AgentPart);

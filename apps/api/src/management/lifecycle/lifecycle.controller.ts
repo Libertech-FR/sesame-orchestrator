@@ -1,26 +1,16 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Param,
-  Post,
-  Query,
-  Req,
-  Res,
-  UseInterceptors,
-} from '@nestjs/common'
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
-import { FilterOptions, SearchFilterOptions } from '~/_common/restools'
-import { Request, Response } from 'express'
-import { Types } from 'mongoose'
-import { AbstractController } from '~/_common/abstracts/abstract.controller'
-import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe'
-import { Lifecycle } from './_schemas/lifecycle.schema'
-import { LifecycleCrudService } from './lifecycle-crud.service'
-import { LifecycleHooksService } from './lifecycle-hooks.service'
-import { LifecycleCacheInterceptor } from './_interceptors/lifecycle-cache.interceptor'
-import { UseRoles } from '~/_common/decorators/use-roles.decorator'
-import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types'
+import { Controller, Get, HttpStatus, Param, Post, Query, Req, Res, UseInterceptors } from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { FilterOptions, SearchFilterOptions } from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { Request, Response } from 'express';
+import { Types } from 'mongoose';
+import { AbstractController } from '~/_common/abstracts/abstract.controller';
+import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
+import { Lifecycle } from './_schemas/lifecycle.schema';
+import { LifecycleCrudService } from './lifecycle-crud.service';
+import { LifecycleHooksService } from './lifecycle-hooks.service';
+import { LifecycleCacheInterceptor } from './_interceptors/lifecycle-cache.interceptor';
+import { UseRoles } from '~/_common/decorators/use-roles.decorator';
+import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
 
 /**
  * Contrôleur de gestion du cycle de vie des identités
@@ -60,7 +50,7 @@ export class LifecycleController extends AbstractController {
     protected readonly _service: LifecycleCrudService,
     private readonly lifecycleHooksService: LifecycleHooksService,
   ) {
-    super()
+    super();
   }
 
   /**
@@ -97,17 +87,17 @@ export class LifecycleController extends AbstractController {
     possession: AC_DEFAULT_POSSESSION,
   })
   @ApiOperation({ summary: 'Forcer la réexécution du cycle de vie courant' })
-  @ApiParam({ name: 'identityId', description: 'Identifiant de l\'identité' })
+  @ApiParam({ name: 'identityId', description: "Identifiant de l'identité" })
   public async forceLifecycle(
     @Param('identityId', ObjectIdValidationPipe) identityId: Types.ObjectId,
     @Res() res: Response,
   ): Promise<Response> {
-    await this.lifecycleHooksService.forceLifecycleEvent(identityId)
+    await this.lifecycleHooksService.forceLifecycleEvent(identityId);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       message: 'Cycle de vie réexécuté',
-    })
+    });
   }
 
   @Get('identity/:identityId')
@@ -116,25 +106,25 @@ export class LifecycleController extends AbstractController {
     action: AC_ACTIONS.READ,
     possession: AC_DEFAULT_POSSESSION,
   })
-  @ApiOperation({ summary: 'Récupérer l\'historique du cycle de vie d\'une identité' })
-  @ApiParam({ name: 'identityId', description: 'Identifiant de l\'identité' })
+  @ApiOperation({ summary: "Récupérer l'historique du cycle de vie d'une identité" })
+  @ApiParam({ name: 'identityId', description: "Identifiant de l'identité" })
   public async getLifecycleHistory(
     @Param('identityId', ObjectIdValidationPipe) identityId: Types.ObjectId,
     @Res() res: Response,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
     @Query('populateRefId') populateRefId?: string,
   ): Promise<Response<Lifecycle[]>> {
-    const populateRefIdEnabled = /true|1|yes|on/i.test(populateRefId)
+    const populateRefIdEnabled = /true|1|yes|on/i.test(populateRefId);
     const [total, data] = await this._service.getLifecycleHistory(identityId, {
       ...searchFilterOptions,
       populateRefId: populateRefIdEnabled,
-    })
+    });
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,
       total,
-    })
+    });
   }
 
   /**
@@ -169,13 +159,11 @@ export class LifecycleController extends AbstractController {
     possession: AC_DEFAULT_POSSESSION,
   })
   @ApiOperation({ summary: 'Récupérer les statistiques du cycle de vie' })
-  public async getStats(
-    @Res() res: Response,
-  ): Promise<Response<Lifecycle[]>> {
+  public async getStats(@Res() res: Response): Promise<Response<Lifecycle[]>> {
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: await this._service.getLifecycleStats(),
-    })
+    });
   }
 
   /**
@@ -216,7 +204,8 @@ export class LifecycleController extends AbstractController {
   @Get('states')
   @ApiOperation({
     summary: 'Récupérer tous les états de cycle de vie disponibles',
-    description: 'Retourne tous les états de cycle de vie incluant les états par défaut et les états personnalisés de la configuration'
+    description:
+      'Retourne tous les états de cycle de vie incluant les états par défaut et les états personnalisés de la configuration',
   })
   public async getAllStates(
     @Req() req: Request,
@@ -225,24 +214,22 @@ export class LifecycleController extends AbstractController {
     // Identifiant unique basé sur la dernière modification du fichier states.yml
     // Permet de déterminer si le cache client doit être invalidé
     const statesFileAge = this._service.stateFileAge;
-    this.logger.debug(`Âge du fichier states.yml (ms depuis epoch) : ${statesFileAge}`)
+    this.logger.debug(`Âge du fichier states.yml (ms depuis epoch) : ${statesFileAge}`);
 
-    const etag = `"${statesFileAge}"`
-    const ifNoneMatch = req.headers['if-none-match']
-    res.setHeader('ETag', etag)
-    res.setHeader('Last-Modified', new Date(statesFileAge).toUTCString())
-    res.setHeader('Cache-Control', 'public, max-age=1, must-revalidate')
+    const etag = `"${statesFileAge}"`;
+    const ifNoneMatch = req.headers['if-none-match'];
+    res.setHeader('ETag', etag);
+    res.setHeader('Last-Modified', new Date(statesFileAge).toUTCString());
+    res.setHeader('Cache-Control', 'public, max-age=1, must-revalidate');
 
     if (ifNoneMatch === etag) {
-      return res.status(HttpStatus.NOT_MODIFIED).send()
+      return res.status(HttpStatus.NOT_MODIFIED).send();
     }
 
-    return res
-      .status(HttpStatus.OK)
-      .json({
-        statusCode: HttpStatus.OK,
-        data: this._service.getAllAvailableStates(),
-      })
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: this._service.getAllAvailableStates(),
+    });
   }
 
   /**
@@ -272,7 +259,7 @@ export class LifecycleController extends AbstractController {
   @Get('states/custom')
   @ApiOperation({
     summary: 'Récupérer les états personnalisés du cycle de vie',
-    description: 'Retourne uniquement les états personnalisés chargés depuis le fichier de configuration states.yml'
+    description: 'Retourne uniquement les états personnalisés chargés depuis le fichier de configuration states.yml',
   })
   public async getCustomStates(
     @Res() res: Response,
@@ -280,7 +267,7 @@ export class LifecycleController extends AbstractController {
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: this._service.getCustomStates(),
-    })
+    });
   }
 
   /**
@@ -314,7 +301,7 @@ export class LifecycleController extends AbstractController {
    *   ],
    *   total: 156
    * }
-  */
+   */
   @Get('recent')
   @UseRoles({
     resource: '/management/lifecycle',
@@ -332,6 +319,6 @@ export class LifecycleController extends AbstractController {
       statusCode: HttpStatus.OK,
       data,
       total,
-    })
+    });
   }
 }

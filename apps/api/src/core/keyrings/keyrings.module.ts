@@ -17,14 +17,8 @@ import { useOnCli } from '~/_common/functions/is-cli';
     ]),
     forwardRef(() => AuthModule),
   ],
-  providers: [
-    KeyringsService,
-    ...useOnCli([
-      ...KeyringsCommand.registerWithSubCommands(),
-      KeyringsCreateQuestions,
-    ]),
-  ],
+  providers: [KeyringsService, ...useOnCli([...KeyringsCommand.registerWithSubCommands(), KeyringsCreateQuestions])],
   controllers: [KeyringsController],
   exports: [KeyringsService],
 })
-export class KeyringsModule { }
+export class KeyringsModule {}

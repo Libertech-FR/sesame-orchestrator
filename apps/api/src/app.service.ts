@@ -167,9 +167,7 @@ export class AppService extends AbstractService implements OnApplicationBootstra
 
     if (isConsoleEntrypoint) {
       // Réactive le logger avec le niveau de log approprié en mode console
-      this.logger.localInstance.setLogLevels(
-        getLogLevel(this.config.get('application.logLevel', 'debug'))
-      );
+      this.logger.localInstance.setLogLevels(getLogLevel(this.config.get('application.logLevel', 'debug')));
     }
   }
 
@@ -299,8 +297,8 @@ export class AppService extends AbstractService implements OnApplicationBootstra
           catchError((error) => {
             this.logger.error(`Error fetching release for ${project}: ${error.message}`);
             throw error;
-          })
-        )
+          }),
+        ),
       );
       this.storage.set(project, data);
       return data;

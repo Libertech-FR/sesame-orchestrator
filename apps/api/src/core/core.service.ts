@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common'
-import { AbstractService } from '~/_common/abstracts/abstract.service'
+import { Injectable } from '@nestjs/common';
+import { AbstractService } from '~/_common/abstracts/abstract.service';
 
 /**
  * Service principal du module Core.
@@ -19,6 +19,6 @@ export class CoreService extends AbstractService {
    * @constructor
    */
   public constructor() {
-    super()
+    super();
   }
 }

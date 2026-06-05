@@ -1,22 +1,22 @@
-import { MongooseModuleOptions } from '@nestjs/mongoose'
-import { RedisOptions } from 'ioredis'
-import { HelmetOptions } from 'helmet'
-import { SwaggerCustomOptions } from '@nestjs/swagger'
-import Joi from 'joi'
-import { IAuthModuleOptions } from '@nestjs/passport'
-import { JwtModuleOptions } from '@nestjs/jwt'
-import { StorageManagerConfig } from '@tacxou/nestjs_module_factorydrive'
-import { AmazonWebServicesS3StorageConfig } from '@tacxou/nestjs_module_factorydrive-s3'
-import { HttpModuleOptions } from '@nestjs/axios'
-import path, { join } from 'path'
-import { CronExpression } from '@nestjs/schedule'
+import { MongooseModuleOptions } from '@nestjs/mongoose';
+import { RedisOptions } from 'ioredis';
+import { HelmetOptions } from 'helmet';
+import { SwaggerCustomOptions } from '@nestjs/swagger';
+import Joi from 'joi';
+import { IAuthModuleOptions } from '@nestjs/passport';
+import { JwtModuleOptions } from '@nestjs/jwt';
+import { StorageManagerConfig } from '@tacxou/nestjs_module_factorydrive';
+import { AmazonWebServicesS3StorageConfig } from '@tacxou/nestjs_module_factorydrive-s3';
+import { HttpModuleOptions } from '@nestjs/axios';
+import path, { join } from 'path';
+import { CronExpression } from '@nestjs/schedule';
 
 /**
  * Répertoire de base de l'application API
  * En environnement Docker: /data/apps/api
  * En développement local: le répertoire du projet
  */
-const API_ROOT_DIR = process.env['SESAME_API_ROOT_DIR'] || process.cwd()
+const API_ROOT_DIR = process.env['SESAME_API_ROOT_DIR'] || process.cwd();
 
 /**
  * Schéma de validation Joi pour les variables d'environnement
@@ -31,26 +31,15 @@ const API_ROOT_DIR = process.env['SESAME_API_ROOT_DIR'] || process.cwd()
  * })
  */
 export const validationSchema = Joi.object({
-  LANG: Joi
-    .string()
-    .default('en'),
+  LANG: Joi.string().default('en'),
 
-  SESAME_LOG_LEVEL: Joi
-    .string()
-    .valid('error', 'warn', 'info', 'debug')
-    .default('info'),
+  SESAME_LOG_LEVEL: Joi.string().valid('error', 'warn', 'info', 'debug').default('info'),
 
-  SESAME_NAME_QUEUE: Joi
-    .string()
-    .default('sesame'),
+  SESAME_NAME_QUEUE: Joi.string().default('sesame'),
 
-  SESAME_HTTPS_ENABLED: Joi
-    .string()
-    .valid('0', '1', 'true', 'false', 'on', 'off')
-    .default('false'),
+  SESAME_HTTPS_ENABLED: Joi.string().valid('0', '1', 'true', 'false', 'on', 'off').default('false'),
 
-  SESAME_HTTPS_PATH_KEY: Joi
-    .string()
+  SESAME_HTTPS_PATH_KEY: Joi.string()
     .when('SESAME_HTTPS_ENABLED', {
       is: /yes|1|on|true/i,
       then: Joi.required(),
@@ -58,8 +47,7 @@ export const validationSchema = Joi.object({
     })
     .default(''),
 
-  SESAME_HTTPS_PATH_CERT: Joi
-    .string()
+  SESAME_HTTPS_PATH_CERT: Joi.string()
     .when('SESAME_HTTPS_ENABLED', {
       is: /yes|1|on|true/i,
       then: Joi.required(),
@@ -67,121 +55,66 @@ export const validationSchema = Joi.object({
     })
     .default(''),
 
-  SESAME_REDIS_URI: Joi
-    .string()
-    .uri()
-    .default('redis://localhost:6379/0'),
+  SESAME_REDIS_URI: Joi.string().uri().default('redis://localhost:6379/0'),
 
-  SESAME_MONGO_URI: Joi
-    .string()
-    .uri()
-    .default('mongodb://localhost:27017/backend'),
+  SESAME_MONGO_URI: Joi.string().uri().default('mongodb://localhost:27017/backend'),
 
-  SESAME_AXIOS_TIMEOUT: Joi
-    .number()
-    .integer()
-    .min(1)
-    .default(5000),
+  SESAME_AXIOS_TIMEOUT: Joi.number().integer().min(1).default(5000),
 
-  SESAME_AXIOS_MAX_REDIRECTS: Joi
-    .number()
-    .integer()
-    .min(0)
-    .default(5),
+  SESAME_AXIOS_MAX_REDIRECTS: Joi.number().integer().min(0).default(5),
 
-  SESAME_JWT_SECRET: Joi
-    .string()
-    .required(),
+  SESAME_JWT_SECRET: Joi.string().required(),
 
-  SESAME_SMTP_SERVER: Joi
-    .string()
-    .hostname()
-    .required(),
+  SESAME_SMTP_SERVER: Joi.string().hostname().required(),
 
-  SESAME_SMTP_PORT: Joi
-    .number()
-    .integer()
-    .min(1)
-    .max(65535)
-    .default(25),
+  SESAME_SMTP_PORT: Joi.number().integer().min(1).max(65535).default(25),
 
-  SESAME_MDP_SENDER: Joi
-    .string()
-    .email()
-    .default(''),
+  SESAME_MDP_SENDER: Joi.string().email().default(''),
 
-  SESAME_FRONT_MDP: Joi
-    .string()
-    .uri()
-    .required(),
+  SESAME_FRONT_MDP: Joi.string().uri().required(),
 
-  SESAME_RESET_PWD_MAIL: Joi
-    .string()
-    .default(''),
+  SESAME_RESET_PWD_MAIL: Joi.string().default(''),
 
-  SESAME_RESET_PWD_MOBILE: Joi
-    .string()
-    .default(''),
+  SESAME_RESET_PWD_MOBILE: Joi.string().default(''),
 
-  SESAME_LIFECYCLE_TRIGGER_CRON: Joi
-    .string()
-    .pattern(/^(\*|([0-5]?\d))(\/\d+)? (\*|([01]?\d|2[0-3]))(\/\d+)? (\*|([01]?\d|2[0-9]|3[01]))(\/\d+)? (\*|(1[0-2]|0?[1-9]))(\/\d+)? (\*|([0-6]))(\/\d+)?$/)
+  SESAME_LIFECYCLE_TRIGGER_CRON: Joi.string()
+    .pattern(
+      /^(\*|([0-5]?\d))(\/\d+)? (\*|([01]?\d|2[0-3]))(\/\d+)? (\*|([01]?\d|2[0-9]|3[01]))(\/\d+)? (\*|(1[0-2]|0?[1-9]))(\/\d+)? (\*|([0-6]))(\/\d+)?$/,
+    )
     .default('*/5 * * * *'),
 
-  SESAME_SMPP_SERVER: Joi
-    .string()
-    .hostname()
-    .default(''),
+  SESAME_SMPP_SERVER: Joi.string().hostname().default(''),
 
-  SESAME_SMPP_SYSTEMID: Joi
-    .string()
-    .default(''),
+  SESAME_SMPP_SYSTEMID: Joi.string().default(''),
 
-  SESAME_SMPP_PASSWORD: Joi
-    .string()
-    .default(''),
+  SESAME_SMPP_PASSWORD: Joi.string().default(''),
 
-  SESAME_SMPP_SOURCEADDR: Joi
-    .string()
-    .default(''),
+  SESAME_SMPP_SOURCEADDR: Joi.string().default(''),
 
-  SESAME_SMPP_REGIONCODE: Joi
-    .string()
-    .default('FR'),
+  SESAME_SMPP_REGIONCODE: Joi.string().default('FR'),
 
-  SESAME_CRON_HANDLER_EXPRESSION: Joi
-    .string()
-    .pattern(/^(\*|([0-5]?\d))(\/\d+)? (\*|([01]?\d|2[0-3]))(\/\d+)? (\*|([01]?\d|2[0-9]|3[01]))(\/\d+)? (\*|(1[0-2]|0?[1-9]))(\/\d+)? (\*|([0-6]))(\/\d+)?$/)
+  SESAME_CRON_HANDLER_EXPRESSION: Joi.string()
+    .pattern(
+      /^(\*|([0-5]?\d))(\/\d+)? (\*|([01]?\d|2[0-3]))(\/\d+)? (\*|([01]?\d|2[0-9]|3[01]))(\/\d+)? (\*|(1[0-2]|0?[1-9]))(\/\d+)? (\*|([0-6]))(\/\d+)?$/,
+    )
     .default(CronExpression.EVERY_HOUR),
 
-  SESAME_CRON_LOG_DIRECTORY: Joi
-    .string()
-    .default(path.join(process.cwd(), 'logs', 'handlers')),
+  SESAME_CRON_LOG_DIRECTORY: Joi.string().default(path.join(process.cwd(), 'logs', 'handlers')),
 
-  SESAME_CRON_LOG_ROTATE_MAX_SIZE_BYTES: Joi
-    .number()
+  SESAME_CRON_LOG_ROTATE_MAX_SIZE_BYTES: Joi.number()
     .integer()
     .min(1)
     .default(10 * 1024 * 1024),
 
-  SESAME_CRON_LOG_ROTATE_MAX_FILES: Joi
-    .number()
-    .integer()
-    .min(1)
-    .default(5),
+  SESAME_CRON_LOG_ROTATE_MAX_FILES: Joi.number().integer().min(1).default(5),
 
-  SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES: Joi
-    .string()
-    .default(''),
+  SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES: Joi.string().default(''),
 
   /**
    * Active trust proxy Express (1 hop) pour que req.ip / X-Forwarded-For reflètent le client derrière un reverse-proxy.
    * @see https://expressjs.com/en/guide/behind-proxies.html
    */
-  SESAME_TRUST_PROXY: Joi
-    .string()
-    .valid('0', '1', 'false', 'true', 'on', 'off', '')
-    .default('0'),
+  SESAME_TRUST_PROXY: Joi.string().valid('0', '1', 'false', 'true', 'on', 'off', '').default('0'),
 });
 
 /**
@@ -207,86 +140,86 @@ export interface MongoosePlugin {
  */
 export interface ConfigInstance {
   application: {
-    lang: string
-    logLevel: string
-    nameQueue: string
+    lang: string;
+    logLevel: string;
+    nameQueue: string;
     /** Si true, Express applique trust proxy (1 hop) pour les adresses IP client derrière un proxy. */
-    trustProxy: boolean
+    trustProxy: boolean;
     bodyParser: {
-      limit: string
-    }
+      limit: string;
+    };
     https: {
       enabled: boolean;
       key: string;
       cert: string;
-    }
-    mfaStepUpMaxAgeSeconds: number
-  }
-  helmet: HelmetOptions
+    };
+    mfaStepUpMaxAgeSeconds: number;
+  };
+  helmet: HelmetOptions;
   mongoose: {
     uri: string;
-    options: MongooseModuleOptions
-    plugins: MongoosePlugin[]
-  }
+    options: MongooseModuleOptions;
+    plugins: MongoosePlugin[];
+  };
   ioredis: {
-    uri: string
-    options: RedisOptions
-  }
+    uri: string;
+    options: RedisOptions;
+  };
   axios: {
-    options: HttpModuleOptions
-  }
+    options: HttpModuleOptions;
+  };
   cron: {
-    handlerExpression: string
-    logDirectory: string
-    logRotateMaxSizeBytes: number
-    logRotateMaxFiles: number
-  }
+    handlerExpression: string;
+    logDirectory: string;
+    logRotateMaxSizeBytes: number;
+    logRotateMaxFiles: number;
+  };
   factorydrive: {
     options:
-    | StorageManagerConfig
-    | {
-      disks: {
-        [key: string]: {
-          driver: 's3';
-          config: AmazonWebServicesS3StorageConfig
-        }
-      }
-    }
-  }
+      | StorageManagerConfig
+      | {
+          disks: {
+            [key: string]: {
+              driver: 's3';
+              config: AmazonWebServicesS3StorageConfig;
+            };
+          };
+        };
+  };
   passport: {
-    options: IAuthModuleOptions
-  }
+    options: IAuthModuleOptions;
+  };
   jwt: {
-    options: JwtModuleOptions
+    options: JwtModuleOptions;
   };
   mailer: {
-    host: string
-    port: number
-    sender: string
-  }
+    host: string;
+    port: number;
+    sender: string;
+  };
   sms: {
-    host: string
-    systemId: string
-    password: string
-    sourceAddr: string
-    regionCode: string
-  }
+    host: string;
+    systemId: string;
+    password: string;
+    sourceAddr: string;
+    regionCode: string;
+  };
   frontPwd: {
-    url: string
-    identityMailAttribute: string
-    identityMobileAttribute: string
-  }
+    url: string;
+    identityMailAttribute: string;
+    identityMobileAttribute: string;
+  };
   lifecycle: {
-    triggerCronExpression: string
-  }
+    triggerCronExpression: string;
+  };
   identities: {
-    doublonSearchAttributes: string[]
-  }
+    doublonSearchAttributes: string[];
+  };
   swagger: {
-    path: string
-    api: string
-    options: SwaggerCustomOptions
-  }
+    path: string;
+    api: string;
+    options: SwaggerCustomOptions;
+  };
 }
 
 /**
@@ -347,8 +280,7 @@ export default (): ConfigInstance => ({
     options: {
       directConnection: true,
     },
-    plugins: [
-    ],
+    plugins: [],
   },
   axios: {
     options: {
@@ -421,11 +353,8 @@ export default (): ConfigInstance => ({
   },
   identities: {
     doublonSearchAttributes: process.env['SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES']
-      ? process.env['SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES'].split(',').map(attr => attr.trim())
-      : [
-        'additionalFields.attributes.supannPerson.supannOIDCDatedeNaissance',
-        'inetOrgPerson.givenName',
-      ],
+      ? process.env['SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES'].split(',').map((attr) => attr.trim())
+      : ['additionalFields.attributes.supannPerson.supannOIDCDatedeNaissance', 'inetOrgPerson.givenName'],
   },
   sms: {
     host: process.env['SESAME_SMPP_SERVER'] || '',
@@ -434,4 +363,4 @@ export default (): ConfigInstance => ({
     sourceAddr: process.env['SESAME_SMPP_SOURCEADDR'] || '',
     regionCode: process.env['SESAME_SMPP_REGIONCODE'] || 'FR',
   },
-})
+});

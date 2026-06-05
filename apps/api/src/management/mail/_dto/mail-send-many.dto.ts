@@ -11,7 +11,7 @@ export class MailSendManyDto {
   @IsString()
   public template: string;
 
-  @ApiProperty({ description: "Sujet du mail (en-tête SMTP, distinct des variables du template)" })
+  @ApiProperty({ description: 'Sujet du mail (en-tête SMTP, distinct des variables du template)' })
   @IsString()
   @IsNotEmpty()
   public subject: string;

@@ -1,56 +1,56 @@
-import { LocalFileSystemStorageConfig } from './local-file-system.storage'
+import { LocalFileSystemStorageConfig } from './local-file-system.storage';
 
-export type { LocalFileSystemStorageConfig }
+export type { LocalFileSystemStorageConfig };
 
 export type StorageManagerSingleDiskConfig =
   | {
-      driver: 'local'
-      config: LocalFileSystemStorageConfig
+      driver: 'local';
+      config: LocalFileSystemStorageConfig;
     }
   | {
-      driver: string
-      config: unknown
-    }
+      driver: string;
+      config: unknown;
+    };
 
 export interface StorageManagerDiskConfig {
-  [key: string]: StorageManagerSingleDiskConfig
+  [key: string]: StorageManagerSingleDiskConfig;
 }
 
 export interface StorageManagerConfig {
-  default?: string
-  disks?: StorageManagerDiskConfig
-  registerLocalDriver?: boolean
+  default?: string;
+  disks?: StorageManagerDiskConfig;
+  registerLocalDriver?: boolean;
 }
 
 export interface Response {
-  raw: unknown
+  raw: unknown;
 }
 
 export interface ExistsResponse extends Response {
-  exists: boolean
+  exists: boolean;
 }
 
 export interface ContentResponse<ContentType> extends Response {
-  content: ContentType
+  content: ContentType;
 }
 
 export interface SignedUrlOptions {
-  expiresIn?: number
+  expiresIn?: number;
 }
 
 export interface SignedUrlResponse extends Response {
-  signedUrl: string
+  signedUrl: string;
 }
 
 export interface StatResponse extends Response {
-  size: number
-  modified: Date
+  size: number;
+  modified: Date;
 }
 
 export interface FileListResponse extends Response {
-  path: string
+  path: string;
 }
 
 export interface DeleteResponse extends Response {
-  wasDeleted: boolean | null
+  wasDeleted: boolean | null;
 }

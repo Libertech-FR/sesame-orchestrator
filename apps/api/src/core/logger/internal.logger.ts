@@ -34,7 +34,7 @@ export class InternalLogger extends ConsoleLogger {
 
   public async initialize() {
     Sentry.logger.info('Initializing logs database connection...', {
-      'module': this.constructor.name,
+      module: this.constructor.name,
     });
     super.log('Initializing logs database connection...', this.constructor.name);
     try {
@@ -42,7 +42,7 @@ export class InternalLogger extends ConsoleLogger {
       this.connection = mongoose.connection;
     } catch (e) {
       Sentry.logger.error('Failed to connect to the logs database', e, {
-        'module': this.constructor.name,
+        module: this.constructor.name,
       });
       super.error('Failed to connect to the logs database', e, this.constructor.name);
       setTimeout(() => this.initialize(), 5000);
@@ -64,7 +64,7 @@ export class InternalLogger extends ConsoleLogger {
     }
 
     Sentry.logger.error(message, {
-      'module': typeof lastParam === 'string' ? lastParam : this.constructor.name,
+      module: typeof lastParam === 'string' ? lastParam : this.constructor.name,
     });
     super.error(...[message, ...optionalParams]);
   }

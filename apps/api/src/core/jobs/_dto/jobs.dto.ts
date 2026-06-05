@@ -1,10 +1,10 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {IsMongoId, IsNotEmpty, IsNumber, IsObject, IsString, ValidateNested} from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsNumber, IsObject, IsString, ValidateNested } from 'class-validator';
 import { Types } from 'mongoose';
 import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto';
 import { ConcernedToPartDTO } from './_parts/concerned-to.part.dto';
-import {JobState} from "~/core/jobs/_enums/state.enum";
+import { JobState } from '~/core/jobs/_enums/state.enum';
 
 export class JobsCreateDto extends CustomFieldsDto {
   @IsString()

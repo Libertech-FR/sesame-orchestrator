@@ -1,7 +1,7 @@
-import { DynamicModule, Module } from '@nestjs/common'
-import { MigrationsService } from './migrations.service'
-import { useOnCli } from '~/_common/functions/is-cli'
-import { MigrationsCommand } from './migrations.command'
+import { DynamicModule, Module } from '@nestjs/common';
+import { MigrationsService } from './migrations.service';
+import { useOnCli } from '~/_common/functions/is-cli';
+import { MigrationsCommand } from './migrations.command';
 
 /**
  * Module NestJS pour la gestion des migrations de base de données
@@ -12,12 +12,7 @@ import { MigrationsCommand } from './migrations.command'
  * pour permettre une configuration flexible.
  */
 @Module({
-  providers: [
-    MigrationsService,
-    ...useOnCli([
-      ...MigrationsCommand.registerWithSubCommands(),
-    ]),
-  ],
+  providers: [MigrationsService, ...useOnCli([...MigrationsCommand.registerWithSubCommands()])],
 })
 export class MigrationsModule {
   /**
@@ -28,6 +23,6 @@ export class MigrationsModule {
   public static async register(): Promise<DynamicModule> {
     return {
       module: this,
-    }
+    };
   }
 }

@@ -1,14 +1,14 @@
-import { ConflictException, NotFoundException } from '@nestjs/common'
-import { CronController } from '~/core/cron/cron.controller'
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import { CronController } from '~/core/cron/cron.controller';
 
 describe('CronController', () => {
-  const search = jest.fn()
-  const read = jest.fn()
-  const readLogs = jest.fn()
-  const setEnabled = jest.fn()
-  const update = jest.fn()
-  const getConsoleHandlers = jest.fn()
-  const runImmediately = jest.fn()
+  const search = jest.fn();
+  const read = jest.fn();
+  const readLogs = jest.fn();
+  const setEnabled = jest.fn();
+  const update = jest.fn();
+  const getConsoleHandlers = jest.fn();
+  const runImmediately = jest.fn();
 
   const cronService = {
     search,
@@ -18,129 +18,138 @@ describe('CronController', () => {
     update,
     getConsoleHandlers,
     runImmediately,
-  }
+  };
 
   const createRes = () => {
-    const json = jest.fn()
-    return { json }
-  }
+    const json = jest.fn();
+    return { json };
+  };
 
-  let controller: CronController
+  let controller: CronController;
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    controller = new CronController(cronService as any)
-  })
+    jest.clearAllMocks();
+    controller = new CronController(cronService as any);
+  });
 
   it('should return paginated cron tasks on search', async () => {
-    search.mockResolvedValue([[{ name: 'task-1' }], 1])
-    const res = createRes()
+    search.mockResolvedValue([[{ name: 'task-1' }], 1]);
+    const res = createRes();
 
-    await controller.search('task', 1, 10, res as any)
+    await controller.search('task', 1, 10, res as any);
 
-    expect(search).toHaveBeenCalledWith('task', { page: 1, limit: 10 })
+    expect(search).toHaveBeenCalledWith('task', { page: 1, limit: 10 });
     expect(res.json).toHaveBeenCalledWith({
       statusCode: 200,
       data: [{ name: 'task-1' }],
       total: 1,
-    })
-  })
+    });
+  });
 
   it('should return console handlers on listHandlers', async () => {
-    getConsoleHandlers.mockReturnValue([{
-      handler: 'lifecycle-execute',
-      command: 'lifecycle execute',
-      label: 'Exécution du cycle de vie',
-      arguments: [],
-    }])
-    const res = createRes()
+    getConsoleHandlers.mockReturnValue([
+      {
+        handler: 'lifecycle-execute',
+        command: 'lifecycle execute',
+        label: 'Exécution du cycle de vie',
+        arguments: [],
+      },
+    ]);
+    const res = createRes();
 
-    await controller.listHandlers(res as any)
+    await controller.listHandlers(res as any);
 
-    expect(getConsoleHandlers).toHaveBeenCalled()
+    expect(getConsoleHandlers).toHaveBeenCalled();
     expect(res.json).toHaveBeenCalledWith({
       statusCode: 200,
-      data: [{ handler: 'lifecycle-execute', command: 'lifecycle execute', label: 'Exécution du cycle de vie', arguments: [] }],
-    })
-  })
+      data: [
+        {
+          handler: 'lifecycle-execute',
+          command: 'lifecycle execute',
+          label: 'Exécution du cycle de vie',
+          arguments: [],
+        },
+      ],
+    });
+  });
 
   it('should throw NotFoundException when read task does not exist', async () => {
-    read.mockResolvedValue(null)
+    read.mockResolvedValue(null);
 
-    await expect(controller.read('missing-task', {} as any)).rejects.toThrow(NotFoundException)
-  })
+    await expect(controller.read('missing-task', {} as any)).rejects.toThrow(NotFoundException);
+  });
 
   it('should return task details on read', async () => {
-    read.mockResolvedValue({ name: 'task-1' })
-    const res = createRes()
+    read.mockResolvedValue({ name: 'task-1' });
+    const res = createRes();
 
-    await controller.read('task-1', res as any)
+    await controller.read('task-1', res as any);
 
     expect(res.json).toHaveBeenCalledWith({
       statusCode: 200,
       data: { name: 'task-1' },
-    })
-  })
+    });
+  });
 
   it('should throw NotFoundException when updating enabled state on missing task', async () => {
-    setEnabled.mockResolvedValue(null)
+    setEnabled.mockResolvedValue(null);
 
-    await expect(
-      controller.updateEnabled('missing-task', { enabled: true } as any, {} as any),
-    ).rejects.toThrow(NotFoundException)
-  })
+    await expect(controller.updateEnabled('missing-task', { enabled: true } as any, {} as any)).rejects.toThrow(
+      NotFoundException,
+    );
+  });
 
   it('should return updated task on updateEnabled', async () => {
-    setEnabled.mockResolvedValue({ name: 'task-1', enabled: false })
-    const res = createRes()
+    setEnabled.mockResolvedValue({ name: 'task-1', enabled: false });
+    const res = createRes();
 
-    await controller.updateEnabled('task-1', { enabled: false } as any, res as any)
+    await controller.updateEnabled('task-1', { enabled: false } as any, res as any);
 
-    expect(setEnabled).toHaveBeenCalledWith('task-1', false)
+    expect(setEnabled).toHaveBeenCalledWith('task-1', false);
     expect(res.json).toHaveBeenCalledWith({
       statusCode: 200,
       data: { name: 'task-1', enabled: false },
-    })
-  })
+    });
+  });
 
   it('should throw NotFoundException when updating missing task', async () => {
-    update.mockResolvedValue(null)
+    update.mockResolvedValue(null);
 
-    await expect(
-      controller.update('missing-task', { schedule: '0 * * * *' } as any, {} as any),
-    ).rejects.toThrow(NotFoundException)
-  })
+    await expect(controller.update('missing-task', { schedule: '0 * * * *' } as any, {} as any)).rejects.toThrow(
+      NotFoundException,
+    );
+  });
 
   it('should return updated task on update', async () => {
-    update.mockResolvedValue({ name: 'task-1', schedule: '0 * * * *' })
-    const res = createRes()
+    update.mockResolvedValue({ name: 'task-1', schedule: '0 * * * *' });
+    const res = createRes();
 
-    await controller.update('task-1', { schedule: '0 * * * *' } as any, res as any)
+    await controller.update('task-1', { schedule: '0 * * * *' } as any, res as any);
 
-    expect(update).toHaveBeenCalledWith('task-1', { schedule: '0 * * * *' })
+    expect(update).toHaveBeenCalledWith('task-1', { schedule: '0 * * * *' });
     expect(res.json).toHaveBeenCalledWith({
       statusCode: 200,
       data: { name: 'task-1', schedule: '0 * * * *' },
-    })
-  })
+    });
+  });
 
   it('should throw ConflictException when runImmediately returns busy', async () => {
-    runImmediately.mockResolvedValue('busy')
+    runImmediately.mockResolvedValue('busy');
 
-    await expect(controller.runImmediately('task-1', {} as any)).rejects.toThrow(ConflictException)
-  })
+    await expect(controller.runImmediately('task-1', {} as any)).rejects.toThrow(ConflictException);
+  });
 
   it('should throw NotFoundException when runImmediately returns not_found', async () => {
-    runImmediately.mockResolvedValue('not_found')
+    runImmediately.mockResolvedValue('not_found');
 
-    await expect(controller.runImmediately('missing-task', {} as any)).rejects.toThrow(NotFoundException)
-  })
+    await expect(controller.runImmediately('missing-task', {} as any)).rejects.toThrow(NotFoundException);
+  });
 
   it('should return in_progress payload when runImmediately starts', async () => {
-    runImmediately.mockResolvedValue('started')
-    const res = createRes()
+    runImmediately.mockResolvedValue('started');
+    const res = createRes();
 
-    await controller.runImmediately('task-1', res as any)
+    await controller.runImmediately('task-1', res as any);
 
     expect(res.json).toHaveBeenCalledWith({
       statusCode: 200,
@@ -149,6 +158,6 @@ describe('CronController', () => {
         launched: true,
         status: 'in_progress',
       },
-    })
-  })
-})
+    });
+  });
+});

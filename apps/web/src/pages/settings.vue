@@ -40,25 +40,29 @@ q-dialog(
                 self="center middle"
               ) Vous n'avez pas les permissions nécessaires pour accéder à cette page
 
-            q-separator(v-if="!$q.screen.gt.sm && navItems.length > 0 && hasPermission('/core/health', 'read')" inset vertical)
-            q-tab(
-              v-if="!$q.screen.gt.sm && hasPermission('/core/health', 'read')"
-              name="/settings/health"
-              label="Santé applicative"
-              icon="mdi-heart-pulse"
-            )
+            template(v-if="!$q.screen.gt.sm")
+              q-separator(v-if="navItems.length > 0 && bottomNavItems.length > 0" inset vertical)
+              q-tab(
+                v-for="item in bottomNavItems"
+                :key="item.route"
+                :name="item.route"
+                :label="item.label"
+                :icon="item.icon"
+              )
 
         .settings-bottom-tabs-wrapper(
-          v-if="$q.screen.gt.sm && hasPermission('/core/health', 'read')"
+          v-if="$q.screen.gt.sm && bottomNavItems.length > 0"
         )
           q-tabs.border-right(
             v-model="tab"
             vertical
           )
             q-tab(
-              name="/settings/health"
-              label="Santé applicative"
-              icon="mdi-heart-pulse"
+              v-for="item in bottomNavItems"
+              :key="item.route"
+              :name="item.route"
+              :label="item.label"
+              :icon="item.icon"
             )
       .col
         q-tab-panels.fit(v-model="tab")
@@ -135,11 +139,21 @@ export default defineNuxtComponent({
         label: 'trousseau de clés API',
         acl: ['/core/keyrings'],
       },
-      // {
-      //   route: '/settings/health',
-      //   icon: 'mdi-heart-pulse',
-      //   label: 'Santé applicative',
-      // },
+    ])
+
+    const bottomNavItemsInternal = ref<NavItem[]>([
+      {
+        route: '/settings/health',
+        icon: 'mdi-heart-pulse',
+        label: 'Santé applicative',
+        acl: ['/core/health'],
+      },
+      {
+        route: '/settings/configuration',
+        icon: 'mdi-tune-variant',
+        label: 'Configuration',
+        acl: ['/settings/configuration'],
+      },
     ])
 
     const navItems = computed(() => {
@@ -157,10 +171,21 @@ export default defineNuxtComponent({
       })
     })
 
+    const bottomNavItems = computed(() => {
+      return bottomNavItemsInternal.value.filter((item) => {
+        if (!item.acl || item.acl.length === 0) {
+          return true
+        }
+
+        return item.acl.some((acl) => hasPermission(acl, AccessControlAction.READ))
+      })
+    })
+
     return {
       tab,
       drawer,
       navItems,
+      bottomNavItems,
       router,
       hasPermission,
     }

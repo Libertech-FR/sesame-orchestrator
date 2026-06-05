@@ -1,30 +1,30 @@
-import { existsSync, readFileSync } from 'fs'
-import { dirname, join } from 'path'
-import { parse } from 'yaml'
-import { ExtensionFileV1 } from './_dto/extension.dto'
-import { ExtensionsFileV1, ExtensionsListV1 } from './_dto/extensions.dto'
-import { plainToInstance } from 'class-transformer'
-import { validateOrReject } from 'class-validator'
-import * as process from 'process'
-import { DynamicModule, Logger } from '@nestjs/common'
+import { existsSync, readFileSync } from 'fs';
+import { dirname, join } from 'path';
+import { parse } from 'yaml';
+import { ExtensionFileV1 } from './_dto/extension.dto';
+import { ExtensionsFileV1, ExtensionsListV1 } from './_dto/extensions.dto';
+import { plainToInstance } from 'class-transformer';
+import { validateOrReject } from 'class-validator';
+import * as process from 'process';
+import { DynamicModule, Logger } from '@nestjs/common';
 
 /**
  * Liste des modules d'extension chargés dynamiquement.
  * @type {DynamicModule[]}
  */
-const serviceList: DynamicModule[] = []
+const serviceList: DynamicModule[] = [];
 
 /**
  * Nom du fichier de configuration d'une extension.
  * @constant {string}
  */
-export const EXTENSION_FILE_INFO = 'extension.yml'
+export const EXTENSION_FILE_INFO = 'extension.yml';
 
 /**
  * Chemin vers le fichier de liste des extensions.
  * @constant {string}
  */
-export const EXTENSIONS_FILE_PATH = join(process.cwd(), '/extensions/list.yml')
+export const EXTENSIONS_FILE_PATH = join(process.cwd(), '/extensions/list.yml');
 
 /**
  * Parse et valide le fichier de liste des extensions.
@@ -45,20 +45,20 @@ export const EXTENSIONS_FILE_PATH = join(process.cwd(), '/extensions/list.yml')
  * 5. Retour de la liste des extensions si valide
  */
 export async function parseExtensionsList(): Promise<ExtensionsListV1[]> {
-  const data = readFileSync(EXTENSIONS_FILE_PATH, 'utf8')
-  const yml = parse(data)
-  const schema = plainToInstance(ExtensionsFileV1, yml)
+  const data = readFileSync(EXTENSIONS_FILE_PATH, 'utf8');
+  const yml = parse(data);
+  const schema = plainToInstance(ExtensionsFileV1, yml);
   try {
     await validateOrReject(schema, {
       whitelist: true,
-    })
+    });
   } catch (errors) {
-    const err = new Error(`Invalid extensions`)
-    err.message = errors.map((e) => e.toString()).join(', ') //TODO: improve error message
-    throw err
+    const err = new Error(`Invalid extensions`);
+    err.message = errors.map((e) => e.toString()).join(', '); //TODO: improve error message
+    throw err;
   }
 
-  return yml.list
+  return yml.list;
 }
 
 /**
@@ -80,10 +80,10 @@ export async function parseExtensionsList(): Promise<ExtensionsListV1[]> {
  * 4. Retourne la configuration validée
  */
 export async function extensionParseFile(path: string): Promise<ExtensionFileV1> {
-  Logger.log('Extension file found, validating...', 'extensionParseFile')
-  const data = readFileSync(`${path}/${EXTENSION_FILE_INFO}`, 'utf8')
-  const yml = parse(data)
-  return plainToInstance(ExtensionFileV1, yml)
+  Logger.log('Extension file found, validating...', 'extensionParseFile');
+  const data = readFileSync(`${path}/${EXTENSION_FILE_INFO}`, 'utf8');
+  const yml = parse(data);
+  return plainToInstance(ExtensionFileV1, yml);
 }
 
 /**
@@ -124,41 +124,47 @@ export async function extensionParseFile(path: string): Promise<ExtensionFileV1>
 export default async function (): Promise<DynamicModule[]> {
   try {
     if (existsSync(EXTENSIONS_FILE_PATH)) {
-      Logger.log('Extensions file found, validating...', 'parsingAppExtensions')
-      const list = await parseExtensionsList()
+      Logger.log('Extensions file found, validating...', 'parsingAppExtensions');
+      const list = await parseExtensionsList();
 
       for (const extension of list) {
         if (!extension.enabled) {
-          Logger.log(`Extension ${extension.path} is disabled`, 'ExtensionServiceSetup')
-          continue
+          Logger.log(`Extension ${extension.path} is disabled`, 'ExtensionServiceSetup');
+          continue;
         }
-        const extensionPath = `${process.cwd()}/extensions/${extension.path}`
-        const extensionFile = await extensionParseFile(extensionPath)
+        const extensionPath = `${process.cwd()}/extensions/${extension.path}`;
+        const extensionFile = await extensionParseFile(extensionPath);
         if (!extensionFile.settings.service.target) {
-          Logger.warn(`Extension ${extensionFile.information.name} has no service target`, 'ExtensionServiceSetup')
-          continue
+          Logger.warn(`Extension ${extensionFile.information.name} has no service target`, 'ExtensionServiceSetup');
+          continue;
         }
-        const extensionServiceTarget = `${extensionPath}/${extensionFile.settings.service.target}`
+        const extensionServiceTarget = `${extensionPath}/${extensionFile.settings.service.target}`;
         await import(extensionServiceTarget)
           .then((module) => {
             if (module[extensionFile.settings.service.mainModule]) {
-              serviceList.push(module[extensionFile.settings.service.mainModule])
-              Logger.log(`Extension ${extensionFile.information.name} is enabled`, 'ExtensionServiceSetup')
-              return
+              serviceList.push(module[extensionFile.settings.service.mainModule]);
+              Logger.log(`Extension ${extensionFile.information.name} is enabled`, 'ExtensionServiceSetup');
+              return;
             }
-            Logger.warn(`Extension <${extensionFile.information.name}> module <${extensionFile.settings.service.mainModule}> has no main module`, 'ExtensionServiceSetup')
+            Logger.warn(
+              `Extension <${extensionFile.information.name}> module <${extensionFile.settings.service.mainModule}> has no main module`,
+              'ExtensionServiceSetup',
+            );
           })
           .catch((err) => {
-            Logger.error(`Extension <${extensionFile.information.name}> located in <${extensionServiceTarget}> failed to load`, 'ExtensionServiceSetup')
-            console.error(err)
-            console.trace(err.stack)
-          })
+            Logger.error(
+              `Extension <${extensionFile.information.name}> located in <${extensionServiceTarget}> failed to load`,
+              'ExtensionServiceSetup',
+            );
+            console.error(err);
+            console.trace(err.stack);
+          });
       }
     }
-    return serviceList
+    return serviceList;
   } catch (err) {
-    Logger.error('Failed to load extensions', 'ExtensionServiceSetup')
-    console.error(err)
-    process.exit(1)
+    Logger.error('Failed to load extensions', 'ExtensionServiceSetup');
+    console.error(err);
+    process.exit(1);
   }
 }

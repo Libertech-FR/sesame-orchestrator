@@ -1,9 +1,9 @@
-import { Logger } from '@nestjs/common'
-import { ModuleRef } from '@nestjs/core'
-import { Command, CommandRunner, InquirerService, Option, SubCommand } from 'nest-commander'
-import { CronConsoleHandler } from '~/_common/decorators/cron-console-handler.decorator'
-import { LifecycleCrudService } from './lifecycle-crud.service'
-import { LifecycleHooksService } from './lifecycle-hooks.service'
+import { Logger } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { Command, CommandRunner, InquirerService, Option, SubCommand } from 'nest-commander';
+import { CronConsoleHandler } from '~/_common/decorators/cron-console-handler.decorator';
+import { LifecycleCrudService } from './lifecycle-crud.service';
+import { LifecycleHooksService } from './lifecycle-hooks.service';
 
 /**
  * Commande CLI pour lister les sources de cycle de vie
@@ -20,7 +20,7 @@ import { LifecycleHooksService } from './lifecycle-hooks.service'
  */
 @SubCommand({ name: 'list' })
 export class LifecycleListCommand extends CommandRunner {
-  private readonly logger = new Logger(LifecycleListCommand.name)
+  private readonly logger = new Logger(LifecycleListCommand.name);
 
   /**
    * Constructeur de la commande list
@@ -34,7 +34,7 @@ export class LifecycleListCommand extends CommandRunner {
     private readonly inquirer: InquirerService,
     private readonly lifecycleService: LifecycleCrudService,
   ) {
-    super()
+    super();
   }
 
   /**
@@ -60,16 +60,16 @@ export class LifecycleListCommand extends CommandRunner {
    * // └─────────┴──────────────┴──────────┴──────────┘
    */
   async run(inputs: string[], options: any): Promise<void> {
-    this.logger.log('Démarrage de la commande de listage des cycles de vie...')
+    this.logger.log('Démarrage de la commande de listage des cycles de vie...');
 
-    const lifecycles = await this.lifecycleService.listLifecycleSources()
+    const lifecycles = await this.lifecycleService.listLifecycleSources();
 
     Object.entries(lifecycles).forEach(([source, actions]) => {
-      this.logger.log(`=== Source de cycle de vie : ${source} ===`)
+      this.logger.log(`=== Source de cycle de vie : ${source} ===`);
       if (actions && Array.isArray(actions) && actions.length > 0) {
-        console.table(actions)
+        console.table(actions);
       } else {
-        this.logger.warn('Aucune action de cycle de vie trouvée.')
+        this.logger.warn('Aucune action de cycle de vie trouvée.');
       }
     });
   }
@@ -92,7 +92,7 @@ export class LifecycleListCommand extends CommandRunner {
 })
 @SubCommand({ name: 'execute' })
 export class LifecycleExecuteCommand extends CommandRunner {
-  private readonly logger = new Logger(LifecycleExecuteCommand.name)
+  private readonly logger = new Logger(LifecycleExecuteCommand.name);
 
   public constructor(
     protected moduleRef: ModuleRef,
@@ -100,27 +100,27 @@ export class LifecycleExecuteCommand extends CommandRunner {
     private readonly lifecycleService: LifecycleCrudService,
     private readonly lifecycleHooksService: LifecycleHooksService,
   ) {
-    super()
+    super();
   }
 
   async run(_inputs: string[], options: LifecycleExecuteOptions): Promise<void> {
-    this.logger.log('Démarrage de la commande d\'exécution du cycle de vie...')
+    this.logger.log("Démarrage de la commande d'exécution du cycle de vie...");
 
-    const source = `${options?.source || ''}`.trim()
+    const source = `${options?.source || ''}`.trim();
     if (!source) {
-      console.error('Usage: yarn run console lifecycle execute --source=<source>')
-      return
+      console.error('Usage: yarn run console lifecycle execute --source=<source>');
+      return;
     }
 
     try {
-      const executed = await this.lifecycleHooksService.executeCronForSource(source)
+      const executed = await this.lifecycleHooksService.executeCronForSource(source);
       if (!executed) {
-        process.exitCode = 1
-        return
+        process.exitCode = 1;
+        return;
       }
-      this.logger.log(`Exécution du cycle de vie pour la source '${source}' terminée avec succès.`)
+      this.logger.log(`Exécution du cycle de vie pour la source '${source}' terminée avec succès.`);
     } catch (error) {
-      this.logger.error(`Erreur lors de l'exécution du cycle de vie pour la source '${source}': ${error.message}`)
+      this.logger.error(`Erreur lors de l'exécution du cycle de vie pour la source '${source}': ${error.message}`);
     }
   }
 
@@ -130,13 +130,13 @@ export class LifecycleExecuteCommand extends CommandRunner {
     required: true,
   })
   parseSource(val: string): string {
-    return `${val || ''}`.trim()
+    return `${val || ''}`.trim();
   }
 }
 
 type LifecycleExecuteOptions = {
-  source: string
-}
+  source: string;
+};
 
 /**
  * Commande CLI principale pour la gestion du cycle de vie
@@ -165,7 +165,7 @@ export class LifecycleCommand extends CommandRunner {
    * @param {ModuleRef} moduleRef - Référence au module NestJS pour la résolution de dépendances
    */
   public constructor(protected moduleRef: ModuleRef) {
-    super()
+    super();
   }
 
   /**
@@ -180,5 +180,5 @@ export class LifecycleCommand extends CommandRunner {
    * aux sous-commandes. Cette méthode est appelée uniquement si aucune sous-commande
    * valide n'est spécifiée.
    */
-  async run(inputs: string[], options: any): Promise<void> { }
+  async run(inputs: string[], options: any): Promise<void> {}
 }

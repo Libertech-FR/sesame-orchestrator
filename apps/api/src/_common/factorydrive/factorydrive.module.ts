@@ -1,7 +1,7 @@
-import { DynamicModule, Module } from '@nestjs/common'
-import { FactorydriveModuleAsyncOptions } from './factorydrive.interfaces'
-import { FactorydriveCoreModule } from './factorydrive.core-module'
-import { StorageManagerConfig } from './factorydrive'
+import { DynamicModule, Module } from '@nestjs/common';
+import { FactorydriveModuleAsyncOptions } from './factorydrive.interfaces';
+import { FactorydriveCoreModule } from './factorydrive.core-module';
+import { StorageManagerConfig } from './factorydrive';
 
 @Module({})
 export class FactorydriveModule {
@@ -9,13 +9,13 @@ export class FactorydriveModule {
     return {
       module: FactorydriveModule,
       imports: [FactorydriveCoreModule.forRoot(options)],
-    }
+    };
   }
 
   public static forRootAsync(options: FactorydriveModuleAsyncOptions): DynamicModule {
     return {
       module: FactorydriveModule,
       imports: [FactorydriveCoreModule.forRootAsync(options)],
-    }
+    };
   }
 }

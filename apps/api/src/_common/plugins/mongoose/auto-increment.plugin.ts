@@ -96,7 +96,6 @@ export function AutoIncrementPlugin(schema: Schema<any>, options: any): void {
       return;
     }
 
-
     if (typeof opt.rules === 'function') {
       const result = opt.rules(this);
       if (!result) {

@@ -1,4 +1,4 @@
-import readline from 'readline'
+import readline from 'readline';
 
 /**
  * Démarre un indicateur de chargement animé dans le terminal
@@ -12,16 +12,16 @@ import readline from 'readline'
  * stopLoader(loader);
  */
 export function startLoader(message) {
-  let currentFrame = 0
-  const spinnerFrames = ['-', '\\', '|', '/']
+  let currentFrame = 0;
+  const spinnerFrames = ['-', '\\', '|', '/'];
 
   const loaderInterval = setInterval(() => {
-    readline.cursorTo(process.stdout, 0)
-    process.stdout.write(`${spinnerFrames[currentFrame]} ${message} `)
-    currentFrame = (currentFrame + 1) % spinnerFrames.length
-  }, 100)
+    readline.cursorTo(process.stdout, 0);
+    process.stdout.write(`${spinnerFrames[currentFrame]} ${message} `);
+    currentFrame = (currentFrame + 1) % spinnerFrames.length;
+  }, 100);
 
-  return loaderInterval
+  return loaderInterval;
 }
 
 /**
@@ -35,10 +35,10 @@ export function startLoader(message) {
  * stopLoader(loader);
  */
 export function stopLoader(loaderInterval) {
-  clearInterval(loaderInterval)
-  readline.cursorTo(process.stdout, 0)
+  clearInterval(loaderInterval);
+  readline.cursorTo(process.stdout, 0);
 
   if (process.stdout.isTTY) {
-    process.stdout.clearLine(0)
+    process.stdout.clearLine(0);
   }
 }

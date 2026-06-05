@@ -59,9 +59,9 @@ export class IdentitiesCreateDto extends IntersectionType(CustomFieldsDto, Metad
   public additionalFields?: additionalFieldsPartDto;
 }
 
-export class IdentitiesDto extends IdentitiesCreateDto { }
+export class IdentitiesDto extends IdentitiesCreateDto {}
 
-export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) { }
+export class IdentitiesUpdateDto extends PartialType(IdentitiesCreateDto) {}
 
 export class IdentitiesUpsertDto extends PartialType(IdentitiesUpdateDto) {
   @IsOptional()

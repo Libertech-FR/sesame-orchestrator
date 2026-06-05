@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common'
-import { MongooseModule } from '@nestjs/mongoose'
-import { AuditsSchema, Audits } from '~/core/audits/_schemas/audits.schema'
-import { AuditsService } from './audits.service'
-import { AuditsController } from './audits.controller'
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AuditsSchema, Audits } from '~/core/audits/_schemas/audits.schema';
+import { AuditsService } from './audits.service';
+import { AuditsController } from './audits.controller';
 
 /**
  * Module de gestion des audits et de l'historique des enregistrements.
@@ -50,4 +50,4 @@ import { AuditsController } from './audits.controller'
   controllers: [AuditsController],
   exports: [AuditsService],
 })
-export class AuditsModule { }
+export class AuditsModule {}

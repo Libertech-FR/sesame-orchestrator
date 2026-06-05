@@ -1,6 +1,6 @@
-import { Logger } from '@nestjs/common'
-import * as Sentry from '@sentry/nestjs'
-import { nodeProfilingIntegration } from '@sentry/profiling-node'
+import { Logger } from '@nestjs/common';
+import * as Sentry from '@sentry/nestjs';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
 /**
  * Initialisation conditionnelle de Sentry
@@ -16,7 +16,7 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node'
  * Si SESAME_SENTRY_DSN n'est pas défini, Sentry reste désactivé et un avertissement est émis.
  */
 if (!process.env.SESAME_SENTRY_DSN) {
-  Logger.warn('SENTRY DSN not provided, Sentry is disabled', 'Sentry')
+  Logger.warn('SENTRY DSN not provided, Sentry is disabled', 'Sentry');
 } else {
   Sentry.init({
     /** DSN de connexion à Sentry */
@@ -69,6 +69,6 @@ if (!process.env.SESAME_SENTRY_DSN) {
       /** Intégration FS pour les opérations système de fichiers */
       Sentry.fsIntegration(),
     ],
-  })
-  Logger.log('Sentry initialized successfully', 'Sentry')
+  });
+  Logger.log('Sentry initialized successfully', 'Sentry');
 }

@@ -53,4 +53,4 @@ export enum AgentState {
  */
 export const AgentStateList: number[] = Object.keys(AgentState)
   .filter((k) => typeof AgentState[k as any] === 'number')
-  .map((k) => parseInt(AgentState[k as any], 10))
+  .map((k) => parseInt(AgentState[k as any], 10));

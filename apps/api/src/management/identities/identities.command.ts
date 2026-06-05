@@ -90,9 +90,9 @@ export class IdentitiesCancelFusionCommand extends CommandRunner {
 }
 
 type IdentitiesPwnedRecheckOptions = {
-  limit?: number
-  maxAgeSeconds?: number
-}
+  limit?: number;
+  maxAgeSeconds?: number;
+};
 
 @CronConsoleHandler({
   handler: 'identities-pwned-recheck',
@@ -102,7 +102,7 @@ type IdentitiesPwnedRecheckOptions = {
     {
       name: 'limit',
       label: 'Limite',
-      description: 'Nombre maximum d\'entrées d\'historique à traiter par exécution.',
+      description: "Nombre maximum d'entrées d'historique à traiter par exécution.",
       type: 'number',
       default: 500,
     },
@@ -276,7 +276,7 @@ export class IdentitiesPwnedCommand extends CommandRunner {
 
   @Option({
     flags: '--limit [limit]',
-    description: 'Nombre maximum d\'entrées d\'historique à traiter par exécution.',
+    description: "Nombre maximum d'entrées d'historique à traiter par exécution.",
     defaultValue: 500,
   })
   parseLimit(val: string): number {

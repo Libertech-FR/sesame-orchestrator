@@ -1,15 +1,15 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema'
-import { StatePart, StatePartSchema } from '~/core/agents/_schemas/_parts/state.part.schema'
-import { SecurityPart, SecurityPartSchema } from '~/core/agents/_schemas/_parts/security.part.schema'
-import { MixedValue } from '~/_common/types/mixed-value.type'
-import { historyPlugin } from '~/_common/plugins/mongoose/history.plugin'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
+import { StatePart, StatePartSchema } from '~/core/agents/_schemas/_parts/state.part.schema';
+import { SecurityPart, SecurityPartSchema } from '~/core/agents/_schemas/_parts/security.part.schema';
+import { MixedValue } from '~/_common/types/mixed-value.type';
+import { historyPlugin } from '~/_common/plugins/mongoose/history.plugin';
 
 /**
  * Méthode d'authentification par défaut pour les agents.
  * @constant {string}
  */
-const DEFAULT_THIRD_PARTY_AUTH = 'local'
+const DEFAULT_THIRD_PARTY_AUTH = 'local';
 
 /**
  * Schéma Mongoose pour les agents.
@@ -64,7 +64,7 @@ export class Agents extends AbstractSchema {
     required: true,
     unique: true,
   })
-  public username: string
+  public username: string;
 
   /**
    * Nom d'affichage de l'agent.
@@ -76,7 +76,7 @@ export class Agents extends AbstractSchema {
   @Prop({
     type: String,
   })
-  public displayName: string
+  public displayName: string;
 
   /**
    * Adresse email unique de l'agent.
@@ -91,7 +91,7 @@ export class Agents extends AbstractSchema {
     required: true,
     unique: true,
   })
-  public email: string
+  public email: string;
 
   /**
    * Mot de passe haché de l'agent.
@@ -106,7 +106,7 @@ export class Agents extends AbstractSchema {
     type: String,
     required: true,
   })
-  public password: string
+  public password: string;
 
   /**
    * Méthode d'authentification tierce utilisée.
@@ -120,7 +120,7 @@ export class Agents extends AbstractSchema {
     type: String,
     default: DEFAULT_THIRD_PARTY_AUTH,
   })
-  public thirdPartyAuth: string
+  public thirdPartyAuth: string;
 
   /**
    * État de lifecycle de l'agent.
@@ -137,7 +137,7 @@ export class Agents extends AbstractSchema {
     required: true,
     default: {},
   })
-  public state: StatePart
+  public state: StatePart;
 
   /**
    * URL de base pour l'agent.
@@ -150,7 +150,7 @@ export class Agents extends AbstractSchema {
     type: String,
     default: '/',
   })
-  public baseURL: string
+  public baseURL: string;
 
   /**
    * Informations de sécurité de l'agent.
@@ -163,7 +163,7 @@ export class Agents extends AbstractSchema {
   @Prop({
     type: SecurityPartSchema,
   })
-  public security: SecurityPart
+  public security: SecurityPart;
 
   /**
    * Rôles de l'agent.
@@ -176,7 +176,7 @@ export class Agents extends AbstractSchema {
     type: [String],
     default: [],
   })
-  public roles: string[]
+  public roles: string[];
 
   /**
    * Champs personnalisés définis par l'utilisateur.
@@ -196,7 +196,7 @@ export class Agents extends AbstractSchema {
   @Prop({
     type: Object,
   })
-  public customFields?: { [key: string]: MixedValue }
+  public customFields?: { [key: string]: MixedValue };
 }
 
 /**
@@ -206,10 +206,7 @@ export class Agents extends AbstractSchema {
  * automatiquement toutes les modifications dans la collection d'audits,
  * à l'exception du champ password pour des raisons de sécurité.
  */
-export const AgentsSchema = SchemaFactory.createForClass(Agents)
-  .plugin(historyPlugin, {
-    collectionName: Agents.name,
-    ignoredFields: [
-      'password',
-    ],
-  })
+export const AgentsSchema = SchemaFactory.createForClass(Agents).plugin(historyPlugin, {
+  collectionName: Agents.name,
+  ignoredFields: ['password'],
+});

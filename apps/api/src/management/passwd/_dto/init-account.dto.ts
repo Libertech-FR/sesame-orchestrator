@@ -11,7 +11,11 @@ export class InitAccountDto {
   @IsString()
   public template?: string;
 
-  @ApiProperty({ required: false, example: { appName: 'Sesame' }, description: 'Variables additionnelles injectées dans le template' })
+  @ApiProperty({
+    required: false,
+    example: { appName: 'Sesame' },
+    description: 'Variables additionnelles injectées dans le template',
+  })
   @IsOptional()
   @IsObject()
   public variables?: Record<string, string>;

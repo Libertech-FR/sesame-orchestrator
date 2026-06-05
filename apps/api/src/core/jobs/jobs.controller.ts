@@ -5,7 +5,7 @@ import {
   FilterSchema,
   SearchFilterOptions,
   SearchFilterSchema,
-} from '~/_common/restools';
+} from '@tacxou/nestjs_module_restools/search-filter-schema';
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';

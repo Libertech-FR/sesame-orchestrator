@@ -12,7 +12,6 @@ import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
 
 @ApiTags('management/identities')
 @Controller('identities')
-
 export class IdentitiesDoublonController extends AbstractController {
   public constructor(protected readonly _service: IdentitiesDoublonService) {
     super();
@@ -51,22 +50,19 @@ export class IdentitiesDoublonController extends AbstractController {
     possession: AC_DEFAULT_POSSESSION,
   })
   @ApiOperation({ summary: 'Ignore la fusion pour une identité' })
-  @ApiParam({ name: 'id', description: 'ID de l\'identité', type: String })
+  @ApiParam({ name: 'id', description: "ID de l'identité", type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Fusion ignorée avec succès' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Identité non trouvée' })
-  public async ignoreFusionForIdentities(
-    @Res() res: Response,
-    @Body('ids') ids: string[],
-  ): Promise<Response> {
+  public async ignoreFusionForIdentities(@Res() res: Response, @Body('ids') ids: string[]): Promise<Response> {
     if (ids.length !== 2) {
       throw new BadRequestException('Deux IDs doivent être fournis pour ignorer la fusion.');
     }
 
-    if (!ids.every(id => Types.ObjectId.isValid(id))) {
+    if (!ids.every((id) => Types.ObjectId.isValid(id))) {
       throw new BadRequestException('Tous les IDs doivent être des ObjectId valides.');
     }
 
-    const data = await this._service.ignoreFusionForIdentities(ids.map(id => new Types.ObjectId(id)));
+    const data = await this._service.ignoreFusionForIdentities(ids.map((id) => new Types.ObjectId(id)));
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -80,23 +76,20 @@ export class IdentitiesDoublonController extends AbstractController {
     action: AC_ACTIONS.UPDATE,
     possession: AC_DEFAULT_POSSESSION,
   })
-  @ApiOperation({ summary: 'Annule l\'ignorance de la fusion pour une identité' })
-  @ApiParam({ name: 'id', description: 'ID de l\'identité', type: String })
+  @ApiOperation({ summary: "Annule l'ignorance de la fusion pour une identité" })
+  @ApiParam({ name: 'id', description: "ID de l'identité", type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Ignorance de fusion annulée avec succès' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Identité non trouvée' })
-  public async unignoreFusionForIdentities(
-    @Res() res: Response,
-    @Body('ids') ids: string[],
-  ): Promise<Response> {
+  public async unignoreFusionForIdentities(@Res() res: Response, @Body('ids') ids: string[]): Promise<Response> {
     if (ids.length !== 2) {
-      throw new BadRequestException('Deux IDs doivent être fournis pour annuler l\'ignorance de la fusion.');
+      throw new BadRequestException("Deux IDs doivent être fournis pour annuler l'ignorance de la fusion.");
     }
 
-    if (!ids.every(id => Types.ObjectId.isValid(id))) {
+    if (!ids.every((id) => Types.ObjectId.isValid(id))) {
       throw new BadRequestException('Tous les IDs doivent être des ObjectId valides.');
     }
 
-    const data = await this._service.unignoreFusionForIdentities(ids.map(id => new Types.ObjectId(id)));
+    const data = await this._service.unignoreFusionForIdentities(ids.map((id) => new Types.ObjectId(id)));
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -112,10 +105,7 @@ export class IdentitiesDoublonController extends AbstractController {
   })
   @ApiOperation({ summary: 'fusionne les deux identités' })
   @ApiResponse({ status: HttpStatus.OK })
-  public async fusion(
-    @Body() body: FusionDto,
-    @Res() res: Response,
-  ): Promise<Response> {
+  public async fusion(@Body() body: FusionDto, @Res() res: Response): Promise<Response> {
     const newId = await this._service.fusion(body.id1, body.id2);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

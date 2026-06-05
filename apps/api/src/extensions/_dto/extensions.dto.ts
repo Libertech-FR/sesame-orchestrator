@@ -1,5 +1,5 @@
-import { Type } from 'class-transformer'
-import { IsBoolean, IsEnum, IsString, ValidateNested } from 'class-validator'
+import { Type } from 'class-transformer';
+import { IsBoolean, IsEnum, IsString, ValidateNested } from 'class-validator';
 
 /**
  * DTO pour une entrée d'extension dans la liste des extensions.
@@ -26,7 +26,7 @@ export class ExtensionsListV1 {
    * @example "./extensions/auth-ldap", "/var/extensions/custom-dashboard"
    */
   @IsString()
-  public path: string
+  public path: string;
 
   /**
    * Indique si l'extension est activée.
@@ -37,7 +37,7 @@ export class ExtensionsListV1 {
    * @default true
    */
   @IsBoolean()
-  public enabled: boolean
+  public enabled: boolean;
 }
 
 /**
@@ -94,7 +94,7 @@ export class ExtensionsFileV1 {
    * @enum "1"
    */
   @IsEnum(['1'])
-  public version: string
+  public version: string;
 
   /**
    * Liste des extensions référencées avec leur état d'activation.
@@ -105,5 +105,5 @@ export class ExtensionsFileV1 {
    */
   @ValidateNested({ each: true })
   @Type(() => ExtensionsListV1)
-  public list: ExtensionsListV1[]
+  public list: ExtensionsListV1[];
 }

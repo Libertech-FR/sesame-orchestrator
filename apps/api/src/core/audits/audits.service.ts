@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Audits, AuditOperation } from '~/core/audits/_schemas/audits.schema'
-import { Model } from 'mongoose'
-import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema'
-import { Types } from 'mongoose'
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Audits, AuditOperation } from '~/core/audits/_schemas/audits.schema';
+import { Model } from 'mongoose';
+import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
+import { Types } from 'mongoose';
 
 /**
  * Service de gestion des audits et de l'historique des enregistrements.
@@ -34,29 +34,31 @@ export class AuditsService extends AbstractServiceSchema<Audits> {
    * @param {Model<Audits>} _model - Le modèle Mongoose pour la collection des audits
    */
   constructor(@InjectModel(Audits.name) protected _model: Model<Audits>) {
-    super()
+    super();
   }
 
   public async getCollections(): Promise<string[]> {
-    const values = await this._model.distinct('coll', { coll: { $exists: true, $ne: null } })
-    return values.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).sort()
+    const values = await this._model.distinct('coll', { coll: { $exists: true, $ne: null } });
+    return values.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).sort();
   }
 
   public async createAuthenticationAudit(params: {
-    username: string
-    ip: string | null
-    result: 'success' | 'failed'
-    reason: string
-    agentId?: Types.ObjectId | string
+    username: string;
+    ip: string | null;
+    result: 'success' | 'failed';
+    reason: string;
+    agentId?: Types.ObjectId | string;
   }): Promise<Audits> {
-    const hasKnownAgentId = params.agentId instanceof Types.ObjectId || (typeof params.agentId === 'string' && Types.ObjectId.isValid(params.agentId))
+    const hasKnownAgentId =
+      params.agentId instanceof Types.ObjectId ||
+      (typeof params.agentId === 'string' && Types.ObjectId.isValid(params.agentId));
     const agentObjectId = hasKnownAgentId
       ? params.agentId instanceof Types.ObjectId
         ? params.agentId
         : new Types.ObjectId(params.agentId)
-      : new Types.ObjectId('000000000000000000000000')
+      : new Types.ObjectId('000000000000000000000000');
 
-    const createdAt = new Date()
+    const createdAt = new Date();
 
     return this._model.create({
       coll: 'auth',
@@ -79,6 +81,6 @@ export class AuditsService extends AbstractServiceSchema<Audits> {
         createdBy: params.username,
         createdAt,
       },
-    })
+    });
   }
 }

@@ -18,10 +18,10 @@ import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import {
   FilterOptions,
   FilterSchema,
-  ObjectIdValidationPipe,
   SearchFilterOptions,
   SearchFilterSchema,
-} from '~/_common/restools';
+} from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { ObjectIdValidationPipe } from '@tacxou/nestjs_module_restools/mongoose';
 import { Response } from 'express';
 import { Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';

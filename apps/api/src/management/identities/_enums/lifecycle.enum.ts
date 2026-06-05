@@ -1,7 +1,7 @@
 export enum IdentityLifecycleDefault {
-  OFFICIAL = "O",
-  INACTIVE = "I",
-  MANUAL = "M",
+  OFFICIAL = 'O',
+  INACTIVE = 'I',
+  MANUAL = 'M',
 }
 
 export interface IdentityLifecycleState {

@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { IsString, IsNotEmpty, IsNumber, IsDate, IsOptional } from 'class-validator'
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsNumber, IsDate, IsOptional } from 'class-validator';
 
 /**
  * DTO pour la partie état d'un agent.
@@ -50,7 +50,7 @@ export class StatePartDTO {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty()
-  public current: number
+  public current: number;
 
   /**
    * Date du dernier changement d'état.
@@ -62,7 +62,7 @@ export class StatePartDTO {
   @IsDate()
   @IsOptional()
   @ApiProperty()
-  public lastChangedAt?: Date
+  public lastChangedAt?: Date;
 
   /**
    * Date de début de suspension.
@@ -74,7 +74,7 @@ export class StatePartDTO {
   @IsDate()
   @IsOptional()
   @ApiProperty()
-  public suspendedAt?: Date
+  public suspendedAt?: Date;
 
   /**
    * Date de fin de suspension.
@@ -87,7 +87,7 @@ export class StatePartDTO {
   @IsDate()
   @IsOptional()
   @ApiProperty()
-  public suspendedUntil?: Date
+  public suspendedUntil?: Date;
 
   /**
    * Raison de la suspension.
@@ -100,5 +100,5 @@ export class StatePartDTO {
   @IsString()
   @IsOptional()
   @ApiProperty()
-  public suspendedReason?: string
+  public suspendedReason?: string;
 }

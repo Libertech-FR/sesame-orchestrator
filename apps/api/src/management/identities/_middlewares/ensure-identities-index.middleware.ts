@@ -6,9 +6,7 @@ import { Identities } from '~/management/identities/_schemas/identities.schema';
 
 @Injectable()
 export class EnsureIdentitiesIndexMiddleware implements NestMiddleware {
-  constructor(
-    @InjectModel(Identities.name) private readonly identityModel: Model<Identities>,
-  ) { }
+  constructor(@InjectModel(Identities.name) private readonly identityModel: Model<Identities>) {}
 
   public async use(req: Request, res: Response, next: () => void) {
     try {

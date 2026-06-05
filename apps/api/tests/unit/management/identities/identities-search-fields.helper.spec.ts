@@ -21,9 +21,7 @@ describe('identities-search-fields.helper', () => {
   it('mergeIdentitySearchFields keeps defaults and merges extra fields without duplicates', () => {
     const merged = mergeIdentitySearchFields(['inetOrgPerson.uid', 'inetOrgPerson.cn', 'invalid$field']);
 
-    expect(Object.keys(merged).sort()).toEqual(
-      [...DEFAULT_IDENTITY_SEARCH_FIELD_KEYS, 'inetOrgPerson.uid'].sort(),
-    );
+    expect(Object.keys(merged).sort()).toEqual([...DEFAULT_IDENTITY_SEARCH_FIELD_KEYS, 'inetOrgPerson.uid'].sort());
     expect(merged['inetOrgPerson.cn']).toBe(1);
     expect(merged['inetOrgPerson.uid']).toBe(1);
     expect(merged['invalid$field']).toBeUndefined();

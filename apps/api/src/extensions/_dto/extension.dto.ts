@@ -1,5 +1,5 @@
-import { Type } from 'class-transformer'
-import { IsDefined, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator'
+import { Type } from 'class-transformer';
+import { IsDefined, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 /**
  * DTO pour les métadonnées de service d'une extension (app ou service).
@@ -25,7 +25,7 @@ export class ExtensionSettingsAppServiceMetadataV1 {
    */
   @IsDefined()
   @IsString()
-  public target: string
+  public target: string;
 
   /**
    * Nom du module principal à importer depuis l'extension.
@@ -37,7 +37,7 @@ export class ExtensionSettingsAppServiceMetadataV1 {
    */
   @IsOptional()
   @IsString()
-  public mainModule: string = 'ExtensionModule'
+  public mainModule: string = 'ExtensionModule';
 }
 
 /**
@@ -63,7 +63,7 @@ export class ExtensionSettingsMetadataV1 {
    */
   @ValidateNested()
   @Type(() => ExtensionSettingsAppServiceMetadataV1)
-  public app: ExtensionSettingsAppServiceMetadataV1
+  public app: ExtensionSettingsAppServiceMetadataV1;
 
   /**
    * Configuration pour le chargement côté service (backend).
@@ -72,7 +72,7 @@ export class ExtensionSettingsMetadataV1 {
    */
   @ValidateNested()
   @Type(() => ExtensionSettingsAppServiceMetadataV1)
-  public service: ExtensionSettingsAppServiceMetadataV1
+  public service: ExtensionSettingsAppServiceMetadataV1;
 }
 
 /**
@@ -98,7 +98,7 @@ export class ExtensionInformationMetadataV1 {
    * @example "authentication-ldap", "custom-dashboard"
    */
   @IsString()
-  public name: string
+  public name: string;
 
   /**
    * Auteur de l'extension.
@@ -108,7 +108,7 @@ export class ExtensionInformationMetadataV1 {
    * @example "John Doe", "ACME Corporation"
    */
   @IsString()
-  public author: string
+  public author: string;
 
   /**
    * Version de l'extension.
@@ -119,7 +119,7 @@ export class ExtensionInformationMetadataV1 {
    * @example "1.0.0", "2.3.1"
    */
   @IsString()
-  public version: string
+  public version: string;
 }
 
 /**
@@ -180,7 +180,7 @@ export class ExtensionFileV1 {
    */
   @IsDefined()
   @IsEnum(['1'])
-  public version: string
+  public version: string;
 
   /**
    * Informations descriptives de l'extension.
@@ -192,7 +192,7 @@ export class ExtensionFileV1 {
   @IsDefined()
   @ValidateNested()
   @Type(() => ExtensionInformationMetadataV1)
-  public information: ExtensionInformationMetadataV1
+  public information: ExtensionInformationMetadataV1;
 
   /**
    * Paramètres de configuration pour le chargement de l'extension.
@@ -204,5 +204,5 @@ export class ExtensionFileV1 {
   @IsDefined()
   @ValidateNested()
   @Type(() => ExtensionSettingsMetadataV1)
-  public settings: ExtensionSettingsMetadataV1
+  public settings: ExtensionSettingsMetadataV1;
 }

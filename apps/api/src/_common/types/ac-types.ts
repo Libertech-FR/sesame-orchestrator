@@ -1,28 +1,40 @@
-import { IAccessInfo } from "nest-access-control"
+import { IAccessInfo } from 'nest-access-control';
 
-export const AC_ADMIN_ROLE = 'admin'
-export const AC_GUEST_ROLE = 'guest'
+export const AC_ADMIN_ROLE = 'admin';
+export const AC_GUEST_ROLE = 'guest';
 
-export const AC_INTERNAL_ROLE_PREFIX = 'interne_'
-export const AC_INTERNAL_ROLE_LECTURE = 'interne_lecture'
-export const AC_INTERNAL_ROLE_ECRITURE = 'interne_ecriture'
-export const AC_INTERNAL_ROLE_GESTION = 'interne_gestion'
+export const AC_INTERNAL_ROLE_PREFIX = 'interne_';
+export const AC_INTERNAL_ROLE_LECTURE = 'interne_lecture';
+export const AC_INTERNAL_ROLE_ECRITURE = 'interne_ecriture';
+export const AC_INTERNAL_ROLE_GESTION = 'interne_gestion';
 
 export const AC_DEFAULT_ROLES = [
   { name: AC_ADMIN_ROLE, displayName: 'Administrateur', description: 'Accès total au système.', inherits: [] },
   { name: AC_GUEST_ROLE, displayName: 'Invité', description: 'Accès minimal (base commune).', inherits: [] },
-] as const
+] as const;
 
 export const AC_INTERNAL_DEFAULT_ROLES = [
-  { name: AC_INTERNAL_ROLE_LECTURE, displayName: 'Interne - Lecture', description: 'Lecture sur les ressources internes.', inherits: [AC_GUEST_ROLE] },
-  { name: AC_INTERNAL_ROLE_ECRITURE, displayName: 'Interne - Écriture', description: 'Création / mise à jour sur les ressources internes.', inherits: [AC_INTERNAL_ROLE_LECTURE] },
-  { name: AC_INTERNAL_ROLE_GESTION, displayName: 'Interne - Gestion', description: 'Gestion avancée (dont suppression) sur les ressources internes.', inherits: [AC_INTERNAL_ROLE_ECRITURE] },
-] as const
+  {
+    name: AC_INTERNAL_ROLE_LECTURE,
+    displayName: 'Interne - Lecture',
+    description: 'Lecture sur les ressources internes.',
+    inherits: [AC_GUEST_ROLE],
+  },
+  {
+    name: AC_INTERNAL_ROLE_ECRITURE,
+    displayName: 'Interne - Écriture',
+    description: 'Création / mise à jour sur les ressources internes.',
+    inherits: [AC_INTERNAL_ROLE_LECTURE],
+  },
+  {
+    name: AC_INTERNAL_ROLE_GESTION,
+    displayName: 'Interne - Gestion',
+    description: 'Gestion avancée (dont suppression) sur les ressources internes.',
+    inherits: [AC_INTERNAL_ROLE_ECRITURE],
+  },
+] as const;
 
-export const AC_ALL_DEFAULT_ROLES = [
-  ...AC_DEFAULT_ROLES,
-  ...AC_INTERNAL_DEFAULT_ROLES,
-] as const
+export const AC_ALL_DEFAULT_ROLES = [...AC_DEFAULT_ROLES, ...AC_INTERNAL_DEFAULT_ROLES] as const;
 
 export enum AC_ACTIONS {
   CREATE = 'create',
@@ -36,7 +48,7 @@ export enum AC_POSSESSIONS {
   ANY = 'any',
 }
 
-export const AC_DEFAULT_POSSESSION = AC_POSSESSIONS.ANY
+export const AC_DEFAULT_POSSESSION = AC_POSSESSIONS.ANY;
 
 export const AC_INTERNAL_DEFAULT_ROLES_GRANTS: IAccessInfo[] = [
   // AC_INTERNAL_ROLE_LECTURE
@@ -98,4 +110,6 @@ export const AC_INTERNAL_DEFAULT_ROLES_GRANTS: IAccessInfo[] = [
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.CREATE, resource: '/settings/smsadm' },
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.UPDATE, resource: '/settings/smsadm' },
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.DELETE, resource: '/settings/smsadm' },
-] as const
+
+  { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.READ, resource: '/settings/configuration' },
+] as const;

@@ -1,6 +1,12 @@
 import { BadRequestException, Body, Controller, Get, HttpStatus, Param, Patch, Post, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { FilterOptions, filterSchema, FilterSchema, SearchFilterOptions, SearchFilterSchema } from '~/_common/restools';
+import {
+  FilterOptions,
+  filterSchema,
+  FilterSchema,
+  SearchFilterOptions,
+  SearchFilterSchema,
+} from '@tacxou/nestjs_module_restools/search-filter-schema';
 import { Response } from 'express';
 import { Document, Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';

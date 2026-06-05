@@ -1,19 +1,19 @@
-import { DynamicModule, Module } from '@nestjs/common'
-import { RouterModule } from '@nestjs/core'
-import { AgentsModule } from './agents/agents.module'
-import { AuthModule } from './auth/auth.module'
-import { BackendsModule } from './backends/backends.module'
-import { CoreController } from './core.controller'
-import { CoreService } from './core.service'
-import { JobsModule } from './jobs/jobs.module'
-import { KeyringsModule } from './keyrings/keyrings.module'
-import { LoggerModule } from './logger/logger.module'
-import { TasksModule } from './tasks/tasks.module'
-import { FilestorageModule } from './filestorage/filestorage.module'
-import { AuditsModule } from './audits/audits.module'
-import { HealthModule } from './health/health.module'
-import { CronModule } from './cron/cron.module'
-import { RolesModule } from './roles/roles.module'
+import { DynamicModule, Module } from '@nestjs/common';
+import { RouterModule } from '@nestjs/core';
+import { AgentsModule } from './agents/agents.module';
+import { AuthModule } from './auth/auth.module';
+import { BackendsModule } from './backends/backends.module';
+import { CoreController } from './core.controller';
+import { CoreService } from './core.service';
+import { JobsModule } from './jobs/jobs.module';
+import { KeyringsModule } from './keyrings/keyrings.module';
+import { LoggerModule } from './logger/logger.module';
+import { TasksModule } from './tasks/tasks.module';
+import { FilestorageModule } from './filestorage/filestorage.module';
+import { AuditsModule } from './audits/audits.module';
+import { HealthModule } from './health/health.module';
+import { CronModule } from './cron/cron.module';
+import { RolesModule } from './roles/roles.module';
 
 /**
  * Module Core - Fonctionnalités essentielles du système.

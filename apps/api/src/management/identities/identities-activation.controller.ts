@@ -4,7 +4,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ActivationDto } from '~/management/identities/_dto/_parts/activation-dto';
-import { DataStatusEnum } from "~/management/identities/_enums/data-status";
+import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 
 /**
  * Contrôleur pour la gestion de l'activation/désactivation des identités
@@ -33,25 +33,21 @@ export class IdentitiesActivationController extends AbstractController {
   @ApiOperation({ summary: 'Active ou désactive une identité' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Identité activée/désactivée avec succès'
+    description: 'Identité activée/désactivée avec succès',
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Erreur de validation ou identité introuvable'
+    description: 'Erreur de validation ou identité introuvable',
   })
-  public async activation(
-    @Res() res: Response,
-    @Body() body: ActivationDto,
-  ): Promise<Response> {
+  public async activation(@Res() res: Response, @Body() body: ActivationDto): Promise<Response> {
     try {
-      const result = await this._service.activation(body.id, body.status)
+      const result = await this._service.activation(body.id, body.status);
 
       return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
         message: `Identity ${body.status === DataStatusEnum.ACTIVE ? 'activated' : 'deactivated'} successfully`,
         data: result,
       });
-
     } catch (error) {
       // Gestion différenciée des erreurs selon leur type
       let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;

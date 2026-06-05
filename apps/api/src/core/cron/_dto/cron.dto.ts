@@ -1,6 +1,5 @@
-
-import { ApiProperty, PartialType } from '@nestjs/swagger'
-import { IsBoolean, IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator'
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IsBoolean, IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 
 /**
  * DTO pour la création d'une tâche cron
@@ -18,7 +17,7 @@ export class CronCreateDto {
     example: 'Task Lifecycle Cleanup',
     required: true,
   })
-  name: string
+  name: string;
 
   @IsString()
   @IsNotEmpty()
@@ -28,7 +27,7 @@ export class CronCreateDto {
     example: 'Cleans up old task lifecycle entries from the database.',
     required: true,
   })
-  description: string
+  description: string;
 
   @IsBoolean()
   @ApiProperty({
@@ -37,7 +36,7 @@ export class CronCreateDto {
     example: true,
     required: true,
   })
-  enabled: boolean
+  enabled: boolean;
 
   @IsString()
   @IsNotEmpty()
@@ -47,7 +46,7 @@ export class CronCreateDto {
     example: '*/5 * * * *',
     required: true,
   })
-  schedule: string
+  schedule: string;
 
   @IsString()
   @IsNotEmpty()
@@ -57,7 +56,7 @@ export class CronCreateDto {
     example: 'agents-create',
     required: true,
   })
-  handler: string
+  handler: string;
 
   @IsObject()
   @IsOptional()
@@ -67,7 +66,7 @@ export class CronCreateDto {
     example: { limit: 500 },
     additionalProperties: true,
   })
-  options?: Record<string, any>
+  options?: Record<string, any>;
 }
 
 export class CronDto extends CronCreateDto {
@@ -79,7 +78,7 @@ export class CronDto extends CronCreateDto {
    */
   @IsMongoId()
   @ApiProperty({ type: String })
-  public _id: string
+  public _id: string;
 }
 
 /**
@@ -90,4 +89,4 @@ export class CronDto extends CronCreateDto {
  * @description Permet la mise à jour partielle des propriétés d'une tâche cron.
  * Toutes les propriétés de CronCreateDto deviennent optionnelles.
  */
-export class CronUpdateDto extends PartialType(CronCreateDto) { }
+export class CronUpdateDto extends PartialType(CronCreateDto) {}

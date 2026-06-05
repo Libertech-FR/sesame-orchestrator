@@ -115,7 +115,6 @@ export class BackendsService extends AbstractQueueProcessor {
     });
 
     this.queueEvents.on('completed', async (payload) => {
-
       const result = <WorkerResultInterface>(<unknown>payload.returnvalue);
 
       if (result?.jobName === ActionType.DUMP_PACKAGE_CONFIG) {
@@ -127,10 +126,8 @@ export class BackendsService extends AbstractQueueProcessor {
       }
       const disableLogs = result?.options?.disableLogs === true;
       let jState = JobState.COMPLETED;
-      let iState = IdentityState.SYNCED;
       if (result.status !== 0) {
         jState = JobState.FAILED;
-        iState = IdentityState.ON_ERROR;
       }
       const completedJob = await this.jobsService.model.findOneAndUpdate<Jobs>(
         { jobId: payload.jobId },
@@ -143,13 +140,13 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { upsert: true, new: true },
       );
-      let myState = result.jobName === ActionType.IDENTITY_DELETE ? IdentityState.DONT_SYNC : IdentityState.SYNCED
+      let myState = result.jobName === ActionType.IDENTITY_DELETE ? IdentityState.DONT_SYNC : IdentityState.SYNCED;
       if (jState === JobState.COMPLETED) {
         this.logger.log(`Job completed... Syncing [${payload.jobId}]`);
       } else {
         this.logger.error(`Job FAILED... Syncing [${payload.jobId}]`);
         this.logger.error(`Set State on error [${payload.jobId}]`);
-        myState = IdentityState.ON_ERROR
+        myState = IdentityState.ON_ERROR;
       }
       await this.identitiesService.model.findByIdAndUpdate(completedJob?.concernedTo?.id, {
         $set: {
@@ -158,7 +155,6 @@ export class BackendsService extends AbstractQueueProcessor {
           deletedFlag: result.jobName === ActionType.IDENTITY_DELETE,
         },
       });
-
     });
   }
 
@@ -270,9 +266,10 @@ export class BackendsService extends AbstractQueueProcessor {
 
     for (const item of payload) {
       const before = typeof item === 'string' ? undefined : item.before;
-      const identityId = typeof item === 'string' ? item : (item.after?._id?.toString() || item.id);
+      const identityId = typeof item === 'string' ? item : item.after?._id?.toString() || item.id;
       if (!identityId) throw new BadRequestException('Missing identity id for lifecycle change');
-      const identity = (typeof item === 'string' || !item.after) ? await this.identitiesService.findById<any>(identityId) : item.after;
+      const identity =
+        typeof item === 'string' || !item.after ? await this.identitiesService.findById<any>(identityId) : item.after;
       // cas des fusion l employeeNumber doit etre celui de l identite primaire
       if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== '') {
         identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
@@ -293,11 +290,16 @@ export class BackendsService extends AbstractQueueProcessor {
 
     const result = {};
     for (const identity of identities) {
-      const [executedJob] = await this.executeJob(identity.action, identity.identity._id, { before: identity.before, after: identity.identity }, {
-        ...options,
-        updateStatus: true,
-        task: task._id as unknown as Types.ObjectId,
-      });
+      const [executedJob] = await this.executeJob(
+        identity.action,
+        identity.identity._id,
+        { before: identity.before, after: identity.identity },
+        {
+          ...options,
+          updateStatus: true,
+          task: task._id as unknown as Types.ObjectId,
+        },
+      );
       result[identity.identity._id] = executedJob;
     }
     return result;
@@ -341,7 +343,7 @@ export class BackendsService extends AbstractQueueProcessor {
 
     const result = {};
     for (const identity of identities) {
-      const [executedJob, res] = await this.executeJob(identity.action, identity.identity._id, identity.identity, {
+      const [executedJob] = await this.executeJob(identity.action, identity.identity._id, identity.identity, {
         ...options,
         updateStatus: true,
         switchToProcessing: false,
@@ -369,7 +371,7 @@ export class BackendsService extends AbstractQueueProcessor {
           message: `Identity ${key} not found`,
         });
       }
- 
+
       const targetState = identity.lastBackendSync ? IdentityState.TO_SYNC : IdentityState.TO_CREATE;
       await this.identitiesService.model.findByIdAndUpdate(key, {
         $set: {
@@ -494,7 +496,7 @@ export class BackendsService extends AbstractQueueProcessor {
   public async executeJob(
     actionType: ActionType,
     concernedTo?: Types.ObjectId,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     payload?: Record<string | number, any>,
     options?: ExecuteJobOptions,
   ): Promise<[Jobs, any]> {
@@ -507,7 +509,7 @@ export class BackendsService extends AbstractQueueProcessor {
       },
       {
         ...options?.job,
-        jobId: (new Types.ObjectId()).toHexString(),
+        jobId: new Types.ObjectId().toHexString(),
         attempts: 1,
       },
       options?.async,
@@ -528,7 +530,8 @@ export class BackendsService extends AbstractQueueProcessor {
     let jobStore: Document<Jobs> = null;
     const disableLogs = options?.disableLogs === true;
     if (!disableLogs || !!concernedTo) {
-      const identity = !disableLogs && concernedTo ? await this.identitiesService.findById<Identities>(concernedTo) : null;
+      const identity =
+        !disableLogs && concernedTo ? await this.identitiesService.findById<Identities>(concernedTo) : null;
       jobStore = await this.jobsService.create<Jobs>({
         jobId: job.id,
         action: actionType,
@@ -594,8 +597,7 @@ export class BackendsService extends AbstractQueueProcessor {
         return [jobStoreUpdated as unknown as Jobs, response];
       } catch (err) {
         error = err instanceof Error ? err : new Error(String(err));
-        const isDiscardedHealthCheck =
-          options?.disableLogs && options?.timeoutDiscard && error.name === 'TimeoutError';
+        const isDiscardedHealthCheck = options?.disableLogs && options?.timeoutDiscard && error.name === 'TimeoutError';
 
         if (isDiscardedHealthCheck) {
           const waitedMs = options.syncTimeout || DEFAULT_SYNC_TIMEOUT;

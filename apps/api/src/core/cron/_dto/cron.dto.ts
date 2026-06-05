@@ -63,8 +63,8 @@ export class CronCreateDto {
   @IsOptional()
   @ApiProperty({
     type: 'object',
-    description: 'Options spécifiques de la tâche (clé/valeur)',
-    example: { retentionPeriodDays: 30 },
+    description: 'Arguments CLI du handler (schéma défini par @CronConsoleHandler)',
+    example: { limit: 500 },
     additionalProperties: true,
   })
   options?: Record<string, any>

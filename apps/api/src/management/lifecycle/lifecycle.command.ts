@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
 import { Command, CommandRunner, InquirerService, SubCommand } from 'nest-commander'
+import { CronConsoleHandler } from '~/_common/decorators/cron-console-handler.decorator'
 import { LifecycleCrudService } from './lifecycle-crud.service'
 import { LifecycleHooksService } from './lifecycle-hooks.service'
 
@@ -74,6 +75,20 @@ export class LifecycleListCommand extends CommandRunner {
   }
 }
 
+@CronConsoleHandler({
+  handler: 'lifecycle-execute',
+  command: 'lifecycle execute',
+  label: 'Exécution du cycle de vie',
+  arguments: [
+    {
+      name: 'source',
+      label: 'Source lifecycle',
+      description: 'Identifiant de source (ex. 01-etd). Laisser vide pour exécuter toutes les sources.',
+      type: 'string',
+      positional: true,
+    },
+  ],
+})
 @SubCommand({ name: 'execute' })
 export class LifecycleExecuteCommand extends CommandRunner {
   private readonly logger = new Logger(LifecycleExecuteCommand.name)

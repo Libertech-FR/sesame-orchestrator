@@ -1,15 +1,21 @@
 
-import { Injectable, Logger } from '@nestjs/common'
+import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 import { SchedulerRegistry } from '@nestjs/schedule'
 import { CronHooksService } from './cron-hooks.service'
 import { pick } from 'radash'
 import { ConfigTaskDTO, CronTaskDTO } from './_dto/config-task.dto'
+import { CronUpdateDto } from './_dto/cron.dto'
 import { CronJob } from 'cron'
 import path from 'node:path'
 import { closeSync, existsSync, openSync, readFileSync, readSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { ConfigService } from '@nestjs/config'
 import { toSafeHandlerName } from '~/_common/functions/handler-logger'
+import { formatValidationErrors } from '~/_common/functions/format-validation-errors.function'
+import { plainToInstance } from 'class-transformer'
+import { validateOrReject } from 'class-validator'
 import { parse, stringify } from 'yaml'
+import { getCronConsoleHandlers } from '~/_common/decorators/cron-console-handler.decorator'
+import { validateCronTaskOptions } from './_functions/cron-command-options.function'
 
 @Injectable()
 export class CronService {
@@ -119,9 +125,65 @@ export class CronService {
     }
   }
 
+  public getConsoleHandlers() {
+    return getCronConsoleHandlers()
+  }
+
   public async setEnabled(name: string, enabled: boolean): Promise<CronTaskDTO & { _job: Partial<CronJob> } | null> {
+    return this.update(name, { enabled })
+  }
+
+  public async update(
+    name: string,
+    payload: CronUpdateDto,
+  ): Promise<CronTaskDTO & { _job: Partial<CronJob> } | null> {
+    const current = this.cronHooksService.getCronTasks().find((task) => task.name === name)
+    if (!current) {
+      return null
+    }
+
+    const mergedHandler = payload.handler ?? current.handler
+
+    try {
+      if (payload.options !== undefined) {
+        validateCronTaskOptions(mergedHandler, payload.options)
+      } else if (current.options !== undefined) {
+        validateCronTaskOptions(mergedHandler, current.options as string[] | Record<string, unknown>)
+      }
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error
+      }
+      throw new BadRequestException(`Options invalides pour le handler "${mergedHandler}".`)
+    }
+
+    const mergedTask = plainToInstance(CronTaskDTO, {
+      ...current,
+      ...pick(payload, ['description', 'enabled', 'schedule', 'handler', 'options']),
+    })
+
+    try {
+      await validateOrReject(mergedTask, { whitelist: true })
+    } catch (errors) {
+      throw new BadRequestException(formatValidationErrors(errors, name))
+    }
+
     const updated = this.updateTaskInConfig(name, (task) => {
-      task.enabled = enabled
+      if (payload.description !== undefined) {
+        task.description = payload.description
+      }
+      if (payload.enabled !== undefined) {
+        task.enabled = payload.enabled
+      }
+      if (payload.schedule !== undefined) {
+        task.schedule = payload.schedule
+      }
+      if (payload.handler !== undefined) {
+        task.handler = payload.handler
+      }
+      if (payload.options !== undefined) {
+        task.options = payload.options
+      }
     })
 
     if (!updated) {

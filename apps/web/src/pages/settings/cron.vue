@@ -18,6 +18,17 @@
         sesame-core-pan-filters(:columns='columns' mode='simple' placeholder='Rechercher par nom, description, ...')
       template(v-slot:row-actions='{ row }')
         q-btn(
+          :disable='!hasPermission("/core/cron", "read")'
+          color='primary'
+          icon='mdi-eye'
+          size='12px'
+          flat
+          round
+          dense
+          @click='openEditDialog(row)'
+        )
+          q-tooltip.text-body2 Consulter / modifier la tâche
+        q-btn(
           :disable='!hasPermission("/core/cron", "update")'
           :loading='!!cronToggleLoading[row.name]'
           :color='row.enabled ? "positive" : "warning"'
@@ -59,6 +70,116 @@
       template(#body-cell-enabled="props")
         q-td
           q-checkbox(:model-value="props.row.enabled" :disable="true" size="xs")
+  q-dialog(v-model='editDialog' persistent)
+    q-card(style='min-width: 560px; max-width: 90vw;')
+      q-toolbar.bg-primary.text-white(bordered dense flat style='height: 32px; line-height: 32px;')
+        q-toolbar-title Édition de la tâche cron
+        q-btn(flat round dense icon='mdi-close' v-close-popup)
+      q-card-section.q-pt-md
+        .column.q-gutter-md
+          q-input(
+            outlined
+            dense
+            readonly
+            v-model='editForm.name'
+            label='Nom de la tâche'
+          )
+          q-input(
+            :disable='!hasPermission("/core/cron", "update")'
+            outlined
+            dense
+            v-model='editForm.description'
+            label='Description'
+            autogrow
+          )
+          q-input(
+            :disable='!hasPermission("/core/cron", "update")'
+            outlined
+            dense
+            v-model='editForm.schedule'
+            label='Expression cron'
+            hint='Exemple : */5 * * * * (toutes les 5 minutes)'
+            :error='!!editValidations.schedule'
+            :error-message='editValidations.schedule'
+          )
+          q-select(
+            :disable='!hasPermission("/core/cron", "update")'
+            outlined
+            dense
+            emit-value
+            map-options
+            option-value='handler'
+            option-label='handler'
+            v-model='editForm.handler'
+            :options='handlerSelectOptions'
+            label='Handler (commande console)'
+            hint='Correspond à yarn run console + la commande sélectionnée'
+            :error='!!editValidations.handler'
+            :error-message='editValidations.handler'
+            @update:model-value='onHandlerChange'
+          )
+            template(#option='scope')
+              q-item(v-bind='scope.itemProps')
+                q-item-section
+                  q-item-label {{ scope.opt.handler }}
+                  q-item-label.caption yarn run console {{ scope.opt.command }}
+                  q-item-label.caption(v-if='scope.opt.label !== scope.opt.handler') {{ scope.opt.label }}
+          template(v-if='editForm.handler')
+            q-separator.q-my-sm
+            .text-subtitle2.q-mt-none Arguments de la commande
+            .text-caption.text-grey-7.q-my-none Les valeurs sont transmises en options CLI (--nom=valeur).
+            template(v-if='selectedHandlerArguments.length')
+              template(v-for='argument in selectedHandlerArguments' :key='argument.name')
+                q-toggle(
+                  v-if='argument.type === "boolean"'
+                  :disable='!hasPermission("/core/cron", "update")'
+                  dense
+                  v-model='editForm.arguments[argument.name]'
+                  :label='argument.label || argument.name'
+                  color='primary'
+                )
+                  q-tooltip.text-body2(v-if='argument.description') {{ argument.description }}
+                q-input(
+                  v-else
+                  :disable='!hasPermission("/core/cron", "update")'
+                  outlined
+                  dense
+                  v-model='editForm.arguments[argument.name]'
+                  :label='argument.label || argument.name'
+                  :hint='argument.description'
+                  :type='argument.type === "number" ? "number" : "text"'
+                  :error='!!editValidations[`arg:${argument.name}`]'
+                  :error-message='editValidations[`arg:${argument.name}`]'
+                )
+            .text-caption.text-grey-7(v-else) Cette commande ne déclare aucun argument configurable.
+            template(v-if='unrecognizedArguments.length')
+              .text-caption.text-grey-7.q-mt-sm Arguments non reconnus (conservés)
+              template(v-for='argument in unrecognizedArguments' :key='argument.name')
+                q-input(
+                  :disable='!hasPermission("/core/cron", "update")'
+                  outlined
+                  dense
+                  v-model='editForm.arguments[argument.name]'
+                  :label='argument.name'
+                  hint='Argument présent dans la configuration mais absent du schéma du handler.'
+                )
+            q-banner.rounded-borders(dense v-if='commandPreview' :class='{ "bg-grey-2 text-grey-9": !$q.dark.isActive, "bg-grey-8 text-white": $q.dark.isActive }')
+              template(#avatar)
+                q-icon(name='mdi-console' color='primary')
+              .text-caption Prévisualisation
+              small.text-body3.text-monospace.q-mt-xs Cette commande doit être exécutée dans le conteneur Sesame Orchestrator.
+              .text-body2.text-monospace.q-mt-xs {{ commandPreview }}
+      q-card-actions(align='right')
+        q-btn(flat label='Annuler' v-close-popup)
+        q-btn(
+          :disable='!hasPermission("/core/cron", "update")'
+          :loading='editSaving'
+          color='positive'
+          push
+          label='Enregistrer'
+          icon='mdi-content-save'
+          @click='saveEditForm'
+        )
   q-dialog(v-model='logsDialog' maximized)
     q-card.fit.column.no-wrap(style='overflow: hidden;')
       q-toolbar.bg-info.text-white(bordered dense style='height: 28px; line-height: 28px;')
@@ -99,6 +220,31 @@
 import type { LocationQueryValue } from 'vue-router'
 import { computed, reactive, ref } from 'vue'
 import { NewTargetId } from '~/constants/variables'
+
+type CronEditForm = {
+  name: string
+  description: string
+  schedule: string
+  handler: string
+  arguments: Record<string, string | number | boolean>
+}
+
+type CronConsoleHandlerArgument = {
+  name: string
+  label?: string
+  description?: string
+  type?: 'string' | 'number' | 'boolean'
+  default?: string | number | boolean
+  required?: boolean
+  positional?: boolean
+}
+
+type CronConsoleHandler = {
+  handler: string
+  command: string
+  label: string
+  arguments?: CronConsoleHandlerArgument[]
+}
 
 export default defineNuxtComponent({
   name: 'SettingsCronPage',
@@ -177,6 +323,18 @@ export default defineNuxtComponent({
     const logsAutoRefreshCountdown = ref(5)
     const cronToggleLoading = reactive<Record<string, boolean>>({})
     const cronRunLoading = reactive<Record<string, boolean>>({})
+    const editDialog = ref(false)
+    const editSaving = ref(false)
+    const editValidations = reactive<Record<string, string>>({})
+    const editForm = ref<CronEditForm>({
+      name: '',
+      description: '',
+      schedule: '',
+      handler: '',
+      arguments: {},
+    })
+    const originalTaskOptions = ref<Record<string, unknown>>({})
+    const cronHandlers = ref<CronConsoleHandler[]>([])
     const logsMonacoOptions = computed(() => ({
       ...monacoOptions.value,
       minimap: { enabled: false },
@@ -208,6 +366,13 @@ export default defineNuxtComponent({
 
     useHttpPaginationReactive(paginationOptions, execute)
 
+    const { data: cronHandlersResult } = await useHttp<{ data: CronConsoleHandler[] }>('/core/cron/handlers', {
+      method: 'get',
+    })
+    if (cronHandlersResult.value?.data) {
+      cronHandlers.value = cronHandlersResult.value.data
+    }
+
     return {
       cronTasks,
       pending,
@@ -234,6 +399,12 @@ export default defineNuxtComponent({
       logsAutoRefreshCountdown,
       cronToggleLoading,
       cronRunLoading,
+      editDialog,
+      editSaving,
+      editValidations,
+      editForm,
+      originalTaskOptions,
+      cronHandlers,
       logsMonacoOptions,
     }
   },
@@ -270,6 +441,40 @@ export default defineNuxtComponent({
           },
         })
       },
+    },
+    handlerSelectOptions(): CronConsoleHandler[] {
+      const options = [...(this.cronHandlers || [])]
+      const current = this.editForm.handler
+      if (current && !options.some((option) => option.handler === current)) {
+        options.unshift({
+          handler: current,
+          command: current.split('-').join(' '),
+          label: current,
+          arguments: [],
+        })
+      }
+      return options
+    },
+    selectedHandlerDescriptor(): CronConsoleHandler | null {
+      if (!this.editForm.handler) {
+        return null
+      }
+      return this.handlerSelectOptions.find((option) => option.handler === this.editForm.handler) || null
+    },
+    selectedHandlerArguments(): CronConsoleHandlerArgument[] {
+      return this.selectedHandlerDescriptor?.arguments || []
+    },
+    selectedHandlerArgumentNames(): string[] {
+      return this.selectedHandlerArguments.map((argument) => argument.name)
+    },
+    unrecognizedArguments(): Array<{ name: string }> {
+      const known = new Set(this.selectedHandlerArgumentNames)
+      return Object.keys(this.editForm.arguments || {})
+        .filter((name) => !known.has(name))
+        .map((name) => ({ name }))
+    },
+    commandPreview(): string {
+      return this.buildCommandPreview(this.editForm.handler, this.editForm.arguments)
     },
   },
   methods: {
@@ -322,6 +527,214 @@ export default defineNuxtComponent({
         return this.$dayjs(nextExecution).format('DD/MM/YYYY HH:mm:ss')
       }
       return 'N/A'
+    },
+    formatCronOptions(options: unknown): Record<string, string | number | boolean> {
+      if (!options || typeof options !== 'object' || Array.isArray(options)) {
+        return {}
+      }
+      const formatted: Record<string, string | number | boolean> = {}
+      for (const [key, value] of Object.entries(options as Record<string, unknown>)) {
+        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+          formatted[key] = value
+        }
+      }
+      return formatted
+    },
+    getHandlerDescriptor(handler: string): CronConsoleHandler | null {
+      return this.handlerSelectOptions.find((option) => option.handler === handler) || null
+    },
+    syncArgumentsFromHandler(preserveExisting = true): void {
+      const descriptor = this.getHandlerDescriptor(this.editForm.handler)
+      const schemaArguments = descriptor?.arguments || []
+      const sourceOptions = preserveExisting
+        ? {
+            ...this.formatCronOptions(this.originalTaskOptions),
+            ...this.editForm.arguments,
+          }
+        : this.formatCronOptions(this.originalTaskOptions)
+      const nextArguments: Record<string, string | number | boolean> = {}
+
+      for (const argument of schemaArguments) {
+        const existing = sourceOptions[argument.name]
+        if (existing !== undefined && existing !== '') {
+          nextArguments[argument.name] = existing
+          continue
+        }
+        if (argument.default !== undefined) {
+          nextArguments[argument.name] = argument.default
+          continue
+        }
+        nextArguments[argument.name] = argument.type === 'boolean' ? false : ''
+      }
+
+      for (const [name, value] of Object.entries(sourceOptions)) {
+        if (schemaArguments.some((argument) => argument.name === name)) {
+          continue
+        }
+        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+          nextArguments[name] = value
+        }
+      }
+
+      this.editForm.arguments = nextArguments
+    },
+    onHandlerChange(): void {
+      this.syncArgumentsFromHandler(false)
+    },
+    buildCommandPreview(handler: string, argumentsMap: Record<string, string | number | boolean>): string {
+      if (!handler) {
+        return ''
+      }
+
+      const descriptor = this.getHandlerDescriptor(handler)
+      const schema = descriptor?.arguments || []
+      const positionalSchema = schema.filter((argument) => argument.positional)
+      const flagSchema = schema.filter((argument) => !argument.positional)
+      const parts = ['yarn', 'run', 'console', ...handler.split('-')]
+
+      for (const argument of positionalSchema) {
+        const value = argumentsMap[argument.name]
+        if (value !== '' && value !== null && value !== undefined) {
+          parts.push(String(value))
+        }
+      }
+
+      const flagEntries = flagSchema.length
+        ? flagSchema.map((argument) => [argument.name, argumentsMap[argument.name]] as const)
+        : Object.entries(argumentsMap || {}).filter(([key]) => !positionalSchema.some((argument) => argument.name === key))
+
+      for (const [key, value] of flagEntries) {
+        if (value === '' || value === null || value === undefined) {
+          continue
+        }
+        if (typeof value === 'boolean') {
+          if (value) {
+            parts.push(`--${key}`)
+          }
+          continue
+        }
+        parts.push(`--${key}='${String(value)}'`)
+      }
+
+      return parts.join(' ')
+    },
+    buildOptionsFromArguments(): Record<string, string | number | boolean> | null | undefined {
+      const descriptor = this.getHandlerDescriptor(this.editForm.handler)
+      const schemaArguments = descriptor?.arguments || []
+      const options: Record<string, string | number | boolean> = {}
+      let hasErrors = false
+
+      for (const [name] of Object.entries(this.editForm.arguments || {})) {
+        if (schemaArguments.length && !schemaArguments.some((argument) => argument.name === name)) {
+          this.editValidations[`arg:${name}`] = 'Argument non reconnu pour ce handler.'
+          hasErrors = true
+        }
+      }
+
+      for (const [name, rawValue] of Object.entries(this.editForm.arguments || {})) {
+        const schema = schemaArguments.find((argument) => argument.name === name)
+        if (rawValue === '' || rawValue === null || rawValue === undefined) {
+          if (schema?.required) {
+            this.editValidations[`arg:${name}`] = 'Ce paramètre est obligatoire.'
+            hasErrors = true
+          }
+          continue
+        }
+
+        if (schema?.type === 'number') {
+          const numericValue = Number(rawValue)
+          if (!Number.isFinite(numericValue)) {
+            this.editValidations[`arg:${name}`] = 'Valeur numérique attendue.'
+            hasErrors = true
+            continue
+          }
+          options[name] = numericValue
+          continue
+        }
+
+        if (schema?.type === 'boolean') {
+          options[name] = !!rawValue
+          continue
+        }
+
+        options[name] = `${rawValue}`
+      }
+
+      if (hasErrors) {
+        return null
+      }
+
+      return Object.keys(options).length ? options : undefined
+    },
+    resetEditValidations(): void {
+      Object.keys(this.editValidations).forEach((key) => {
+        delete this.editValidations[key]
+      })
+    },
+    openEditDialog(cronTask: any): void {
+      this.resetEditValidations()
+      this.originalTaskOptions = this.formatCronOptions(cronTask?.options)
+      this.editForm = {
+        name: cronTask?.name || '',
+        description: cronTask?.description || '',
+        schedule: cronTask?.schedule || '',
+        handler: cronTask?.handler || '',
+        arguments: {},
+      }
+      this.syncArgumentsFromHandler(true)
+      this.editDialog = true
+    },
+    async saveEditForm(): Promise<void> {
+      const name = this.editForm.name
+      if (!name) {
+        return
+      }
+
+      this.resetEditValidations()
+
+      if (!this.editForm.handler) {
+        this.editValidations.handler = 'Le handler est obligatoire.'
+        return
+      }
+
+      const options = this.buildOptionsFromArguments()
+      if (options === null) {
+        return
+      }
+
+      const payload: Record<string, unknown> = {
+        description: this.editForm.description,
+        schedule: this.editForm.schedule,
+        handler: this.editForm.handler,
+      }
+      if (options !== undefined) {
+        payload.options = options
+      }
+
+      this.editSaving = true
+      try {
+        await this.$http.patch(`/core/cron/${encodeURIComponent(name)}`, {
+          body: payload,
+        })
+        this.$q.notify({
+          message: `Tâche "${name}" mise à jour.`,
+          color: 'positive',
+          position: 'top-right',
+          icon: 'mdi-check-circle-outline',
+        })
+        this.editDialog = false
+        await this.refresh()
+      } catch (error: any) {
+        const message = error?.response?._data?.message || `Impossible de mettre à jour la tâche "${name}".`
+        this.$q.notify({
+          message,
+          color: 'negative',
+          position: 'top-right',
+          icon: 'mdi-alert-circle-outline',
+        })
+      } finally {
+        this.editSaving = false
+      }
     },
     async openLogsModal(cronTask: any): Promise<void> {
       this.resetLogsViewerState()

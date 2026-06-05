@@ -7,7 +7,7 @@ import { UseRoles } from '~/_common/decorators/use-roles.decorator'
 import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types'
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator'
 import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper'
-import { CronDto } from './_dto/cron.dto'
+import { CronDto, CronUpdateDto } from './_dto/cron.dto'
 import { PartialProjectionType } from '~/_common/types/partial-projection.type'
 import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator'
 import { IsBoolean } from 'class-validator'
@@ -67,6 +67,19 @@ export class CronController {
     })
   }
 
+  @Get('handlers')
+  @UseRoles({
+    resource: '/core/cron',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async listHandlers(@Res() res: Response): Promise<Response> {
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data: this.cronService.getConsoleHandlers(),
+    })
+  }
+
   @Get(':name')
   @UseRoles({
     resource: '/core/cron',
@@ -120,6 +133,29 @@ export class CronController {
     @Res() res: Response,
   ): Promise<Response> {
     const data = await this.cronService.setEnabled(name, body.enabled)
+    if (!data) {
+      throw new NotFoundException(`Cron task <${name}> not found`)
+    }
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data,
+    })
+  }
+
+  @Patch(':name')
+  @UseRoles({
+    resource: '/core/cron',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiReadResponseDecorator(CronDto)
+  public async update(
+    @Param('name') name: string,
+    @Body() body: CronUpdateDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const data = await this.cronService.update(name, body)
     if (!data) {
       throw new NotFoundException(`Cron task <${name}> not found`)
     }

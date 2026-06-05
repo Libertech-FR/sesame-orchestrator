@@ -9,6 +9,7 @@ import { loadcronTasks } from './_functions/load-cron-tasks.function'
 import { ConfigService } from '@nestjs/config'
 import { createHandlerLogger } from '~/_common/functions/handler-logger'
 import { resolveConfigVariables } from '~/_common/functions/resolve-config-variables.function'
+import { buildCronCommandArgs } from './_functions/cron-command-options.function'
 
 @Injectable()
 export class CronHooksService {
@@ -293,25 +294,11 @@ export class CronHooksService {
   }
 
   private async executeHandlerCommand(name: string, handler: string, options?: Record<string, any>): Promise<void> {
-    const args: string[] = []
     const resolvedOptions = await resolveConfigVariables(options)
-
-    if (resolvedOptions && typeof resolvedOptions === 'object') {
-      for (const [k, v] of Object.entries(resolvedOptions)) {
-        if (typeof v === 'boolean') {
-          if (v) args.push(`--${k}`)
-        } else if (v === null || v === undefined) {
-          // skip
-        } else if (typeof v === 'object') {
-          args.push(`--${k}='${JSON.stringify(v)}'`)
-        } else {
-          args.push(`--${k}='${String(v)}'`)
-        }
-      }
-    }
+    const { positionalArgs, flagArgs } = buildCronCommandArgs(handler, resolvedOptions)
 
     const cmd = 'yarn'
-    const cmdArgs = ['run', 'console', handler.split('-').join(' '), ...args]
+    const cmdArgs = ['run', 'console', ...handler.split('-'), ...positionalArgs, ...flagArgs]
 
     const handlerLogger = createHandlerLogger(this.configService, name)
     this.logger.log(`Spawning command: ${cmd} ${cmdArgs.join(' ')}`)

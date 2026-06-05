@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { Command, CommandRunner, SubCommand } from 'nest-commander';
+import { Command, CommandRunner, Option, SubCommand } from 'nest-commander';
+import { CronConsoleHandler } from '~/_common/decorators/cron-console-handler.decorator';
 import { seedRequestContextId } from '~/contextId';
 import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { IdentitiesUpsertService } from '~/management/identities/identities-upsert.service';
@@ -88,6 +89,31 @@ export class IdentitiesCancelFusionCommand extends CommandRunner {
   }
 }
 
+type IdentitiesPwnedRecheckOptions = {
+  limit?: number
+  maxAgeSeconds?: number
+}
+
+@CronConsoleHandler({
+  handler: 'identities-pwned-recheck',
+  command: 'identities pwned recheck',
+  label: 'Re-vérification HIBP des mots de passe',
+  arguments: [
+    {
+      name: 'limit',
+      label: 'Limite',
+      description: 'Nombre maximum d\'entrées d\'historique à traiter par exécution.',
+      type: 'number',
+      default: 500,
+    },
+    {
+      name: 'maxAgeSeconds',
+      label: 'Âge maximum (secondes)',
+      description: 'Re-vérifier uniquement les entrées dont le dernier contrôle est plus ancien.',
+      type: 'number',
+    },
+  ],
+})
 @SubCommand({ name: 'pwned' })
 export class IdentitiesPwnedCommand extends CommandRunner {
   private readonly logger = new Logger(IdentitiesPwnedCommand.name);
@@ -96,10 +122,10 @@ export class IdentitiesPwnedCommand extends CommandRunner {
     super();
   }
 
-  async run(inputs: string[], options: any): Promise<void> {
+  async run(inputs: string[], options: IdentitiesPwnedRecheckOptions): Promise<void> {
     const subTask = inputs?.[0];
     if (subTask !== 'recheck') {
-      console.error('Usage: yarn run console identities pwned recheck [--limit=500]');
+      console.error('Usage: yarn run console identities pwned recheck [--limit=500] [--maxAgeSeconds=86400]');
       return;
     }
 
@@ -120,6 +146,8 @@ export class IdentitiesPwnedCommand extends CommandRunner {
 
     const maxAgeSeconds = Number(options?.maxAgeSeconds || policies?.pwnedRecheckMaxAgeSeconds || 0);
     const limit = Math.max(Number(options?.limit || 500), 1);
+
+    this.logger.log(`Running identities pwned recheck with limit=${limit} and maxAgeSeconds=${maxAgeSeconds}`);
 
     const cutoff =
       Number.isFinite(maxAgeSeconds) && maxAgeSeconds > 0 ? new Date(Date.now() - maxAgeSeconds * 1000) : null;
@@ -245,8 +273,30 @@ export class IdentitiesPwnedCommand extends CommandRunner {
       }
     }
   }
+
+  @Option({
+    flags: '--limit [limit]',
+    description: 'Nombre maximum d\'entrées d\'historique à traiter par exécution.',
+    defaultValue: 500,
+  })
+  parseLimit(val: string): number {
+    return Math.max(Number(val || 500), 1);
+  }
+
+  @Option({
+    flags: '--maxAgeSeconds [maxAgeSeconds]',
+    description: 'Re-vérifier uniquement les entrées dont le dernier contrôle est plus ancien (secondes).',
+  })
+  parseMaxAgeSeconds(val: string): number {
+    return Number(val);
+  }
 }
 
+@CronConsoleHandler({
+  handler: 'identities-password-expiration-reminder-send',
+  command: 'identities password expiration reminder send',
+  label: 'Rappels de fin de validité du mot de passe',
+})
 @SubCommand({ name: 'password' })
 export class IdentitiesPasswordExpirationReminderCommand extends CommandRunner {
   private readonly logger = new Logger(IdentitiesPasswordExpirationReminderCommand.name);

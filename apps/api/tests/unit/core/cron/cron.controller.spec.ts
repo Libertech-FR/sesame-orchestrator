@@ -6,6 +6,8 @@ describe('CronController', () => {
   const read = jest.fn()
   const readLogs = jest.fn()
   const setEnabled = jest.fn()
+  const update = jest.fn()
+  const getConsoleHandlers = jest.fn()
   const runImmediately = jest.fn()
 
   const cronService = {
@@ -13,6 +15,8 @@ describe('CronController', () => {
     read,
     readLogs,
     setEnabled,
+    update,
+    getConsoleHandlers,
     runImmediately,
   }
 
@@ -39,6 +43,24 @@ describe('CronController', () => {
       statusCode: 200,
       data: [{ name: 'task-1' }],
       total: 1,
+    })
+  })
+
+  it('should return console handlers on listHandlers', async () => {
+    getConsoleHandlers.mockReturnValue([{
+      handler: 'lifecycle-execute',
+      command: 'lifecycle execute',
+      label: 'Exécution du cycle de vie',
+      arguments: [],
+    }])
+    const res = createRes()
+
+    await controller.listHandlers(res as any)
+
+    expect(getConsoleHandlers).toHaveBeenCalled()
+    expect(res.json).toHaveBeenCalledWith({
+      statusCode: 200,
+      data: [{ handler: 'lifecycle-execute', command: 'lifecycle execute', label: 'Exécution du cycle de vie', arguments: [] }],
     })
   })
 
@@ -78,6 +100,27 @@ describe('CronController', () => {
     expect(res.json).toHaveBeenCalledWith({
       statusCode: 200,
       data: { name: 'task-1', enabled: false },
+    })
+  })
+
+  it('should throw NotFoundException when updating missing task', async () => {
+    update.mockResolvedValue(null)
+
+    await expect(
+      controller.update('missing-task', { schedule: '0 * * * *' } as any, {} as any),
+    ).rejects.toThrow(NotFoundException)
+  })
+
+  it('should return updated task on update', async () => {
+    update.mockResolvedValue({ name: 'task-1', schedule: '0 * * * *' })
+    const res = createRes()
+
+    await controller.update('task-1', { schedule: '0 * * * *' } as any, res as any)
+
+    expect(update).toHaveBeenCalledWith('task-1', { schedule: '0 * * * *' })
+    expect(res.json).toHaveBeenCalledWith({
+      statusCode: 200,
+      data: { name: 'task-1', schedule: '0 * * * *' },
     })
   })
 

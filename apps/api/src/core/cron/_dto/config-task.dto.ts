@@ -107,10 +107,10 @@ export class CronTaskDTO {
       { type: 'array', items: { type: 'string' } },
       { type: 'object', additionalProperties: true },
     ],
-    description: 'Options spécifiques de la tâche : tableau de strings ou objet clé/valeur',
+    description: 'Options CLI transmises au handler (arguments déclarés via @CronConsoleHandler)',
     examples: [
-      ['arg1', 'arg2'],
-      { key1: 'value1', key2: 'value2', retentionPeriodDays: 30 },
+      { limit: 500 },
+      { source: '01-etd' },
     ],
   })
   options?: string[] | Record<string, any>
@@ -131,8 +131,8 @@ export class ConfigTaskDTO {
    *     description: 'Cleans up old task lifecycle entries from the database.',
    *     enabled: true,
    *     schedule: 'CRON_PATTERN',
-   *     handler: 'agents-create',
-   *     options: { retentionPeriodDays: 30 }
+   *     handler: 'identities-pwned-recheck',
+   *     options: { limit: 500 }
    *   }
    * ]
    */

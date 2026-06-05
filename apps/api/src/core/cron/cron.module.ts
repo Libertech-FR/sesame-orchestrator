@@ -1,5 +1,6 @@
 
 import { Module } from '@nestjs/common'
+import './cron-console-handlers.bootstrap'
 import { CronService } from './cron.service'
 import { CronController } from './cron.controller'
 import { CronHooksService } from './cron-hooks.service'

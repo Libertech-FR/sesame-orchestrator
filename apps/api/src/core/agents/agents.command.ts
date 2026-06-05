@@ -2,6 +2,7 @@ import { Logger } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
 import { Types } from 'mongoose'
 import { Command, CommandRunner, InquirerService, Question, QuestionSet, SubCommand } from 'nest-commander'
+import { CronConsoleHandler } from '~/_common/decorators/cron-console-handler.decorator'
 import { AgentsCreateDto, AgentsUpdateDto } from '~/core/agents/_dto/agents.dto'
 import { AgentsService } from '~/core/agents/agents.service'
 import { Agents } from './_schemas/agents.schema'
@@ -221,6 +222,11 @@ export class AgentsClearMfaCommand extends CommandRunner {
   }
 }
 
+@CronConsoleHandler({
+  handler: 'agents-list',
+  command: 'agents list',
+  label: 'Liste des agents',
+})
 @SubCommand({ name: 'list' })
 export class AgentsListCommand extends CommandRunner {
   private readonly logger = new Logger(AgentsListCommand.name)

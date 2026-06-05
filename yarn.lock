@@ -6330,10 +6330,10 @@
     fs-extra "^11.3.4"
     node-exceptions "^4.0.1"
 
-"@tacxou/nestjs_module_restools@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@tacxou/nestjs_module_restools/-/nestjs_module_restools-1.0.2.tgz#612934c6a9c42e8e8382f62e371577b19ede034d"
-  integrity sha512-QZW/Za6rpz2P4rAQj1n+Tgf1EUqu1Z2BEdYZ2ILbsmygdnzfJorGpNxToBhoQWovMkBuf91zilEQg18RbNKz8Q==
+"@tacxou/nestjs_module_restools@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@tacxou/nestjs_module_restools/-/nestjs_module_restools-1.0.4.tgz#e5fe6edbdb6423c830fc4f9ddcd0e153429014ca"
+  integrity sha512-9XApc+iMC06ll7+iQO0i7I7wfp5Byhs8nxjsqLsQSt5cmt06s3GtEYDIO/hgAGLW7dylE3VaGlnUtmy3Y5Ojng==
   dependencies:
     "@nestjs/event-emitter" "^3.1.0"
     class-transformer "^0.5.1"

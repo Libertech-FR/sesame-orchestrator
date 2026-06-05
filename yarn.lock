@@ -11445,6 +11445,11 @@ hibp@^15.0.1:
   resolved "https://registry.yarnpkg.com/hibp/-/hibp-15.2.1.tgz#0552d333dcf3039d8473967b69161fe227402695"
   integrity sha512-f7FxrlBz5FGd/J7tx9DR1cCQNIzKTl4BLZzgRXeQblzcO/xiWGrvXBMwztRzjJVeFACpED6P+iVmU7of9eFqyA==
 
+highlight.js@^11.11.1:
+  version "11.11.1"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-11.11.1.tgz#fca06fa0e5aeecf6c4d437239135fabc15213585"
+  integrity sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==
+
 hookable@^5.5.3:
   version "5.5.3"
   resolved "https://registry.yarnpkg.com/hookable/-/hookable-5.5.3.tgz#6cfc358984a1ef991e2518cb9ed4a778bbd3215d"

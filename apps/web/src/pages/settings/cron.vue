@@ -185,7 +185,8 @@
       q-toolbar.bg-info.text-white(bordered dense style='height: 28px; line-height: 28px;')
         q-toolbar-title
           span Logs de la tâche "{{ selectedCronName }}"
-          span.q-ml-sm.text-caption(v-if='logsDialog && selectedCronName') (Actualisation dans {{ logsAutoRefreshCountdown }}s)
+          span.q-ml-sm.text-caption(v-if='logsLastReceivedAt')
+            | · {{ logsLastReceivedAtLabel }}
         q-space
         q-btn(
           flat
@@ -198,28 +199,33 @@
         )
           q-tooltip.text-body2(anchor='top middle' self='bottom middle') Exécuter immédiatement
         q-separator.q-mx-xs(vertical inset)
-        q-btn(flat round dense icon='mdi-refresh' :loading='logsLoading' @click='loadCronLogs')
+        q-btn(flat round dense icon='mdi-refresh' :loading='logsLoading' @click='requestCronLogsSnapshot')
           q-tooltip.text-body2(anchor='top middle' self='bottom middle') Actualiser les logs
         q-btn(flat round dense icon='mdi-close' v-close-popup)
           q-tooltip.text-body2(anchor='top middle' self='bottom middle') Fermer
       q-separator
-      q-card-section.col.q-pa-none(ref='logsContainer' style='min-height: 0; overflow: auto;')
+      q-card-section.col.q-pa-none.cron-logs-panel(ref='logsContainer')
         q-inner-loading(:showing='logsLoading')
-        div.text-center(v-if='!logsLoading && !logsExists').text-grey-7 Aucun fichier de log trouvé pour cette tâche.
-        client-only(v-if='logsExists')
-          LazyMonacoEditor.fit(
-            ref='logsMonacoEditor'
-            :model-value="logsContent || 'Aucun contenu de log.'"
-            :options='logsMonacoOptions'
-            lang='shell'
-            @load='onLogsEditorLoad'
-          )
+        div.text-center.cron-logs-empty(v-if='!logsLoading && !logsExists').text-grey-7 Aucun fichier de log trouvé pour cette tâche.
+        pre.cron-logs-viewer(
+          v-show='logsExists'
+          ref='logsViewer'
+          @scroll='onLogsViewerScroll'
+        )
+          code.hljs.language-bash(v-if='logsHighlightedHtml' v-html='logsHighlightedHtml')
+          code.hljs.language-bash(v-else) {{ logsContent || 'Aucun contenu de log.' }}
 </template>
 
 <script lang="ts">
 import type { LocationQueryValue } from 'vue-router'
-import { computed, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
+import { io, type Socket } from 'socket.io-client'
 import { NewTargetId } from '~/constants/variables'
+
+type CronLogsEvent =
+  | { type: 'snapshot'; exists: boolean; content: string; updatedAt: string | null }
+  | { type: 'append'; content: string }
+  | { type: 'resync' }
 
 type CronEditForm = {
   name: string
@@ -290,6 +296,15 @@ export default defineNuxtComponent({
           sortable: true,
         },
       ],
+      logsContent: '',
+      logsHighlightedHtml: '',
+      logsHighlightTimer: null as ReturnType<typeof setTimeout> | null,
+      logsLoadInFlight: false,
+      logsLastScrollTop: 0,
+      logsSnapshotTimeout: null as ReturnType<typeof setTimeout> | null,
+      logsSnapshotResolver: null as (() => void) | null,
+      logsHasScrolledDown: false,
+      logsFollowTail: true,
     }
   },
   provide() {
@@ -301,9 +316,7 @@ export default defineNuxtComponent({
     const { useHttpPaginationOptions, useHttpPaginationReactive } = usePagination({ name: 'settings-cron' })
     const { toPathWithQueries, navigateToTab } = useRouteQueries()
     const { hasPermission } = useAccessControl()
-    const { monacoOptions } = useDebug()
-
-    const editorEl = useTemplateRef<HTMLDivElement>('logsMonacoEditor')
+    const { highlightShellLogs } = useShellSyntaxHighlight()
 
     const paginationOptions = useHttpPaginationOptions()
     const logsDialog = ref(false)
@@ -313,15 +326,12 @@ export default defineNuxtComponent({
     const logsTailStep = 250
     const logsTailMax = 5_000
     const logsFullyLoaded = ref(false)
-    const logsContent = ref('')
     const logsExists = ref(false)
-    const logsMonacoEditor = ref<any>(null)
-    const logsScrollDispose = ref<null | (() => void)>(null)
     const logsLoadingMore = ref(false)
     const logsRunLoading = ref(false)
-    const logsAutoRefreshMs = ref(60_000)
-    const logsAutoRefreshTimer = ref<ReturnType<typeof setInterval> | null>(null)
-    const logsAutoRefreshCountdown = ref(5)
+    const logsSocket = ref<Socket | null>(null)
+    const logsSocketConnected = ref(false)
+    const logsLastReceivedAt = ref<string | null>(null)
     const cronToggleLoading = reactive<Record<string, boolean>>({})
     const cronRunLoading = reactive<Record<string, boolean>>({})
     const editDialog = ref(false)
@@ -336,16 +346,6 @@ export default defineNuxtComponent({
     })
     const originalTaskOptions = ref<Record<string, unknown>>({})
     const cronHandlers = ref<CronConsoleHandler[]>([])
-    const logsMonacoOptions = computed(() => ({
-      ...monacoOptions.value,
-      minimap: { enabled: false },
-      readOnly: true,
-      wordWrap: 'off',
-      scrollBeyondLastLine: false,
-      lineNumbers: 'off',
-      folding: false,
-      glyphMargin: false,
-    }))
 
     const {
       data: cronTasks,
@@ -381,7 +381,7 @@ export default defineNuxtComponent({
       toPathWithQueries,
       navigateToTab,
       hasPermission,
-      editorEl,
+      highlightShellLogs,
       logsDialog,
       selectedCronName,
       logsLoading,
@@ -389,15 +389,12 @@ export default defineNuxtComponent({
       logsTailStep,
       logsTailMax,
       logsFullyLoaded,
-      logsContent,
       logsExists,
-      logsMonacoEditor,
-      logsScrollDispose,
       logsLoadingMore,
       logsRunLoading,
-      logsAutoRefreshMs,
-      logsAutoRefreshTimer,
-      logsAutoRefreshCountdown,
+      logsSocket,
+      logsSocketConnected,
+      logsLastReceivedAt,
       cronToggleLoading,
       cronRunLoading,
       editDialog,
@@ -406,22 +403,21 @@ export default defineNuxtComponent({
       editForm,
       originalTaskOptions,
       cronHandlers,
-      logsMonacoOptions,
     }
   },
   watch: {
     logsDialog(isOpen: boolean): void {
       if (isOpen) {
-        this.startLogsAutoRefresh()
+        this.connectCronLogsSocket()
         return
       }
 
-      this.stopLogsAutoRefresh()
+      this.disconnectCronLogsSocket()
       this.resetLogsViewerState()
     },
   },
   beforeUnmount(): void {
-    this.stopLogsAutoRefresh()
+    this.disconnectCronLogsSocket()
     this.resetLogsViewerState()
   },
   computed: {
@@ -477,50 +473,213 @@ export default defineNuxtComponent({
     commandPreview(): string {
       return this.buildCommandPreview(this.editForm.handler, this.editForm.arguments)
     },
+    logsLastReceivedAtLabel(): string {
+      if (!this.logsLastReceivedAt) {
+        return ''
+      }
+      return `Mis à jour le ${this.$dayjs(this.logsLastReceivedAt).format('DD/MM/YYYY HH:mm:ss')}`
+    },
   },
   methods: {
-    startLogsAutoRefresh(): void {
-      if (this.logsAutoRefreshTimer || !this.logsDialog) {
-        return
-      }
-
-      const refreshSeconds = Math.max(Math.round(this.logsAutoRefreshMs / 1000), 1)
-      this.logsAutoRefreshCountdown = refreshSeconds
-      this.logsAutoRefreshTimer = setInterval(() => {
-        if (!this.logsDialog || !this.selectedCronName || this.logsLoading || this.logsLoadingMore) {
-          return
-        }
-
-        if (this.logsAutoRefreshCountdown > 1) {
-          this.logsAutoRefreshCountdown -= 1
-          return
-        }
-
-        this.logsAutoRefreshCountdown = refreshSeconds
-        void this.loadCronLogs()
-      }, 1000)
+    touchLogsLastReceived(): void {
+      this.logsLastReceivedAt = new Date().toISOString()
     },
-    stopLogsAutoRefresh(): void {
-      if (!this.logsAutoRefreshTimer) {
+    getLogsViewerElement(): HTMLElement | null {
+      const viewer = this.$refs.logsViewer
+      return viewer instanceof HTMLElement ? viewer : null
+    },
+    isLogsViewerNearBottom(threshold = 48): boolean {
+      const viewer = this.getLogsViewerElement()
+      if (!viewer) {
+        return true
+      }
+      return viewer.scrollTop + viewer.clientHeight >= viewer.scrollHeight - threshold
+    },
+    scrollLogsViewerToBottom(): void {
+      const viewer = this.getLogsViewerElement()
+      if (!viewer) {
+        return
+      }
+      const scroll = () => {
+        viewer.scrollTop = viewer.scrollHeight
+        this.logsLastScrollTop = viewer.scrollTop
+      }
+      scroll()
+      requestAnimationFrame(scroll)
+    },
+    clearLogsHighlightTimer(): void {
+      if (this.logsHighlightTimer) {
+        clearTimeout(this.logsHighlightTimer)
+        this.logsHighlightTimer = null
+      }
+    },
+    scheduleLogsHighlight(immediate = false, scrollToBottom = false): void {
+      this.clearLogsHighlightTimer()
+      const apply = () => {
+        this.refreshLogsHighlight()
+        if (!scrollToBottom) {
+          return
+        }
+        this.$nextTick(() => {
+          this.scrollLogsViewerToBottom()
+        })
+      }
+      if (immediate) {
+        apply()
+        return
+      }
+      this.logsHighlightTimer = window.setTimeout(() => {
+        this.logsHighlightTimer = null
+        apply()
+      }, 200)
+    },
+    refreshLogsHighlight(): void {
+      const content = this.logsContent || ''
+      if (!content) {
+        this.logsHighlightedHtml = ''
+        return
+      }
+      try {
+        this.logsHighlightedHtml = this.highlightShellLogs(content)
+      } catch {
+        this.logsHighlightedHtml = ''
+      }
+    },
+    applyLogsContent(content: string, scrollToBottom = false): void {
+      this.logsContent = content || ''
+      this.scheduleLogsHighlight(true, scrollToBottom)
+    },
+    appendLogsContent(chunk: string, scrollToBottom = false): void {
+      this.logsContent = `${this.logsContent || ''}${chunk}`
+      this.scheduleLogsHighlight(scrollToBottom, scrollToBottom)
+    },
+    clearLogsSnapshotTimeout(): void {
+      if (this.logsSnapshotTimeout) {
+        clearTimeout(this.logsSnapshotTimeout)
+        this.logsSnapshotTimeout = null
+      }
+    },
+    finishCronLogsSnapshotRequest(): void {
+      this.clearLogsSnapshotTimeout()
+      this.logsLoading = false
+      this.logsLoadingMore = false
+      this.logsLoadInFlight = false
+      const resolver = this.logsSnapshotResolver
+      this.logsSnapshotResolver = null
+      resolver?.()
+    },
+    onCronLogsSnapshotTimeout(): void {
+      this.logsSnapshotTimeout = null
+      if (!this.logsLoadInFlight) {
         return
       }
 
-      clearInterval(this.logsAutoRefreshTimer)
-      this.logsAutoRefreshTimer = null
-      this.logsAutoRefreshCountdown = Math.max(Math.round(this.logsAutoRefreshMs / 1000), 1)
+      void this.loadCronLogsViaHttp(true).finally(() => {
+        this.finishCronLogsSnapshotRequest()
+      })
+    },
+    connectCronLogsSocket(): void {
+      if (!this.logsDialog || !this.selectedCronName) {
+        return
+      }
+
+      const auth = useAuth()
+      const id = auth.user?._id
+      const key = auth.user?.sseToken
+      if (!id || !key) {
+        return
+      }
+
+      this.disconnectCronLogsSocket()
+      this.logsHasScrolledDown = false
+      this.logsFollowTail = true
+      this.logsLoading = true
+
+      this.logsSocket = io('/core/cron', {
+        path: '/socket.io',
+        query: { id: String(id), key: String(key) },
+        transports: ['polling'],
+        reconnectionAttempts: 10,
+      })
+
+      this.logsSocket.on('connect', () => {
+        this.logsSocketConnected = true
+        this.logsSocket?.emit('subscribe', {
+          taskName: this.selectedCronName,
+          tail: this.logsTail,
+        })
+      })
+
+      this.logsSocket.on('disconnect', () => {
+        this.logsSocketConnected = false
+      })
+
+      this.logsSocket.on('connect_error', () => {
+        this.logsSocketConnected = false
+        this.logsLoading = false
+      })
+
+      this.logsSocket.on('logs', (payload: CronLogsEvent) => {
+        this.handleCronLogsEvent(payload)
+      })
+    },
+    disconnectCronLogsSocket(): void {
+      if (this.logsSocket) {
+        this.logsSocket.emit('unsubscribe')
+        this.logsSocket.removeAllListeners()
+        this.logsSocket.disconnect()
+        this.logsSocket = null
+      }
+      this.logsSocketConnected = false
+    },
+    handleCronLogsEvent(payload: CronLogsEvent): void {
+      if (!payload || typeof payload !== 'object') {
+        return
+      }
+
+      if (payload.type === 'snapshot') {
+        this.logsExists = payload.exists
+        if (!this.logsLoadingMore) {
+          this.logsHasScrolledDown = false
+          this.logsFollowTail = true
+        }
+        this.applyLogsContent(payload.content || '', this.logsFollowTail && !this.logsLoadingMore)
+        this.touchLogsLastReceived()
+        const lineCount = this.logsContent ? this.logsContent.split('\n').length : 0
+        this.logsFullyLoaded = this.logsTail >= this.logsTailMax || lineCount < this.logsTail
+        this.finishCronLogsSnapshotRequest()
+        return
+      }
+
+      if (payload.type === 'append' && payload.content) {
+        this.appendLogsContent(payload.content, this.logsFollowTail)
+        this.logsExists = true
+        this.touchLogsLastReceived()
+        return
+      }
+
+      if (payload.type === 'resync') {
+        return
+      }
     },
     resetLogsViewerState(): void {
-      if (this.logsScrollDispose) {
-        this.logsScrollDispose()
-        this.logsScrollDispose = null
-      }
-      this.logsMonacoEditor = null
       this.logsLoadingMore = false
       this.logsLoading = false
       this.logsExists = false
       this.logsContent = ''
+      this.logsHighlightedHtml = ''
+      this.clearLogsHighlightTimer()
       this.logsFullyLoaded = false
       this.logsTail = this.logsTailStep
+      this.logsLastReceivedAt = null
+      this.logsLoadInFlight = false
+      this.logsLastScrollTop = 0
+      this.logsHasScrolledDown = false
+      this.logsFollowTail = true
+      this.clearLogsSnapshotTimeout()
+      const resolver = this.logsSnapshotResolver
+      this.logsSnapshotResolver = null
+      resolver?.()
     },
     getNextExecution(cronTask: any): string {
       const nextExecution = cronTask?._job?.nextExecution
@@ -736,8 +895,6 @@ export default defineNuxtComponent({
       this.resetLogsViewerState()
       this.selectedCronName = cronTask?.name || ''
       this.logsDialog = true
-      await this.loadCronLogs()
-      this.startLogsAutoRefresh()
     },
     async toggleCronEnabled(cronTask: any): Promise<void> {
       const name = cronTask?.name
@@ -781,7 +938,7 @@ export default defineNuxtComponent({
         this.$q.notify({
           message: `Exécution immédiate lancée pour "${name}".`,
           color: 'positive',
-          position: 'bottom-center',
+          position: 'bottom',
           icon: 'mdi-play-circle-outline',
         })
         await this.refresh()
@@ -821,26 +978,70 @@ export default defineNuxtComponent({
         this.logsRunLoading = false
       }
     },
-    async loadCronLogs(): Promise<void> {
+    requestCronLogsSnapshot(): Promise<void> {
+      if (!this.selectedCronName || this.logsLoadInFlight) {
+        return Promise.resolve()
+      }
+
+      if (!this.logsLoadingMore) {
+        this.logsTail = this.logsTailStep
+        this.logsFullyLoaded = false
+        this.logsHasScrolledDown = false
+      }
+
+      const socket = this.logsSocket
+      if (socket?.connected) {
+        return new Promise((resolve) => {
+          this.logsLoadInFlight = true
+          this.logsSnapshotResolver = resolve
+          this.logsLoading = true
+
+          socket.emit('resync', {
+            taskName: this.selectedCronName,
+            tail: this.logsTail,
+          })
+
+          this.clearLogsSnapshotTimeout()
+          this.logsSnapshotTimeout = window.setTimeout(() => {
+            this.onCronLogsSnapshotTimeout()
+          }, 10_000)
+        })
+      }
+
+      return this.loadCronLogsViaHttp()
+    },
+    async loadCronLogsViaHttp(isFallback = false): Promise<void> {
       if (!this.selectedCronName) {
         return
       }
 
-      this.logsLoading = true
+      if (this.logsLoadInFlight && !isFallback) {
+        return
+      }
+
+      if (!isFallback) {
+        this.logsLoadInFlight = true
+        this.logsLoading = true
+      }
       try {
-        const response = await this.$http.get(`/core/cron/${encodeURIComponent(this.selectedCronName)}/logs`, {
+        const data = await this.$http.$get(`/core/cron/${encodeURIComponent(this.selectedCronName)}/logs`, {
           query: {
             tail: this.logsTail,
           },
-        })
-        this.logsContent = response?._data?.data?.content || ''
-        this.logsExists = !!response?._data?.data?.exists
+        }) as { data?: { content?: string; exists?: boolean } }
+        const content = data?.data?.content || ''
+        this.logsExists = !!data?.data?.exists
+        this.logsHasScrolledDown = false
+        this.applyLogsContent(content, this.logsFollowTail && !this.logsLoadingMore)
+        this.touchLogsLastReceived()
         const lineCount = this.logsContent ? this.logsContent.split('\n').length : 0
         this.logsFullyLoaded = this.logsTail >= this.logsTailMax || lineCount < this.logsTail
       } catch (error: any) {
         this.logsContent = ''
+        this.logsHighlightedHtml = ''
         this.logsExists = false
         this.logsFullyLoaded = true
+        this.applyLogsContent('')
         this.$q.notify({
           message: error?.response?._data?.message || 'Impossible de charger les logs de la tâche cron (timeout ou erreur réseau).',
           color: 'negative',
@@ -848,54 +1049,144 @@ export default defineNuxtComponent({
           icon: 'mdi-alert-circle-outline',
         })
       } finally {
-        this.logsLoading = false
-        if (this.logsDialog && this.selectedCronName) {
-          this.logsAutoRefreshCountdown = Math.max(Math.round(this.logsAutoRefreshMs / 1000), 1)
+        if (!isFallback) {
+          this.logsLoading = false
+          this.logsLoadingMore = false
+          this.logsLoadInFlight = false
         }
       }
     },
-    onLogsEditorLoad(editor: any): void {
-      this.logsMonacoEditor = editor
-      if (this.logsScrollDispose) {
-        this.logsScrollDispose()
-        this.logsScrollDispose = null
+    onLogsViewerScroll(): void {
+      const viewer = this.getLogsViewerElement()
+      if (!viewer) {
+        return
       }
 
-      const model = editor.getModel()
-      const lineCount = model?.getLineCount() || 1
-      editor.revealLineNearTop(lineCount)
-      const disposable = editor.onDidScrollChange(async () => {
-        const isAtTop = editor.getScrollTop() <= 0
-        if (!isAtTop || this.logsLoading || this.logsLoadingMore || this.logsFullyLoaded || !this.logsExists) {
-          return
-        }
+      const scrollTop = viewer.scrollTop
+      this.logsFollowTail = this.isLogsViewerNearBottom()
+      if (scrollTop > 100) {
+        this.logsHasScrolledDown = true
+      }
+      this.logsLastScrollTop = scrollTop
 
-        const nextTail = Math.min(this.logsTail + this.logsTailStep, this.logsTailMax)
-        if (nextTail <= this.logsTail) {
-          this.logsFullyLoaded = true
-          return
-        }
+      if (
+        scrollTop > 0
+        || !this.logsHasScrolledDown
+        || this.logsLoadInFlight
+        || this.logsLoading
+        || this.logsLoadingMore
+        || this.logsFullyLoaded
+        || !this.logsExists
+      ) {
+        return
+      }
 
-        this.logsLoadingMore = true
-        this.logsTail = nextTail
-        const previousModel = editor.getModel()
-        const previousLineCount = previousModel?.getLineCount() || 1
-        const anchorLine = editor.getVisibleRanges()?.[0]?.startLineNumber || 1
-        try {
-          await this.loadCronLogs()
-          this.$nextTick(() => {
-            const updatedModel = editor.getModel()
-            const updatedLineCount = updatedModel?.getLineCount() || previousLineCount
-            const addedLines = Math.max(updatedLineCount - previousLineCount, 0)
-            const nextAnchorLine = Math.min(anchorLine + addedLines, updatedLineCount)
-            editor.revealLineNearTop(nextAnchorLine)
-          })
-        } finally {
-          this.logsLoadingMore = false
-        }
+      const nextTail = Math.min(this.logsTail + this.logsTailStep, this.logsTailMax)
+      if (nextTail <= this.logsTail) {
+        this.logsFullyLoaded = true
+        return
+      }
+
+      const previousScrollHeight = viewer.scrollHeight
+      this.logsLoadingMore = true
+      this.logsTail = nextTail
+      void this.requestCronLogsSnapshot().finally(() => {
+        this.logsLoadingMore = false
+        this.$nextTick(() => {
+          const updatedViewer = this.getLogsViewerElement()
+          if (!updatedViewer) {
+            return
+          }
+          const addedHeight = updatedViewer.scrollHeight - previousScrollHeight
+          updatedViewer.scrollTop = Math.max(addedHeight, 0)
+          this.logsLastScrollTop = updatedViewer.scrollTop
+        })
       })
-      this.logsScrollDispose = () => disposable.dispose()
     },
   },
 })
 </script>
+
+<style lang="sass" scoped>
+.cron-logs-panel
+  min-height: 0
+  overflow: hidden
+  position: relative
+
+.cron-logs-empty
+  padding: 24px
+
+.cron-logs-viewer
+  margin: 0
+  padding: 8px 12px
+  height: 100%
+  overflow: auto
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace
+  font-size: 12px
+  line-height: 1.4
+  white-space: pre
+  word-wrap: normal
+  background: #282c34
+  color: #abb2bf
+  box-sizing: border-box
+
+  :deep(code.hljs)
+    display: block
+    padding: 0
+    background: transparent
+    font-family: inherit
+    font-size: inherit
+    line-height: inherit
+    white-space: pre
+    color: #abb2bf
+
+    .hljs-comment,
+    .hljs-quote
+      color: #5c6370
+      font-style: italic
+
+    .hljs-doctag,
+    .hljs-formula,
+    .hljs-keyword
+      color: #c678dd
+
+    .hljs-deletion,
+    .hljs-name,
+    .hljs-section,
+    .hljs-selector-tag,
+    .hljs-subst
+      color: #e06c75
+
+    .hljs-literal
+      color: #56b6c2
+
+    .hljs-addition,
+    .hljs-attribute,
+    .hljs-meta .hljs-string,
+    .hljs-regexp,
+    .hljs-string
+      color: #98c379
+
+    .hljs-attr,
+    .hljs-number,
+    .hljs-selector-attr,
+    .hljs-selector-class,
+    .hljs-selector-pseudo,
+    .hljs-template-variable,
+    .hljs-type,
+    .hljs-variable
+      color: #d19a66
+
+    .hljs-bullet,
+    .hljs-link,
+    .hljs-meta,
+    .hljs-selector-id,
+    .hljs-symbol,
+    .hljs-title
+      color: #61aeee
+
+    .hljs-built_in,
+    .hljs-class .hljs-title,
+    .hljs-title.class_
+      color: #e6c07b
+</style>

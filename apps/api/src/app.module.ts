@@ -9,6 +9,7 @@ import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { RedisOptions } from 'ioredis';
+import { redisOptionsFromUri } from '~/_common/functions/redis-options-from-uri';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RequestContextModule } from 'nestjs-request-context';
@@ -115,21 +116,25 @@ import { MfaGuard } from './_common/guards/mfa.guard';
         options: config.get<RedisOptions>('ioredis.options'),
       }),
     }),
-    ...(process.env['SESAME_MS_BETA'] !== '1'
-      ? [
-          BullModule.forRootAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: async (configService: ConfigService) => ({
-              connection: {
-                host: configService.get('ioredis.host'),
-                port: configService.get('ioredis.port'),
-              },
-              blockingConnection: true,
-            }),
-          }),
-        ]
-      : []),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const uri = configService.get<string>('ioredis.uri')
+        const redisOptions = redisOptionsFromUri(uri)
+
+        return {
+          connection: {
+            host: redisOptions.host,
+            port: redisOptions.port,
+            ...(redisOptions.username ? { username: redisOptions.username } : {}),
+            ...(redisOptions.password ? { password: redisOptions.password } : {}),
+            ...(typeof redisOptions.db === 'number' ? { db: redisOptions.db } : {}),
+          },
+          blockingConnection: true,
+        }
+      },
+    }),
     SesameQueueModule.register(),
     AccessControlModule.forRootAsync({
       imports: [CoreModule],

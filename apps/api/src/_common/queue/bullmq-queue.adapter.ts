@@ -42,6 +42,7 @@ export class BullmqQueueAdapter implements SesameQueueAdapter {
 
     this._queue = new Queue(queueName, { connection });
     this._queueEvents = new QueueEvents(queueName, { connection });
+    await this._queueEvents.waitUntilReady();
     this._eventsEmitter = new BullmqQueueEventsEmitter(this._queueEvents);
     this._logger.log(`BullMQ queue "${queueName}" ready`);
   }

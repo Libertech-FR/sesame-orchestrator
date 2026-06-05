@@ -68,7 +68,7 @@ export class BackendsController {
   public async syncAllIdentities(@Res() res: Response, @Query('async') asyncQuery: string) {
     const async = /true|on|yes|1/i.test(asyncQuery);
     const data = await this.backendsService.syncAllIdentities({
-      async: false,
+      async,
     });
     return res.status(HttpStatus.ACCEPTED).json({ async, data });
   }

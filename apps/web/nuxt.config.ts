@@ -4,9 +4,13 @@ import openapiTS, { astToString, COMMENT_HEADER } from 'openapi-typescript'
 import { defineNuxtConfig } from 'nuxt/config'
 import * as consola from 'consola'
 import setupApp from './src/server/extension.setup'
+import { loadingBarHijackFilter } from './src/composables/useLoadingBarHijackFilter'
 
 const SESAME_APP_API_URL = process.env.SESAME_APP_API_URL || 'http://localhost:4002'
+/** URL API exposée au navigateur (WebSocket). Ex. http://mactacx:4002 si l'API est joignable sur ce host. */
+const SESAME_APP_PUBLIC_API_URL = process.env.SESAME_APP_PUBLIC_API_URL || ''
 const SESAME_ALLOWED_HOSTS = process.env.SESAME_ALLOWED_HOSTS ? process.env.SESAME_ALLOWED_HOSTS.split(',') : []
+const SOCKET_IO_PROXY_TARGET = SESAME_APP_API_URL.replace(/\/$/, '')
 const IS_DEV = process.env.NODE_ENV === 'development'
 
 if (SESAME_ALLOWED_HOSTS.length === 0 && !/localhost/.test(SESAME_APP_API_URL) && IS_DEV) {
@@ -76,6 +80,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       release: process.env.npm_package_name + '@' + process.env.npm_package_version,
+      socketApiUrl: SESAME_APP_PUBLIC_API_URL,
       sentry: {
         dsn: process.env.SESAME_SENTRY_DSN,
       },
@@ -175,6 +180,8 @@ export default defineNuxtConfig({
         color: 'primary',
         size: '3px',
         position: 'top',
+        /** Exclut socket.io (long-polling) et le polling de synchro / daemon. */
+        hijackFilter: loadingBarHijackFilter,
       },
     },
     extras: {
@@ -192,6 +199,13 @@ export default defineNuxtConfig({
   vite: {
     server: {
       allowedHosts: ['localhost', ...SESAME_ALLOWED_HOSTS],
+      proxy: {
+        '/socket.io': {
+          target: SOCKET_IO_PROXY_TARGET,
+          changeOrigin: true,
+          ws: true,
+        },
+      },
     },
     build: {
       // Avoid per-chunk CSS ordering differences between dev/prod.
@@ -241,18 +255,16 @@ export default defineNuxtConfig({
     typescriptBundlerResolution: true,
   },
   nitro: {
-    experimental: {
-      websocket: false,
+    devProxy: {
+      '/socket.io': {
+        target: SOCKET_IO_PROXY_TARGET,
+        changeOrigin: true,
+        ws: true,
+      },
     },
     routeRules: {
-      '/api/core/backends/sse': {
-        proxy: `${SESAME_APP_API_URL}/core/backends/sse`,
-        // Disable compression and caching for SSE
-        headers: {
-          'Cache-Control': 'no-cache, no-transform',
-          'Connection': 'keep-alive',
-          'X-Accel-Buffering': 'no', // Disable buffering in nginx
-        },
+      '/socket.io': {
+        proxy: `${SOCKET_IO_PROXY_TARGET}/socket.io`,
       },
       '/api/**': {
         proxy: `${SESAME_APP_API_URL}/**`,

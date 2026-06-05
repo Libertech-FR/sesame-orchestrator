@@ -1,2 +1,1 @@
 export const SESAME_QUEUE = Symbol('SESAME_QUEUE');
-export const SESAME_DAEMON_CLIENT = 'SESAME_DAEMON';

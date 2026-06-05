@@ -23,6 +23,7 @@ import { WorkerResultInterface } from '~/core/backends/_interfaces/worker-result
 import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
+const DAEMON_PING_TIMEOUT_MS = 15_000;
 
 @Injectable()
 export class BackendsService extends AbstractQueueProcessor {
@@ -42,18 +43,15 @@ export class BackendsService extends AbstractQueueProcessor {
       this.logger.debug('QUEUE CHECKER IGNORED, cli mode detected !');
       return;
     }
-    if (this.config.get<boolean>('application.msBeta')) {
-      this.logger.warn('SESAME_MS_BETA=1: pas de réconciliation BullMQ, avancement via WebSocket (Redis pub/sub)');
-      return;
-    }
 
     this.logger.warn('ENABLE QUEUE CHECKER !');
 
     const jobsCompleted = await this.queue.getCompleted();
     for (const job of jobsCompleted) {
       const result = <WorkerResultInterface>(<unknown>job.returnvalue);
-      if (result.jobName === ActionType.DUMP_PACKAGE_CONFIG || result?.options?.disableLogs === true) {
-        return;
+      const disableLogs = result?.options?.disableLogs === true;
+      if (result?.jobName === ActionType.DUMP_PACKAGE_CONFIG) {
+        continue;
       }
       const isSyncedJob = await this.jobsService.model.findOneAndUpdate<Jobs>(
         { jobId: job.id, state: { $nin: [JobState.COMPLETED, JobState.FAILED] } },
@@ -61,7 +59,7 @@ export class BackendsService extends AbstractQueueProcessor {
           $set: {
             state: JobState.COMPLETED,
             finishedAt: new Date(),
-            result: job.returnvalue,
+            ...(disableLogs ? {} : { result: job.returnvalue }),
           },
         },
         { new: true },
@@ -120,9 +118,14 @@ export class BackendsService extends AbstractQueueProcessor {
 
       const result = <WorkerResultInterface>(<unknown>payload.returnvalue);
 
-      if (result.jobName === ActionType.DUMP_PACKAGE_CONFIG || result?.options?.disableLogs === true) {
+      if (result?.jobName === ActionType.DUMP_PACKAGE_CONFIG) {
         return;
       }
+      if (!result) {
+        this.logger.warn(`Job completed without return value [${payload.jobId}]`);
+        return;
+      }
+      const disableLogs = result?.options?.disableLogs === true;
       let jState = JobState.COMPLETED;
       let iState = IdentityState.SYNCED;
       if (result.status !== 0) {
@@ -135,7 +138,7 @@ export class BackendsService extends AbstractQueueProcessor {
           $set: {
             state: jState,
             finishedAt: new Date(),
-            result: payload.returnvalue,
+            ...(disableLogs ? {} : { result: payload.returnvalue }),
           },
         },
         { upsert: true, new: true },
@@ -523,18 +526,19 @@ export class BackendsService extends AbstractQueueProcessor {
       payload['oldPassword'] = '**********';
     }
     let jobStore: Document<Jobs> = null;
-    if (!options?.disableLogs) {
-      const identity = concernedTo ? await this.identitiesService.findById<Identities>(concernedTo) : null;
+    const disableLogs = options?.disableLogs === true;
+    if (!disableLogs || !!concernedTo) {
+      const identity = !disableLogs && concernedTo ? await this.identitiesService.findById<Identities>(concernedTo) : null;
       jobStore = await this.jobsService.create<Jobs>({
         jobId: job.id,
         action: actionType,
-        params: payload,
-        concernedTo: identity
+        ...(disableLogs ? {} : { params: payload }),
+        concernedTo: concernedTo
           ? {
-            $ref: 'identities',
-            id: concernedTo,
-            name: identity?.inetOrgPerson?.cn,
-          }
+              $ref: 'identities',
+              id: concernedTo,
+              name: identity?.inetOrgPerson?.cn,
+            }
           : null,
         comment: options?.comment,
         task: options?.task,
@@ -594,56 +598,22 @@ export class BackendsService extends AbstractQueueProcessor {
           options?.disableLogs && options?.timeoutDiscard && error.name === 'TimeoutError';
 
         if (isDiscardedHealthCheck) {
-          this.logger.debug(`Job ${job.id} timed out after health-check wait (discarded)`);
-        } else {
-          this.logger.error(`Error while executing job ${job.id}`, error);
-          console.error(error.stack);
-        }
-      }
-
-      if (this.config.get<boolean>('application.msBeta')) {
-        let jobFailed: ModifyResult<Query<Jobs, Jobs>> = null;
-        if (!options?.disableLogs && jobStore) {
-          jobFailed = await this.jobsService.update<Jobs>(jobStore._id, {
-            $set: {
-              state: JobState.FAILED,
-              finishedAt: new Date(),
-              result: { ...(error as any)?.response },
-            },
-          });
-        }
-
-        if (concernedTo && !!options?.updateStatus) {
-          await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
-            $set: { state: IdentityState.ON_ERROR },
-          });
-        }
-
-        if (options?.timeoutDiscard && error?.name === 'TimeoutError') {
+          const waitedMs = options.syncTimeout || DEFAULT_SYNC_TIMEOUT;
+          this.logger.debug(`Job ${job.id} timed out after health-check wait (${waitedMs}ms, discarded)`);
           await job.discard();
 
           throw new RequestTimeoutException({
             status: HttpStatus.REQUEST_TIMEOUT,
-            message: `Sync job ${job.id} failed to finish in time`,
+            message:
+              actionType === ActionType.DUMP_PACKAGE_CONFIG
+                ? `Le daemon n'a pas répondu dans le délai imparti (${waitedMs} ms)`
+                : `Sync job ${job.id} failed to finish in time`,
             error,
-            job: jobFailed as unknown as Jobs,
           });
         }
 
-        if (error?.name === 'TimeoutError') {
-          throw new RequestTimeoutException({
-            status: HttpStatus.REQUEST_TIMEOUT,
-            message: `Sync job ${job.id} failed to finish in time`,
-            error,
-            job: jobFailed as unknown as Jobs,
-          });
-        }
-
-        throw new BadRequestException({
-          status: HttpStatus.BAD_REQUEST,
-          error,
-          job: (error as any)?.response ?? jobFailed,
-        });
+        this.logger.error(`Error while executing job ${job.id}`, error);
+        console.error(error.stack);
       }
 
       const stateOfJob = await job.getState();
@@ -709,7 +679,7 @@ export class BackendsService extends AbstractQueueProcessor {
           async: false,
           disableLogs: true,
           timeoutDiscard: true,
-          syncTimeout: 5_000,
+          syncTimeout: DAEMON_PING_TIMEOUT_MS,
         },
       );
       return {
@@ -718,10 +688,29 @@ export class BackendsService extends AbstractQueueProcessor {
         version: this._extractDaemonPackageVersion(response),
       };
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
+      const message = this._extractErrorMessage(error);
       this.logger.debug(`Daemon ping failed: ${message}`);
       return { online: false, pingMs: null, error: message };
     }
+  }
+
+  private _extractErrorMessage(error: unknown): string {
+    if (error instanceof HttpException) {
+      const response = error.getResponse();
+      if (typeof response === 'string') {
+        return response;
+      }
+      if (response && typeof response === 'object' && 'message' in response) {
+        const msg = (response as { message?: string | string[] }).message;
+        if (Array.isArray(msg)) {
+          return msg.join(', ');
+        }
+        if (typeof msg === 'string') {
+          return msg;
+        }
+      }
+    }
+    return error instanceof Error ? error.message : String(error);
   }
 
   private _extractDaemonPackageVersion(response: unknown): string | undefined {

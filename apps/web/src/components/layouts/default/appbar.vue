@@ -114,7 +114,7 @@ export default defineNuxtComponent({
     async syncAll() {
       this.syncing({ count: this.badgesValues.TO_SYNC })
       this.$http.post('/core/backends/syncall', {
-        params: {
+        query: {
           async: true,
         },
       })

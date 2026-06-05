@@ -16,7 +16,13 @@ q-page.grid
     :row-key='identityTableRowKey'
   )
     template(#top-table)
-      sesame-core-pan-filters(:columns='columns' :columnsType='columnsType' mode='complex' :placeholder='"Rechercher par nom, prénom, email, ..."')
+      sesame-core-pan-filters(
+        :columns='columns'
+        :columnsType='columnsType'
+        mode='complex'
+        :placeholder='"Rechercher par nom, prénom, email, ..."'
+        :searchFieldsHint='searchFieldsHint'
+      )
     template(#before-top-right-before="{ selected, clearSelection }")
       q-btn.q-ml-md(
         :disable='!hasPermission("/management/identities", "create")'
@@ -131,13 +137,11 @@ export default defineNuxtComponent({
     const { getStateName } = useIdentityStates()
     const { countFilters, hasFilters, getFilters, removeFilter } = useFiltersQuery(columns)
     const { useHttpPaginationOptions, useHttpPaginationReactive } = usePagination()
+    const { getSearchFieldsQuery, buildSearchFieldsHint } = useIdentitySearchFields()
+    const searchFieldsQuery = getSearchFieldsQuery()
+    const searchFieldsHint = computed(() => buildSearchFieldsHint(columns.value))
 
-    // const queryDebounced = ref({
-    //   ...getDefaults(),
-    //   ...$route.query,
-    // })
-
-    const paginationOptions = useHttpPaginationOptions()
+    const paginationOptions = useHttpPaginationOptions(searchFieldsQuery)
 
     const {
       data: identities,
@@ -151,7 +155,7 @@ export default defineNuxtComponent({
       ...paginationOptions,
     })
 
-    useHttpPaginationReactive(paginationOptions, execute)
+    useHttpPaginationReactive(paginationOptions, execute, searchFieldsQuery)
 
     // watchDebounced(
     //   () => ({ ...getDefaults(), ...$route.query }),
@@ -205,6 +209,7 @@ export default defineNuxtComponent({
       columns,
       visibleColumns,
       columnsType,
+      searchFieldsHint,
       tabs: [
         {
           name: 'index',
@@ -670,6 +675,9 @@ export default defineNuxtComponent({
           return IdentityState.TO_SYNC
 
         case IdentityState.SYNCED:
+          return IdentityState.TO_SYNC
+
+        case IdentityState.PROCESSING:
           return IdentityState.TO_SYNC
 
         default:

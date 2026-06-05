@@ -21,6 +21,7 @@ q-layout(view="hHh LpR lff" style="margin-top: -1px;")
 <script lang="ts">
 import { IdentityState } from '~/constants/enums'
 import { useIdentityStateStore } from '~/stores/identityState'
+import { loadingBarDefaults } from '~/composables/useLoadingBarHijackFilter'
 import { io, type Socket } from 'socket.io-client'
 
 export default defineNuxtComponent({
@@ -60,11 +61,7 @@ export default defineNuxtComponent({
   async setup() {
     const $q = useQuasar()
 
-    $q.loadingBar.setDefaults({
-      color: 'white',
-      size: '3px',
-      position: 'top'
-    })
+    $q.loadingBar.setDefaults(loadingBarDefaults)
 
     const identityStateStore = useIdentityStateStore()
     const { menuParts, getMenuByPart, initialize } = useMenu(identityStateStore)
@@ -148,12 +145,10 @@ export default defineNuxtComponent({
 
         this.disconnectBackendsSocket()
 
-        const apiOrigin = resolveSocketApiOrigin()
-
-        this.socket = io(`${apiOrigin}/core/backends`, {
+        this.socket = io('/core/backends', {
           path: '/socket.io',
           query: { id: String(id), key: String(key) },
-          transports: ['polling', 'websocket'],
+          transports: ['polling'],
           reconnectionAttempts: 10,
         })
         this.socket.on('message', this.onJobMessage.bind(this))

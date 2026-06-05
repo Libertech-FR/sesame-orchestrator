@@ -16,16 +16,14 @@ q-layout(view="lHh Lpr fff")
 </template>
 
 <script lang="ts">
+import { loadingBarDefaults } from '~/composables/useLoadingBarHijackFilter'
+
 export default defineNuxtComponent({
   name: 'SimpleCenteredLayout',
   setup() {
     const $q = useQuasar()
 
-    $q.loadingBar.setDefaults({
-      color: 'white',
-      size: '3px',
-      position: 'top'
-    })
+    $q.loadingBar.setDefaults(loadingBarDefaults)
 
     const getStyle = () => {
       return {

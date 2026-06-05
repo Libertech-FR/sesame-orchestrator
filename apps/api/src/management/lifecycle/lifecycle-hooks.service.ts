@@ -450,12 +450,26 @@ export class LifecycleHooksService extends AbstractLifecycleService {
     await this.fireLifecycleEvent(identity, identity, { force: true })
   }
 
+  private isOperationalStateOnlyChange(before: Identities | undefined, after: Identities): boolean {
+    if (!before) {
+      return false
+    }
+    return before.lifecycle === after.lifecycle && before.state !== after.state
+  }
+
   private async fireLifecycleEvent(
     before: Identities,
     after: Identities,
     options?: { force?: boolean },
   ): Promise<void> {
     const lifecycleChanged = options?.force || (!!before && before.lifecycle !== after.lifecycle)
+
+    if (!options?.force && this.isOperationalStateOnlyChange(before, after)) {
+      this.logger.debug(
+        `Identity <${after._id}> operational state changed (${before.state} -> ${after.state}), skipping lifecycle backend jobs`,
+      )
+      return
+    }
 
     if (lifecycleChanged) {
       await this.create({

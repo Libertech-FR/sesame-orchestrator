@@ -6,7 +6,7 @@ import * as consola from 'consola'
 import setupApp from './src/server/extension.setup'
 import { loadingBarHijackFilter } from './src/composables/useLoadingBarHijackFilter'
 
-const SESAME_APP_API_URL = process.env.SESAME_APP_API_URL || 'http://localhost:4002'
+const SESAME_APP_API_URL = process.env.SESAME_APP_API_URL || 'http://127.0.0.1:4000'
 /** URL API exposée au navigateur (WebSocket). Ex. http://mactacx:4002 si l'API est joignable sur ce host. */
 const SESAME_APP_PUBLIC_API_URL = process.env.SESAME_APP_PUBLIC_API_URL || ''
 const SESAME_ALLOWED_HOSTS = process.env.SESAME_ALLOWED_HOSTS ? process.env.SESAME_ALLOWED_HOSTS.split(',') : []
@@ -263,9 +263,6 @@ export default defineNuxtConfig({
       },
     },
     routeRules: {
-      '/socket.io': {
-        proxy: `${SOCKET_IO_PROXY_TARGET}/socket.io`,
-      },
       '/api/**': {
         proxy: `${SESAME_APP_API_URL}/**`,
       },

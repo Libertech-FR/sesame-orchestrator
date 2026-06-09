@@ -220,6 +220,7 @@
 import type { LocationQueryValue } from 'vue-router'
 import { reactive, ref } from 'vue'
 import { attachSocketIoDebug } from '~/composables/useSocketIoDebug'
+import { resolveSocketApiOrigin } from '~/composables/useSocketApiOrigin'
 import { io, type Socket } from 'socket.io-client'
 import { NewTargetId } from '~/constants/variables'
 
@@ -596,7 +597,7 @@ export default defineNuxtComponent({
       this.logsFollowTail = true
       this.logsLoading = true
 
-      this.logsSocket = io('/core/cron', {
+      this.logsSocket = io(`${resolveSocketApiOrigin()}/core/cron`, {
         path: '/socket.io',
         query: { id: String(id), key: String(key) },
         transports: ['polling'],

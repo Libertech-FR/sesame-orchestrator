@@ -5,6 +5,14 @@
 #   docker network create sesame
 #   docker network create reverse   # si reverse-proxy externe
 #
+# Socket.IO (apps/web/.env) :
+#   SESAME_APP_API_URL=http://127.0.0.1:4000
+#   # Si le reverse-proxy route /socket.io vers le port 4000 (API) au lieu du 3000 (Nuxt) :
+#   # SESAME_APP_PUBLIC_API_URL=https://votre-domaine
+#
+# Reverse-proxy : router /socket.io vers le port 3000 (Nuxt proxifie vers l'API)
+# ou directement vers le port 4000 (définir SESAME_APP_PUBLIC_API_URL ci-dessus).
+#
 # Démarrage :
 #   docker compose -f docker-compose.prod.yml up -d
 

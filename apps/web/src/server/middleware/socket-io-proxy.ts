@@ -12,5 +12,10 @@ export default defineEventHandler(async (event) => {
     return
   }
 
+  // proxyRequest (h3) ne gère pas l'upgrade WebSocket — laisser devProxy / reverse-proxy s'en charger.
+  if (event.node.req.headers.upgrade?.toLowerCase() === 'websocket') {
+    return
+  }
+
   return proxyRequest(event, `${resolveApiBaseUrl()}${url}`)
 })

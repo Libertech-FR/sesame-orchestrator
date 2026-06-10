@@ -147,7 +147,10 @@ export function attachSocketIoDebug(socket: Socket, namespace: string): void {
   })
 
   socket.on('connect', () => {
-    maybeLog('lifecycle', 'connect', { socketId: socket.id })
+    maybeLog('lifecycle', 'connect', {
+      socketId: socket.id,
+      transport: socket.io.engine.transport.name,
+    })
   })
 
   socket.on('disconnect', (reason) => {

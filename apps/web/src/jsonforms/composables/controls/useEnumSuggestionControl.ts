@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { first, get, isArray, isEmpty, isNumber, isObject, isString } from 'radash'
 import { useNuxtApp } from '#imports'
 import { determineClearValue, useQuasarControl } from '../../utils'
@@ -28,6 +28,22 @@ export const createEnumAdaptTarget = (clearValue: unknown) => {
   }
 
   return (value: unknown) => (isBlankValue(value) ? clearValue : value)
+}
+
+export const normalizeArrayControlData = (data: unknown): unknown[] | null => {
+  if (data === null || data === undefined) {
+    return null
+  }
+
+  if (Array.isArray(data)) {
+    return data
+  }
+
+  if (typeof data === 'string' && data.trim().length === 0) {
+    return []
+  }
+
+  return [data]
 }
 
 export const isArraySchemaControl = (control: JsonFormsEnumControl['control']['value']) => {
@@ -92,6 +108,40 @@ export const useEnumSuggestionControl = ({
   const control = useQuasarControl(jsonFormsControl, adaptTarget, debounceWait)
 
   const isArrayControl = computed(() => isArraySchemaControl(control.control.value))
+
+  const modelValue = computed(() => {
+    const data = control.control.value.data
+
+    if (!isArrayControl.value) {
+      return data ?? null
+    }
+
+    return normalizeArrayControlData(data) ?? null
+  })
+
+  watch(
+    () => control.control.value.data,
+    (data) => {
+      if (!isArrayControl.value) {
+        return
+      }
+
+      if (data !== null && data !== undefined && !Array.isArray(data)) {
+        control.onChange(adaptTarget(normalizeArrayControlData(data) ?? []))
+      }
+    },
+    { immediate: true },
+  )
+
+  const onChange = (value: unknown) => {
+    if (isArrayControl.value) {
+      const normalized = Array.isArray(value) ? value : normalizeArrayControlData(value) ?? []
+      control.onChange(adaptTarget(normalized))
+      return
+    }
+
+    control.onChange(adaptTarget(value))
+  }
 
   const optionValueKey = computed(() =>
     resolveOptionKey(control.appliedOptions.value?.optionValue, 'value'),
@@ -209,16 +259,14 @@ export const useEnumSuggestionControl = ({
 
   const createValue = (newValue: unknown, done: () => void) => {
     if (isArrayControl.value) {
-      const currentValue = Array.isArray(control.control.value.data)
-        ? control.control.value.data
-        : []
+      const currentValue = normalizeArrayControlData(control.control.value.data) ?? []
 
       if (newValue != null && !currentValue.includes(newValue)) {
         const updatedValue = [...currentValue, newValue]
-        control.onChange(adaptTarget(updatedValue))
+        onChange(updatedValue)
       }
     } else {
-      control.onChange(adaptTarget(newValue))
+      onChange(newValue)
     }
     done()
   }
@@ -226,7 +274,9 @@ export const useEnumSuggestionControl = ({
   return {
     ...control,
     adaptTarget,
+    onChange,
     createValue,
+    modelValue,
     isArrayControl,
     optionValueKey,
     optionLabelKey,

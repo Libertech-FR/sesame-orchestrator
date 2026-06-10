@@ -12,7 +12,7 @@
       @blur="isFocused = false"
       @new-value="createValue"
       :id="control.id"
-      :model-value="control.data || null"
+      :model-value="modelValue"
       :label="computedLabel"
       :class="styles.control.input"
       clear-icon="mdi-close"

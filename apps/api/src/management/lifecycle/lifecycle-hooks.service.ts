@@ -354,6 +354,13 @@ export class LifecycleHooksService extends AbstractLifecycleService {
                   date: new Date(),
                 });
 
+                if (hasMutation) {
+                  await this.backendsService.lifecycleChangedIdentities(
+                    [{ id: updated._id.toString(), before: identity, after: updated }],
+                    { targetState: IdentityState.TO_SYNC },
+                  );
+                }
+
                 this.logger.log(
                   `Identity <${identity._id}> updated to lifecycle <${idRule.target}> by trigger from source <${idRule.sources}>`,
                 );
@@ -562,17 +569,16 @@ export class LifecycleHooksService extends AbstractLifecycleService {
           date: new Date(),
         });
 
-        if (hasMutation) {
-          this.logger.log(
-            `Identity <${res._id}> updated to lifecycle <${lcs.target}> with attribute mutation, set to TO_SYNC`,
-          );
-        } else {
-          const identities = res._id ? [{ id: res._id.toString(), before: after, after: res }] : [];
-          await this.backendsService.lifecycleChangedIdentities(identities);
-          this.logger.log(
-            `Identity <${res._id}> updated to lifecycle <${lcs.target}> based on rules from source <${after.lifecycle}>`,
-          );
-        }
+        const identities = res._id ? [{ id: res._id.toString(), before: after, after: res }] : [];
+        await this.backendsService.lifecycleChangedIdentities(identities, {
+          ...(hasMutation ? { targetState: IdentityState.TO_SYNC } : {}),
+        });
+
+        this.logger.log(
+          hasMutation
+            ? `Identity <${res._id}> updated to lifecycle <${lcs.target}> with attribute mutation, lifecycle event sent and set to TO_SYNC`
+            : `Identity <${res._id}> updated to lifecycle <${lcs.target}> based on rules from source <${after.lifecycle}>`,
+        );
         return;
       }
     }

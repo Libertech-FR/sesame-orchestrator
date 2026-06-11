@@ -24,7 +24,7 @@ import { IdentityState } from '~/constants/enums'
 import { useIdentityStateStore } from '~/stores/identityState'
 import { loadingBarDefaults } from '~/composables/useLoadingBarHijackFilter'
 import { attachSocketIoDebug } from '~/composables/useSocketIoDebug'
-import { buildSocketIoClientOptions, resolveSocketApiOrigin } from '~/composables/useSocketApiOrigin'
+import { buildSocketIoClientOptions } from '~/composables/useSocketIoClient'
 import { io, type Socket } from 'socket.io-client'
 
 export default defineNuxtComponent({
@@ -159,7 +159,7 @@ export default defineNuxtComponent({
 
         this.disconnectBackendsSocket()
 
-        this.socket = io(`${resolveSocketApiOrigin()}/core/backends`, buildSocketIoClientOptions({ id, key }))
+        this.socket = io('/core/backends', buildSocketIoClientOptions({ id, key }))
         attachSocketIoDebug(this.socket, '/core/backends')
         this.socket.on('connect', () => {
           Object.assign(this.daemonStatus, { checking: true })

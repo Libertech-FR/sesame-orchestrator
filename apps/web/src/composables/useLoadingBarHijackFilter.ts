@@ -1,6 +1,6 @@
 /** Requêtes en arrière-plan : ne pas déclencher la barre Quasar (XHR hijack). */
 const BACKGROUND_URL_PARTS = [
-  '/socket.io',
+  '/api/socket.io',
   '/core/backends/sync-progress',
 ]
 

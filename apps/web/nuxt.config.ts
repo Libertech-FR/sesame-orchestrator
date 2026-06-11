@@ -7,13 +7,8 @@ import setupApp from './src/server/extension.setup'
 import { loadingBarHijackFilter } from './src/composables/useLoadingBarHijackFilter'
 
 const SESAME_APP_API_URL = process.env.SESAME_APP_API_URL || 'http://127.0.0.1:4000'
-const SESAME_APP_API_URL_PARSED = new URL(SESAME_APP_API_URL)
-/** URL API exposée au navigateur (WebSocket). Ex. http://mactacx:4002 (Docker) ou :4000 (API native). */
-const SESAME_APP_PUBLIC_API_URL = process.env.SESAME_APP_PUBLIC_API_URL || ''
-/** Port API vu depuis le navigateur (Docker : 4002 mappé, interne API : 4000). */
-const SESAME_APP_PUBLIC_API_PORT = process.env.SESAME_APP_PUBLIC_API_PORT || ''
 const SESAME_ALLOWED_HOSTS = process.env.SESAME_ALLOWED_HOSTS ? process.env.SESAME_ALLOWED_HOSTS.split(',') : []
-const SOCKET_IO_PROXY_TARGET = SESAME_APP_API_URL.replace(/\/$/, '')
+const API_PROXY_TARGET = SESAME_APP_API_URL.replace(/\/$/, '')
 const IS_DEV = process.env.NODE_ENV === 'development'
 
 if (SESAME_ALLOWED_HOSTS.length === 0 && !/localhost/.test(SESAME_APP_API_URL) && IS_DEV) {
@@ -21,7 +16,6 @@ if (SESAME_ALLOWED_HOSTS.length === 0 && !/localhost/.test(SESAME_APP_API_URL) &
 }
 
 consola.info(`[Nuxt] SESAME_APP_API_URL: ${SESAME_APP_API_URL}`)
-consola.info(`[Nuxt] Socket.IO public port: ${SESAME_APP_PUBLIC_API_PORT || SESAME_APP_API_URL_PARSED.port || '4000'}`)
 consola.info(`[Nuxt] SESAME_ALLOWED_HOSTS: ${SESAME_ALLOWED_HOSTS}`)
 
 let SESAME_APP_DARK_MODE: 'auto' | boolean = false
@@ -84,10 +78,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       release: process.env.npm_package_name + '@' + process.env.npm_package_version,
-      socketApiUrl: SESAME_APP_PUBLIC_API_URL,
-      socketApiPort: SESAME_APP_API_URL_PARSED.port || (SESAME_APP_API_URL_PARSED.protocol === 'https:' ? '443' : '4000'),
-      socketPublicApiPort: SESAME_APP_PUBLIC_API_PORT || SESAME_APP_API_URL_PARSED.port || (SESAME_APP_API_URL_PARSED.protocol === 'https:' ? '443' : '4000'),
-      socketApiProtocol: SESAME_APP_API_URL_PARSED.protocol,
       sentry: {
         dsn: process.env.SESAME_SENTRY_DSN,
       },
@@ -95,6 +85,7 @@ export default defineNuxtConfig({
   },
   modules: [
     '@sentry/nuxt/module',
+    '@nuxt-alt/proxy',
     '@nuxt-alt/auth',
     '@nuxt-alt/http',
     '@pinia/nuxt',
@@ -105,6 +96,21 @@ export default defineNuxtConfig({
     'nuxt-monaco-editor',
     ...setupApp(),
   ],
+  proxy: {
+    debug: IS_DEV,
+    experimental: {
+      listener: true,
+    },
+    proxies: {
+      '/api': {
+        target: API_PROXY_TARGET,
+        changeOrigin: true,
+        ws: true,
+        xfwd: true,
+        rewrite: (path: string) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
   sentry: {
     autoInjectServerSentry: "top-level-import",
   },
@@ -187,7 +193,7 @@ export default defineNuxtConfig({
         color: 'primary',
         size: '3px',
         position: 'top',
-        /** Exclut socket.io (long-polling) et le polling de synchro / daemon. */
+        /** Exclut Socket.IO (`/api/socket.io`) et le polling de synchro / daemon. */
         hijackFilter: loadingBarHijackFilter,
       },
     },
@@ -206,11 +212,13 @@ export default defineNuxtConfig({
   vite: {
     server: {
       allowedHosts: ['localhost', ...SESAME_ALLOWED_HOSTS],
+      // En dev, le navigateur parle à Vite : seul Vite peut faire l'upgrade WS (Nitro proxy.web → Invalid frame header).
       proxy: {
-        '/socket.io': {
-          target: SOCKET_IO_PROXY_TARGET,
+        '/api/socket.io': {
+          target: API_PROXY_TARGET,
           changeOrigin: true,
           ws: true,
+          rewrite: (path: string) => path.replace(/^\/api/, ''),
         },
       },
     },
@@ -262,17 +270,9 @@ export default defineNuxtConfig({
     typescriptBundlerResolution: true,
   },
   nitro: {
-    devProxy: {
-      '/socket.io': {
-        target: SOCKET_IO_PROXY_TARGET,
-        changeOrigin: true,
-        ws: true,
-      },
-    },
-    routeRules: {
-      '/api/**': {
-        proxy: `${SESAME_APP_API_URL}/**`,
-      },
+    experimental: {
+      /** Requis par @nuxt-alt/proxy pour ne pas intercepter les upgrades WS. */
+      websocket: false,
     },
   },
   experimental: {

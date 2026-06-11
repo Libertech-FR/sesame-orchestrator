@@ -86,6 +86,34 @@ describe('resolveClientIp', () => {
     expect(p.tcpPeerNormalized).toBe('140.82.121.5');
   });
 
+  it('returns X-Real-IP when tcp peer is loopback and trust proxy is enabled', () => {
+    const previous = process.env.SESAME_TRUST_PROXY;
+    process.env.SESAME_TRUST_PROXY = '1';
+    try {
+      const req = makeReq({
+        headers: { 'x-real-ip': '192.168.1.190' },
+        socket: { remoteAddress: '127.0.0.1' } as any,
+      });
+      expect(resolveClientIp(req)).toBe('192.168.1.190');
+    } finally {
+      process.env.SESAME_TRUST_PROXY = previous;
+    }
+  });
+
+  it('returns first X-Forwarded-For hop behind loopback proxy when trust proxy is enabled', () => {
+    const previous = process.env.SESAME_TRUST_PROXY;
+    process.env.SESAME_TRUST_PROXY = '1';
+    try {
+      const req = makeReq({
+        headers: { 'x-forwarded-for': '192.168.65.1, 127.0.0.1' },
+        socket: { remoteAddress: '127.0.0.1' } as any,
+      });
+      expect(resolveClientIp(req)).toBe('192.168.65.1');
+    } finally {
+      process.env.SESAME_TRUST_PROXY = previous;
+    }
+  });
+
   it('keeps raw peer fields in debug payload', () => {
     const req = makeReq({
       headers: { host: 'host.docker.internal:4002' },

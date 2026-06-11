@@ -43,6 +43,14 @@ function tcpPeerIp(req: Request): string | null {
   return normalizeIp(req.socket?.remoteAddress ?? null);
 }
 
+function isLoopbackIp(ip: string | null): boolean {
+  return ip === '127.0.0.1' || ip === '::1';
+}
+
+function isTrustProxyEnabled(): boolean {
+  return /^(1|true|on|yes)$/i.test(process.env['SESAME_TRUST_PROXY'] || '');
+}
+
 /**
  * Résout l'IP client réelle derrière CDN / reverse-proxy (Cloudflare, nginx, etc.).
  * À utiliser pour l'auth et les audits ; combiner avec `trust proxy` sur Express si besoin.
@@ -53,6 +61,7 @@ function tcpPeerIp(req: Request): string | null {
  */
 export function resolveClientIp(req: Request): string | null {
   const peerIp = tcpPeerIp(req);
+  const trustedLocalProxy = isTrustProxyEnabled() && isLoopbackIp(peerIp);
   const orderedHeaders = ['cf-connecting-ip', 'true-client-ip', 'x-forwarded-for', 'x-real-ip'] as const;
 
   for (const name of orderedHeaders) {
@@ -63,7 +72,8 @@ export function resolveClientIp(req: Request): string | null {
       continue;
     }
     // Ne pas prendre un « forwarded » qui ne fait que recopier le pair TCP (pas de chaîne utile).
-    if (peerIp && ip === peerIp) {
+    // Exception : derrière le proxy Nuxt local, la chaîne XFF peut être « client, 127.0.0.1 ».
+    if (peerIp && ip === peerIp && !(trustedLocalProxy && name === 'x-forwarded-for' && raw?.includes(','))) {
       continue;
     }
     return ip;

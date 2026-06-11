@@ -333,21 +333,25 @@ export class LifecycleHooksService extends AbstractLifecycleService {
             this.logger.verbose(`identities process request`, JSON.stringify(req, null, 2));
 
             for (const identity of identities) {
-              const hasMutation = hasLifecycleMutation(resolvedMutation);
-              const updated = await this.identitiesService.model.findOneAndUpdate(
-                { _id: identity._id },
-                {
-                  $set: {
-                    ...resolvedMutation,
-                    lifecycle: idRule.target,
-                    lastLifecycleUpdate: new Date(),
-                    ...(hasMutation ? { state: IdentityState.TO_SYNC } : {}),
+              try {
+                const hasMutation = hasLifecycleMutation(resolvedMutation);
+                const updated = await this.identitiesService.model.findOneAndUpdate(
+                  { _id: identity._id },
+                  {
+                    $set: {
+                      ...resolvedMutation,
+                      lifecycle: idRule.target,
+                      lastLifecycleUpdate: new Date(),
+                      ...(hasMutation ? { state: IdentityState.TO_SYNC } : {}),
+                    },
                   },
-                },
-                { new: true },
-              );
+                  { new: true },
+                );
 
-              if (updated) {
+                if (!updated) {
+                  continue;
+                }
+
                 await this.create({
                   refId: identity._id,
                   lifecycle: idRule.target,
@@ -357,12 +361,22 @@ export class LifecycleHooksService extends AbstractLifecycleService {
                 if (hasMutation) {
                   await this.backendsService.lifecycleChangedIdentities(
                     [{ id: updated._id.toString(), before: identity, after: updated }],
-                    { targetState: IdentityState.TO_SYNC },
+                    {
+                      async: true,
+                      updateStatus: false,
+                      targetState: IdentityState.TO_SYNC,
+                    },
                   );
                 }
 
                 this.logger.log(
                   `Identity <${identity._id}> updated to lifecycle <${idRule.target}> by trigger from source <${idRule.sources}>`,
+                );
+              } catch (error) {
+                this.logger.error(
+                  `Error processing identity <${identity._id}> for lifecycle trigger in source <${idRule.sources}>:`,
+                  error?.message,
+                  error?.stack,
                 );
               }
             }

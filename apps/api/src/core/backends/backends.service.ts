@@ -298,6 +298,7 @@ export class BackendsService extends AbstractQueueProcessor {
           ...options,
           updateStatus: true,
           task: task._id as unknown as Types.ObjectId,
+          concernedToName: identity.identity.inetOrgPerson?.cn,
         },
       );
       result[identity.identity._id] = executedJob;
@@ -530,8 +531,20 @@ export class BackendsService extends AbstractQueueProcessor {
     let jobStore: Document<Jobs> = null;
     const disableLogs = options?.disableLogs === true;
     if (!disableLogs || !!concernedTo) {
-      const identity =
-        !disableLogs && concernedTo ? await this.identitiesService.findById<Identities>(concernedTo) : null;
+      let concernedToName = options?.concernedToName;
+      if (!concernedToName && !disableLogs && concernedTo) {
+        concernedToName =
+          payload?.after?.inetOrgPerson?.cn ??
+          payload?.identity?.inetOrgPerson?.cn ??
+          payload?.inetOrgPerson?.cn;
+      }
+      if (!concernedToName && !disableLogs && concernedTo) {
+        const identity = await this.identitiesService.model
+          .findById(concernedTo)
+          .select('inetOrgPerson.cn')
+          .lean();
+        concernedToName = identity?.inetOrgPerson?.cn;
+      }
       jobStore = await this.jobsService.create<Jobs>({
         jobId: job.id,
         action: actionType,
@@ -540,7 +553,7 @@ export class BackendsService extends AbstractQueueProcessor {
           ? {
               $ref: 'identities',
               id: concernedTo,
-              name: identity?.inetOrgPerson?.cn,
+              name: concernedToName,
             }
           : null,
         comment: options?.comment,

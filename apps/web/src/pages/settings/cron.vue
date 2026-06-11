@@ -55,18 +55,18 @@
           @click='toggleCronEnabled(row)'
         )
           q-tooltip.text-body2 {{ row.enabled ? 'Désactiver' : 'Activer' }} la tâche
-        //- q-btn(
-        //-   :disable='!hasPermission("/core/cron", "update")'
-        //-   :loading='!!cronRunLoading[row.name]'
-        //-   color='purple'
-        //-   icon='mdi-play-circle-outline'
-        //-   size='12px'
-        //-   flat
-        //-   round
-        //-   dense
-        //-   @click='runCronImmediately(row)'
-        //- )
-        //-   q-tooltip.text-body2 Exécuter immédiatement
+        q-btn(
+          :disable='!hasPermission("/core/cron", "update")'
+          :loading='!!cronRunLoading[row.name]'
+          color='purple'
+          icon='mdi-play-circle-outline'
+          size='12px'
+          flat
+          round
+          dense
+          @click='runCronImmediately(row)'
+        )
+          q-tooltip.text-body2 Exécuter immédiatement
         q-btn(
           :disable='!hasPermission("/core/cron", "read")'
           color='primary'

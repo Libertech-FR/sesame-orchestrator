@@ -10,6 +10,7 @@ export interface ExecuteJobOptions {
   updateStatus?: boolean;
   switchToProcessing?: boolean;
   comment?: string;
+  concernedToName?: string;
   targetState?: any;
   dataState?: any;
   task?: Types.ObjectId;

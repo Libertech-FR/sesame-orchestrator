@@ -106,7 +106,34 @@ describe('AuthService', () => {
     expect(tokens.access_token).toBe('new-a');
     expect(createTokensSpy).toHaveBeenCalledWith({ _id: 'a1', username: 'john' }, 'existing-r', {
       mfaVerified: undefined,
+      mfaVerifiedAt: undefined,
     });
+  });
+
+  it('should not pass mfaVerifiedAt to jwt sign options when renewing tokens', async () => {
+    const verifiedAt = 1_700_000_000_000;
+    redisGet.mockResolvedValueOnce(
+      JSON.stringify({ identityId: 'a1', mfaVerified: true, mfaVerifiedAt: verifiedAt }),
+    );
+    agentsFindOne.mockResolvedValueOnce({
+      _id: 'a1',
+      toObject: () => ({ _id: 'a1', username: 'john', password: 'hash' }),
+      toJSON: () => ({ _id: 'a1', username: 'john' }),
+    });
+    jwtSign.mockReturnValue('access-token');
+
+    await service.renewTokens('existing-r');
+
+    const signOptions = jwtSign.mock.calls[0]?.[1];
+    expect(signOptions).toEqual(
+      expect.objectContaining({
+        expiresIn: expect.any(Number),
+        jwtid: expect.any(String),
+        subject: 'a1',
+      }),
+    );
+    expect(signOptions).not.toHaveProperty('mfaVerifiedAt');
+    expect(signOptions).not.toHaveProperty('mfaVerified');
   });
 
   it('should throw UnauthorizedException when renew token does not exist', async () => {

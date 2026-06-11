@@ -5,9 +5,11 @@ import { CronJob } from 'cron';
 import dayjs from 'dayjs';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { isConsoleEntrypoint } from '~/_common/functions/is-cli';
+import { IdentityState } from '../identities/_enums/states.enum';
 import { Identities } from '../identities/_schemas/identities.schema';
 import { AbstractLifecycleService } from './_abstracts/abstract.lifecycle.service';
 import { ConfigRulesObjectSchemaDTO } from './_dto/config-rules.dto';
+import { hasLifecycleMutation } from './_functions/has-lifecycle-mutation.function';
 import { loadCustomStates } from './_functions/load-custom-states.function';
 import { loadLifecycleRules } from './_functions/load-lifecycle-rules.function';
 import { validateLifecycleCronRules } from './_functions/validate-lifecycle-cron-rules.function';
@@ -331,6 +333,7 @@ export class LifecycleHooksService extends AbstractLifecycleService {
             this.logger.verbose(`identities process request`, JSON.stringify(req, null, 2));
 
             for (const identity of identities) {
+              const hasMutation = hasLifecycleMutation(resolvedMutation);
               const updated = await this.identitiesService.model.findOneAndUpdate(
                 { _id: identity._id },
                 {
@@ -338,6 +341,7 @@ export class LifecycleHooksService extends AbstractLifecycleService {
                     ...resolvedMutation,
                     lifecycle: idRule.target,
                     lastLifecycleUpdate: new Date(),
+                    ...(hasMutation ? { state: IdentityState.TO_SYNC } : {}),
                   },
                 },
                 { new: true },
@@ -526,6 +530,7 @@ export class LifecycleHooksService extends AbstractLifecycleService {
           continue; // Skip processing if it's a trigger-based rule
         }
 
+        const hasMutation = hasLifecycleMutation(resolvedMutation);
         const res = await this.identitiesService.model.findOneAndUpdate(
           {
             ...resolvedRules,
@@ -537,6 +542,7 @@ export class LifecycleHooksService extends AbstractLifecycleService {
               ...resolvedMutation,
               lifecycle: lcs.target,
               lastLifecycleUpdate: new Date(),
+              ...(hasMutation ? { state: IdentityState.TO_SYNC } : {}),
             },
           },
           {
@@ -556,12 +562,17 @@ export class LifecycleHooksService extends AbstractLifecycleService {
           date: new Date(),
         });
 
-        const identities = res._id ? [{ id: res._id.toString(), before: after, after: res }] : [];
-        await this.backendsService.lifecycleChangedIdentities(identities);
-
-        this.logger.log(
-          `Identity <${res._id}> updated to lifecycle <${lcs.target}> based on rules from source <${after.lifecycle}>`,
-        );
+        if (hasMutation) {
+          this.logger.log(
+            `Identity <${res._id}> updated to lifecycle <${lcs.target}> with attribute mutation, set to TO_SYNC`,
+          );
+        } else {
+          const identities = res._id ? [{ id: res._id.toString(), before: after, after: res }] : [];
+          await this.backendsService.lifecycleChangedIdentities(identities);
+          this.logger.log(
+            `Identity <${res._id}> updated to lifecycle <${lcs.target}> based on rules from source <${after.lifecycle}>`,
+          );
+        }
         return;
       }
     }

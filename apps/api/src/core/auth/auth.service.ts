@@ -764,7 +764,7 @@ export class AuthService extends AbstractService implements OnModuleInit {
         expiresIn: this.ACCESS_TOKEN_EXPIRES_IN,
         jwtid,
         subject: `${identity._id}`,
-        ...omit(options, ['scopes', 'mfaVerified']),
+        ...omit(options, ['scopes', 'mfaVerified', 'mfaVerifiedAt']),
       },
     );
     this.logger.debug(

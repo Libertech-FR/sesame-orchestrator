@@ -39,5 +39,7 @@ export function buildSocketIoClientOptions(auth: { id: string; key: string }): P
     transports: socketIoTransports(),
     upgrade: !pollingOnly,
     reconnectionAttempts: 10,
+    reconnectionDelay: 5_000,
+    reconnectionDelayMax: 30_000,
   }
 }

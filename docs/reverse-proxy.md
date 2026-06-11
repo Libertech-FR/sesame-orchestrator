@@ -29,9 +29,11 @@ Le navigateur ne parle **qu’au frontal Nuxt** (port `3000` dans le conteneur, 
 
 ## Nginx
 
-### En-têtes WebSocket (recommandé)
+### Exemple complet (Docker, réseau `reverse`)
 
-Utiliser une `map` pour gérer `Connection` correctement (préférable à `Connection "upgrade"` fixe) :
+Configuration validée en production : redirection HTTP → HTTPS, tout le trafic (REST + Socket.IO WebSocket) vers Nuxt `:3000`.
+
+La `map` doit être déclarée **au niveau `http`** (dans `nginx.conf` ou un fichier inclus), pas dans le `server` :
 
 ```nginx
 map $http_upgrade $connection_upgrade {
@@ -40,14 +42,20 @@ map $http_upgrade $connection_upgrade {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 80;
+    server_name sesame.example.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
     server_name sesame.example.com;
 
     # ssl_certificate ...
     # ssl_certificate_key ...
 
     location / {
-        proxy_pass http://127.0.0.1:3000;   # ou nom du service Docker : http://sesame-orchestrator:3000
+        proxy_pass http://sesame-orchestrator:3000;
         proxy_http_version 1.1;
 
         # WebSocket (Socket.IO sur /api/socket.io)
@@ -66,11 +74,32 @@ server {
 }
 ```
 
-### Variante minimale (équivalent à ta snippet)
+Sur l’hôte sans réseau Docker `reverse`, remplacer `http://sesame-orchestrator:3000` par `http://127.0.0.1:3000` (ou le port publié, ex. `3002`).
+
+Après modification :
+
+```bash
+nginx -t && nginx -s reload
+```
+
+### Erreurs fréquentes Nginx
+
+| Erreur | Symptôme navigateur | Correction |
+| --- | --- | --- |
+| Pas de `proxy_http_version 1.1` ni d’en-têtes `Upgrade` / `Connection` | `WebSocket connection to 'wss://…/api/socket.io/…' failed` | Ajouter les directives WS **dans** `location /` (voir exemple ci-dessus) |
+| `proxy_set_header` placés **en dehors** du bloc `location` | REST OK, WebSocket KO, IP client parfois incorrecte | Déplacer tous les `proxy_set_header` **à l’intérieur** de `location /` |
+| Vhost séparé `listen 4000` vers l’API | Confusion de routage, contournement de Nuxt | Supprimer l’exposition directe du port `4000` ; tout passe par le vhost `443` → `:3000` |
+| `proxy_pass` vers le port `4000` | Socket.IO et auth IP incohérents | Cibler uniquement `sesame-orchestrator:3000` |
+
+> **À éviter** : router `/socket.io`, `/api` ou `/api/socket.io` directement vers le port `4000` — le front utilise le chemin `/api/socket.io` via Nuxt.
+
+### Variante minimale
+
+Si la `map` n’est pas disponible :
 
 ```nginx
 location / {
-    proxy_pass http://127.0.0.1:3000;
+    proxy_pass http://sesame-orchestrator:3000;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
@@ -80,8 +109,6 @@ location / {
     proxy_set_header X-Forwarded-Proto $scheme;
 }
 ```
-
-> **À éviter** : router `/socket.io` ou `/api` directement vers le port `4000` — le front utilise le chemin `/api/socket.io` via Nuxt.
 
 ---
 
@@ -171,10 +198,28 @@ proxy_pass http://sesame-orchestrator:3000;
 
 | Symptôme | Cause probable |
 | --- | --- |
+| `WebSocket connection to 'wss://…/api/socket.io/…' failed` | Nginx/Apache sans `Upgrade` / `Connection` / `proxy_http_version 1.1` |
 | `Invalid frame header` (navigateur) | Upgrade WS non proxifié (HTTP renvoyé à la place) |
 | Socket.IO reste en `polling` uniquement | `NUXT_PUBLIC_SOCKET_IO_POLLING_ONLY=true` ou reverse-proxy sans WS |
-| Auth `ip not allowed` + `127.0.0.1` | `SESAME_TRUST_PROXY=0` ou en-têtes `X-Forwarded-For` / `X-Real-IP` absents |
-| WS OK en `make simulation`, KO derrière proxy | Config WS manquante sur Nginx/Apache (ce document) |
+| Auth `ip not allowed` + `127.0.0.1` | `SESAME_TRUST_PROXY=0` ou en-têtes `X-Forwarded-For` / `X-Real-IP` absents ou hors `location` |
+| WS OK en `make simulation`, KO derrière proxy | Config WS manquante sur Nginx/Apache (voir [Erreurs fréquentes Nginx](#erreurs-fréquentes-nginx)) |
+
+### Tests sur le serveur
+
+```bash
+# Polling HTTP via Nuxt (doit répondre, pas 502)
+curl -sI "http://sesame-orchestrator:3000/api/socket.io/?EIO=4&transport=polling"
+
+# Upgrade WebSocket via Nuxt (doit renvoyer HTTP 101)
+curl -i -N \
+  -H "Connection: Upgrade" \
+  -H "Upgrade: websocket" \
+  -H "Sec-WebSocket-Version: 13" \
+  -H "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==" \
+  "http://sesame-orchestrator:3000/api/socket.io/?EIO=4&transport=websocket"
+```
+
+Si `101` en local mais échec via HTTPS public → corriger le reverse-proxy externe (vhost `443`).
 
 ### Test local (sans reverse-proxy externe)
 

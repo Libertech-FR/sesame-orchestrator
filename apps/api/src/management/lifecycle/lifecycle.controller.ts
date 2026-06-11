@@ -1,4 +1,20 @@
-import { Controller, Get, HttpStatus, Param, Post, Query, Req, Res, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { FilterOptions, SearchFilterOptions } from '@tacxou/nestjs_module_restools/search-filter-schema';
 import { Request, Response } from 'express';
@@ -6,8 +22,17 @@ import { Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
 import { Lifecycle } from './_schemas/lifecycle.schema';
+import {
+  LifecycleRuleFileCreateDto,
+  LifecycleRuleFileSummaryDto,
+  LifecycleRuleFileUpdateDto,
+  LifecycleStatesUpdateDto,
+} from './_dto/lifecycle-config.dto';
+import { LifecycleConfigService } from './lifecycle-config.service';
 import { LifecycleCrudService } from './lifecycle-crud.service';
 import { LifecycleHooksService } from './lifecycle-hooks.service';
+import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
+import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator';
 import { LifecycleCacheInterceptor } from './_interceptors/lifecycle-cache.interceptor';
 import { UseRoles } from '~/_common/decorators/use-roles.decorator';
 import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
@@ -49,6 +74,7 @@ export class LifecycleController extends AbstractController {
   public constructor(
     protected readonly _service: LifecycleCrudService,
     private readonly lifecycleHooksService: LifecycleHooksService,
+    private readonly lifecycleConfigService: LifecycleConfigService,
   ) {
     super();
   }
@@ -152,6 +178,154 @@ export class LifecycleController extends AbstractController {
    *   }
    * }
    */
+  @Get('config/rules')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiPaginatedDecorator(LifecycleRuleFileSummaryDto)
+  public async searchConfigRules(
+    @Query('search') search: string,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const [data, total] = await this.lifecycleConfigService.searchRules(search, { page, limit });
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data,
+      total,
+    });
+  }
+
+  @Post('config/rules')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.CREATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiReadResponseDecorator(LifecycleRuleFileCreateDto)
+  public async createConfigRule(@Body() body: LifecycleRuleFileCreateDto, @Res() res: Response): Promise<Response> {
+    const data = await this.lifecycleConfigService.createRule(body);
+
+    return res.status(HttpStatus.CREATED).json({
+      statusCode: HttpStatus.CREATED,
+      data,
+    });
+  }
+
+  @Get('config/rules/:name')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async readConfigRule(@Param('name') name: string, @Res() res: Response): Promise<Response> {
+    const data = await this.lifecycleConfigService.readRule(name);
+    if (!data) {
+      throw new NotFoundException(`Lifecycle rules file <${name}> not found`);
+    }
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
+  @Patch('config/rules/:name')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async updateConfigRule(
+    @Param('name') name: string,
+    @Body() body: LifecycleRuleFileUpdateDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const data = await this.lifecycleConfigService.updateRule(name, body);
+    if (!data) {
+      throw new NotFoundException(`Lifecycle rules file <${name}> not found`);
+    }
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
+  @Delete('config/rules/:name')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.DELETE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async deleteConfigRule(@Param('name') name: string, @Res() res: Response): Promise<Response> {
+    const deleted = await this.lifecycleConfigService.deleteRule(name);
+    if (!deleted) {
+      throw new NotFoundException(`Lifecycle rules file <${name}> not found`);
+    }
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data: { name, deleted: true },
+    });
+  }
+
+  @Post('config/rules/:name/execute')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async executeConfigRule(@Param('name') name: string, @Res() res: Response): Promise<Response> {
+    const status = await this.lifecycleConfigService.executeRule(name);
+    if (status === 'not_found') {
+      throw new NotFoundException(`Lifecycle rules file <${name}> not found`);
+    }
+    if (status === 'not_executable') {
+      throw new ConflictException(`Lifecycle rules file <${name}> has no executable cron rules (trigger: -1)`);
+    }
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data: { name, launched: true, status: 'in_progress' },
+    });
+  }
+
+  @Get('config/states')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async getConfigStates(@Res() res: Response): Promise<Response> {
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data: {
+        defaultStates: this.lifecycleConfigService.getDefaultStates(),
+        customStates: this.lifecycleConfigService.getCustomStates(),
+      },
+    });
+  }
+
+  @Put('config/states')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async updateConfigStates(@Body() body: LifecycleStatesUpdateDto, @Res() res: Response): Promise<Response> {
+    const data = await this.lifecycleConfigService.updateCustomStates(body);
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
   @Get('stats')
   @UseRoles({
     resource: '/management/lifecycle',

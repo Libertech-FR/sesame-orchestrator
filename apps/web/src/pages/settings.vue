@@ -137,6 +137,12 @@ export default defineNuxtComponent({
         acl: ['/core/cron'],
       },
       {
+        route: '/settings/lifecycle',
+        icon: 'mdi-state-machine',
+        label: 'Cycles de vie',
+        acl: ['/management/lifecycle'],
+      },
+      {
         route: '/settings/keyrings',
         icon: 'mdi-key-chain',
         label: 'trousseau de clés API',

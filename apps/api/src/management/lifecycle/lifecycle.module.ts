@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Lifecycle, LifecycleSchema } from './_schemas/lifecycle.schema';
 import { LifecycleController } from './lifecycle.controller';
+import { LifecycleConfigService } from './lifecycle-config.service';
 import { LifecycleCrudService } from './lifecycle-crud.service';
 import { LifecycleHooksService } from './lifecycle-hooks.service';
 import { IdentitiesModule } from '../identities/identities.module';
@@ -40,6 +41,7 @@ import { BackendsModule } from '~/core/backends/backends.module';
   providers: [
     // Service CRUD de gestion du cycle de vie
     LifecycleCrudService,
+    LifecycleConfigService,
     // Service de gestion des automatisations et événements
     LifecycleHooksService,
     // Commandes CLI enregistrées uniquement en mode console

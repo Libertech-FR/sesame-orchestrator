@@ -194,6 +194,11 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * @param ttlMs Durée de validité du cache en millisecondes (par défaut 60s)
    * @returns Les règles actuelles (rechargées si nécessaire)
    */
+  public async syncAfterConfigChange(): Promise<void> {
+    await this.refreshLifecycleCache();
+    this._lastLifecycleCacheRefresh = Date.now();
+  }
+
   public async ensureLifecycleCacheFresh(ttlMs: number = 60_000): Promise<ConfigRulesObjectSchemaDTO[]> {
     const now = Date.now();
     if (!this._lastLifecycleCacheRefresh || now - this._lastLifecycleCacheRefresh > ttlMs) {

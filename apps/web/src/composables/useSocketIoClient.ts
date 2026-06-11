@@ -1,5 +1,47 @@
-import type { ManagerOptions, SocketOptions } from 'socket.io-client'
+import type { ManagerOptions, Socket, SocketOptions } from 'socket.io-client'
 import { tryUseNuxtApp, useRuntimeConfig } from '#app'
+
+const STALE_SOCKET_IO_DISCONNECT_REASONS = new Set([
+  'transport error',
+  'transport close',
+  'ping timeout',
+  'io server disconnect',
+])
+
+/** Session Engine.IO invalide (ex. redémarrage API) alors que le namespace semble encore connecté. */
+export function isStaleSocketIoDisconnectReason(reason: string): boolean {
+  return STALE_SOCKET_IO_DISCONNECT_REASONS.has(reason)
+}
+
+/** Appelle `handler` sur erreur transport (ex. POST polling 400) puis retire les écouteurs. */
+export function onSocketIoTransportFailure(socket: Socket, handler: () => void): () => void {
+  let handled = false
+  const runOnce = () => {
+    if (handled) {
+      return
+    }
+    handled = true
+    cleanup()
+    handler()
+  }
+
+  const onDisconnect = (reason: string) => {
+    if (isStaleSocketIoDisconnectReason(reason)) {
+      runOnce()
+    }
+  }
+  const onError = () => runOnce()
+
+  socket.on('disconnect', onDisconnect)
+  socket.io.on('error', onError)
+
+  const cleanup = () => {
+    socket.off('disconnect', onDisconnect)
+    socket.io.off('error', onError)
+  }
+
+  return cleanup
+}
 
 /** Même préfixe que le proxy `/api/**` → API (cf. `nuxt.config.ts`). */
 export const SOCKET_IO_PATH = '/api/socket.io'

@@ -264,7 +264,7 @@
 import type { LocationQueryValue } from 'vue-router'
 import { reactive, ref } from 'vue'
 import { attachSocketIoDebug } from '~/composables/useSocketIoDebug'
-import { buildSocketIoClientOptions } from '~/composables/useSocketIoClient'
+import { buildSocketIoClientOptions, onSocketIoTransportFailure } from '~/composables/useSocketIoClient'
 import { io, type Socket } from 'socket.io-client'
 import { NewTargetId } from '~/constants/variables'
 
@@ -350,6 +350,7 @@ export default defineNuxtComponent({
       logsLastScrollTop: 0,
       logsSnapshotTimeout: null as ReturnType<typeof setTimeout> | null,
       logsSnapshotResolver: null as (() => void) | null,
+      logsSnapshotTransportCleanup: null as (() => void) | null,
       logsHasScrolledDown: false,
       logsFollowTail: true,
     }
@@ -609,8 +610,13 @@ export default defineNuxtComponent({
         this.logsSnapshotTimeout = null
       }
     },
+    clearLogsSnapshotTransportWatch(): void {
+      this.logsSnapshotTransportCleanup?.()
+      this.logsSnapshotTransportCleanup = null
+    },
     finishCronLogsSnapshotRequest(): void {
       this.clearLogsSnapshotTimeout()
+      this.clearLogsSnapshotTransportWatch()
       this.logsLoading = false
       this.logsLoadingMore = false
       this.logsLoadInFlight = false
@@ -662,6 +668,12 @@ export default defineNuxtComponent({
 
       this.logsSocket.on('connect_error', () => {
         this.logsSocketConnected = false
+        if (this.logsLoadInFlight) {
+          void this.loadCronLogsViaHttp(true).finally(() => {
+            this.finishCronLogsSnapshotRequest()
+          })
+          return
+        }
         this.logsLoading = false
       })
 
@@ -670,8 +682,11 @@ export default defineNuxtComponent({
       })
     },
     disconnectCronLogsSocket(): void {
+      this.clearLogsSnapshotTransportWatch()
       if (this.logsSocket) {
-        this.logsSocket.emit('unsubscribe')
+        if (this.logsSocket.connected) {
+          this.logsSocket.emit('unsubscribe')
+        }
         this.logsSocket.removeAllListeners()
         this.logsSocket.disconnect()
         this.logsSocket = null
@@ -723,6 +738,7 @@ export default defineNuxtComponent({
       this.logsHasScrolledDown = false
       this.logsFollowTail = true
       this.clearLogsSnapshotTimeout()
+      this.clearLogsSnapshotTransportWatch()
       const resolver = this.logsSnapshotResolver
       this.logsSnapshotResolver = null
       resolver?.()
@@ -1127,6 +1143,12 @@ export default defineNuxtComponent({
           this.logsLoadInFlight = true
           this.logsSnapshotResolver = resolve
           this.logsLoading = true
+          this.clearLogsSnapshotTransportWatch()
+          this.logsSnapshotTransportCleanup = onSocketIoTransportFailure(socket, () => {
+            void this.loadCronLogsViaHttp(true).finally(() => {
+              this.finishCronLogsSnapshotRequest()
+            })
+          })
 
           socket.emit('resync', {
             taskName: this.selectedCronName,

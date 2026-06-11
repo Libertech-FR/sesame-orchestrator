@@ -25,7 +25,7 @@ type DaemonStatusPayload = {
 };
 
 const IDENTITY_JOB_TYPES = [ActionType.IDENTITY_UPDATE, ActionType.IDENTITY_CREATE, ActionType.IDENTITY_DELETE];
-const DAEMON_STATUS_INTERVAL_MS = 20_000;
+const DAEMON_STATUS_INTERVAL_MS = 60_000;
 
 @Public()
 @WebSocketGateway({

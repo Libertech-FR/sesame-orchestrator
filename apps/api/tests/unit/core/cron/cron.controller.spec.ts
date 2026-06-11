@@ -9,6 +9,8 @@ describe('CronController', () => {
   const update = jest.fn();
   const getConsoleHandlers = jest.fn();
   const runImmediately = jest.fn();
+  const create = jest.fn();
+  const deleteTask = jest.fn();
 
   const cronService = {
     search,
@@ -18,6 +20,8 @@ describe('CronController', () => {
     update,
     getConsoleHandlers,
     runImmediately,
+    create,
+    delete: deleteTask,
   };
 
   const createRes = () => {
@@ -157,6 +161,60 @@ describe('CronController', () => {
         name: 'task-1',
         launched: true,
         status: 'in_progress',
+      },
+    });
+  });
+
+  it('should return created task on create', async () => {
+    create.mockResolvedValue({ name: 'task-new', enabled: false });
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    await controller.create(
+      {
+        name: 'task-new',
+        description: 'new task',
+        enabled: false,
+        schedule: '0 * * * *',
+        handler: 'agents-list',
+      } as any,
+      res as any,
+    );
+
+    expect(create).toHaveBeenCalledWith({
+      name: 'task-new',
+      description: 'new task',
+      enabled: false,
+      schedule: '0 * * * *',
+      handler: 'agents-list',
+    });
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({
+      statusCode: 201,
+      data: { name: 'task-new', enabled: false },
+    });
+  });
+
+  it('should throw NotFoundException when deleting missing task', async () => {
+    deleteTask.mockResolvedValue(false);
+
+    await expect(controller.delete('missing-task', {} as any)).rejects.toThrow(NotFoundException);
+  });
+
+  it('should return deleted payload on delete', async () => {
+    deleteTask.mockResolvedValue(true);
+    const res = createRes();
+
+    await controller.delete('task-1', res as any);
+
+    expect(deleteTask).toHaveBeenCalledWith('task-1');
+    expect(res.json).toHaveBeenCalledWith({
+      statusCode: 200,
+      data: {
+        name: 'task-1',
+        deleted: true,
       },
     });
   });

@@ -3,6 +3,7 @@ import {
   ConflictException,
   Controller,
   DefaultValuePipe,
+  Delete,
   Get,
   HttpStatus,
   NotFoundException,
@@ -20,7 +21,7 @@ import { UseRoles } from '~/_common/decorators/use-roles.decorator';
 import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
 import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper';
-import { CronDto, CronUpdateDto } from './_dto/cron.dto';
+import { CronCreateDto, CronDto, CronUpdateDto } from './_dto/cron.dto';
 import { PartialProjectionType } from '~/_common/types/partial-projection.type';
 import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator';
 import { IsBoolean } from 'class-validator';
@@ -90,6 +91,22 @@ export class CronController {
     return res.json({
       statusCode: HttpStatus.OK,
       data: this.cronService.getConsoleHandlers(),
+    });
+  }
+
+  @Post()
+  @UseRoles({
+    resource: '/core/cron',
+    action: AC_ACTIONS.CREATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiReadResponseDecorator(CronDto)
+  public async create(@Body() body: CronCreateDto, @Res() res: Response): Promise<Response> {
+    const data = await this.cronService.create(body);
+
+    return res.status(HttpStatus.CREATED).json({
+      statusCode: HttpStatus.CREATED,
+      data,
     });
   }
 
@@ -197,6 +214,27 @@ export class CronController {
         name,
         launched: true,
         status: 'in_progress',
+      },
+    });
+  }
+
+  @Delete(':name')
+  @UseRoles({
+    resource: '/core/cron',
+    action: AC_ACTIONS.DELETE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async delete(@Param('name') name: string, @Res() res: Response): Promise<Response> {
+    const deleted = await this.cronService.delete(name);
+    if (!deleted) {
+      throw new NotFoundException(`Cron task <${name}> not found`);
+    }
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data: {
+        name,
+        deleted: true,
       },
     });
   }

@@ -14,6 +14,21 @@
       :targetId='targetId'
       row-key='name'
     )
+      template(#before-top-right-before)
+        q-btn(
+          :disable='!hasPermission("/core/cron", "create")'
+          icon='mdi-plus'
+          flat
+          dense
+          @click='openCreateDialog'
+        )
+          q-tooltip.text-body2 Créer une tâche cron
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/core/cron', 'create')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
+        q-separator.q-mx-sm(vertical)
       template(#top-table)
         sesame-core-pan-filters(:columns='columns' mode='simple' placeholder='Rechercher par nom, description, ...')
       template(v-slot:row-actions='{ row }')
@@ -40,18 +55,18 @@
           @click='toggleCronEnabled(row)'
         )
           q-tooltip.text-body2 {{ row.enabled ? 'Désactiver' : 'Activer' }} la tâche
-        q-btn(
-          :disable='!hasPermission("/core/cron", "update")'
-          :loading='!!cronRunLoading[row.name]'
-          color='purple'
-          icon='mdi-play-circle-outline'
-          size='12px'
-          flat
-          round
-          dense
-          @click='runCronImmediately(row)'
-        )
-          q-tooltip.text-body2 Exécuter immédiatement
+        //- q-btn(
+        //-   :disable='!hasPermission("/core/cron", "update")'
+        //-   :loading='!!cronRunLoading[row.name]'
+        //-   color='purple'
+        //-   icon='mdi-play-circle-outline'
+        //-   size='12px'
+        //-   flat
+        //-   round
+        //-   dense
+        //-   @click='runCronImmediately(row)'
+        //- )
+        //-   q-tooltip.text-body2 Exécuter immédiatement
         q-btn(
           :disable='!hasPermission("/core/cron", "read")'
           color='primary'
@@ -67,33 +82,55 @@
             anchor="top middle"
             self="center middle"
           ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
+        q-btn(
+          :disable='!hasPermission("/core/cron", "delete")'
+          color='negative'
+          icon='mdi-delete'
+          size='12px'
+          flat
+          round
+          dense
+          @click='deleteCronTask(row)'
+        )
+          q-tooltip.text-body2 Supprimer la tâche
+          q-tooltip.text-body2.bg-negative.text-white(
+            v-if="!hasPermission('/core/cron', 'delete')"
+            anchor="top middle"
+            self="center middle"
+          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
       template(#body-cell-enabled="props")
         q-td
           q-checkbox(:model-value="props.row.enabled" :disable="true" size="xs")
   q-dialog(v-model='editDialog' persistent)
     q-card(style='min-width: 560px; max-width: 90vw;')
       q-toolbar.bg-primary.text-white(bordered dense flat style='height: 32px; line-height: 32px;')
-        q-toolbar-title Édition de la tâche cron
+        q-toolbar-title {{ isCreateMode ? 'Création d\'une tâche cron' : 'Édition de la tâche cron' }}
         q-btn(flat round dense icon='mdi-close' v-close-popup)
       q-card-section.q-pt-md
         .column.q-gutter-md
           q-input(
+            :disable='!isCreateMode || !hasPermission("/core/cron", "create")'
             outlined
             dense
-            readonly
+            :readonly='!isCreateMode'
             v-model='editForm.name'
             label='Nom de la tâche'
+            hint='Identifiant unique de la tâche'
+            :error='!!editValidations.name'
+            :error-message='editValidations.name'
           )
           q-input(
-            :disable='!hasPermission("/core/cron", "update")'
+            :disable='!hasPermission("/core/cron", isCreateMode ? "create" : "update")'
             outlined
             dense
             v-model='editForm.description'
             label='Description'
             autogrow
+            :error='!!editValidations.description'
+            :error-message='editValidations.description'
           )
           q-input(
-            :disable='!hasPermission("/core/cron", "update")'
+            :disable='!hasPermission("/core/cron", isCreateMode ? "create" : "update")'
             outlined
             dense
             v-model='editForm.schedule'
@@ -102,8 +139,15 @@
             :error='!!editValidations.schedule'
             :error-message='editValidations.schedule'
           )
+          q-toggle(
+            :disable='!hasPermission("/core/cron", isCreateMode ? "create" : "update")'
+            dense
+            v-model='editForm.enabled'
+            label='Tâche activée'
+            color='primary'
+          )
           q-select(
-            :disable='!hasPermission("/core/cron", "update")'
+            :disable='!hasPermission("/core/cron", isCreateMode ? "create" : "update")'
             outlined
             dense
             emit-value
@@ -132,7 +176,7 @@
               template(v-for='argument in selectedHandlerArguments' :key='argument.name')
                 q-toggle(
                   v-if='argument.type === "boolean"'
-                  :disable='!hasPermission("/core/cron", "update")'
+                  :disable='!hasPermission("/core/cron", isCreateMode ? "create" : "update")'
                   dense
                   v-model='editForm.arguments[argument.name]'
                   :label='argument.label || argument.name'
@@ -141,7 +185,7 @@
                   q-tooltip.text-body2(v-if='argument.description') {{ argument.description }}
                 q-input(
                   v-else
-                  :disable='!hasPermission("/core/cron", "update")'
+                  :disable='!hasPermission("/core/cron", isCreateMode ? "create" : "update")'
                   outlined
                   dense
                   v-model='editForm.arguments[argument.name]'
@@ -156,7 +200,7 @@
               .text-caption.text-grey-7.q-mt-sm Arguments non reconnus (conservés)
               template(v-for='argument in unrecognizedArguments' :key='argument.name')
                 q-input(
-                  :disable='!hasPermission("/core/cron", "update")'
+                  :disable='!hasPermission("/core/cron", isCreateMode ? "create" : "update")'
                   outlined
                   dense
                   v-model='editForm.arguments[argument.name]'
@@ -172,12 +216,12 @@
       q-card-actions(align='right')
         q-btn(flat label='Annuler' v-close-popup)
         q-btn(
-          :disable='!hasPermission("/core/cron", "update")'
+          :disable='!hasPermission("/core/cron", isCreateMode ? "create" : "update")'
           :loading='editSaving'
           color='positive'
           push
-          label='Enregistrer'
-          icon='mdi-content-save'
+          :label='isCreateMode ? "Créer" : "Enregistrer"'
+          :icon='isCreateMode ? "mdi-plus" : "mdi-content-save"'
           @click='saveEditForm'
         )
   q-dialog(v-model='logsDialog' maximized)
@@ -234,6 +278,7 @@ type CronEditForm = {
   description: string
   schedule: string
   handler: string
+  enabled: boolean
   arguments: Record<string, string | number | boolean>
 }
 
@@ -337,6 +382,7 @@ export default defineNuxtComponent({
     const cronToggleLoading = reactive<Record<string, boolean>>({})
     const cronRunLoading = reactive<Record<string, boolean>>({})
     const editDialog = ref(false)
+    const isCreateMode = ref(false)
     const editSaving = ref(false)
     const editValidations = reactive<Record<string, string>>({})
     const editForm = ref<CronEditForm>({
@@ -344,6 +390,7 @@ export default defineNuxtComponent({
       description: '',
       schedule: '',
       handler: '',
+      enabled: false,
       arguments: {},
     })
     const originalTaskOptions = ref<Record<string, unknown>>({})
@@ -400,6 +447,7 @@ export default defineNuxtComponent({
       cronToggleLoading,
       cronRunLoading,
       editDialog,
+      isCreateMode,
       editSaving,
       editValidations,
       editForm,
@@ -824,26 +872,53 @@ export default defineNuxtComponent({
         delete this.editValidations[key]
       })
     },
+    openCreateDialog(): void {
+      this.resetEditValidations()
+      this.isCreateMode = true
+      this.originalTaskOptions = {}
+      this.editForm = {
+        name: '',
+        description: '',
+        schedule: '0 * * * *',
+        handler: '',
+        enabled: false,
+        arguments: {},
+      }
+      this.editDialog = true
+    },
     openEditDialog(cronTask: any): void {
       this.resetEditValidations()
+      this.isCreateMode = false
       this.originalTaskOptions = this.formatCronOptions(cronTask?.options)
       this.editForm = {
         name: cronTask?.name || '',
         description: cronTask?.description || '',
         schedule: cronTask?.schedule || '',
         handler: cronTask?.handler || '',
+        enabled: !!cronTask?.enabled,
         arguments: {},
       }
       this.syncArgumentsFromHandler(true)
       this.editDialog = true
     },
     async saveEditForm(): Promise<void> {
-      const name = this.editForm.name
+      this.resetEditValidations()
+
+      const name = this.editForm.name?.trim()
       if (!name) {
+        this.editValidations.name = 'Le nom de la tâche est obligatoire.'
         return
       }
 
-      this.resetEditValidations()
+      if (!this.editForm.description?.trim()) {
+        this.editValidations.description = 'La description est obligatoire.'
+        return
+      }
+
+      if (!this.editForm.schedule?.trim()) {
+        this.editValidations.schedule = "L'expression cron est obligatoire."
+        return
+      }
 
       if (!this.editForm.handler) {
         this.editValidations.handler = 'Le handler est obligatoire.'
@@ -859,6 +934,7 @@ export default defineNuxtComponent({
         description: this.editForm.description,
         schedule: this.editForm.schedule,
         handler: this.editForm.handler,
+        enabled: this.editForm.enabled,
       }
       if (options !== undefined) {
         payload.options = options
@@ -866,19 +942,35 @@ export default defineNuxtComponent({
 
       this.editSaving = true
       try {
-        await this.$http.patch(`/core/cron/${encodeURIComponent(name)}`, {
-          body: payload,
-        })
-        this.$q.notify({
-          message: `Tâche "${name}" mise à jour.`,
-          color: 'positive',
-          position: 'top-right',
-          icon: 'mdi-check-circle-outline',
-        })
+        if (this.isCreateMode) {
+          await this.$http.post('/core/cron', {
+            body: {
+              name,
+              ...payload,
+            },
+          })
+          this.$q.notify({
+            message: `Tâche "${name}" créée.`,
+            color: 'positive',
+            position: 'top-right',
+            icon: 'mdi-check-circle-outline',
+          })
+        } else {
+          await this.$http.patch(`/core/cron/${encodeURIComponent(name)}`, {
+            body: payload,
+          })
+          this.$q.notify({
+            message: `Tâche "${name}" mise à jour.`,
+            color: 'positive',
+            position: 'top-right',
+            icon: 'mdi-check-circle-outline',
+          })
+        }
         this.editDialog = false
         await this.refresh()
       } catch (error: any) {
-        const message = error?.response?._data?.message || `Impossible de mettre à jour la tâche "${name}".`
+        const action = this.isCreateMode ? 'créer' : 'mettre à jour'
+        const message = error?.response?._data?.message || `Impossible de ${action} la tâche "${name}".`
         this.$q.notify({
           message,
           color: 'negative',
@@ -888,6 +980,48 @@ export default defineNuxtComponent({
       } finally {
         this.editSaving = false
       }
+    },
+    deleteCronTask(cronTask: any): void {
+      const name = cronTask?.name
+      if (!name) {
+        return
+      }
+
+      this.$q
+        .dialog({
+          title: 'Confirmation',
+          message: `Voulez-vous vraiment supprimer la tâche cron "${name}" ?`,
+          persistent: true,
+          ok: {
+            push: true,
+            color: 'positive',
+            label: 'Supprimer',
+          },
+          cancel: {
+            push: true,
+            color: 'negative',
+            label: 'Annuler',
+          },
+        })
+        .onOk(async () => {
+          try {
+            await this.$http.delete(`/core/cron/${encodeURIComponent(name)}`)
+            this.$q.notify({
+              message: `Tâche "${name}" supprimée.`,
+              color: 'positive',
+              position: 'top-right',
+              icon: 'mdi-check-circle-outline',
+            })
+            await this.refresh()
+          } catch (error: any) {
+            this.$q.notify({
+              message: error?.response?._data?.message || `Impossible de supprimer la tâche "${name}".`,
+              color: 'negative',
+              position: 'top-right',
+              icon: 'mdi-alert-circle-outline',
+            })
+          }
+        })
     },
     async openLogsModal(cronTask: any): Promise<void> {
       this.resetLogsViewerState()

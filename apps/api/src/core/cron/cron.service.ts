@@ -1,12 +1,23 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronHooksService } from './cron-hooks.service';
 import { pick } from 'radash';
 import { ConfigTaskDTO, CronTaskDTO } from './_dto/config-task.dto';
-import { CronUpdateDto } from './_dto/cron.dto';
+import { CronCreateDto, CronUpdateDto } from './_dto/cron.dto';
 import { CronJob } from 'cron';
 import path from 'node:path';
-import { closeSync, existsSync, openSync, readFileSync, readSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import {
+  closeSync,
+  existsSync,
+  mkdirSync,
+  openSync,
+  readFileSync,
+  readSync,
+  readdirSync,
+  statSync,
+  unlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { ConfigService } from '@nestjs/config';
 import { toSafeHandlerName } from '~/_common/functions/handler-logger';
 import { formatValidationErrors } from '~/_common/functions/format-validation-errors.function';
@@ -116,6 +127,55 @@ export class CronService {
 
   public async setEnabled(name: string, enabled: boolean): Promise<(CronTaskDTO & { _job: Partial<CronJob> }) | null> {
     return this.update(name, { enabled });
+  }
+
+  public async create(payload: CronCreateDto): Promise<(CronTaskDTO & { _job: Partial<CronJob> }) | null> {
+    const existing = this.cronHooksService.getCronTasks().find((task) => task.name === payload.name);
+    if (existing) {
+      throw new ConflictException(`Cron task <${payload.name}> already exists`);
+    }
+
+    try {
+      if (payload.options !== undefined) {
+        validateCronTaskOptions(payload.handler, payload.options);
+      }
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException(`Options invalides pour le handler "${payload.handler}".`);
+    }
+
+    const task = plainToInstance(CronTaskDTO, payload);
+
+    try {
+      await validateOrReject(task, { whitelist: true });
+    } catch (errors) {
+      throw new BadRequestException(formatValidationErrors(errors, payload.name));
+    }
+
+    const created = this.createTaskInConfig(task);
+    if (!created) {
+      throw new BadRequestException(`Impossible de créer la tâche cron <${payload.name}> dans la configuration.`);
+    }
+
+    await this.cronHooksService.syncCronJobs();
+    return this.read(payload.name);
+  }
+
+  public async delete(name: string): Promise<boolean> {
+    const current = this.cronHooksService.getCronTasks().find((task) => task.name === name);
+    if (!current) {
+      return false;
+    }
+
+    const deleted = this.deleteTaskFromConfig(name);
+    if (!deleted) {
+      return false;
+    }
+
+    await this.cronHooksService.syncCronJobs();
+    return true;
   }
 
   public async update(
@@ -278,16 +338,72 @@ export class CronService {
     };
   }
 
-  private updateTaskInConfig(name: string, updater: (task: CronTaskDTO) => void): boolean {
-    const configDir = path.join(process.cwd(), 'configs', 'cron');
+  private getConfigDir(): string {
+    return path.join(process.cwd(), 'configs', 'cron');
+  }
+
+  private listConfigFiles(): string[] {
+    const configDir = this.getConfigDir();
     if (!existsSync(configDir)) {
-      return false;
+      return [];
     }
 
-    const files = readdirSync(configDir).filter((file) => file.endsWith('.yml') || file.endsWith('.yaml'));
+    return readdirSync(configDir).filter((file) => file.endsWith('.yml') || file.endsWith('.yaml'));
+  }
 
-    for (const file of files) {
-      const filePath = path.join(configDir, file);
+  private createTaskInConfig(task: CronTaskDTO): boolean {
+    const configDir = this.getConfigDir();
+    if (!existsSync(configDir)) {
+      mkdirSync(configDir, { recursive: true });
+    }
+
+    const fileName = `${toSafeHandlerName(task.name)}.yml`;
+    const filePath = path.join(configDir, fileName);
+
+    if (existsSync(filePath)) {
+      const raw = readFileSync(filePath, 'utf-8');
+      const parsed = parse(raw) as ConfigTaskDTO;
+      if (parsed?.tasks?.length) {
+        throw new ConflictException(`Le fichier de configuration <${fileName}> existe déjà.`);
+      }
+    }
+
+    writeFileSync(filePath, stringify({ tasks: [task] } satisfies ConfigTaskDTO));
+    return true;
+  }
+
+  private deleteTaskFromConfig(name: string): boolean {
+    for (const file of this.listConfigFiles()) {
+      const filePath = path.join(this.getConfigDir(), file);
+      const raw = readFileSync(filePath, 'utf-8');
+      const parsed = parse(raw) as ConfigTaskDTO;
+      const tasks = parsed?.tasks;
+
+      if (!tasks || !Array.isArray(tasks)) {
+        continue;
+      }
+
+      const taskIndex = tasks.findIndex((task) => task.name === name);
+      if (taskIndex === -1) {
+        continue;
+      }
+
+      tasks.splice(taskIndex, 1);
+      if (tasks.length === 0) {
+        unlinkSync(filePath);
+      } else {
+        writeFileSync(filePath, stringify(parsed));
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
+  private updateTaskInConfig(name: string, updater: (task: CronTaskDTO) => void): boolean {
+    for (const file of this.listConfigFiles()) {
+      const filePath = path.join(this.getConfigDir(), file);
       const raw = readFileSync(filePath, 'utf-8');
       const parsed = parse(raw) as ConfigTaskDTO;
       const tasks = parsed?.tasks;

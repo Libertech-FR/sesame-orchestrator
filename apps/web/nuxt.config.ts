@@ -10,12 +10,18 @@ const SESAME_APP_API_URL = process.env.SESAME_APP_API_URL || 'http://127.0.0.1:4
 const SESAME_ALLOWED_HOSTS = process.env.SESAME_ALLOWED_HOSTS ? process.env.SESAME_ALLOWED_HOSTS.split(',') : []
 const API_PROXY_TARGET = SESAME_APP_API_URL.replace(/\/$/, '')
 const IS_DEV = process.env.NODE_ENV === 'development'
+/** Par défaut : polling seul en dev (proxy WS cassé), WebSocket en prod. Surcharge : SESAME_SOCKET_IO_POLLING_ONLY=0|1 */
+const SOCKET_IO_POLLING_ONLY =
+  process.env.SESAME_SOCKET_IO_POLLING_ONLY !== undefined
+    ? /^(1|true|yes|on)$/i.test(process.env.SESAME_SOCKET_IO_POLLING_ONLY)
+    : IS_DEV
 
 if (SESAME_ALLOWED_HOSTS.length === 0 && !/localhost/.test(SESAME_APP_API_URL) && IS_DEV) {
   SESAME_ALLOWED_HOSTS.push(new URL(SESAME_APP_API_URL).hostname)
 }
 
 consola.info(`[Nuxt] SESAME_APP_API_URL: ${SESAME_APP_API_URL}`)
+consola.info(`[Nuxt] Socket.IO polling only: ${SOCKET_IO_POLLING_ONLY}`)
 consola.info(`[Nuxt] SESAME_ALLOWED_HOSTS: ${SESAME_ALLOWED_HOSTS}`)
 
 let SESAME_APP_DARK_MODE: 'auto' | boolean = false
@@ -78,6 +84,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       release: process.env.npm_package_name + '@' + process.env.npm_package_version,
+      socketIoPollingOnly: SOCKET_IO_POLLING_ONLY,
       sentry: {
         dsn: process.env.SESAME_SENTRY_DSN,
       },

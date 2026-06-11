@@ -43,16 +43,6 @@
               )
                 q-tooltip.text-body2 Consulter / modifier
               q-btn(
-                :disable='!hasPermission("/management/lifecycle", "update")'
-                :loading='!!ruleExecuteLoading[row.name]'
-                color='purple'
-                icon='mdi-play-circle-outline'
-                size='12px'
-                flat round dense
-                @click='executeRule(row)'
-              )
-                q-tooltip.text-body2 Exécuter les règles cron (trigger: -1)
-              q-btn(
                 :disable='!hasPermission("/management/lifecycle", "delete")'
                 color='negative'
                 icon='mdi-delete'
@@ -95,12 +85,12 @@
               flat
               @click='openCreateStateDialog'
             )
-          q-markup-table(dense flat bordered v-if='customStates.length')
+          q-markup-table.lifecycle-states-table(dense flat bordered v-if='customStates.length')
             thead
               tr
                 th.text-left Clé
                 th.text-left Label
-                th.text-left Description
+                th.text-left.lifecycle-states-description Description
                 th.text-left Icône
                 th.text-left Couleur
                 th.text-right Actions
@@ -109,7 +99,8 @@
                 td
                   q-badge(:style='{ backgroundColor: state.color || "#888" }') {{ state.key }}
                 td {{ state.label }}
-                td.text-caption {{ state.description }}
+                td.text-caption.lifecycle-states-description
+                  span.lifecycle-states-description-text(:title='state.description') {{ state.description }}
                 td
                   q-icon(v-if='state.icon' :name='state.icon' size='18px')
                 td
@@ -164,22 +155,158 @@
             :model-value='ruleForm.name'
             label='Nom du fichier'
           )
-          q-banner.rounded-borders(dense :class='{ "bg-grey-2 text-grey-9": !$q.dark.isActive, "bg-grey-8 text-white": $q.dark.isActive }')
-            template(#avatar)
-              q-icon(name='mdi-information-outline' color='primary')
-            | Définissez les règles de transition au format JSON. Chaque règle peut inclure : sources, target, trigger, dateKey, rules, mutation.
-            | Utilisez trigger: -1 pour une exécution via cron/CLI, ou une durée (ex. "90d", "5s").
-          q-input(
-            :disable='!hasPermission("/management/lifecycle", isCreateRuleMode ? "create" : "update")'
-            outlined
-            type='textarea'
-            autogrow
-            v-model='ruleForm.identitiesJson'
-            label='Règles (identities)'
-            input-style='font-family: ui-monospace, monospace; min-height: 320px;'
-            :error='!!ruleValidations.identities'
-            :error-message='ruleValidations.identities'
+          .row.items-center.q-mb-sm
+            .text-subtitle2 Règles de transition
+            q-space
+            q-btn(
+              :disable='!hasPermission("/management/lifecycle", isCreateRuleMode ? "create" : "update")'
+              color='primary'
+              icon='mdi-plus'
+              label='Ajouter une règle'
+              dense flat
+              @click='addRuleItem'
+            )
+          q-banner.rounded-borders(dense v-if='!ruleForm.identities.length' :class='{ "bg-grey-2 text-grey-9": !$q.dark.isActive, "bg-grey-8 text-white": $q.dark.isActive }')
+            | Aucune règle définie. Ajoutez au moins une règle de transition.
+          q-expansion-item.lifecycle-rule-item(
+            v-for='(rule, index) in ruleForm.identities'
+            :key='rule._id'
+            dense
+            expand-separator
+            :label='ruleItemLabel(rule, index)'
+            :caption='ruleItemCaption(rule)'
+            header-class='text-primary'
+            default-opened
           )
+            q-card(flat bordered)
+              q-card-section
+                .column.q-gutter-md
+                  q-select(
+                    :disable='!hasPermission("/management/lifecycle", isCreateRuleMode ? "create" : "update")'
+                    outlined dense multiple use-chips
+                    emit-value map-options
+                    v-model='rule.sources'
+                    :options='getStateKeyOptions(rule)'
+                    label='États source'
+                    hint="États depuis lesquels la transition peut s'appliquer"
+                    :error='!!ruleValidations[`rule:${index}:sources`]'
+                    :error-message='ruleValidations[`rule:${index}:sources`]'
+                    @update:model-value='scheduleRuleFilterPreview(rule)'
+                  )
+                  q-select(
+                    :disable='!hasPermission("/management/lifecycle", isCreateRuleMode ? "create" : "update")'
+                    outlined dense
+                    emit-value map-options
+                    v-model='rule.target'
+                    :options='getStateKeyOptions(rule)'
+                    label='État cible'
+                    :error='!!ruleValidations[`rule:${index}:target`]'
+                    :error-message='ruleValidations[`rule:${index}:target`]'
+                  )
+                  q-input(
+                    :disable='!hasPermission("/management/lifecycle", isCreateRuleMode ? "create" : "update")'
+                    outlined dense
+                    v-model='rule.triggerInput'
+                    label='Déclencheur (trigger)'
+                    hint='-1 = cron/CLI · secondes (ex. 3600) · 90d · 50m · 5s'
+                    :error='!!ruleValidations[`rule:${index}:trigger`]'
+                    :error-message='ruleValidations[`rule:${index}:trigger`]'
+                    @update:model-value='scheduleRuleFilterPreview(rule)'
+                  )
+                    template(#append)
+                      q-btn(flat dense round icon='mdi-timer-off-outline' @click='rule.triggerInput = "-1"')
+                        q-tooltip Définir sur -1 (exécution cron/CLI)
+                  q-input(
+                    :disable='!hasPermission("/management/lifecycle", isCreateRuleMode ? "create" : "update")'
+                    outlined dense type='textarea' autogrow
+                    v-model='rule.rulesJson'
+                    label='Filtre MongoDB (rules)'
+                    hint='Requête de filtrage sur le document identité'
+                    input-style='font-family: ui-monospace, monospace; min-height: 80px;'
+                    :error='!!ruleValidations[`rule:${index}:rules`]'
+                    :error-message='ruleValidations[`rule:${index}:rules`]'
+                    @update:model-value='scheduleRuleFilterPreview(rule)'
+                  )
+                  .lifecycle-preview-panel(v-if='getRulePreview(rule._id)?.filter || getRulePreview(rule._id)?.filterLoading || getRulePreview(rule._id)?.filterError')
+                    .row.items-center.q-mb-xs
+                      .text-caption.text-weight-medium Prévisualisation du filtre MongoDB
+                      q-space
+                      q-spinner-dots(v-if='getRulePreview(rule._id)?.filterLoading' color='primary' size='20px')
+                    .text-negative.text-caption.q-mb-xs(v-if='getRulePreview(rule._id)?.filterError') {{ getRulePreview(rule._id)?.filterError }}
+                    template(v-else-if='getRulePreview(rule._id)?.filter')
+                      .text-caption.q-mb-xs {{ getRulePreview(rule._id)?.filter?.temporalFilter?.note }}
+                      .text-body2.q-mb-sm
+                        strong {{ getRulePreview(rule._id)?.filter?.count ?? 0 }}
+                        |  identité(s) correspondante(s)
+                      q-markup-table.lifecycle-preview-table(dense flat bordered v-if='getRulePreview(rule._id)?.filter?.samples?.length')
+                        thead
+                          tr
+                            th.text-left CN
+                            th.text-left État
+                            th.text-left E-mail
+                            th.text-left ID
+                        tbody
+                          tr(v-for='sample in getRulePreview(rule._id)?.filter?.samples' :key='sample._id')
+                            td {{ sample.cn || '—' }}
+                            td {{ sample.lifecycle || '—' }}
+                            td {{ sample.mail || '—' }}
+                            td.text-monospace.text-caption {{ sample._id }}
+                      .text-caption.text-grey-7.q-mt-xs(v-else) Aucun échantillon à afficher.
+                      q-expansion-item.lifecycle-preview-query(
+                        dense
+                        expand-separator
+                        label='Requête MongoDB'
+                        header-class='text-caption'
+                      )
+                        pre.lifecycle-preview-code {{ formatPreviewJson(getRulePreview(rule._id)?.filter?.query) }}
+                  q-input(
+                    :disable='!hasPermission("/management/lifecycle", isCreateRuleMode ? "create" : "update")'
+                    outlined dense type='textarea' autogrow
+                    v-model='rule.mutationJson'
+                    label='Mutation (optionnel)'
+                    hint='Champs à modifier lors de la transition (JSON, variables Liquid : date.today, date.isoNow, …)'
+                    input-style='font-family: ui-monospace, monospace; min-height: 60px;'
+                    :error='!!ruleValidations[`rule:${index}:mutation`]'
+                    :error-message='ruleValidations[`rule:${index}:mutation`]'
+                    @update:model-value='scheduleRuleMutationPreview(rule)'
+                  )
+                  .lifecycle-preview-panel(v-if='getRulePreview(rule._id)?.mutation || getRulePreview(rule._id)?.mutationLoading || getRulePreview(rule._id)?.mutationError')
+                    .row.items-center.q-mb-xs
+                      .text-caption.text-weight-medium Prévisualisation de la mutation
+                      q-space
+                      q-spinner-dots(v-if='getRulePreview(rule._id)?.mutationLoading' color='primary' size='20px')
+                    .text-negative.text-caption.q-mb-xs(v-if='getRulePreview(rule._id)?.mutationError') {{ getRulePreview(rule._id)?.mutationError }}
+                    template(v-else-if='getRulePreview(rule._id)?.mutation')
+                      q-expansion-item.lifecycle-preview-variables(
+                        dense
+                        expand-separator
+                        :label='getTemplateVariablesLabel(rule._id)'
+                        header-class='text-caption'
+                      )
+                        q-markup-table.lifecycle-preview-table.lifecycle-preview-variables-table(
+                          dense flat bordered
+                          :class='$q.dark.isActive ? "text-grey-3" : "text-grey-9"'
+                        )
+                          thead
+                            tr
+                              th.text-left(:class='$q.dark.isActive ? "text-grey-5" : "text-grey-7"') Variable
+                              th.text-left(:class='$q.dark.isActive ? "text-grey-5" : "text-grey-7"') Valeur actuelle
+                          tbody
+                            tr(v-for='(value, key) in getRulePreview(rule._id)?.mutation?.templateVariables' :key='key')
+                              td.text-monospace.text-caption(:class='$q.dark.isActive ? "text-grey-5" : "text-grey-7"') {{ key }}
+                              td.text-monospace.text-caption {{ value }}
+                      .text-caption.q-mt-sm Après résolution des variables
+                      pre.lifecycle-preview-code {{ formatPreviewJson(getRulePreview(rule._id)?.mutation?.resolved) }}
+                  .row.justify-end
+                    q-btn(
+                      :disable='!hasPermission("/management/lifecycle", isCreateRuleMode ? "create" : "update")'
+                      color='negative'
+                      icon='mdi-delete'
+                      label='Supprimer cette règle'
+                      flat dense
+                      @click='removeRuleItem(index)'
+                    )
+          .text-negative.text-caption.q-mt-sm(v-if='ruleValidations.identities') {{ ruleValidations.identities }}
       q-card-actions(align='right')
         q-btn(flat label='Annuler' v-close-popup)
         q-btn(
@@ -264,15 +391,61 @@ type LifecycleState = {
   color?: string
 }
 
-const RULE_TEMPLATE = `[
-  {
-    "sources": ["I"],
-    "rules": { "inetOrgPerson.departmentNumber": "etd" },
-    "trigger": -1,
-    "dateKey": "metadata.lastUpdatedAt",
-    "target": "D"
+type RuleFormItem = {
+  _id: string
+  sources: string[]
+  target: string
+  triggerInput: string
+  rulesJson: string
+  dateKey: string
+  mutationJson: string
+  _extra?: Record<string, unknown>
+}
+
+type RuleMutationPreview = {
+  raw: Record<string, unknown>
+  resolved: Record<string, unknown>
+  templateVariables: Record<string, string>
+}
+
+type RuleFilterPreview = {
+  query: Record<string, unknown>
+  count: number
+  samples: Array<{
+    _id: string
+    lifecycle?: string
+    cn?: string
+    mail?: string
+  }>
+  temporalFilter?: {
+    applied?: boolean
+    note?: string
   }
-]`
+}
+
+type RulePreviewState = {
+  mutationLoading?: boolean
+  mutation?: RuleMutationPreview
+  mutationError?: string
+  filterLoading?: boolean
+  filter?: RuleFilterPreview
+  filterError?: string
+}
+
+let ruleItemSeq = 0
+
+function createEmptyRuleItem(): RuleFormItem {
+  ruleItemSeq += 1
+  return {
+    _id: `rule-${ruleItemSeq}`,
+    sources: [],
+    target: '',
+    triggerInput: '-1',
+    rulesJson: '{}',
+    dateKey: 'metadata.lastUpdatedAt',
+    mutationJson: '',
+  }
+}
 
 export default defineNuxtComponent({
   name: 'SettingsLifecyclePage',
@@ -334,8 +507,12 @@ export default defineNuxtComponent({
     const isCreateRuleMode = ref(false)
     const ruleSaving = ref(false)
     const ruleValidations = reactive<Record<string, string>>({})
-    const ruleForm = ref({ name: '', identitiesJson: RULE_TEMPLATE })
-    const ruleExecuteLoading = reactive<Record<string, boolean>>({})
+    const ruleForm = ref<{ name: string; identities: RuleFormItem[] }>({
+      name: '',
+      identities: [createEmptyRuleItem()],
+    })
+    const rulePreviewState = reactive<Record<string, RulePreviewState>>({})
+    const rulePreviewTimers = new Map<string, { mutation?: ReturnType<typeof setTimeout>; filter?: ReturnType<typeof setTimeout> }>()
 
     const defaultStates = ref<LifecycleState[]>([])
     const customStates = ref<LifecycleState[]>([])
@@ -387,7 +564,8 @@ export default defineNuxtComponent({
       ruleSaving,
       ruleValidations,
       ruleForm,
-      ruleExecuteLoading,
+      rulePreviewState,
+      rulePreviewTimers,
       defaultStates,
       customStates,
       statesDirty,
@@ -415,29 +593,344 @@ export default defineNuxtComponent({
     },
   },
   methods: {
+    getRulePreview(ruleId: string): RulePreviewState | undefined {
+      return this.rulePreviewState[ruleId]
+    },
+    formatPreviewJson(value: unknown): string {
+      if (value === undefined || value === null) {
+        return ''
+      }
+      try {
+        return JSON.stringify(value, null, 2)
+      } catch {
+        return `${value}`
+      }
+    },
+    getTemplateVariablesLabel(ruleId: string): string {
+      const variables = this.getRulePreview(ruleId)?.mutation?.templateVariables
+      const count = variables ? Object.keys(variables).length : 0
+      return `Variables disponibles (${count})`
+    },
+    clearRulePreview(ruleId: string): void {
+      delete this.rulePreviewState[ruleId]
+      const timers = this.rulePreviewTimers.get(ruleId)
+      if (timers?.mutation) {
+        clearTimeout(timers.mutation)
+      }
+      if (timers?.filter) {
+        clearTimeout(timers.filter)
+      }
+      this.rulePreviewTimers.delete(ruleId)
+    },
+    scheduleRuleMutationPreview(rule: RuleFormItem): void {
+      const timers = this.rulePreviewTimers.get(rule._id) || {}
+      if (timers.mutation) {
+        clearTimeout(timers.mutation)
+      }
+      timers.mutation = window.setTimeout(() => {
+        void this.previewRuleMutation(rule)
+      }, 500)
+      this.rulePreviewTimers.set(rule._id, timers)
+    },
+    scheduleRuleFilterPreview(rule: RuleFormItem): void {
+      const timers = this.rulePreviewTimers.get(rule._id) || {}
+      if (timers.filter) {
+        clearTimeout(timers.filter)
+      }
+      timers.filter = window.setTimeout(() => {
+        void this.previewRuleFilter(rule)
+      }, 500)
+      this.rulePreviewTimers.set(rule._id, timers)
+    },
+    parseJsonObjectForPreview(raw: string): { value?: Record<string, unknown>; error?: string } {
+      const trimmed = `${raw || ''}`.trim()
+      if (!trimmed || trimmed === '{}') {
+        return { value: undefined }
+      }
+      try {
+        const parsed = JSON.parse(trimmed)
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+          return { error: 'Un objet JSON est attendu.' }
+        }
+        return { value: parsed as Record<string, unknown> }
+      } catch {
+        return { error: 'JSON invalide.' }
+      }
+    },
+    async previewRuleMutation(rule: RuleFormItem): Promise<void> {
+      const parsed = this.parseJsonObjectForPreview(rule.mutationJson)
+      if (!parsed.value && !parsed.error) {
+        const state = this.rulePreviewState[rule._id] || {}
+        delete state.mutation
+        delete state.mutationError
+        delete state.mutationLoading
+        this.rulePreviewState[rule._id] = state
+        return
+      }
+
+      if (parsed.error) {
+        this.rulePreviewState[rule._id] = {
+          ...this.rulePreviewState[rule._id],
+          mutationError: parsed.error,
+          mutation: undefined,
+          mutationLoading: false,
+        }
+        return
+      }
+
+      this.rulePreviewState[rule._id] = {
+        ...this.rulePreviewState[rule._id],
+        mutationLoading: true,
+        mutationError: undefined,
+      }
+
+      try {
+        const response = await this.$http.$post('/management/lifecycle/config/preview/mutation', {
+          body: { mutation: parsed.value },
+        }) as { data?: RuleMutationPreview }
+        this.rulePreviewState[rule._id] = {
+          ...this.rulePreviewState[rule._id],
+          mutation: response?.data,
+          mutationLoading: false,
+          mutationError: undefined,
+        }
+      } catch (error: any) {
+        this.rulePreviewState[rule._id] = {
+          ...this.rulePreviewState[rule._id],
+          mutationLoading: false,
+          mutationError: error?.response?._data?.message || 'Impossible de prévisualiser la mutation.',
+        }
+      }
+    },
+    async previewRuleFilter(rule: RuleFormItem): Promise<void> {
+      if (!rule.sources?.length) {
+        const state = this.rulePreviewState[rule._id] || {}
+        delete state.filter
+        delete state.filterError
+        delete state.filterLoading
+        this.rulePreviewState[rule._id] = state
+        return
+      }
+
+      const parsed = this.parseJsonObjectForPreview(rule.rulesJson)
+      if (parsed.error) {
+        this.rulePreviewState[rule._id] = {
+          ...this.rulePreviewState[rule._id],
+          filterError: parsed.error,
+          filter: undefined,
+          filterLoading: false,
+        }
+        return
+      }
+
+      this.rulePreviewState[rule._id] = {
+        ...this.rulePreviewState[rule._id],
+        filterLoading: true,
+        filterError: undefined,
+      }
+
+      try {
+        const response = await this.$http.$post('/management/lifecycle/config/preview/filter', {
+          body: {
+            sources: rule.sources,
+            rules: parsed.value || {},
+            triggerInput: rule.triggerInput,
+            dateKey: rule.dateKey,
+            sampleLimit: 5,
+          },
+        }) as { data?: RuleFilterPreview }
+        this.rulePreviewState[rule._id] = {
+          ...this.rulePreviewState[rule._id],
+          filter: response?.data,
+          filterLoading: false,
+          filterError: undefined,
+        }
+      } catch (error: any) {
+        this.rulePreviewState[rule._id] = {
+          ...this.rulePreviewState[rule._id],
+          filterLoading: false,
+          filterError: error?.response?._data?.message || 'Impossible de prévisualiser le filtre.',
+        }
+      }
+    },
+    getStateKeyOptions(rule?: RuleFormItem): Array<{ label: string; value: string }> {
+      const options = [...this.defaultStates, ...this.customStates].map((state) => ({
+        label: `${state.key} — ${state.label}`,
+        value: state.key,
+      }))
+      const seen = new Set(options.map((option) => option.value))
+      const extraKeys = rule ? [...(rule.sources || []), rule.target].filter(Boolean) : []
+      for (const key of extraKeys) {
+        if (!seen.has(key)) {
+          options.push({ label: `${key} (hors liste)`, value: key })
+          seen.add(key)
+        }
+      }
+      return options
+    },
     resetRuleValidations(): void {
       Object.keys(this.ruleValidations).forEach((key) => delete this.ruleValidations[key])
     },
     resetStateValidations(): void {
       Object.keys(this.stateValidations).forEach((key) => delete this.stateValidations[key])
     },
-    parseIdentitiesJson(): unknown[] | null {
+    ruleItemLabel(rule: RuleFormItem, index: number): string {
+      const sources = rule.sources?.length ? rule.sources.join(', ') : '?'
+      const target = rule.target || '?'
+      return `Règle ${index + 1} : [${sources}] → ${target}`
+    },
+    ruleItemCaption(rule: RuleFormItem): string {
+      const trigger = rule.triggerInput?.trim() || 'sans déclencheur'
+      return `trigger: ${trigger}`
+    },
+    addRuleItem(): void {
+      this.ruleForm.identities.push(createEmptyRuleItem())
+    },
+    removeRuleItem(index: number): void {
+      this.ruleForm.identities.splice(index, 1)
+    },
+    formatTriggerForDisplay(trigger: unknown): string {
+      if (trigger === -1 || trigger === '-1') {
+        return '-1'
+      }
+      if (trigger === undefined || trigger === null || trigger === '') {
+        return ''
+      }
+      return String(trigger)
+    },
+    parseTriggerInput(input: string): number | string | null | undefined {
+      const trimmed = `${input || ''}`.trim()
+      if (!trimmed) {
+        return undefined
+      }
+      if (trimmed === '-1') {
+        return -1
+      }
+      if (/^\d+[dms]$/.test(trimmed)) {
+        return trimmed
+      }
+      if (/^\d+$/.test(trimmed)) {
+        const seconds = parseInt(trimmed, 10)
+        if (seconds > 0) {
+          return seconds
+        }
+      }
+      return null
+    },
+    parseJsonObject(raw: string, fieldName: string, index: number): Record<string, unknown> | null | undefined {
+      const trimmed = `${raw || ''}`.trim()
+      if (!trimmed || trimmed === '{}') {
+        return undefined
+      }
       try {
-        const parsed = JSON.parse(this.ruleForm.identitiesJson)
-        if (!Array.isArray(parsed)) {
-          this.ruleValidations.identities = 'Le contenu doit être un tableau JSON.'
+        const parsed = JSON.parse(trimmed)
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+          this.ruleValidations[`rule:${index}:${fieldName}`] = 'Un objet JSON est attendu.'
           return null
         }
-        return parsed
+        return parsed as Record<string, unknown>
       } catch {
-        this.ruleValidations.identities = 'JSON invalide.'
+        this.ruleValidations[`rule:${index}:${fieldName}`] = 'JSON invalide.'
         return null
       }
+    },
+    identityFromApiToForm(identity: Record<string, unknown>): RuleFormItem {
+      const knownKeys = new Set(['sources', 'target', 'trigger', 'rules', 'mutation', 'dateKey'])
+      const extra: Record<string, unknown> = {}
+      for (const [key, value] of Object.entries(identity)) {
+        if (!knownKeys.has(key)) {
+          extra[key] = value
+        }
+      }
+
+      ruleItemSeq += 1
+      return {
+        _id: `rule-${ruleItemSeq}`,
+        sources: Array.isArray(identity.sources) ? [...identity.sources as string[]] : [],
+        target: `${identity.target || ''}`,
+        triggerInput: this.formatTriggerForDisplay(identity.trigger),
+        rulesJson: identity.rules ? JSON.stringify(identity.rules, null, 2) : '{}',
+        dateKey: `${identity.dateKey || 'metadata.lastUpdatedAt'}`,
+        mutationJson: identity.mutation ? JSON.stringify(identity.mutation, null, 2) : '',
+        _extra: Object.keys(extra).length ? extra : undefined,
+      }
+    },
+    buildIdentityFromFormItem(item: RuleFormItem, index: number): Record<string, unknown> | null {
+      if (!item.sources?.length) {
+        this.ruleValidations[`rule:${index}:sources`] = 'Sélectionnez au moins un état source.'
+        return null
+      }
+      if (!item.target) {
+        this.ruleValidations[`rule:${index}:target`] = "L'état cible est obligatoire."
+        return null
+      }
+
+      const trigger = this.parseTriggerInput(item.triggerInput)
+      if (item.triggerInput?.trim() && trigger === null) {
+        this.ruleValidations[`rule:${index}:trigger`] = 'Format invalide. Utilisez -1, un nombre de secondes, ou 90d / 50m / 5s.'
+        return null
+      }
+
+      const rules = this.parseJsonObject(item.rulesJson, 'rules', index)
+      if (rules === null) {
+        return null
+      }
+
+      const mutation = this.parseJsonObject(item.mutationJson, 'mutation', index)
+      if (mutation === null) {
+        return null
+      }
+
+      const hasRules = !!rules && Object.keys(rules).length > 0
+      const hasTrigger = trigger !== undefined && trigger !== null
+      if (!hasRules && !hasTrigger) {
+        this.ruleValidations[`rule:${index}:trigger`] = 'Renseignez un trigger ou un filtre rules.'
+        return null
+      }
+
+      const identity: Record<string, unknown> = { ...(item._extra || {}) }
+      identity.sources = item.sources
+      identity.target = item.target
+      if (item.dateKey?.trim()) {
+        identity.dateKey = item.dateKey.trim()
+      }
+      if (trigger !== undefined) {
+        identity.trigger = trigger
+      }
+      if (rules) {
+        identity.rules = rules
+      }
+      if (mutation) {
+        identity.mutation = mutation
+      }
+
+      return identity
+    },
+    buildIdentitiesFromForm(): Record<string, unknown>[] | null {
+      if (!this.ruleForm.identities.length) {
+        this.ruleValidations.identities = 'Ajoutez au moins une règle.'
+        return null
+      }
+
+      const identities: Record<string, unknown>[] = []
+      for (let index = 0; index < this.ruleForm.identities.length; index++) {
+        const built = this.buildIdentityFromFormItem(this.ruleForm.identities[index], index)
+        if (!built) {
+          return null
+        }
+        identities.push(built)
+      }
+
+      return identities
     },
     openCreateRuleDialog(): void {
       this.resetRuleValidations()
       this.isCreateRuleMode = true
-      this.ruleForm = { name: '', identitiesJson: RULE_TEMPLATE }
+      Object.keys(this.rulePreviewState).forEach((key) => this.clearRulePreview(key))
+      this.ruleForm = {
+        name: '',
+        identities: [createEmptyRuleItem()],
+      }
       this.ruleDialog = true
     },
     async openEditRuleDialog(row: LifecycleRuleSummary): Promise<void> {
@@ -445,14 +938,23 @@ export default defineNuxtComponent({
       this.isCreateRuleMode = false
       try {
         const response = await this.$http.$get(`/management/lifecycle/config/rules/${encodeURIComponent(row.name)}`) as {
-          data?: { identities?: unknown[] }
+          data?: { identities?: Record<string, unknown>[] }
         }
         const identities = response?.data?.identities || []
+        Object.keys(this.rulePreviewState).forEach((key) => this.clearRulePreview(key))
         this.ruleForm = {
           name: row.name,
-          identitiesJson: JSON.stringify(identities, null, 2),
+          identities: identities.length
+            ? identities.map((identity) => this.identityFromApiToForm(identity))
+            : [createEmptyRuleItem()],
         }
         this.ruleDialog = true
+        this.$nextTick(() => {
+          for (const rule of this.ruleForm.identities) {
+            this.scheduleRuleFilterPreview(rule)
+            this.scheduleRuleMutationPreview(rule)
+          }
+        })
       } catch (error: any) {
         this.$q.notify({
           message: error?.response?._data?.message || `Impossible de charger le fichier "${row.name}".`,
@@ -470,7 +972,7 @@ export default defineNuxtComponent({
         return
       }
 
-      const identities = this.parseIdentitiesJson()
+      const identities = this.buildIdentitiesFromForm()
       if (identities === null) {
         return
       }
@@ -538,27 +1040,6 @@ export default defineNuxtComponent({
           })
         }
       })
-    },
-    async executeRule(row: LifecycleRuleSummary): Promise<void> {
-      this.ruleExecuteLoading[row.name] = true
-      try {
-        await this.$http.post(`/management/lifecycle/config/rules/${encodeURIComponent(row.name)}/execute`)
-        this.$q.notify({
-          message: `Exécution lancée pour "${row.name}".`,
-          color: 'positive',
-          position: 'bottom',
-          icon: 'mdi-play-circle-outline',
-        })
-      } catch (error: any) {
-        this.$q.notify({
-          message: error?.response?._data?.message || `Impossible d'exécuter "${row.name}".`,
-          color: 'negative',
-          position: 'top-right',
-          icon: 'mdi-alert-circle-outline',
-        })
-      } finally {
-        this.ruleExecuteLoading[row.name] = false
-      }
     },
     openCreateStateDialog(): void {
       this.resetStateValidations()
@@ -675,4 +1156,47 @@ export default defineNuxtComponent({
   position: relative
   height: 100%
   min-height: 0
+
+.lifecycle-rule-item
+  border: 1px solid rgba(0, 0, 0, 0.12)
+  border-radius: 4px
+  margin-bottom: 8px
+
+.lifecycle-preview-panel
+  padding: 8px 10px
+  border-radius: 4px
+  background: rgba(0, 0, 0, 0.03)
+
+.lifecycle-preview-code
+  margin: 0
+  padding: 8px
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace
+  font-size: 11px
+  line-height: 1.35
+  white-space: pre-wrap
+  word-break: break-word
+  max-height: 220px
+  overflow: auto
+  background: rgba(0, 0, 0, 0.04)
+  border-radius: 4px
+
+.lifecycle-preview-table
+  font-size: 12px
+
+.lifecycle-preview-variables-table
+  margin-top: 4px
+
+  td:first-child
+    white-space: nowrap
+    width: 1%
+
+.lifecycle-states-table
+  .lifecycle-states-description
+    max-width: 240px
+
+  .lifecycle-states-description-text
+    display: block
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
 </style>

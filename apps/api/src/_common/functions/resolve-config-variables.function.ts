@@ -28,6 +28,18 @@ liquidEngine.registerFilter('unixSeconds', (value: unknown) => {
   return normalizeDate(value).unix();
 });
 
+export function getTemplateContextSummary(): Record<string, string> {
+  const now = dayjs();
+  return {
+    'date.today': now.format('YYYY-MM-DD'),
+    'date.yesterday': now.subtract(1, 'day').format('YYYY-MM-DD'),
+    'date.tomorrow': dayjs().add(1, 'day').format('YYYY-MM-DD'),
+    'date.isoNow': dayjs().toISOString(),
+    'date.unix': `${dayjs().valueOf()}`,
+    'date.unixSeconds': `${dayjs().unix()}`,
+  };
+}
+
 function buildTemplateContext(): Record<string, unknown> {
   const now = dayjs();
   return {

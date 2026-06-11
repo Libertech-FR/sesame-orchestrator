@@ -23,6 +23,8 @@ import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
 import { Lifecycle } from './_schemas/lifecycle.schema';
 import {
+  LifecyclePreviewFilterDto,
+  LifecyclePreviewMutationDto,
   LifecycleRuleFileCreateDto,
   LifecycleRuleFileSummaryDto,
   LifecycleRuleFileUpdateDto,
@@ -178,6 +180,39 @@ export class LifecycleController extends AbstractController {
    *   }
    * }
    */
+  @Post('config/preview/mutation')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async previewConfigMutation(
+    @Body() body: LifecyclePreviewMutationDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const data = await this.lifecycleConfigService.previewMutation(body);
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
+  @Post('config/preview/filter')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async previewConfigFilter(@Body() body: LifecyclePreviewFilterDto, @Res() res: Response): Promise<Response> {
+    const data = await this.lifecycleConfigService.previewFilter(body);
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
   @Get('config/rules')
   @UseRoles({
     resource: '/management/lifecycle',

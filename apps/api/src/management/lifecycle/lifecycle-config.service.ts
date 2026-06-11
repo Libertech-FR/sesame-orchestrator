@@ -13,8 +13,15 @@ import {
   LifecycleRuleFileUpdateDto,
   LifecycleStatesUpdateDto,
 } from './_dto/lifecycle-config.dto';
+import { resolveConfigVariables, getTemplateContextSummary } from '~/_common/functions/resolve-config-variables.function';
+import { IdentitiesCrudService } from '../identities/identities-crud.service';
 import { loadLifecycleRules } from './_functions/load-lifecycle-rules.function';
+import {
+  lifecycleTriggerToSeconds,
+  parseLifecycleTriggerInput,
+} from './_functions/parse-lifecycle-trigger-input.function';
 import { validateLifecycleCronRules } from './_functions/validate-lifecycle-cron-rules.function';
+import { LifecyclePreviewFilterDto, LifecyclePreviewMutationDto } from './_dto/lifecycle-config.dto';
 import { LifecycleCrudService } from './lifecycle-crud.service';
 import { LifecycleHooksService } from './lifecycle-hooks.service';
 
@@ -33,6 +40,7 @@ export class LifecycleConfigService {
   public constructor(
     private readonly lifecycleHooksService: LifecycleHooksService,
     private readonly lifecycleCrudService: LifecycleCrudService,
+    private readonly identitiesCrudService: IdentitiesCrudService,
   ) {}
 
   public async searchRules(
@@ -151,6 +159,91 @@ export class LifecycleConfigService {
 
   public getCustomStates(): IdentityLifecycleState[] {
     return this.lifecycleCrudService.getCustomStates();
+  }
+
+  public async previewMutation(payload: LifecyclePreviewMutationDto): Promise<{
+    raw: Record<string, unknown>;
+    resolved: Record<string, unknown>;
+    templateVariables: Record<string, string>;
+  }> {
+    const raw = payload.mutation || {};
+    const resolved = (await resolveConfigVariables(raw)) as Record<string, unknown>;
+
+    return {
+      raw,
+      resolved,
+      templateVariables: getTemplateContextSummary(),
+    };
+  }
+
+  public async previewFilter(payload: LifecyclePreviewFilterDto): Promise<{
+    query: Record<string, unknown>;
+    resolvedRules: Record<string, unknown>;
+    count: number;
+    samples: Array<Record<string, unknown>>;
+    temporalFilter: { applied: boolean; dateKey?: string; before?: string; note?: string };
+  }> {
+    if (!payload.sources?.length) {
+      throw new BadRequestException('Au moins un état source est requis pour la prévisualisation.');
+    }
+
+    const resolvedRules = (await resolveConfigVariables(payload.rules ?? {})) as Record<string, unknown>;
+    const parsedTrigger = parseLifecycleTriggerInput(payload.triggerInput);
+    const triggerSeconds = lifecycleTriggerToSeconds(parsedTrigger ?? undefined);
+    const dateKey = payload.dateKey?.trim() || 'lastSync';
+
+    const query: Record<string, unknown> = {
+      ...resolvedRules,
+      lifecycle: { $in: payload.sources },
+      ignoreLifecycle: { $ne: true },
+      deletedFlag: { $ne: true },
+    };
+
+    const temporalFilter: {
+      applied: boolean;
+      dateKey?: string;
+      before?: string;
+      note?: string;
+    } = {
+      applied: false,
+      note: 'Aucun filtre temporel appliqué (trigger absent, -1, ou immédiat).',
+    };
+
+    if (typeof triggerSeconds === 'number' && triggerSeconds > 0) {
+      const checkDate = new Date(Date.now() - triggerSeconds * 1000);
+      query[dateKey] = { $lte: checkDate };
+      temporalFilter.applied = true;
+      temporalFilter.dateKey = dateKey;
+      temporalFilter.before = checkDate.toISOString();
+      temporalFilter.note = `Identités dont ${dateKey} est antérieur ou égal à ${checkDate.toISOString()}.`;
+    } else if (triggerSeconds === -1) {
+      temporalFilter.note = 'Trigger -1 : exécution cron/CLI sans filtre temporel.';
+    }
+
+    const sampleLimit = payload.sampleLimit ?? 5;
+    const [count, samples] = await Promise.all([
+      this.identitiesCrudService.model.countDocuments(query),
+      this.identitiesCrudService.model
+        .find(query)
+        .limit(sampleLimit)
+        .select('_id lifecycle inetOrgPerson.cn inetOrgPerson.mail metadata.lastUpdatedAt lastSync')
+        .lean(),
+    ]);
+
+    return {
+      query,
+      resolvedRules,
+      count,
+      samples: samples.map((sample) => ({
+        _id: sample._id,
+        lifecycle: sample.lifecycle,
+        cn: (sample as { inetOrgPerson?: { cn?: string } }).inetOrgPerson?.cn,
+        mail: (sample as { inetOrgPerson?: { mail?: string } }).inetOrgPerson?.mail,
+        lastSync: (sample as { lastSync?: Date }).lastSync,
+        lastUpdatedAt: (sample as { metadata?: { lastUpdatedAt?: Date } }).metadata?.lastUpdatedAt,
+      })),
+      temporalFilter,
+    };
   }
 
   public async updateCustomStates(payload: LifecycleStatesUpdateDto): Promise<IdentityLifecycleState[]> {

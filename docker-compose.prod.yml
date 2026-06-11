@@ -6,7 +6,7 @@
 #   docker network create reverse   # si reverse-proxy externe
 #
 # Socket.IO : le client utilise `/api/socket.io` (même origine que le front).
-# apps/web/.env : ne pas définir SESAME_SOCKET_IO_POLLING_ONLY (ou =0) → WebSocket en prod.
+# WebSocket prod : NUXT_PUBLIC_SOCKET_IO_POLLING_ONLY=false (défaut si NODE_ENV=production au build).
 # Reverse-proxy : router tout le trafic (HTTP + WebSocket) vers le port Nuxt (3000) ;
 # Nuxt proxifie `/api/**` vers l'API interne (SESAME_APP_API_URL=http://127.0.0.1:4000).
 #

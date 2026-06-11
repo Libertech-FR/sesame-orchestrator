@@ -10,11 +10,20 @@ const SESAME_APP_API_URL = process.env.SESAME_APP_API_URL || 'http://127.0.0.1:4
 const SESAME_ALLOWED_HOSTS = process.env.SESAME_ALLOWED_HOSTS ? process.env.SESAME_ALLOWED_HOSTS.split(',') : []
 const API_PROXY_TARGET = SESAME_APP_API_URL.replace(/\/$/, '')
 const IS_DEV = process.env.NODE_ENV === 'development'
-/** Par défaut : polling seul en dev (proxy WS cassé), WebSocket en prod. Surcharge : SESAME_SOCKET_IO_POLLING_ONLY=0|1 */
-const SOCKET_IO_POLLING_ONLY =
-  process.env.SESAME_SOCKET_IO_POLLING_ONLY !== undefined
-    ? /^(1|true|yes|on)$/i.test(process.env.SESAME_SOCKET_IO_POLLING_ONLY)
-    : IS_DEV
+/**
+ * Polling seul si true (dev). Surcharges runtime (sans rebuild) : NUXT_PUBLIC_SOCKET_IO_POLLING_ONLY.
+ * Build : SESAME_SOCKET_IO_POLLING_ONLY ou défaut IS_DEV.
+ */
+const SOCKET_IO_POLLING_ONLY = (() => {
+  const fromNuxtPublic = process.env.NUXT_PUBLIC_SOCKET_IO_POLLING_ONLY
+  if (fromNuxtPublic !== undefined) {
+    return /^(1|true|yes|on)$/i.test(fromNuxtPublic)
+  }
+  if (process.env.SESAME_SOCKET_IO_POLLING_ONLY !== undefined) {
+    return /^(1|true|yes|on)$/i.test(process.env.SESAME_SOCKET_IO_POLLING_ONLY)
+  }
+  return IS_DEV
+})()
 
 if (SESAME_ALLOWED_HOSTS.length === 0 && !/localhost/.test(SESAME_APP_API_URL) && IS_DEV) {
   SESAME_ALLOWED_HOSTS.push(new URL(SESAME_APP_API_URL).hostname)

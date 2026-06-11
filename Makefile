@@ -54,6 +54,7 @@ simulation: ## Start production environment in simulation mode
 	@docker run --rm -it \
 		$(DOCKER_SOCKET_MOUNT) \
 		-e NODE_ENV=production \
+		-e NUXT_PUBLIC_SOCKET_IO_POLLING_ONLY=false \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
 		-e GIT_BRANCH=$(GIT_BRANCH) \
 		-e GIT_COMMIT=$(GIT_COMMIT) \
@@ -86,6 +87,7 @@ prod: ## Start production environment
 	@docker run --rm -it \
 		$(DOCKER_SOCKET_MOUNT) \
 		-e NODE_ENV=production \
+		-e NUXT_PUBLIC_SOCKET_IO_POLLING_ONLY=false \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
 		-e GIT_BRANCH=$(GIT_BRANCH) \
 		-e GIT_COMMIT=$(GIT_COMMIT) \
@@ -110,6 +112,7 @@ dev: ## Start development environment
 	@docker run --rm -it \
 		$(DOCKER_SOCKET_MOUNT) \
 		-e NODE_ENV=development \
+		-e NUXT_PUBLIC_SOCKET_IO_POLLING_ONLY=true \
 		-e NODE_TLS_REJECT_UNAUTHORIZED=0 \
 		-e GIT_BRANCH=$(GIT_BRANCH) \
 		-e GIT_COMMIT=$(GIT_COMMIT) \

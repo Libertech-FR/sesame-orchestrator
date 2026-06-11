@@ -748,7 +748,11 @@ export class AuthService extends AbstractService implements OnModuleInit {
     const normalizedIdentity = typeof identity?.toObject === 'function' ? identity.toObject() : identity;
     const jwtid = `${identity._id}_${randomBytes(16).toString('hex')}`;
     const mfaVerified = !!options?.mfaVerified;
-    const mfaVerifiedAt = mfaVerified ? Date.now() : null;
+    const mfaVerifiedAt = mfaVerified
+      ? typeof options?.mfaVerifiedAt === 'number'
+        ? options.mfaVerifiedAt
+        : Date.now()
+      : null;
     const access_token = this.jwtService.sign(
       {
         identity: pick(normalizedIdentity, ['_id', 'username', 'email', 'token', 'roles']),
@@ -840,10 +844,16 @@ export class AuthService extends AbstractService implements OnModuleInit {
   > {
     const data = await this.redis.get([this.REFRESH_TOKEN_PREFIX, refresh_token].join(this.TOKEN_PATH_SEPARATOR));
     if (!data) throw new UnauthorizedException();
-    const { identityId, mfaVerified } = JSON.parse(data);
+    const { identityId, mfaVerified, mfaVerifiedAt } = JSON.parse(data);
     const identity = await this.agentsService.findOne<Agents>({ _id: identityId });
     if (!identity) throw new ForbiddenException();
-    return [identity, await this.createTokens(omit(identity.toObject(), ['password']), refresh_token, { mfaVerified })];
+    return [
+      identity,
+      await this.createTokens(omit(identity.toObject(), ['password']), refresh_token, {
+        mfaVerified,
+        mfaVerifiedAt: typeof mfaVerifiedAt === 'number' ? mfaVerifiedAt : undefined,
+      }),
+    ];
   }
 
   public async clearSession(jwt: string): Promise<void> {

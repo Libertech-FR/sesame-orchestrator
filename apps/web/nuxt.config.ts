@@ -212,15 +212,6 @@ export default defineNuxtConfig({
   vite: {
     server: {
       allowedHosts: ['localhost', ...SESAME_ALLOWED_HOSTS],
-      // En dev, le navigateur parle à Vite : seul Vite peut faire l'upgrade WS (Nitro proxy.web → Invalid frame header).
-      proxy: {
-        '/api/socket.io': {
-          target: API_PROXY_TARGET,
-          changeOrigin: true,
-          ws: true,
-          rewrite: (path: string) => path.replace(/^\/api/, ''),
-        },
-      },
     },
     build: {
       // Avoid per-chunk CSS ordering differences between dev/prod.

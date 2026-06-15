@@ -18,6 +18,7 @@ import { ServiceSchemaInterface } from './interfaces/service.schema.interface';
 import { AbstractSchema } from './schemas/abstract.schema';
 import mongodb from 'mongodb';
 import { omit } from 'radash';
+import { normalizeMongoFilterValues } from '~/_common/functions/normalize-mongo-filter-values';
 
 @Injectable()
 export abstract class AbstractServiceSchema<T extends AbstractSchema | Document = AbstractSchema | Document>
@@ -54,6 +55,7 @@ export abstract class AbstractServiceSchema<T extends AbstractSchema | Document 
       }
     }
     this.logger.debug(['find', JSON.stringify(Object.values(arguments))].join(' '))
+    filter = normalizeMongoFilterValues(filter)
     return await this._model.find<Query<Array<T>, T, any, T>>(filter, projection, options).exec()
   }
 
@@ -71,6 +73,7 @@ export abstract class AbstractServiceSchema<T extends AbstractSchema | Document 
       }
     }
     this.logger.debug(['count', JSON.stringify(Object.values(arguments))].join(' '))
+    filter = normalizeMongoFilterValues(filter)
     return await this._model.countDocuments(filter, options as any).exec()
   }
 
@@ -104,6 +107,7 @@ export abstract class AbstractServiceSchema<T extends AbstractSchema | Document 
     }
     const softDelete = { deletedFlag: { $ne: true } }
     filter = { ...filter, ...softDelete }
+    filter = normalizeMongoFilterValues(filter)
     let count = await this._model.countDocuments(filter).exec()
     let data = await this._model.find<T & Query<T, T, any, T>>(filter, projection, options).exec()
 

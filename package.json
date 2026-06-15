@@ -41,5 +41,10 @@
   "devDependencies": {
     "turbo": "^2.9.15"
   },
-  "packageManager": "yarn@1.22.22"
+  "packageManager": "yarn@1.22.22",
+  "resolutions": {
+    "**/mongoose": "8.23.0",
+    "@tacxou/nestjs_module_restools/**/mongoose": "8.23.0",
+    "@tacxou/nestjs_module_restools/**/bson": "6.10.4"
+  }
 }

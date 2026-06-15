@@ -30,6 +30,7 @@ import {
   LifecycleRuleFileUpdateDto,
   LifecycleStatesUpdateDto,
 } from './_dto/lifecycle-config.dto';
+import { ManualTransitionsUpdateDto } from './_dto/manual-transitions.dto';
 import { LifecycleConfigService } from './lifecycle-config.service';
 import { LifecycleCrudService } from './lifecycle-crud.service';
 import { LifecycleHooksService } from './lifecycle-hooks.service';
@@ -343,6 +344,40 @@ export class LifecycleController extends AbstractController {
         defaultStates: this.lifecycleConfigService.getDefaultStates(),
         customStates: this.lifecycleConfigService.getCustomStates(),
       },
+    });
+  }
+
+
+  @Get('config/manual-transitions')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async getConfigManualTransitions(@Res() res: Response): Promise<Response> {
+    const data = await this.lifecycleConfigService.getManualTransitions();
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data: { manualTransitions: data },
+    });
+  }
+
+  @Put('config/manual-transitions')
+  @UseRoles({
+    resource: '/management/lifecycle',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  public async updateConfigManualTransitions(
+    @Body() body: ManualTransitionsUpdateDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const data = await this.lifecycleConfigService.updateManualTransitions(body);
+
+    return res.json({
+      statusCode: HttpStatus.OK,
+      data: { manualTransitions: data },
     });
   }
 

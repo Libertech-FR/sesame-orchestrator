@@ -4,6 +4,7 @@
     q-tabs(v-model='activeTab' dense align='left' active-color='primary' indicator-color='primary' shrink)
       q-tab(name='rules' icon='mdi-file-tree' label='Fichiers de règles')
       q-tab(name='states' icon='mdi-state-machine' label='États personnalisés')
+      q-tab(name='manual' icon='mdi-hand-pointing-right' label='Transitions manuelles')
     q-separator
     q-tab-panels.lifecycle-settings-panels.col(v-model='activeTab' animated)
       q-tab-panel.q-pa-none.fit(name='rules')
@@ -58,6 +59,77 @@
                   :color='props.row.cronExecutable ? "positive" : "grey"'
                   size='18px'
                 )
+
+      q-tab-panel.q-pa-none.fit.scroll(name='manual')
+        .q-pa-md
+          .text-subtitle2 Transitions manuelles uniquement
+          .text-caption.text-grey-7.q-mb-md
+            | Ces règles filtrent uniquement les changements de cycle de vie effectués manuellement dans l'interface.
+            | Les transitions automatiques (cron, règles) ne sont pas concernées.
+            | Sans règle pour un état source, toutes les destinations restent autorisées.
+          .row.items-center.q-mb-sm
+            q-space
+            q-btn(
+              :disable='!hasPermission("/management/lifecycle", "create")'
+              color='primary'
+              icon='mdi-plus'
+              label='Ajouter une règle'
+              dense flat
+              @click='addManualTransitionItem'
+            )
+          q-banner.rounded-borders(dense v-if='!manualTransitions.length' :class='{ "bg-grey-2 text-grey-9": !$q.dark.isActive, "bg-grey-8 text-white": $q.dark.isActive }')
+            | Aucune règle de transition manuelle. Tous les changements manuels sont autorisés.
+          q-markup-table.lifecycle-manual-table(dense flat bordered v-if='manualTransitions.length')
+            thead
+              tr
+                th.text-left État source
+                th.text-left Destinations autorisées (manuel)
+                th.text-right Actions
+            tbody
+              tr(v-for='(rule, index) in manualTransitions' :key='rule._id')
+                td
+                  q-select(
+                    :disable='!hasPermission("/management/lifecycle", "update")'
+                    outlined dense emit-value map-options
+                    v-model='rule.source'
+                    @update:model-value='manualDirty = true'
+                    :options='getManualSourceOptions(rule)'
+                    label='État actuel'
+                    :error='!!manualValidations[`manual:${index}:source`]'
+                    :error-message='manualValidations[`manual:${index}:source`]'
+                  )
+                td
+                  q-select(
+                    :disable='!hasPermission("/management/lifecycle", "update")'
+                    outlined dense multiple use-chips emit-value map-options
+                    v-model='rule.targets'
+                    @update:model-value='manualDirty = true'
+                    :options='getStateKeyOptions()'
+                    label='Destinations manuelles autorisées'
+                    hint='Changement manuel uniquement'
+                    :error='!!manualValidations[`manual:${index}:targets`]'
+                    :error-message='manualValidations[`manual:${index}:targets`]'
+                  )
+                td.text-right
+                  q-btn(
+                    :disable='!hasPermission("/management/lifecycle", "delete")'
+                    color='negative'
+                    icon='mdi-delete'
+                    size='sm'
+                    flat round dense
+                    @click='removeManualTransitionItem(index)'
+                  )
+          .row.q-mt-md(v-if='manualDirty')
+            q-btn(
+              :disable='!hasPermission("/management/lifecycle", "update")'
+              :loading='manualSaving'
+              color='positive'
+              push
+              icon='mdi-content-save'
+              label='Enregistrer les transitions manuelles'
+              @click='saveManualTransitions'
+            )
+
       q-tab-panel.q-pa-none.fit.scroll(name='states')
         .q-pa-md
           .text-subtitle2.q-mb-sm États par défaut (non modifiables)
@@ -85,7 +157,11 @@
               flat
               @click='openCreateStateDialog'
             )
-          q-markup-table.lifecycle-states-table(dense flat bordered v-if='customStates.length')
+          q-markup-table.lifecycle-manual-table
+  td
+    vertical-align: top
+
+.lifecycle-states-table(dense flat bordered v-if='customStates.length')
             thead
               tr
                 th.text-left Clé
@@ -383,6 +459,12 @@ type LifecycleRuleSummary = {
   targets: string[]
 }
 
+type ManualTransitionFormItem = {
+  _id: string
+  source: string
+  targets: string[]
+}
+
 type LifecycleState = {
   key: string
   label: string
@@ -433,6 +515,16 @@ type RulePreviewState = {
 }
 
 let ruleItemSeq = 0
+let manualTransitionSeq = 0
+
+function createEmptyManualTransitionItem(): ManualTransitionFormItem {
+  manualTransitionSeq += 1
+  return {
+    _id: `manual-${manualTransitionSeq}`,
+    source: '',
+    targets: [],
+  }
+}
 
 function createEmptyRuleItem(): RuleFormItem {
   ruleItemSeq += 1
@@ -552,7 +644,29 @@ export default defineNuxtComponent({
       statesDirty.value = false
     }
 
-    await loadStates()
+
+    const manualTransitions = ref<ManualTransitionFormItem[]>([])
+    const manualDirty = ref(false)
+    const manualSaving = ref(false)
+    const manualValidations = reactive<Record<string, string>>({})
+
+    const loadManualTransitions = async (): Promise<void> => {
+      const response = await $http.$get('/management/lifecycle/config/manual-transitions') as {
+        data?: { manualTransitions?: Array<{ source: string; targets: string[] }> }
+      }
+      const items = response?.data?.manualTransitions || []
+      manualTransitions.value = items.map((item) => {
+        manualTransitionSeq += 1
+        return {
+          _id: `manual-${manualTransitionSeq}`,
+          source: item.source,
+          targets: [...(item.targets || [])],
+        }
+      })
+      manualDirty.value = false
+    }
+
+    await loadManualTransitions()
 
     return {
       hasPermission,
@@ -576,6 +690,11 @@ export default defineNuxtComponent({
       stateValidations,
       stateForm,
       loadStates,
+      manualTransitions,
+      manualDirty,
+      manualSaving,
+      manualValidations,
+      loadManualTransitions,
     }
   },
   computed: {
@@ -751,6 +870,85 @@ export default defineNuxtComponent({
           filterLoading: false,
           filterError: error?.response?._data?.message || 'Impossible de prévisualiser le filtre.',
         }
+      }
+    },
+
+    getManualSourceOptions(rule: ManualTransitionFormItem): Array<{ label: string; value: string }> {
+      const usedSources = new Set(
+        this.manualTransitions
+          .filter((item) => item._id !== rule._id)
+          .map((item) => item.source)
+          .filter(Boolean),
+      )
+      return this.getStateKeyOptions()
+        .filter((option) => !usedSources.has(option.value))
+    },
+    addManualTransitionItem(): void {
+      this.manualTransitions.push(createEmptyManualTransitionItem())
+      this.manualDirty = true
+    },
+    removeManualTransitionItem(index: number): void {
+      this.manualTransitions.splice(index, 1)
+      this.manualDirty = true
+    },
+    resetManualValidations(): void {
+      Object.keys(this.manualValidations).forEach((key) => delete this.manualValidations[key])
+    },
+    buildManualTransitionsPayload(): Array<{ source: string; targets: string[] }> | null {
+      const payload: Array<{ source: string; targets: string[] }> = []
+      const usedSources = new Set<string>()
+
+      for (let index = 0; index < this.manualTransitions.length; index++) {
+        const rule = this.manualTransitions[index]
+        if (!rule.source) {
+          this.manualValidations[`manual:${index}:source`] = "L'état source est obligatoire."
+          return null
+        }
+        if (usedSources.has(rule.source)) {
+          this.manualValidations[`manual:${index}:source`] = 'Cet état source est déjà utilisé.'
+          return null
+        }
+        if (!rule.targets?.length) {
+          this.manualValidations[`manual:${index}:targets`] = 'Sélectionnez au moins une destination autorisée.'
+          return null
+        }
+        usedSources.add(rule.source)
+        payload.push({
+          source: rule.source,
+          targets: [...rule.targets],
+        })
+      }
+
+      return payload
+    },
+    async saveManualTransitions(): Promise<void> {
+      this.resetManualValidations()
+      const manualTransitions = this.buildManualTransitionsPayload()
+      if (manualTransitions === null) {
+        return
+      }
+
+      this.manualSaving = true
+      try {
+        await this.$http.put('/management/lifecycle/config/manual-transitions', {
+          body: { manualTransitions },
+        })
+        await this.loadManualTransitions()
+        this.$q.notify({
+          message: 'Transitions manuelles enregistrées.',
+          color: 'positive',
+          position: 'top-right',
+          icon: 'mdi-check-circle-outline',
+        })
+      } catch (error: any) {
+        this.$q.notify({
+          message: error?.response?._data?.message || "Impossible d'enregistrer les transitions manuelles.",
+          color: 'negative',
+          position: 'top-right',
+          icon: 'mdi-alert-circle-outline',
+        })
+      } finally {
+        this.manualSaving = false
       }
     },
     getStateKeyOptions(rule?: RuleFormItem): Array<{ label: string; value: string }> {
@@ -1189,6 +1387,10 @@ export default defineNuxtComponent({
   td:first-child
     white-space: nowrap
     width: 1%
+
+.lifecycle-manual-table
+  td
+    vertical-align: top
 
 .lifecycle-states-table
   .lifecycle-states-description

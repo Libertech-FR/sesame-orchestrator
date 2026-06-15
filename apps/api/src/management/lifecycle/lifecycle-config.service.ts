@@ -24,6 +24,8 @@ import { validateLifecycleCronRules } from './_functions/validate-lifecycle-cron
 import { LifecyclePreviewFilterDto, LifecyclePreviewMutationDto } from './_dto/lifecycle-config.dto';
 import { LifecycleCrudService } from './lifecycle-crud.service';
 import { LifecycleHooksService } from './lifecycle-hooks.service';
+import { ManualTransitionRuleDto, ManualTransitionsSchemaDto, ManualTransitionsUpdateDto } from './_dto/manual-transitions.dto';
+import { clearManualTransitionsCache, loadManualTransitions } from './_functions/load-manual-transitions.function';
 
 export type LifecycleRuleFileSummary = {
   name: string;
@@ -155,6 +157,38 @@ export class LifecycleConfigService {
     return this.lifecycleCrudService.getAllAvailableStates().filter((state) =>
       ['O', 'I', 'M'].includes(state.key),
     );
+  }
+
+
+  public async getManualTransitions(): Promise<ManualTransitionRuleDto[]> {
+    return loadManualTransitions();
+  }
+
+  public async updateManualTransitions(payload: ManualTransitionsUpdateDto): Promise<ManualTransitionRuleDto[]> {
+    const schema = plainToInstance(ManualTransitionsSchemaDto, {
+      manualTransitions: payload.manualTransitions || [],
+    });
+
+    try {
+      await validateOrReject(schema, { whitelist: true });
+    } catch (errors) {
+      throw new BadRequestException(formatValidationErrors(errors, 'manual-transitions.yml'));
+    }
+
+    const usedSources = new Set<string>();
+    for (const rule of schema.manualTransitions) {
+      if (usedSources.has(rule.source)) {
+        throw new BadRequestException(`La source <${rule.source}> est définie plusieurs fois.`);
+      }
+      usedSources.add(rule.source);
+    }
+
+    this.ensureLifecycleDir();
+    writeFileSync(this.getManualTransitionsFilePath(), stringify({ manualTransitions: schema.manualTransitions }));
+    clearManualTransitionsCache();
+
+    await this.syncAfterConfigChange();
+    return loadManualTransitions();
   }
 
   public getCustomStates(): IdentityLifecycleState[] {
@@ -296,6 +330,10 @@ export class LifecycleConfigService {
 
   private getLifecycleDir(): string {
     return path.join(process.cwd(), 'configs', 'lifecycle');
+  }
+
+  private getManualTransitionsFilePath(): string {
+    return path.join(this.getLifecycleDir(), 'manual-transitions.yml');
   }
 
   private getStatesFilePath(): string {

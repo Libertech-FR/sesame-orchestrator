@@ -1,5 +1,12 @@
+type ManualTransitionRule = {
+  source: string
+  targets: string[]
+}
+
 const stateList = ref<any[]>([])
+const manualTransitions = ref<ManualTransitionRule[]>([])
 let stateListPromise: Promise<void> | null = null
+let manualTransitionsPromise: Promise<void> | null = null
 
 type useIdentityLifecycleReturnType = {
   getLifecycleColor: (state: string) => string
@@ -7,6 +14,9 @@ type useIdentityLifecycleReturnType = {
   getLifecycleIcon: (state: string) => string
   getLifecycleInfos: (state: string) => { color: string, name: string, value: string, icon: string, textColor?: string }
   stateList: Ref<any[]>
+  manualTransitions: Ref<ManualTransitionRule[]>
+  isManualLifecycleTargetAllowed: (from: string, to: string) => boolean
+  getAllowedManualLifecycleTargets: (from: string) => string[] | null
 }
 
 const DEFAULT_COLOR = 'grey'
@@ -37,6 +47,33 @@ export async function useIdentityLifecycles(): Promise<useIdentityLifecycleRetur
 
       await stateListPromise
     }
+    const loadManualTransitions = async (): Promise<void> => {
+      try {
+        const response = await $http.get('/management/lifecycle/config/manual-transitions', {
+          method: 'GET',
+        })
+        if (response && Array.isArray(response._data?.data?.manualTransitions)) {
+          manualTransitions.value = response._data.data.manualTransitions
+        }
+      } catch (error: any) {
+        console.error('Error fetching manual lifecycle transitions:', error)
+      }
+    }
+
+    if (manualTransitions.value.length === 0) {
+      if (!manualTransitionsPromise) {
+        manualTransitionsPromise = (async () => {
+          try {
+            await loadManualTransitions()
+          } finally {
+            manualTransitionsPromise = null
+          }
+        })()
+      }
+      await manualTransitionsPromise
+    }
+
+
   } catch (error: any) {
     console.error('Error initializing lifecycle states:', error)
   }
@@ -74,5 +111,33 @@ export async function useIdentityLifecycles(): Promise<useIdentityLifecycleRetur
     }
   }
 
-  return { getLifecycleName, getLifecycleColor, getLifecycleIcon, getLifecycleInfos, stateList }
+  function getAllowedManualLifecycleTargets(from: string): string[] | null {
+    const rule = manualTransitions.value.find((item) => item.source === from)
+    if (!rule) {
+      return null
+    }
+    return [...new Set(rule.targets || [])]
+  }
+
+  function isManualLifecycleTargetAllowed(from: string, to: string): boolean {
+    if (!from || !to || from === to) {
+      return true
+    }
+    const allowedTargets = getAllowedManualLifecycleTargets(from)
+    if (allowedTargets === null) {
+      return true
+    }
+    return allowedTargets.includes(to)
+  }
+
+  return {
+    getLifecycleName,
+    getLifecycleColor,
+    getLifecycleIcon,
+    getLifecycleInfos,
+    stateList,
+    manualTransitions,
+    isManualLifecycleTargetAllowed,
+    getAllowedManualLifecycleTargets,
+  }
 }

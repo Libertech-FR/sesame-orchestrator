@@ -1,3 +1,5 @@
+import { loadManualTransitions } from '~/management/lifecycle/_functions/load-manual-transitions.function';
+import { isManualLifecycleTransitionAllowed } from '~/management/lifecycle/_functions/is-manual-lifecycle-transition-allowed.function';
 import { BadRequestException, Body, Controller, Get, HttpStatus, Param, Patch, Post, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import {
@@ -357,6 +359,16 @@ export class IdentitiesCrudController extends AbstractController {
     if (!identity) {
       throw new BadRequestException('Identity not found');
     }
+
+    if (body.lifecycle && body.lifecycle !== identity.lifecycle) {
+      const manualTransitions = await loadManualTransitions();
+      if (!isManualLifecycleTransitionAllowed(identity.lifecycle, body.lifecycle, manualTransitions)) {
+        throw new BadRequestException(
+          `Changement manuel de cycle de vie non autorisé : <${identity.lifecycle}> → <${body.lifecycle}>`,
+        );
+      }
+    }
+
     const data = await this._service.updateLifecycle(_id, body.lifecycle);
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

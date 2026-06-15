@@ -1,0 +1,32 @@
+# Transitions manuelles uniquement (changement via l'interface identité).
+# N'affecte pas les règles automatiques (cron, fichiers rules/*.yml).
+# Si un état source n'est pas listé ici, toutes les destinations restent autorisées.
+
+manualTransitions:
+  # Officiel (O) : activation courante, pas de passage direct vers « A détruire » ou « Caché »
+  - source: O
+    targets: [I, M, A, P, V]
+
+  # Inactif (I) : réactivation ou mise en file de suppression
+  - source: I
+    targets: [O, M, D]
+
+  # Manuel (M) : état opérateur, retours usuels
+  - source: M
+    targets: [O, I, A, P]
+
+  # En attente (A) : validation ou retour provisoire
+  - source: A
+    targets: [O, P, I]
+
+  # Provisoire (P) : promotion ou mise en attente
+  - source: P
+    targets: [O, A, I]
+
+  # A détruire (D) : uniquement sortie de la file (pas de nouveau cycle destructeur)
+  - source: D
+    targets: [I, O]
+
+  # Verrouillé (V) : déverrouillage vers états stables
+  - source: V
+    targets: [O, I]

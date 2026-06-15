@@ -146,9 +146,16 @@
               v-for='stateItem in stateList' :key='stateItem.key'
               @click="switchLifecycle(stateItem.key)"
               :active='stateItem.key === identity.lifecycle'
+              :disable='!isManualLifecycleChangeAllowed(stateItem.key)'
               active-class="bg-purple-8 text-white"
-              clickable v-close-popup
+              :clickable='isManualLifecycleChangeAllowed(stateItem.key)'
+              v-close-popup
             )
+              q-tooltip.text-body2(
+                v-if='!isManualLifecycleChangeAllowed(stateItem.key) && stateItem.key !== identity.lifecycle'
+                anchor='top middle'
+                self='bottom middle'
+              ) Changement manuel non autorisé vers cet état
               q-item-section(avatar)
                 q-icon(:name="stateItem.icon || 'mdi-help-rhombus-outline'" :color="stateItem.color")
               q-item-section
@@ -262,11 +269,12 @@ export default defineNuxtComponent({
     }
   },
   async setup() {
-    const { stateList } = await useIdentityLifecycles()
+    const { stateList, isManualLifecycleTargetAllowed } = await useIdentityLifecycles()
     const { hasPermission } = useAccessControl()
 
     return {
       stateList,
+      isManualLifecycleTargetAllowed,
       hasPermission,
     }
   },
@@ -312,7 +320,22 @@ export default defineNuxtComponent({
     },
   },
   methods: {
+    isManualLifecycleChangeAllowed(targetLifecycle: string): boolean {
+      if (!this.identity?.lifecycle) {
+        return true
+      }
+      return this.isManualLifecycleTargetAllowed(this.identity.lifecycle, targetLifecycle)
+    },
     async switchLifecycle(lifecycle: string) {
+      if (!this.isManualLifecycleChangeAllowed(lifecycle)) {
+        this.$q.notify({
+          message: `Changement manuel de cycle de vie non autorisé vers <${lifecycle}>`,
+          color: 'negative',
+          position: 'top-right',
+          icon: 'mdi-alert-circle-outline',
+        })
+        return
+      }
       const requestOptions = { method: 'POST', body: JSON.stringify({ lifecycle }) }
       try {
         const data = await this.$http.patch(`/management/identities/${this.identity._id}/lifecycle`, requestOptions)

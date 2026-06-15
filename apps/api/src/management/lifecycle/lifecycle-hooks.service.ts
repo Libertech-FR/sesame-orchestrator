@@ -72,6 +72,9 @@ export class LifecycleHooksService extends AbstractLifecycleService {
     }
 
     for (const file of defaultFiles) {
+      if (file === 'rules') {
+        continue;
+      }
       if (!files.includes(file)) {
         try {
           const defaultFile = readFileSync(`${process.cwd()}/defaults/lifecycle/${file}`, 'utf-8');

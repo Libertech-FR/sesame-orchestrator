@@ -369,7 +369,9 @@ export class IdentitiesCrudController extends AbstractController {
       }
     }
 
-    const data = await this._service.updateLifecycle(_id, body.lifecycle);
+    await this._service.updateLifecycle(_id, body.lifecycle);
+    const data = await this._service.findById<Identities>(_id);
+
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,

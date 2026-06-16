@@ -20,6 +20,7 @@ import { TasksService } from '../tasks/tasks.service';
 import { ActionType } from './_enum/action-type.enum';
 import { ExecuteJobOptions } from './_interfaces/execute-job-options.interface';
 import { WorkerResultInterface } from '~/core/backends/_interfaces/worker-result.interface';
+import { formatWorkerResultErrorMessage } from '~/core/backends/_functions/format-worker-result-error-message.function';
 import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
@@ -672,10 +673,13 @@ export class BackendsService extends AbstractQueueProcessor {
         });
       }
 
+      const workerResult = (error as any).response as WorkerResultInterface | undefined;
+
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
+        message: formatWorkerResultErrorMessage(workerResult),
         error,
-        job: (error as any).response,
+        job: workerResult,
       });
     }
 

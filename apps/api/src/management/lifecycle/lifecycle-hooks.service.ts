@@ -419,7 +419,7 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * // Déclenché automatiquement lors de :
    * // await identitiesService.update(id, { lifecycle: 'MANUAL' })
    */
-  @OnEvent('management.identities.service.afterUpdate')
+  @OnEvent('management.identities.service.afterUpdate', { suppressErrors: false })
   public async handle(event: { updated: Identities; before?: Identities }): Promise<void> {
     this.logger.verbose(`Handling identity update event for identity <${event.updated._id}>`);
 
@@ -452,7 +452,7 @@ export class LifecycleHooksService extends AbstractLifecycleService {
    * // Déclenché automatiquement lors de :
    * // await identitiesService.upsert(filter, data)
    */
-  @OnEvent('management.identities.service.afterUpsert')
+  @OnEvent('management.identities.service.afterUpsert', { suppressErrors: false })
   public async handleOrderCreatedEvent(event: { result: Identities; before?: Identities }): Promise<void> {
     this.logger.verbose(`Handling identity upsert event for identity <${event.result._id}>`);
 
@@ -515,12 +515,35 @@ export class LifecycleHooksService extends AbstractLifecycleService {
     return before.lifecycle === after.lifecycle && before.state !== after.state;
   }
 
+  private async rollbackLifecycleOnBackendFailure(
+    identityId: Types.ObjectId,
+    lifecycle: string,
+    lastLifecycleUpdate: Date | undefined,
+    historyIds: Array<Types.ObjectId | string>,
+  ): Promise<void> {
+    await this.identitiesService.model.findByIdAndUpdate(identityId, {
+      $set: {
+        lifecycle,
+        ...(lastLifecycleUpdate ? { lastLifecycleUpdate } : {}),
+      },
+    });
+
+    for (const historyId of historyIds) {
+      try {
+        await this.delete(historyId);
+      } catch (error) {
+        this.logger.warn(`Unable to delete lifecycle history <${historyId}>: ${error?.message}`);
+      }
+    }
+  }
+
   private async fireLifecycleEvent(
     before: Identities,
     after: Identities,
     options?: { force?: boolean },
   ): Promise<void> {
     const lifecycleChanged = options?.force || (!!before && before.lifecycle !== after.lifecycle);
+    const shouldRollbackLifecycle = lifecycleChanged && !options?.force && !!before;
 
     if (!options?.force && this.isOperationalStateOnlyChange(before, after)) {
       this.logger.debug(
@@ -529,14 +552,15 @@ export class LifecycleHooksService extends AbstractLifecycleService {
       return;
     }
 
+    let initialHistoryId: Types.ObjectId | string | undefined;
     if (lifecycleChanged) {
-      await this.create({
+      const history = await this.create({
         refId: after._id,
         lifecycle: after.lifecycle,
         date: new Date(),
       });
+      initialHistoryId = history?._id ? String(history._id) : undefined;
       this.logger.debug(`Lifecycle event manualy recorded for identity <${after._id}>: ${after.lifecycle}`);
-      // If the lifecycle has changed, we need to process the new lifecycle
     }
 
     if (this.lifecycleSources[after.lifecycle]) {
@@ -551,7 +575,7 @@ export class LifecycleHooksService extends AbstractLifecycleService {
 
         if (lcs.trigger) {
           this.logger.debug(`Skipping lifecycle source <${after.lifecycle}> with trigger: ${lcs.trigger}`);
-          continue; // Skip processing if it's a trigger-based rule
+          continue;
         }
 
         const hasMutation = hasLifecycleMutation(resolvedMutation);
@@ -570,8 +594,8 @@ export class LifecycleHooksService extends AbstractLifecycleService {
             },
           },
           {
-            new: true, // Return the updated document
-            upsert: false, // Do not create a new document if no match is found
+            new: true,
+            upsert: false,
           },
         );
 
@@ -580,16 +604,27 @@ export class LifecycleHooksService extends AbstractLifecycleService {
           continue;
         }
 
-        await this.create({
+        const ruleHistory = await this.create({
           refId: after._id,
           lifecycle: lcs.target,
           date: new Date(),
         });
 
         const identities = res._id ? [{ id: res._id.toString(), before: after, after: res }] : [];
-        await this.backendsService.lifecycleChangedIdentities(identities, {
-          ...(hasMutation ? { targetState: IdentityState.TO_SYNC } : {}),
-        });
+
+        try {
+          await this.backendsService.lifecycleChangedIdentities(identities, {
+            ...(hasMutation ? { targetState: IdentityState.TO_SYNC } : {}),
+          });
+        } catch (error) {
+          await this.rollbackLifecycleOnBackendFailure(
+            after._id,
+            after.lifecycle,
+            after.lastLifecycleUpdate,
+            [ruleHistory?._id ? String(ruleHistory._id) : undefined].filter(Boolean) as Array<Types.ObjectId | string>,
+          );
+          throw error;
+        }
 
         this.logger.log(
           hasMutation
@@ -602,7 +637,20 @@ export class LifecycleHooksService extends AbstractLifecycleService {
 
     if (lifecycleChanged) {
       const identities = after._id ? [{ id: after._id.toString(), before, after }] : [];
-      await this.backendsService.lifecycleChangedIdentities(identities);
+
+      try {
+        await this.backendsService.lifecycleChangedIdentities(identities);
+      } catch (error) {
+        if (shouldRollbackLifecycle) {
+          await this.rollbackLifecycleOnBackendFailure(
+            after._id,
+            before.lifecycle,
+            before.lastLifecycleUpdate,
+            [initialHistoryId].filter(Boolean) as Array<Types.ObjectId | string>,
+          );
+        }
+        throw error;
+      }
     }
   }
 }

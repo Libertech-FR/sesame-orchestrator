@@ -326,6 +326,24 @@ export default defineNuxtComponent({
       }
       return this.isManualLifecycleTargetAllowed(this.identity.lifecycle, targetLifecycle)
     },
+    extractLifecycleErrorMessage(error: any): string {
+      const data = error?.response?._data
+      if (typeof data?.message === 'string' && data.message.trim()) {
+        return data.message
+      }
+
+      const job = data?.job
+      if (job?.data) {
+        for (const result of Object.values(job.data) as Array<{ error?: { message?: string }; output?: { message?: string } }>) {
+          const message = result?.error?.message || result?.output?.message
+          if (message) {
+            return message
+          }
+        }
+      }
+
+      return data?.error?.message || error?.message || 'erreur inconnue'
+    },
     async switchLifecycle(lifecycle: string) {
       if (!this.isManualLifecycleChangeAllowed(lifecycle)) {
         this.$q.notify({
@@ -345,14 +363,15 @@ export default defineNuxtComponent({
           position: 'top-right',
           icon: 'mdi-check-circle-outline',
         })
-        ;(this as any).refresh()
       } catch (error: any) {
         this.$q.notify({
-          message: 'Impossible de modifier le cycle de vie : ' + error.response._data.message,
+          message: 'Impossible de modifier le cycle de vie : ' + this.extractLifecycleErrorMessage(error),
           color: 'negative',
           position: 'top-right',
           icon: 'mdi-alert-circle-outline',
         })
+      } finally {
+        ;(this as any).refresh()
       }
     },
     async forceLifecycleExecution() {

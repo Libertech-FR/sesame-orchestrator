@@ -157,11 +157,7 @@
               flat
               @click='openCreateStateDialog'
             )
-          q-markup-table.lifecycle-manual-table
-  td
-    vertical-align: top
-
-.lifecycle-states-table(dense flat bordered v-if='customStates.length')
+          q-markup-table.lifecycle-states-table(dense flat bordered v-if='customStates.length')
             thead
               tr
                 th.text-left Clé

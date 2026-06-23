@@ -7,6 +7,8 @@ import { ActivationDto } from '~/management/identities/_dto/_parts/activation-dt
 import { ForcePasswordDto } from '~/management/identities/_dto/force-password-dto';
 import { IdentitiesForcepasswordService } from '~/management/identities/identities-forcepassword.service';
 import { NeedChangePasswordDto } from '~/management/identities/_dto/need-change-password.dto';
+import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
+import { UseRoles } from '~/_common/decorators/use-roles.decorator';
 
 @ApiTags('management/identities')
 @Controller('identities')
@@ -15,6 +17,11 @@ export class IdentitiesForcePasswordController extends AbstractController {
     super();
   }
   @Post('forcepassword')
+  @UseRoles({
+    resource: '/management/identities/forcepassword',
+    action: AC_ACTIONS.CREATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiOperation({ summary: 'force le mot de passe de l identite' })
   @ApiResponse({ status: HttpStatus.OK })
   public async forcePassword(@Res() res: Response, @Body() body: ForcePasswordDto): Promise<Response> {
@@ -32,6 +39,11 @@ export class IdentitiesForcePasswordController extends AbstractController {
     }
   }
   @Post('needtochangepassword')
+  @UseRoles({
+    resource: '/management/identities/needtochangepassword',
+    action: AC_ACTIONS.CREATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
   @ApiOperation({ summary: "force l'utilisateur a changer son mot de passe" })
   @ApiResponse({ status: HttpStatus.OK })
   public async needToChangePassword(@Res() res: Response, @Body() body: NeedChangePasswordDto): Promise<Response> {

@@ -6294,7 +6294,7 @@
   dependencies:
     defer-to-connect "^2.0.1"
 
-"@tacxou/jsonforms_builder@^1.0.3":
+"@tacxou/jsonforms_builder@1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@tacxou/jsonforms_builder/-/jsonforms_builder-1.0.3.tgz#83b3189ff5a506c85ec3e570e58d2a9195d43179"
   integrity sha512-sYc6qcLTznbHEVe6Ral6APNNy7SWskciup+7qDhWMU2SjO3lZ5sWsb5qtvSgsy0uNSQZpvaLDY8cmwkqrJ6A5w==
@@ -6314,26 +6314,26 @@
     dayjs "^1.11.13"
     radash "^12.1.1"
 
-"@tacxou/nestjs_module_factorydrive-s3@^1.0.5":
+"@tacxou/nestjs_module_factorydrive-s3@1.0.5":
   version "1.0.5"
-  resolved "https://registry.npmjs.org/@tacxou/nestjs_module_factorydrive-s3/-/nestjs_module_factorydrive-s3-1.0.5.tgz#67f51a34f405b93f093dc4b3b6819554d9c88fe3"
+  resolved "https://registry.yarnpkg.com/@tacxou/nestjs_module_factorydrive-s3/-/nestjs_module_factorydrive-s3-1.0.5.tgz#67f51a34f405b93f093dc4b3b6819554d9c88fe3"
   integrity sha512-qd4BJv8uRWCGXmJb+CjQym11ki2ZxM4QqetaHY316cw4yQezcfEqm9Zh26URLDfremzJ/m3cIZ2WOjnLfDIsXw==
   dependencies:
     "@aws-sdk/client-s3" ">=3.1004.0"
     "@aws-sdk/s3-request-presigner" "^3.1004.0"
 
-"@tacxou/nestjs_module_factorydrive@^1.1.6":
+"@tacxou/nestjs_module_factorydrive@1.1.6":
   version "1.1.6"
-  resolved "https://registry.npmjs.org/@tacxou/nestjs_module_factorydrive/-/nestjs_module_factorydrive-1.1.6.tgz#d170c7384ea1a52d24d6b85eb6a40ea4d32e7954"
+  resolved "https://registry.yarnpkg.com/@tacxou/nestjs_module_factorydrive/-/nestjs_module_factorydrive-1.1.6.tgz#d170c7384ea1a52d24d6b85eb6a40ea4d32e7954"
   integrity sha512-MVXMV2C+U9LtT5hr1GaAhoSNNZJQZMemz7mbXot2VcURHfjcXA6sIF7QBS8huP2aPD/InwtXiR6K+gvCWFwXfw==
   dependencies:
     fs-extra "^11.3.4"
     node-exceptions "^4.0.1"
 
-"@tacxou/nestjs_module_restools@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@tacxou/nestjs_module_restools/-/nestjs_module_restools-1.0.4.tgz#e5fe6edbdb6423c830fc4f9ddcd0e153429014ca"
-  integrity sha512-9XApc+iMC06ll7+iQO0i7I7wfp5Byhs8nxjsqLsQSt5cmt06s3GtEYDIO/hgAGLW7dylE3VaGlnUtmy3Y5Ojng==
+"@tacxou/nestjs_module_restools@1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@tacxou/nestjs_module_restools/-/nestjs_module_restools-1.1.1.tgz#df6ef0f5a2d3c1ed77ade3cb72cbb19564ff79d4"
+  integrity sha512-BQnE2a9WIT6spXYS1nLcaZJmN1sASqfA3udI9yunwvd1GozsoZ4DPi1JH9enJ8aX97MtXk6dkdMvHhgMxwQbWA==
   dependencies:
     "@nestjs/event-emitter" "^3.1.0"
     class-transformer "^0.5.1"

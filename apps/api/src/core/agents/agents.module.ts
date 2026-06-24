@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AgentsSchema, Agents } from '~/core/agents/_schemas/agents.schema';
 import { AgentsService } from './agents.service';
 import { AgentsController } from './agents.controller';
-import { AgentCreateQuestions, AgentsCommand } from '~/core/agents/agents.command';
+import { AgentCreateQuestions, AgentResetPasswordQuestions, AgentsCommand } from '~/core/agents/agents.command';
 import { useOnCli } from '~/_common/functions/is-cli';
 import { SettingsModule } from '~/settings/settings.module';
 
@@ -35,7 +35,10 @@ import { SettingsModule } from '~/settings/settings.module';
       },
     ]),
   ],
-  providers: [AgentsService, ...useOnCli([...AgentsCommand.registerWithSubCommands(), AgentCreateQuestions])],
+  providers: [
+    AgentsService,
+    ...useOnCli([...AgentsCommand.registerWithSubCommands(), AgentCreateQuestions, AgentResetPasswordQuestions]),
+  ],
   controllers: [AgentsController],
   exports: [AgentsService],
 })

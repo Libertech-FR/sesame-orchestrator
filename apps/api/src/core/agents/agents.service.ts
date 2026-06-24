@@ -7,6 +7,8 @@ import { AgentsCreateDto } from './_dto/agents.dto';
 import { hash } from 'argon2';
 import { randomBytes } from 'node:crypto';
 import { SecurityPartDTO } from './_dto/parts/security.part.dto';
+import { AgentState } from './_enum/agent-state.enum';
+import { StatePartDTO } from './_dto/parts/state.part.dto';
 
 /**
  * Service de gestion des agents.
@@ -66,6 +68,7 @@ export class AgentsService extends AbstractServiceSchema<Agents> {
     data.password = await hash(data.password);
     data.security = (data.security || {}) as SecurityPartDTO;
     data.security.secretKey = randomBytes(32).toString('hex');
+    data.state = { current: AgentState.ACTIVE, lastChangedAt: new Date() } as StatePartDTO;
 
     return await super.create(data, options);
   }

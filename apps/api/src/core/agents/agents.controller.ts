@@ -405,9 +405,10 @@ export class AgentsController extends AbstractController {
       }
 
       const newPassword = `${payload.password}`.trim();
-      if ((await this.passwdadmService.checkPolicies(newPassword)) === false) {
+      const policyViolation = await this.passwdadmService.getPolicyViolation(newPassword);
+      if (policyViolation) {
         throw new BadRequestException({
-          message: 'Une erreur est survenue : Le mot de passe ne respecte pas la politique des mots de passe',
+          message: policyViolation,
           error: 'Bad Request',
           statusCode: 400,
         });
@@ -778,9 +779,10 @@ export class AgentsController extends AbstractController {
     const payload: Record<string, any> = { ...(body as Record<string, any>) };
     if (typeof payload.password === 'string' && payload.password.trim().length > 0) {
       const newPassword = `${payload.password}`.trim();
-      if ((await this.passwdadmService.checkPolicies(newPassword)) === false) {
+      const policyViolation = await this.passwdadmService.getPolicyViolation(newPassword);
+      if (policyViolation) {
         throw new BadRequestException({
-          message: 'Une erreur est survenue : Le mot de passe ne respecte pas la politique des mots de passe',
+          message: policyViolation,
           error: 'Bad Request',
           statusCode: 400,
         });

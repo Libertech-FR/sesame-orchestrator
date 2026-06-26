@@ -1,6 +1,6 @@
 import { PasswdadmService } from '~/settings/passwdadm.service';
 
-describe('PasswdadmService.checkPolicies', () => {
+describe('PasswdadmService.getPolicyViolation', () => {
   it('should reject when hasNumbers enabled and password has no digits', async () => {
     const ctx = {
       getPolicies: async () => ({
@@ -15,8 +15,8 @@ describe('PasswdadmService.checkPolicies', () => {
       logger: { error: jest.fn() },
     } as any;
 
-    const ok = await PasswdadmService.prototype.checkPolicies.call(ctx, 'NoDigitsHere!');
-    expect(ok).toBe(false);
+    const violation = await PasswdadmService.prototype.getPolicyViolation.call(ctx, 'NoDigitsHere!');
+    expect(violation).toBe('Le mot de passe doit contenir au moins un chiffre');
   });
 
   it('should accept when hasNumbers enabled and password has digits', async () => {
@@ -33,7 +33,7 @@ describe('PasswdadmService.checkPolicies', () => {
       logger: { error: jest.fn() },
     } as any;
 
-    const ok = await PasswdadmService.prototype.checkPolicies.call(ctx, 'Has1Digit');
-    expect(ok).toBe(true);
+    const violation = await PasswdadmService.prototype.getPolicyViolation.call(ctx, 'Has1Digit');
+    expect(violation).toBeNull();
   });
 });

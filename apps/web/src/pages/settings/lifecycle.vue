@@ -83,6 +83,7 @@
             thead
               tr
                 th.text-left État source
+                th.text-left Filtre identité (optionnel)
                 th.text-left Destinations autorisées (manuel)
                 th.text-right Actions
             tbody
@@ -97,6 +98,17 @@
                     label='État actuel'
                     :error='!!manualValidations[`manual:${index}:source`]'
                     :error-message='manualValidations[`manual:${index}:source`]'
+                  )
+                td
+                  q-input(
+                    :disable='!hasPermission("/management/lifecycle", "update")'
+                    outlined dense autogrow
+                    v-model='rule.filterJson'
+                    @update:model-value='manualDirty = true'
+                    label='Filtre MongoDB'
+                    hint='Ex. {"inetOrgPerson.employeeType":"TAIGA"} — vide = défaut'
+                    :error='!!manualValidations[`manual:${index}:filter`]'
+                    :error-message='manualValidations[`manual:${index}:filter`]'
                   )
                 td
                   q-select(
@@ -459,6 +471,7 @@ type ManualTransitionFormItem = {
   _id: string
   source: string
   targets: string[]
+  filterJson: string
 }
 
 type LifecycleState = {
@@ -519,6 +532,7 @@ function createEmptyManualTransitionItem(): ManualTransitionFormItem {
     _id: `manual-${manualTransitionSeq}`,
     source: '',
     targets: [],
+    filterJson: '',
   }
 }
 
@@ -648,7 +662,7 @@ export default defineNuxtComponent({
 
     const loadManualTransitions = async (): Promise<void> => {
       const response = await $http.$get('/management/lifecycle/config/manual-transitions') as {
-        data?: { manualTransitions?: Array<{ source: string; targets: string[] }> }
+        data?: { manualTransitions?: Array<{ source: string; targets: string[]; filter?: Record<string, unknown> }> }
       }
       const items = response?.data?.manualTransitions || []
       manualTransitions.value = items.map((item) => {
@@ -657,6 +671,7 @@ export default defineNuxtComponent({
           _id: `manual-${manualTransitionSeq}`,
           source: item.source,
           targets: [...(item.targets || [])],
+          filterJson: item.filter ? JSON.stringify(item.filter, null, 2) : '',
         }
       })
       manualDirty.value = false
@@ -870,14 +885,7 @@ export default defineNuxtComponent({
     },
 
     getManualSourceOptions(rule: ManualTransitionFormItem): Array<{ label: string; value: string }> {
-      const usedSources = new Set(
-        this.manualTransitions
-          .filter((item) => item._id !== rule._id)
-          .map((item) => item.source)
-          .filter(Boolean),
-      )
       return this.getStateKeyOptions()
-        .filter((option) => !usedSources.has(option.value))
     },
     addManualTransitionItem(): void {
       this.manualTransitions.push(createEmptyManualTransitionItem())
@@ -890,9 +898,9 @@ export default defineNuxtComponent({
     resetManualValidations(): void {
       Object.keys(this.manualValidations).forEach((key) => delete this.manualValidations[key])
     },
-    buildManualTransitionsPayload(): Array<{ source: string; targets: string[] }> | null {
-      const payload: Array<{ source: string; targets: string[] }> = []
-      const usedSources = new Set<string>()
+    buildManualTransitionsPayload(): Array<{ source: string; targets: string[]; filter?: Record<string, unknown> }> | null {
+      const payload: Array<{ source: string; targets: string[]; filter?: Record<string, unknown> }> = []
+      const usedRuleKeys = new Set<string>()
 
       for (let index = 0; index < this.manualTransitions.length; index++) {
         const rule = this.manualTransitions[index]
@@ -900,18 +908,38 @@ export default defineNuxtComponent({
           this.manualValidations[`manual:${index}:source`] = "L'état source est obligatoire."
           return null
         }
-        if (usedSources.has(rule.source)) {
-          this.manualValidations[`manual:${index}:source`] = 'Cet état source est déjà utilisé.'
-          return null
-        }
         if (!rule.targets?.length) {
           this.manualValidations[`manual:${index}:targets`] = 'Sélectionnez au moins une destination autorisée.'
           return null
         }
-        usedSources.add(rule.source)
+
+        let filter: Record<string, unknown> | undefined
+        const filterJson = rule.filterJson?.trim()
+        if (filterJson) {
+          try {
+            const parsed = JSON.parse(filterJson)
+            if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+              this.manualValidations[`manual:${index}:filter`] = 'Le filtre doit être un objet JSON.'
+              return null
+            }
+            filter = parsed as Record<string, unknown>
+          } catch {
+            this.manualValidations[`manual:${index}:filter`] = 'JSON invalide pour le filtre.'
+            return null
+          }
+        }
+
+        const ruleKey = `${rule.source}::${filter ? JSON.stringify(filter) : ''}`
+        if (usedRuleKeys.has(ruleKey)) {
+          this.manualValidations[`manual:${index}:source`] = 'Cette combinaison source/filtre est déjà utilisée.'
+          return null
+        }
+        usedRuleKeys.add(ruleKey)
+
         payload.push({
           source: rule.source,
           targets: [...rule.targets],
+          ...(filter ? { filter } : {}),
         })
       }
 

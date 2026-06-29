@@ -1,15 +1,36 @@
 # Transitions manuelles uniquement (changement via l'interface identité).
 # N'affecte pas les règles automatiques (cron, fichiers rules/*.yml).
-# Si un état source n'est pas listé ici, toutes les destinations restent autorisées.
+#
+# Comportement permissif :
+# - Si un état source n'est pas listé ici, toutes les destinations restent autorisées.
+# - Plusieurs règles peuvent partager le même état source si leurs filtres diffèrent.
+# - Pour un état source donné, la première règle dont le filtre correspond à l'identité est appliquée.
+# - Si aucune règle filtrée ne correspond, la règle sans filtre pour cet état source est utilisée.
+# - Si seules des règles filtrées existent et qu'aucune ne correspond, toutes les destinations restent autorisées.
+#
+# Le champ `filter` est optionnel et utilise la syntaxe d'une requête MongoDB sur le document identité
+# (ex. inetOrgPerson.employeeType, opérateurs $ne, $in, etc.).
 
 # manualTransitions:
-#   # Officiel (O) : activation courante, pas de passage direct vers « A détruire » ou « Caché »
+#   # Officiel (O) — employés TAIGA : pas de passage direct vers « Verrouillé »
+#   - source: O
+#     filter:
+#       inetOrgPerson.employeeType: TAIGA
+#     targets: [I, M, A, P]
+
+#   # Officiel (O) — défaut pour les autres employeeType
 #   - source: O
 #     targets: [I, M, A, P, V]
 
 #   # Inactif (I) : réactivation ou mise en file de suppression
 #   - source: I
 #     targets: [O, M, D]
+
+#   # Inactif (I) — TAIGA : retour officiel uniquement
+#   - source: I
+#     filter:
+#       inetOrgPerson.employeeType: TAIGA
+#     targets: [O]
 
 #   # Manuel (M) : état opérateur, retours usuels
 #   - source: M

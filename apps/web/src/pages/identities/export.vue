@@ -5,6 +5,7 @@ q-page.container.q-pa-sm
       q-toolbar-title Export des identités
       q-btn.q-mx-sm(
         @click="exportData"
+        :disable="exportColumns.length === 0"
         icon="mdi-cloud-download"
         color="positive"
         label="Exporter"
@@ -12,6 +13,38 @@ q-page.container.q-pa-sm
         flat
         dense
       )
+        q-tooltip.text-body2(v-if="exportColumns.length === 0" transition-show="scale" transition-hide="scale") Sélectionnez au moins une colonne à exporter
+      q-btn-group.q-mx-sm(flat stretch)
+        q-btn(flat icon="mdi-table-headers-eye" dense size="md")
+          q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Sélectionner les colonnes à exporter
+          q-menu(
+            anchor="bottom right"
+            self="top right"
+            content-class="export-columns-menu"
+          )
+            .q-pa-sm
+              .text-subtitle2.q-mb-sm Colonnes à exporter
+              .text-caption.text-grey.q-py-md(v-if="!availableExportColumns.length") Aucune colonne disponible
+              q-list(v-else dense)
+                q-item.export-column-item(
+                  v-for="column in availableExportColumns"
+                  :key="column.name"
+                  dense
+                  clickable
+                  @click="toggleExportColumn(column.name)"
+                )
+                  q-item-section(side)
+                    q-toggle(
+                      v-model="exportVisibleColumns"
+                      :val="column.name"
+                      dense
+                      @click.stop
+                    )
+                  q-item-section
+                    q-item-label.export-column-label(
+                      lines="2"
+                      :title="column.label.length > 32 ? column.label : undefined"
+                    ) {{ column.label }}
       q-select(
         v-model="typeExport"
         :options="optionsExport"
@@ -28,7 +61,7 @@ q-page.container.q-pa-sm
     )
     q-table(
         :rows-per-page-options="[20,50,0]"
-        :columns="fieldsName"
+        :columns="exportColumns"
         :rows="identities"
         row-key="_id"
         flat
@@ -51,7 +84,8 @@ export default defineNuxtComponent({
   },
   async setup() {
     const route = useRoute()
-    const { columns, visibleColumns, columnsType } = useColumnsIdentites()
+    const { columns, columnsType } = useColumnsIdentites()
+    const { exportVisibleColumns, initializeExportColumns } = useIdentitiesExportColumns()
     const { countFilters, hasFilters, getFilters, removeFilter } = useFiltersQuery(columns)
     const { getSearchFieldsQuery, buildSearchFieldsHint } = useIdentitySearchFields()
     const searchFieldsHint = computed(() => buildSearchFieldsHint(columns.value))
@@ -77,7 +111,7 @@ export default defineNuxtComponent({
           return Object.keys(enr[enr.name].properties)
         })
 
-        return allFields.map((enr) => {
+        const columns = allFields.map((enr) => {
           return {
             name: enr,
             field: enr,
@@ -88,6 +122,10 @@ export default defineNuxtComponent({
             },
           }
         })
+
+        initializeExportColumns(columns.map((col) => col.name))
+
+        return columns
       },
     })
 
@@ -114,7 +152,7 @@ export default defineNuxtComponent({
     })
 
     return {
-      visibleColumns,
+      exportVisibleColumns,
       columns,
       columnsType,
       searchFieldsHint,
@@ -161,31 +199,42 @@ export default defineNuxtComponent({
         })
       },
     },
-    fieldsList() {
-      return this.columns!.reduce((acc: { name: string; label: string; type?: string }[], column) => {
-        if (this.visibleColumns!.includes(column.name) && column.name !== 'actions' && column.name !== 'states') {
-          const type = this.columnsType.find((type) => type.name === column.name)?.type
-          acc.push({
-            name: column.name,
-            label: column.label,
-            type,
-          })
-        }
-        return acc
-      }, [])
+    exportColumns() {
+      if (!this.availableExportColumns.length) return []
+      return this.availableExportColumns.filter((column) => this.exportVisibleColumns.includes(column.name))
+    },
+    availableExportColumns() {
+      return Array.isArray(this.fieldsName) ? this.fieldsName : []
     },
   },
   methods: {
+    toggleExportColumn(columnName: string): void {
+      const index = this.exportVisibleColumns.indexOf(columnName)
+      if (index === -1) {
+        this.exportVisibleColumns.push(columnName)
+        return
+      }
+      this.exportVisibleColumns.splice(index, 1)
+    },
     async exportData(): Promise<void> {
+      if (this.exportColumns.length === 0) return
+
       if (this.typeExport === 'CSV') {
-        const csv = this.toCsv(this.fieldsName, this.identities)
+        const csv = this.toCsv(this.exportColumns, this.identities)
         let blob = new Blob([csv], { type: 'text/csv' })
         let link = document.createElement('a')
         link.href = window.URL.createObjectURL(blob)
         link.download = 'sesame-export.csv'
         link.click()
       } else if (this.typeExport === 'JSON') {
-        let blob = new Blob([JSON.stringify(this.rowsData)], { type: 'text/json' })
+        const fieldNames = this.exportColumns.map((column) => column.name)
+        const filteredRows = (this.identities || []).map((row: any) => {
+          return fieldNames.reduce((acc: Record<string, unknown>, fieldName: string) => {
+            acc[fieldName] = row?.[fieldName]
+            return acc
+          }, {})
+        })
+        let blob = new Blob([JSON.stringify(filteredRows, null, 2)], { type: 'text/json' })
         let link = document.createElement('a')
         link.href = window.URL.createObjectURL(blob)
         link.download = 'sesame-export.json'
@@ -215,3 +264,23 @@ export default defineNuxtComponent({
   },
 })
 </script>
+
+<style lang="scss">
+.export-columns-menu {
+  min-width: 320px;
+  max-width: 480px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.export-column-item {
+  min-height: 36px;
+  padding-right: 4px;
+}
+
+.export-column-label {
+  word-break: break-word;
+  line-height: 1.25;
+  font-size: 12px;
+}
+</style>

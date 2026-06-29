@@ -324,7 +324,7 @@ export default defineNuxtComponent({
       if (!this.identity?.lifecycle) {
         return true
       }
-      return this.isManualLifecycleTargetAllowed(this.identity.lifecycle, targetLifecycle)
+      return this.isManualLifecycleTargetAllowed(this.identity.lifecycle, targetLifecycle, this.identity)
     },
     extractLifecycleErrorMessage(error: any): string {
       const data = error?.response?._data

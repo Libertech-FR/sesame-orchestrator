@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class ManualTransitionRuleDto {
   @IsString()
@@ -23,6 +23,17 @@ export class ManualTransitionRuleDto {
     required: true,
   })
   targets: string[];
+
+  @IsOptional()
+  @IsObject()
+  @ApiProperty({
+    type: Object,
+    description:
+      "Filtre optionnel sur l'identité (syntaxe requête MongoDB). Si absent, la règle s'applique par défaut pour l'état source.",
+    example: { 'inetOrgPerson.employeeType': 'TAIGA' },
+    required: false,
+  })
+  filter?: object;
 }
 
 export class ManualTransitionsSchemaDto {

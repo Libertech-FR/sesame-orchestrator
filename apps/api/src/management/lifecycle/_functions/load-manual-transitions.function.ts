@@ -5,6 +5,7 @@ import { validateOrReject } from 'class-validator';
 import { Logger } from '@nestjs/common';
 import { formatValidationErrors } from '../../../_common/functions/format-validation-errors.function';
 import { ManualTransitionRuleDto, ManualTransitionsSchemaDto } from '../_dto/manual-transitions.dto';
+import { getManualTransitionRuleKey } from './find-manual-transition-rule.function';
 
 let __manualTransitionsCache: ManualTransitionRuleDto[] | null = null;
 let __manualTransitionsCacheMtime: number | null = null;
@@ -45,12 +46,13 @@ export async function loadManualTransitions(): Promise<ManualTransitionRuleDto[]
 
     await validateOrReject(schema, { whitelist: true });
 
-    const usedSources = new Set<string>();
+    const usedRuleKeys = new Set<string>();
     for (const rule of schema.manualTransitions) {
-      if (usedSources.has(rule.source)) {
-        throw new Error(`Duplicate manual transition source '${rule.source}' found in manual-transitions.yml`);
+      const ruleKey = getManualTransitionRuleKey(rule);
+      if (usedRuleKeys.has(ruleKey)) {
+        throw new Error(`Duplicate manual transition rule '${ruleKey}' found in manual-transitions.yml`);
       }
-      usedSources.add(rule.source);
+      usedRuleKeys.add(ruleKey);
     }
 
     __manualTransitionsCache = schema.manualTransitions;

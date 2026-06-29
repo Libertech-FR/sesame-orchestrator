@@ -362,7 +362,7 @@ export class IdentitiesCrudController extends AbstractController {
 
     if (body.lifecycle && body.lifecycle !== identity.lifecycle) {
       const manualTransitions = await loadManualTransitions();
-      if (!isManualLifecycleTransitionAllowed(identity.lifecycle, body.lifecycle, manualTransitions)) {
+      if (!isManualLifecycleTransitionAllowed(identity.lifecycle, body.lifecycle, manualTransitions, identity as Record<string, unknown>)) {
         throw new BadRequestException(
           `Changement manuel de cycle de vie non autorisé : <${identity.lifecycle}> → <${body.lifecycle}>`,
         );

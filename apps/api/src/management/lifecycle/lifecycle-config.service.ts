@@ -26,6 +26,7 @@ import { LifecycleCrudService } from './lifecycle-crud.service';
 import { LifecycleHooksService } from './lifecycle-hooks.service';
 import { ManualTransitionRuleDto, ManualTransitionsSchemaDto, ManualTransitionsUpdateDto } from './_dto/manual-transitions.dto';
 import { clearManualTransitionsCache, loadManualTransitions } from './_functions/load-manual-transitions.function';
+import { getManualTransitionRuleKey } from './_functions/find-manual-transition-rule.function';
 
 export type LifecycleRuleFileSummary = {
   name: string;
@@ -175,12 +176,13 @@ export class LifecycleConfigService {
       throw new BadRequestException(formatValidationErrors(errors, 'manual-transitions.yml'));
     }
 
-    const usedSources = new Set<string>();
+    const usedRuleKeys = new Set<string>();
     for (const rule of schema.manualTransitions) {
-      if (usedSources.has(rule.source)) {
-        throw new BadRequestException(`La source <${rule.source}> est définie plusieurs fois.`);
+      const ruleKey = getManualTransitionRuleKey(rule);
+      if (usedRuleKeys.has(ruleKey)) {
+        throw new BadRequestException(`La combinaison source/filtre <${rule.source}> est définie plusieurs fois.`);
       }
-      usedSources.add(rule.source);
+      usedRuleKeys.add(ruleKey);
     }
 
     this.ensureLifecycleDir();

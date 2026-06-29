@@ -4,6 +4,8 @@
       flat
       round
       dense
+      :stretch="stretch"
+      :class="$attrs.class"
       icon="mdi-bug-outline"
       :color="color"
       :size="size"
@@ -14,6 +16,8 @@
       flat
       round
       dense
+      :stretch="stretch"
+      :class="$attrs.class"
       icon="mdi-lan-connect"
       color="orange-8"
       :size="size"
@@ -25,6 +29,7 @@
 <script lang="ts">
 export default defineNuxtComponent({
   name: 'CoreAppDebugButtonsComponent',
+  inheritAttrs: false,
   props: {
     size: {
       type: String,
@@ -33,6 +38,10 @@ export default defineNuxtComponent({
     color: {
       type: String,
       default: 'orange',
+    },
+    stretch: {
+      type: Boolean,
+      default: false,
     },
   },
   setup() {

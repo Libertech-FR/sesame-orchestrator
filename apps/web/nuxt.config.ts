@@ -10,6 +10,8 @@ const SESAME_APP_API_URL = process.env.SESAME_APP_API_URL || 'http://127.0.0.1:4
 const SESAME_ALLOWED_HOSTS = process.env.SESAME_ALLOWED_HOSTS ? process.env.SESAME_ALLOWED_HOSTS.split(',') : []
 const API_PROXY_TARGET = SESAME_APP_API_URL.replace(/\/$/, '')
 const IS_DEV = process.env.NODE_ENV === 'development'
+/** Port vu par le navigateur (ex. 3002 via `make dev`) quand Nuxt tourne derrière un mapping Docker. */
+const WEB_HMR_CLIENT_PORT = process.env.SESAME_WEB_HMR_CLIENT_PORT ? Number(process.env.SESAME_WEB_HMR_CLIENT_PORT) : undefined
 /**
  * Polling seul si true (dev). Surcharges runtime (sans rebuild) : NUXT_PUBLIC_SOCKET_IO_POLLING_ONLY.
  * Build : SESAME_SOCKET_IO_POLLING_ONLY ou défaut IS_DEV.
@@ -32,6 +34,9 @@ if (SESAME_ALLOWED_HOSTS.length === 0 && !/localhost/.test(SESAME_APP_API_URL) &
 consola.info(`[Nuxt] SESAME_APP_API_URL: ${SESAME_APP_API_URL}`)
 consola.info(`[Nuxt] Socket.IO polling only: ${SOCKET_IO_POLLING_ONLY}`)
 consola.info(`[Nuxt] SESAME_ALLOWED_HOSTS: ${SESAME_ALLOWED_HOSTS}`)
+if (IS_DEV && WEB_HMR_CLIENT_PORT) {
+  consola.info(`[Nuxt] Vite HMR clientPort: ${WEB_HMR_CLIENT_PORT}`)
+}
 
 let SESAME_APP_DARK_MODE: 'auto' | boolean = false
 if (process.env.SESAME_APP_DARK_MODE) {
@@ -66,6 +71,7 @@ export default defineNuxtConfig({
   // Generate client sourcemaps for clearer stack traces in Sentry
   sourcemap: { client: 'hidden' },
   devServer: {
+    host: IS_DEV ? '0.0.0.0' : undefined,
     port: 3000,
     ...sslCfg,
   },
@@ -228,6 +234,13 @@ export default defineNuxtConfig({
   vite: {
     server: {
       allowedHosts: ['localhost', ...SESAME_ALLOWED_HOSTS],
+      ...(IS_DEV && WEB_HMR_CLIENT_PORT
+        ? {
+            hmr: {
+              clientPort: WEB_HMR_CLIENT_PORT,
+            },
+          }
+        : {}),
     },
     build: {
       // Avoid per-chunk CSS ordering differences between dev/prod.

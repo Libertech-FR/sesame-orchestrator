@@ -23,4 +23,25 @@ describe('isManualLifecycleTransitionAllowed', () => {
   it('should always allow staying on the current lifecycle', () => {
     expect(isManualLifecycleTransitionAllowed('I', 'I', rules)).toBe(true);
   });
+
+  it('should apply filtered rules before default rules for the same source', () => {
+    const filteredRules = [
+      { source: 'O', filter: { 'inetOrgPerson.employeeType': 'TAIGA' }, targets: ['I', 'M'] },
+      { source: 'O', targets: ['I', 'M', 'A', 'P', 'V'] },
+    ];
+    const taigaIdentity = { inetOrgPerson: { employeeType: 'TAIGA' } };
+    const otherIdentity = { inetOrgPerson: { employeeType: 'CDI' } };
+
+    expect(getAllowedManualLifecycleTargets('O', filteredRules, taigaIdentity)).toEqual(['I', 'M']);
+    expect(isManualLifecycleTransitionAllowed('O', 'V', filteredRules, taigaIdentity)).toBe(false);
+    expect(isManualLifecycleTransitionAllowed('O', 'V', filteredRules, otherIdentity)).toBe(true);
+  });
+
+  it('should remain permissive when only filtered rules exist and none match', () => {
+    const filteredRules = [{ source: 'O', filter: { 'inetOrgPerson.employeeType': 'TAIGA' }, targets: ['I'] }];
+    const otherIdentity = { inetOrgPerson: { employeeType: 'CDI' } };
+
+    expect(getAllowedManualLifecycleTargets('O', filteredRules, otherIdentity)).toBeNull();
+    expect(isManualLifecycleTransitionAllowed('O', 'V', filteredRules, otherIdentity)).toBe(true);
+  });
 });

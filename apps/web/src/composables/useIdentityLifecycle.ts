@@ -1,6 +1,12 @@
+import {
+  findManualTransitionRule,
+  type ManualTransitionRule as ManualTransitionRuleType,
+} from '~/utils/manual-transition-rules'
+
 type ManualTransitionRule = {
   source: string
   targets: string[]
+  filter?: Record<string, unknown>
 }
 
 const stateList = ref<any[]>([])
@@ -15,8 +21,8 @@ type useIdentityLifecycleReturnType = {
   getLifecycleInfos: (state: string) => { color: string, name: string, value: string, icon: string, textColor?: string }
   stateList: Ref<any[]>
   manualTransitions: Ref<ManualTransitionRule[]>
-  isManualLifecycleTargetAllowed: (from: string, to: string) => boolean
-  getAllowedManualLifecycleTargets: (from: string) => string[] | null
+  isManualLifecycleTargetAllowed: (from: string, to: string, identity?: Record<string, unknown>) => boolean
+  getAllowedManualLifecycleTargets: (from: string, identity?: Record<string, unknown>) => string[] | null
 }
 
 const DEFAULT_COLOR = 'grey'
@@ -111,19 +117,19 @@ export async function useIdentityLifecycles(): Promise<useIdentityLifecycleRetur
     }
   }
 
-  function getAllowedManualLifecycleTargets(from: string): string[] | null {
-    const rule = manualTransitions.value.find((item) => item.source === from)
+  function getAllowedManualLifecycleTargets(from: string, identity?: Record<string, unknown>): string[] | null {
+    const rule = findManualTransitionRule(from, manualTransitions.value as ManualTransitionRuleType[], identity)
     if (!rule) {
       return null
     }
     return [...new Set(rule.targets || [])]
   }
 
-  function isManualLifecycleTargetAllowed(from: string, to: string): boolean {
+  function isManualLifecycleTargetAllowed(from: string, to: string, identity?: Record<string, unknown>): boolean {
     if (!from || !to || from === to) {
       return true
     }
-    const allowedTargets = getAllowedManualLifecycleTargets(from)
+    const allowedTargets = getAllowedManualLifecycleTargets(from, identity)
     if (allowedTargets === null) {
       return true
     }

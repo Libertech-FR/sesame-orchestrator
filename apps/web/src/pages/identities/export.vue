@@ -55,9 +55,12 @@ q-page.container.q-pa-sm
       )
     sesame-core-pan-filters(
       :columns='columns'
+      :columnsType='columnsType'
       mode='complex'
       :placeholder='"Rechercher par nom, prénom, email, ..."'
       :searchFieldsHint='searchFieldsHint'
+      :default-filter-field-paths='DEFAULT_IDENTITY_FILTER_FIELD_PATHS'
+      custom-filter-fields-storage-key='identities'
     )
     q-table(
         :rows-per-page-options="[20,50,0]"
@@ -156,6 +159,7 @@ export default defineNuxtComponent({
       columns,
       columnsType,
       searchFieldsHint,
+      DEFAULT_IDENTITY_FILTER_FIELD_PATHS,
       fieldsName,
       identities,
       pending,

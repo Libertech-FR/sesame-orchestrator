@@ -85,6 +85,8 @@ q-toolbar(dense flat)
               title='Ajouter un filtre'
               :columns='columns'
               :columns-type='columnsType'
+              :default-filter-field-paths='defaultFilterFieldPaths'
+              :custom-filter-fields-storage-key='customFilterFieldsStorageKey'
             )
         q-separator(vertical)
         q-btn-dropdown.text-secondary(
@@ -112,7 +114,7 @@ q-toolbar(dense flat)
       template(v-for='(filter, i) in getFilters' :key='filter.field')
         //- pre(v-html='JSON.stringify(filter)')
         q-chip(
-          :class="[!columnExists(filter.field) ? 'text-black' : '']"
+          :class="[!isRecognizedFilterField(filter.field) ? 'text-black' : '']"
           @remove="removeFilter(filter)"
           :color="getFilterColor(filter)"
           removable
@@ -135,13 +137,15 @@ q-toolbar(dense flat)
               :initial-filter='filter'
               :columns='columns'
               :columns-type='columnsType'
+              :default-filter-field-paths='defaultFilterFieldPaths'
+              :custom-filter-fields-storage-key='customFilterFieldsStorageKey'
             )
           q-tooltip.text-body2(
             :class="getTooltipColor(filter)"
             anchor='top middle'
             self='bottom middle'
           )
-            span(v-if='!columnExists(filter.field)')
+            span(v-if='!isRecognizedFilterField(filter.field)')
               | Cliquer pour modifier le filtre&nbsp;
               small (Le champ "{{ filter.field }}" n'existe pas ou n'est pas reconnu)
             span(v-else) Cliquer pour modifier le filtre
@@ -182,6 +186,16 @@ export default defineComponent({
       required: false,
       default: undefined,
     },
+    defaultFilterFieldPaths: {
+      type: Array as PropType<readonly string[]>,
+      required: false,
+      default: () => [],
+    },
+    customFilterFieldsStorageKey: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
   },
   setup({ columns, columnsType }) {
     const { countFilters, hasFilters, getFilters, removeFilter, removeAllFilters } = useFiltersQuery(ref(columns), ref(columnsType))
@@ -212,11 +226,15 @@ export default defineComponent({
     },
   },
   methods: {
-    columnExists(field: string) {
-      return this.columns.find((col) => col.name === field)
+    isRecognizedFilterField(field: string) {
+      return isRecognizedFilterField(field, {
+        columns: this.columns,
+        columnsType: this.columnsType,
+        defaultFilterFieldPaths: this.defaultFilterFieldPaths,
+      })
     },
     getFilterColor(filter: { comparator: string; label: string; field: string; search?: string; value?: unknown }) {
-      if (this.columnExists(filter.field)) {
+      if (this.isRecognizedFilterField(filter.field)) {
         return this.$q.dark.isActive ? 'grey-9' : 'grey-3'
       }
 
@@ -224,7 +242,7 @@ export default defineComponent({
     },
     getTooltipColor(filter: { comparator: string; label: string; field: string; search?: string; value?: unknown }) {
       const colors = [] as string[]
-      if (!this.columnExists(filter.field)) {
+      if (!this.isRecognizedFilterField(filter.field)) {
         colors.push(this.$q.dark.isActive ? 'bg-amber-9' : 'bg-amber-3')
         colors.push('text-black')
       }

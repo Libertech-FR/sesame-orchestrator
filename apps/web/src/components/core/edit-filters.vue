@@ -3,12 +3,12 @@ q-card.transparent(style='min-width: 45vw; max-width: 90vw')
   q-toolbar.bg-secondary.text-white(dense flat style='height: 32px;')
     q-toolbar-title
       span {{ title }}&nbsp;
-      small(v-if='columnExists(initialFilter.field || "")')
+      small(v-if='isRecognizedFilterField(initialFilter.field || "")')
         i(v-if='initialFilter.label') <{{ initialFilter.label }}>
       q-chip(
         @click='copy(initialFilter.field || "")'
         v-if='initialFilter && initialFilter.field'
-        :color='$q.dark.isActive ? "amber-9" : "amber-3"'
+        :color='isRecognizedFilterField(initialFilter.field || "") ? ($q.dark.isActive ? "grey-9" : "grey-3") : ($q.dark.isActive ? "amber-9" : "amber-3")'
         text-color='black'
         size='xs'
         class='q-ml-sm'
@@ -48,11 +48,36 @@ q-card.transparent(style='min-width: 45vw; max-width: 90vw')
           //- pre(v-html='JSON.stringify(scope)')
           q-chip(
             style='overflow-x: hidden;'
-            :class="[!columnExists(scope.opt.name || scope.opt) ? 'text-black' : '']"
-            :color="!columnExists(scope.opt.name || scope.opt) ? ($q.dark.isActive ? 'amber-9' : 'amber-3') : ''"
+            :class="[!isRecognizedFilterField(scope.opt.name || scope.opt) ? 'text-black' : '']"
+            :color="!isRecognizedFilterField(scope.opt.name || scope.opt) ? ($q.dark.isActive ? 'amber-9' : 'amber-3') : ''"
             dense
           )
-            | {{ scope.opt.label || scope.opt.name || scope.opt }}
+            template(v-if='isCustomFilterFieldOption(scope.opt)')
+              | {{ scope.opt.name || scope.opt }}
+            template(v-else)
+              | {{ scope.opt.label || scope.opt.name || scope.opt }}
+              small.filter-field-path(v-if='scope.opt.name && scope.opt.label !== scope.opt.name') ({{ scope.opt.name }})
+        template(v-slot:option="scope")
+          q-item(v-bind="scope.itemProps")
+            q-item-section
+              template(v-if='isCustomFilterFieldOption(scope.opt)')
+                q-item-label {{ scope.opt.name }}
+              template(v-else)
+                q-item-label
+                  | {{ scope.opt.label }}
+                  small.filter-field-path(v-if='scope.opt.name && scope.opt.label !== scope.opt.name') ({{ scope.opt.name }})
+            q-item-section(v-if='isCustomFilterFieldOption(scope.opt) && customFilterFieldsStorageKey' side)
+              q-btn(
+                icon='mdi-delete-outline'
+                flat
+                dense
+                round
+                size='sm'
+                color='negative'
+                aria-label='Supprimer le champ personnalisé'
+                @click.stop='removeCustomFilterFieldOption(scope.opt.name)'
+              )
+                q-tooltip Supprimer ce champ personnalisé
         template(#no-option="{ inputValue }")
           q-item(clickable @click="triggerEnter")
             q-item-section
@@ -61,12 +86,12 @@ q-card.transparent(style='min-width: 45vw; max-width: 90vw')
                 | &nbsp;
                 code <{{ inputValue }}>
       q-select.col-1(
-        v-if='filter.key && !columnExists(filter.key || "")'
+        v-if='filter.key && !isRecognizedFilterField(filter.key || "")'
         style='min-width: 120px'
         v-model='fieldType'
         label='Type'
         :options='["text", "number", "date", "boolean", "array"]'
-        :readonly='!filter.key || !!columnExists(filter.key || "")'
+        :readonly='!filter.key || !!isRecognizedFilterField(filter.key || "")'
         dense
         outlined
         options-dense
@@ -253,11 +278,21 @@ export default defineNuxtComponent({
       type: Object as () => InitialFilter,
       default: () => ({}),
     },
+    defaultFilterFieldPaths: {
+      type: Array as PropType<readonly string[]>,
+      required: false,
+      default: () => [],
+    },
+    customFilterFieldsStorageKey: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
   },
   watch: {
     'filter.key': {
       handler() {
-        this.fieldType = this.columnsType.find((col) => col.name === this.filter.key)?.type || 'text'
+        this.fieldType = resolveFilterFieldType(this.filter.key || '', this.columnsType)
         this.filter.operator = ''
       },
     },
@@ -277,10 +312,10 @@ export default defineNuxtComponent({
   data() {
     return {
       filterOptions: [] as { name: string; label: string }[],
+      allFilterOptions: [] as { name: string; label: string }[],
     }
   },
   setup({ columns, initialFilter, columnsType }) {
-    console.log('initialFilter', initialFilter)
     const { fieldTypes, comparatorTypes, writeFilter } = useFiltersQuery(ref(columns), ref(columnsType))
 
     const detectInitialOperator = () => {
@@ -395,7 +430,7 @@ export default defineNuxtComponent({
       return this.fieldType || 'text'
     },
     availableComparators(): { label: string; value: string; prefix?: string; suffix?: string; multiplefields?: boolean }[] {
-      if (!this.columnExists(this.filter.key || '') && !this.fieldType) {
+      if (!this.isRecognizedFilterField(this.filter.key || '') && !this.fieldType) {
         return this.comparatorTypes || []
       }
 
@@ -418,33 +453,73 @@ export default defineNuxtComponent({
     },
   },
   methods: {
-    columnExists(field: string) {
-      return this.columns.find((col) => col.name === field)
+    isRecognizedFilterField(field: string) {
+      return isRecognizedFilterField(field, {
+        columns: this.columns,
+        columnsType: this.columnsType,
+        defaultFilterFieldPaths: this.defaultFilterFieldPaths,
+      })
     },
-    mapAssign(col: { name: string; label?: string }) {
-      return { name: col.name, label: col.label || col.name }
+    isCustomFilterFieldOption(option: { name?: string; label?: string; isCustom?: boolean } | string) {
+      if (typeof option === 'string') {
+        return this.allFilterOptions.find((item) => item.name === option)?.isCustom === true
+      }
+
+      if (option?.isCustom) return true
+
+      const name = option?.name
+      if (!name) return false
+
+      return this.allFilterOptions.find((item) => item.name === name)?.isCustom === true
+    },
+    rebuildFilterOptions() {
+      this.allFilterOptions = buildFilterFieldOptions(this.columns, {
+        extraDefaultPaths: this.defaultFilterFieldPaths,
+        customStorageKey: this.customFilterFieldsStorageKey,
+      })
+      this.filterOptions = [...this.allFilterOptions]
+    },
+    removeCustomFilterFieldOption(field: string) {
+      if (!this.customFilterFieldsStorageKey || !field) return
+
+      removeCustomFilterField(this.customFilterFieldsStorageKey, field)
+
+      if (this.filter.key === field) {
+        this.filter.key = undefined
+        this.filter.operator = ''
+        this.filter.value = undefined
+      }
+
+      this.rebuildFilterOptions()
     },
     createValue(val: string, done: (newVal: string, mode: 'toggle' | 'add-unique' | 'add') => void) {
       if (val.length > 0) {
-        if (this.filterOptions.find((opt) => opt.label === val)) {
-          // If the value already exists in options, select it
-          const existing = this.filterOptions.find((opt) => opt.label === val)!
+        const existingByName = this.allFilterOptions.find((opt) => opt.name === val)
+        const existingByLabel = this.allFilterOptions.find((opt) => opt.label === val)
+        const existing = existingByName || existingByLabel
+
+        if (existing) {
           done(existing.name, 'toggle')
-        } else {
-          // Otherwise, add it to options and select it
-          const newOption = { name: val, label: val }
-          this.filterOptions.push(newOption)
-          done(val, 'add-unique')
+          return
         }
+
+        if (this.customFilterFieldsStorageKey) {
+          saveCustomFilterField(this.customFilterFieldsStorageKey, val)
+        }
+
+        this.rebuildFilterOptions()
+        done(val, 'add-unique')
       }
     },
     filterFn(val, update) {
       update(() => {
         if (val === '') {
-          this.filterOptions = this.columns.map(this.mapAssign)
+          this.filterOptions = [...this.allFilterOptions]
         } else {
           const needle = val.toLowerCase()
-          this.filterOptions = this.columns.map(this.mapAssign).filter((v) => v.label.toLowerCase().indexOf(needle) > -1)
+          this.filterOptions = this.allFilterOptions.filter(
+            (option) => option.label.toLowerCase().includes(needle) || option.name.toLowerCase().includes(needle),
+          )
         }
       })
     },
@@ -484,12 +559,19 @@ export default defineNuxtComponent({
     },
   },
   mounted() {
-    this.filterOptions = this.columns.map(this.mapAssign)
-    this.fieldType = this.columnsType.find((col) => col.name === this.filter.key)?.type
+    this.rebuildFilterOptions()
+    this.fieldType = resolveFilterFieldType(this.filter.key || '', this.columnsType)
 
-    if (!this.fieldType && !this.columnExists(this.filter.key || '') && this.filter.key) {
+    if (!this.fieldType && !this.isRecognizedFilterField(this.filter.key || '') && this.filter.key) {
       this.fieldType = this.comparator?.type ? this.comparator.type[0] : 'text'
     }
   },
 })
 </script>
+
+<style lang="scss" scoped>
+.filter-field-path {
+  font-size: 0.75em;
+  opacity: 0.72;
+}
+</style>

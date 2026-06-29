@@ -22,6 +22,8 @@ q-page.grid
         mode='complex'
         :placeholder='"Rechercher par nom, prénom, email, ..."'
         :searchFieldsHint='searchFieldsHint'
+        :default-filter-field-paths='DEFAULT_IDENTITY_FILTER_FIELD_PATHS'
+        custom-filter-fields-storage-key='identities'
       )
     template(#before-top-right-before="{ selected, clearSelection }")
       q-btn.q-ml-md(
@@ -210,6 +212,7 @@ export default defineNuxtComponent({
       visibleColumns,
       columnsType,
       searchFieldsHint,
+      DEFAULT_IDENTITY_FILTER_FIELD_PATHS,
       tabs: [
         {
           name: 'index',

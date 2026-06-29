@@ -161,7 +161,7 @@ function useMenu(identityStateStore: ReturnType<typeof useIdentityStateStore>): 
       // Si l'entrée est explicitement restreinte par `roles`, on l'affiche (la page gère ensuite ses propres gardes ACL).
       if (requiredRoles.length > 0) return true
       if (!entry.path) return false
-      console.log('entry', entry)
+      //console.log('entry', entry)
       if (!entry.roles && !entry.acl) return true
 
       const basePath = entry.path.replace(/^\//, '')

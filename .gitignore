@@ -12,7 +12,8 @@ certificates/
 documentation/
 node_modules/
 .DS_Store/
-
+.idea
 .env
 .env.*
 !.env.example
+apps/web/src/public/config/logo.png

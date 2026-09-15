@@ -16,6 +16,12 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { MailadmService } from '~/settings/mailadm.service';
 import { get } from 'radash';
 import { IdentitiesPasswordExpirationReminderService } from '~/management/identities/identities-password-expiration-reminder.service';
+import { InitStatesEnum } from '~/management/identities/_enums/init-state.enum';
+import {
+  buildExpiredInitInvitationFilter,
+  DEFAULT_INIT_TOKEN_TTL_SECONDS,
+  getInitInvitationExpirationCutoff,
+} from '~/management/passwd/init-invitation-expiration.helper';
 
 @SubCommand({ name: 'fingerprint' })
 export class IdentitiesFingerprintCommand extends CommandRunner {
@@ -320,6 +326,90 @@ export class IdentitiesPasswordExpirationReminderCommand extends CommandRunner {
   }
 }
 
+type IdentitiesInitExpireOptions = {
+  dryRun?: boolean;
+};
+
+@CronConsoleHandler({
+  handler: 'identities-init-invitation-expire',
+  command: 'identities init expire',
+  label: "Expiration des invitations d'initialisation de compte",
+  arguments: [
+    {
+      name: 'dryRun',
+      label: 'Simulation',
+      description: 'Compte les invitations expirées sans modifier les identités.',
+      type: 'boolean',
+      default: false,
+    },
+  ],
+})
+@SubCommand({ name: 'init' })
+export class IdentitiesInitExpireCommand extends CommandRunner {
+  private readonly logger = new Logger(IdentitiesInitExpireCommand.name);
+
+  public constructor(protected moduleRef: ModuleRef) {
+    super();
+  }
+
+  async run(inputs: string[], options: IdentitiesInitExpireOptions): Promise<void> {
+    const subTask = inputs?.[0];
+    if (subTask !== 'expire') {
+      console.error('Usage: yarn run console identities init expire [--dryRun]');
+      return;
+    }
+
+    // Services singleton : `ModuleRef.resolve()` ne fonctionne que pour les providers transient / request-scoped.
+    const identities = this.moduleRef.get(IdentitiesCrudService, { strict: false });
+    const passwdadm = this.moduleRef.get(PasswdadmService, { strict: false });
+
+    const policies = await passwdadm.getPolicies();
+    const ttlSeconds = Number(policies?.initTokenTTL) || DEFAULT_INIT_TOKEN_TTL_SECONDS;
+
+    const now = new Date();
+    const cutoff = getInitInvitationExpirationCutoff(ttlSeconds, now);
+    const filter = buildExpiredInitInvitationFilter(ttlSeconds, now);
+
+    this.logger.log(
+      `Checking outdated init invitations: initTokenTTL=${ttlSeconds}s cutoff=${cutoff.toISOString()} dryRun=${!!options?.dryRun}`,
+    );
+
+    const total = await identities.model.countDocuments(filter);
+    if (total === 0) {
+      this.logger.log('No outdated init invitation found.');
+      return;
+    }
+
+    if (options?.dryRun) {
+      const candidates = await identities.model.find(filter).select({ _id: 1, initInfo: 1 }).lean();
+      for (const candidate of candidates) {
+        this.logger.warn(
+          `[dryRun] Identity <${candidate._id}> init invitation expired (initDate=${candidate?.initInfo?.initDate?.toISOString?.() ?? 'n/a'})`,
+        );
+      }
+      this.logger.log(`[dryRun] ${total} identity(ies) would be flagged as OUTOFDATE.`);
+      return;
+    }
+
+    // Seules les identités encore en SENT sont passées en OUTOFDATE (garanti par le filtre).
+    const result = await identities.model.updateMany(filter, {
+      $set: { initState: InitStatesEnum.OUTOFDATE },
+    });
+
+    this.logger.log(`Outdated init invitations: ${result.modifiedCount}/${total} identity(ies) set to OUTOFDATE.`);
+  }
+
+  @Option({
+    flags: '--dryRun [dryRun]',
+    description: 'Compte les invitations expirées sans modifier les identités.',
+    defaultValue: false,
+  })
+  parseDryRun(val: string): boolean {
+    if (val === undefined || val === null || val === '') return true;
+    return /^(1|true|on|yes)$/i.test(String(val).trim());
+  }
+}
+
 @Command({
   name: 'identities',
   arguments: '<task>',
@@ -328,6 +418,7 @@ export class IdentitiesPasswordExpirationReminderCommand extends CommandRunner {
     IdentitiesCancelFusionCommand,
     IdentitiesPwnedCommand,
     IdentitiesPasswordExpirationReminderCommand,
+    IdentitiesInitExpireCommand,
   ],
 })
 export class IdentitiesCommand extends CommandRunner {

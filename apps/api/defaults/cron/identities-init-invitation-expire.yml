@@ -1,0 +1,7 @@
+tasks:
+  - name: "identities-init-invitation-expire"
+    description: "Expiration des invitations d'initialisation de compte"
+    enabled: true
+    schedule: "1 * * * *"  # Tous les jours à 08:00
+    handler: "identities-init-invitation-expire"
+    options:

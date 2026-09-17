@@ -9,7 +9,7 @@ import { loadcronTasks } from './_functions/load-cron-tasks.function';
 import { ConfigService } from '@nestjs/config';
 import { createHandlerLogger } from '~/_common/functions/handler-logger';
 import { resolveConfigVariables } from '~/_common/functions/resolve-config-variables.function';
-import { buildCronCommandArgs } from './_functions/cron-command-options.function';
+import { buildCronCommandArgs, resolveCronConsoleCommandWords } from './_functions/cron-command-options.function';
 
 @Injectable()
 export class CronHooksService {
@@ -177,7 +177,9 @@ export class CronHooksService {
     }
 
     // Supprimer les jobs qui ne sont plus dans les tâches désirées
-    for (const [name, job] of existingJobs) {
+    // Itère sur une copie : getCronJobs() renvoie la Map interne du registre, et un delete + add
+    // sur la même clé la replace en fin de Map, ce qui la ferait revisiter indéfiniment.
+    for (const [name, job] of Array.from(existingJobs)) {
       if (!name.startsWith('cron-task-')) continue;
 
       const desired = desiredTasks.get(name);
@@ -301,7 +303,7 @@ export class CronHooksService {
     const { positionalArgs, flagArgs } = buildCronCommandArgs(handler, resolvedOptions);
 
     const cmd = 'yarn';
-    const cmdArgs = ['run', 'console', ...handler.split('-'), ...positionalArgs, ...flagArgs];
+    const cmdArgs = ['run', 'console', ...resolveCronConsoleCommandWords(handler), ...positionalArgs, ...flagArgs];
 
     const handlerLogger = createHandlerLogger(this.configService, name);
     this.logger.log(`Spawning command: ${cmd} ${cmdArgs.join(' ')}`);

@@ -8,6 +8,15 @@ function getHandlerDescriptor(handler: string) {
   return getCronConsoleHandlers().find((entry) => entry.handler === handler);
 }
 
+/**
+ * Mots de la commande console d'un handler : utilise `command` déclaré via @CronConsoleHandler,
+ * sinon (handler non déclaré) découpe l'identifiant sur les tirets.
+ */
+export function resolveCronConsoleCommandWords(handler: string): string[] {
+  const descriptor = getHandlerDescriptor(handler);
+  return (descriptor?.command || handler.replace(/-/g, ' ')).split(/\s+/).filter(Boolean);
+}
+
 export function resolveCronConsoleArgumentFlag(argument: CronConsoleHandlerArgument): string {
   return argument.flag || `--${argument.name}`;
 }

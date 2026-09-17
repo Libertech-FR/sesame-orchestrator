@@ -331,7 +331,7 @@ type IdentitiesInitExpireOptions = {
 };
 
 @CronConsoleHandler({
-  handler: 'identities-init-invitation-expire',
+  handler: 'identities-init-expire',
   command: 'identities init expire',
   label: "Expiration des invitations d'initialisation de compte",
   arguments: [

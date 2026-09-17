@@ -46,7 +46,7 @@
     "fast-password-entropy": "^1.1.1",
     "hibp": "^15.0.1",
     "highlight.js": "^11.11.1",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "lodash-es": "^4.17.23",
     "moment": "^2.30.1",
     "monaco-editor": "^0.53.0",

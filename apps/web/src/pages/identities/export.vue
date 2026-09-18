@@ -65,7 +65,7 @@ q-page.container.q-pa-sm
     q-table(
         :rows-per-page-options="[20,50,0]"
         :columns="exportColumns"
-        :rows="identities"
+        :rows="identities || []"
         row-key="_id"
         flat
         dense
@@ -74,6 +74,8 @@ q-page.container.q-pa-sm
 
 <script lang="ts">
 import type { LocationQueryValue } from 'vue-router'
+// Import explicite : l'auto-import d'unimport ne détecte pas cette constante dans ce fichier.
+import { DEFAULT_IDENTITY_FILTER_FIELD_PATHS } from '~/composables/useFilterFieldOptions'
 
 export default defineNuxtComponent({
   name: 'IdentitiesExportPage',
@@ -95,11 +97,13 @@ export default defineNuxtComponent({
 
     let rowsData = null
     const queryWithoutRead = computed(() => {
-      const { read, ...rest } = route.query
+      // L'export porte sur tout le résultat filtré : la pagination de la table
+      // (`limit`/`page`, présents dans l'URL au retour de /identities/table) ne doit pas être reprise.
+      const { read, limit, page, ...rest } = route.query
       return {
-        limit: 9999,
         ...getSearchFieldsQuery(),
         ...rest,
+        limit: 9999,
       }
     })
 
@@ -110,8 +114,11 @@ export default defineNuxtComponent({
     } = await useHttp('/management/identities/validation', {
       method: 'GET',
       transform: (result: any) => {
-        const allFields = result.data.flatMap((enr) => {
-          return Object.keys(enr[enr.name].properties)
+        const schemas = Array.isArray(result?.data) ? result.data : []
+        const allFields = schemas.flatMap((enr) => {
+          // Un schéma YAML vide ou sans `properties` ne doit pas casser la page.
+          const properties = enr?.[enr?.name]?.properties
+          return properties ? Object.keys(properties) : []
         })
 
         const columns = allFields.map((enr) => {

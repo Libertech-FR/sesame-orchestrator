@@ -250,8 +250,23 @@ export default defineNuxtComponent({
         this.syncSelectionWithRows()
       },
     },
+    // La sélection survit à un changement de page, mais pas à un changement de
+    // filtre / recherche : les lignes conservées ne feraient plus partie du jeu affiché.
+    filtersSignature: {
+      handler(next: string, previous: string) {
+        if (next !== previous) this.clearSelection()
+      },
+    },
   },
   computed: {
+    /** Empreinte des filtres actifs, hors pagination / tri / route de détail. */
+    filtersSignature(): string {
+      const query = this.$route?.query || {}
+      const entries = Object.entries(query)
+        .filter(([key]) => !['limit', 'skip', 'page', 'read'].includes(key) && !key.startsWith('sort'))
+        .sort(([a], [b]) => a.localeCompare(b))
+      return JSON.stringify(entries)
+    },
     visibleColumnsSelected(): QTableProps['visibleColumns'] {
       if (!this.visibleColumns || this.visibleColumns.length === 0) {
         return (this.columns || []).map((column) => column.name)
@@ -290,21 +305,29 @@ export default defineNuxtComponent({
     },
   },
   methods: {
-    /**
-     * Garde uniquement les lignes encore présentes dans `rows` (même clé `rowKey`)
-     * et réaligne sur les objets courants. Sinon la sélection peut rester bloquée
-     * sur d’anciennes lignes après changement de route / filtres / rechargement.
-     */
     tableRowKey(row: Record<string, unknown>): string {
       const rk = this.rowKey
       return typeof rk === 'function' ? String(rk(row)) : String(row?.[rk as string] ?? '')
     },
+    /**
+     * Réaligne la sélection sur les objets de la page courante (sinon Quasar ne
+     * reconnaît plus les lignes cochées après un rechargement) tout en conservant
+     * les lignes sélectionnées sur les autres pages : la sélection doit survivre
+     * à un changement de page. Les doublons de clé sont éliminés.
+     */
     syncSelectionWithRows() {
       if (!this.selection || this.selection === 'none') return
       if (!Array.isArray(this.selected) || this.selected.length === 0) return
       const rows = this.rows || []
       const rowByKey = new Map(rows.map((r) => [this.tableRowKey(r), r]))
-      const next = this.selected.map((s) => rowByKey.get(this.tableRowKey(s))).filter((r) => r !== undefined)
+      const seen = new Set<string>()
+      const next = [] as typeof this.selected
+      for (const s of this.selected) {
+        const key = this.tableRowKey(s)
+        if (seen.has(key)) continue
+        seen.add(key)
+        next.push(rowByKey.get(key) ?? s)
+      }
       if (next.length !== this.selected.length || next.some((r, i) => r !== this.selected[i])) {
         this.selected = next
       }

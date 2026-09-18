@@ -38,6 +38,14 @@ q-dialog(
             q-item-section
               q-item-label.text-weight-medium(lines="2") {{ item.label }}
               q-item-label.text-caption.text-grey-6(lines="1" style="font-family: ui-monospace, monospace") {{ item.idShort }}
+      .identity-modal-body-footer(v-if="allIdentitiesCount > selectedRows.length")
+        q-separator.q-my-md
+        q-checkbox(
+          dense
+          color="negative"
+          v-model="deleteAllIdentities",
+          :label="checkboxLabel",
+        )
     q-card-actions.identity-modal-actions(align="right")
       q-btn.identity-modal-btn-cancel(
         outline
@@ -54,19 +62,23 @@ q-dialog(
         color="negative"
         icon-right="mdi-check"
         label="Supprimer"
-        :disable="selectedRows.length === 0"
+        :disable="selectedRows.length === 0 && !deleteAllIdentities"
         @click="syncIdentities"
       )
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useDialogPluginComponent, useQuasar } from 'quasar'
 
 const props = defineProps({
   selectedIdentities: {
     type: Array,
     default: () => [],
+  },
+  allIdentitiesCount: {
+    type: Number,
+    default: 0,
   },
 })
 
@@ -159,15 +171,24 @@ const identityListItems = computed(() => {
   })
 })
 
-const mainText = computed(
-  () =>
-    `Vous allez supprimer ${selectedRows.value.length} identité${selectedRows.value.length > 1 ? 's' : ''}. Cette action est irréversible. Vérifiez la liste puis confirmez.`,
+const deleteAllIdentities = ref(false)
+
+const mainText = computed(() => {
+  if (deleteAllIdentities.value) {
+    return `Vous allez supprimer les ${props.allIdentitiesCount} identité${props.allIdentitiesCount > 1 ? 's' : ''} correspondant au filtre actuel, et pas seulement la sélection ci-dessous. Cette action est irréversible.`
+  }
+
+  return `Vous allez supprimer ${selectedRows.value.length} identité${selectedRows.value.length > 1 ? 's' : ''}. Cette action est irréversible. Vérifiez la liste puis confirmez.`
+})
+
+const checkboxLabel = computed(
+  () => `Supprimer toutes les identités du filtre actuel (${props.allIdentitiesCount} identité${props.allIdentitiesCount > 1 ? 's' : ''})`,
 )
 
 const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
 
 const syncIdentities = () => {
-  onDialogOK({ success: true })
+  onDialogOK({ success: true, deleteAllIdentities: deleteAllIdentities.value })
 }
 
 const cancelSync = () => {
@@ -207,6 +228,10 @@ const cancelSync = () => {
 }
 
 .identity-modal-body-top {
+  flex-shrink: 0;
+}
+
+.identity-modal-body-footer {
   flex-shrink: 0;
 }
 

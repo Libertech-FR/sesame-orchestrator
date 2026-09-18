@@ -56,6 +56,7 @@ q-page.grid
         q-separator(vertical v-if="selected.length !== 0")
         q-btn(flat icon="mdi-cancel" color="warning" rounded @click="clearSelection" size="md" v-show="selected.length !== 0" dense)
           q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Nettoyer la selection
+      .text-caption.q-ml-sm.text-weight-medium(v-if="selected.length !== 0") {{ selected.length }} identité(s) sélectionnée(s)
     template(#body-cell-state="props")
       q-td
         sesame-pages-identities-states-info(:identity='props.row')
@@ -182,13 +183,21 @@ export default defineNuxtComponent({
       })
     }
 
-    /** Clé unique par ligne : évite le bug Quasar (plusieurs lignes cochées pour un seul _id dans `selected`). */
+    /**
+     * Clé unique par ligne, stable d'une page à l'autre (indispensable pour conserver
+     * la sélection lors d'un changement de page). L'index n'est ajouté qu'en cas de
+     * doublon d'`_id` dans la page courante, pour éviter le bug Quasar
+     * (plusieurs lignes cochées pour un seul `_id` dans `selected`).
+     */
     function identityTableRowKey(row: Record<string, unknown>) {
-      const list = identities.value?.data
-      if (!row || !Array.isArray(list)) return '__'
-      const idx = list.indexOf(row)
+      if (!row) return '__'
       const id = row?._id != null ? String(row._id) : 'noid'
-      return idx >= 0 ? `${id}::${idx}` : `${id}::${list.length}`
+      const list = identities.value?.data
+      if (!Array.isArray(list)) return id
+      const idx = list.indexOf(row)
+      if (idx < 0) return id
+      const first = list.findIndex((r) => (r?._id != null ? String(r._id) : 'noid') === id)
+      return idx === first ? id : `${id}::${idx}`
     }
 
     return {
@@ -308,9 +317,11 @@ export default defineNuxtComponent({
     },
     bulkIdsFromIdentities(identities: unknown[]): string[] {
       if (!Array.isArray(identities)) return []
-      return identities
+      const ids = identities
         .map((row) => this.identityRowIdString(row as Record<string, unknown>))
         .filter((id): id is string => id.length > 0)
+      // La sélection peut couvrir plusieurs pages : on dédoublonne avant l'appel.
+      return [...new Set(ids)]
     },
     async fetchSyncedTotalCount(): Promise<number> {
       try {
@@ -480,11 +491,34 @@ export default defineNuxtComponent({
           component: deleteManyModal,
           componentProps: {
             selectedIdentities: selectionAtOpen,
+            allIdentitiesCount: this.identities?.total ?? 0,
           },
         })
-        .onOk(async () => {
-          await this.trashManySelected(selectionAtOpen)
+        .onOk(async (data) => {
+          if (data?.deleteAllIdentities) {
+            await this.trashAllIdentities()
+          } else {
+            await this.trashManySelected(selectionAtOpen)
+          }
         })
+    },
+
+    async trashAllIdentities() {
+      const { data: identities } = await useHttp<any>('/management/identities?limit=999999', {
+        method: 'get',
+        query: this.returnFilter(),
+      })
+
+      const rows = identities.value?.data
+      if (!Array.isArray(rows) || rows.length === 0) {
+        this.$q.notify({
+          message: 'Aucune identité à supprimer',
+          color: 'negative',
+        })
+        return
+      }
+
+      await this.trashManySelected(rows)
     },
 
     async updateAllIdentities(state: IdentityState) {
@@ -596,6 +630,13 @@ export default defineNuxtComponent({
 
     async trashManySelected(identities) {
       const ids = this.bulkIdsFromIdentities(identities)
+      if (ids.length === 0) {
+        this.$q.notify({
+          message: 'Aucune identité à supprimer',
+          color: 'negative',
+        })
+        return
+      }
 
       try {
         const { data } = await $http.$post(`/core/backends/delete`, {
@@ -604,16 +645,28 @@ export default defineNuxtComponent({
           },
         })
 
-        this.$q.notify({
-          message: `Les identités ont été supprimées avec succès`,
-          color: 'positive',
-        })
+        // Le backend traite chaque identité indépendamment : on remonte les échecs partiels
+        // plutôt que d'annoncer une réussite globale.
+        const entries = data && typeof data === 'object' ? Object.entries(data as Record<string, unknown>) : []
+        const failed = entries.filter(([, value]) => value && typeof value === 'object' && 'error' in value)
+
+        if (failed.length > 0) {
+          this.$q.notify({
+            message: `${ids.length - failed.length}/${ids.length} identité(s) supprimée(s), ${failed.length} en erreur`,
+            color: 'warning',
+          })
+        } else {
+          this.$q.notify({
+            message: `${ids.length} identité(s) supprimée(s) avec succès`,
+            color: 'positive',
+          })
+        }
         await this.fetchAllStateCount()
         this.refresh()
         ;(this.$refs.twoPan as any).clearSelection()
       } catch (error: any) {
         this.$q.notify({
-          message: error.data.message,
+          message: error?.data?.message ?? error?.response?._data?.message ?? 'Erreur lors de la suppression',
           color: 'negative',
         })
       }
@@ -688,7 +741,8 @@ export default defineNuxtComponent({
       }
     },
     returnFilter() {
-      const rest = this.$route.query
+      // copie : supprimer les clés directement sur `$route.query` mutait la route courante
+      const rest = { ...this.$route.query }
 
       for (const [key] of Object.entries(rest)) {
         if (key === 'limit' || key === 'skip' || key === 'sort' || key === 'read') {

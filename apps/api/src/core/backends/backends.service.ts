@@ -315,46 +315,65 @@ export class BackendsService extends AbstractQueueProcessor {
 
     if (!payload.length) throw new BadRequestException('No identities to disable');
 
+    const result = {};
+
     for (const key of payload) {
-      const identity = await this.identitiesService.findById<any>(key);
-      if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== '') {
-        identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
-      } else {
-        //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
-        identity.inetOrgPerson.employeeNumber = identity.inetOrgPerson.employeeNumber[0];
-      }
-      if (!identity.lastBackendSync) {
-        // l identité n'a jamais été symchronisée on la soft delete
-        await this.identitiesService.model.findByIdAndUpdate(key, {
-          $set: {
-            state: IdentityState.DONT_SYNC,
-            deletedFlag: true,
-          },
+      try {
+        const identity = await this.identitiesService.findById<any>(key);
+        if (!identity) {
+          result[key] = { error: `Identity ${key} not found` };
+          continue;
+        }
+        if (identity.primaryEmployeeNumber !== null && identity.primaryEmployeeNumber !== '') {
+          identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
+        } else if (Array.isArray(identity.inetOrgPerson?.employeeNumber)) {
+          //on prend la premiere pour envoyer une chaine et non un tableau pour la compatibilité ldap
+          identity.inetOrgPerson.employeeNumber = identity.inetOrgPerson.employeeNumber[0];
+        }
+        if (!identity.lastBackendSync) {
+          // l identité n'a jamais été symchronisée on la soft delete
+          // puis on poursuit avec le reste de la sélection (suppression en masse)
+          await this.identitiesService.model.findByIdAndUpdate(key, {
+            $set: {
+              state: IdentityState.DONT_SYNC,
+              deletedFlag: true,
+            },
+          });
+          result[key] = { softDeleted: true };
+          continue;
+        }
+        identities.push({
+          action: ActionType.IDENTITY_DELETE,
+          identity,
         });
-        return [];
+      } catch (error) {
+        // une identité en erreur ne doit pas interrompre la suppression des autres
+        this.logger.error(`Unable to prepare deletion of identity ${key}: ${error?.message}`, error?.stack);
+        result[key] = { error: error?.message ?? 'Unknown error' };
       }
-      identities.push({
-        action: ActionType.IDENTITY_DELETE,
-        identity,
-      });
     }
+
+    if (!identities.length) return result;
 
     const task: Document<Tasks> = await this.tasksService.create<Tasks>({
       jobs: identities.map((identity) => identity.identity._id),
     });
 
-    const result = {};
     for (const identity of identities) {
-      const [executedJob] = await this.executeJob(identity.action, identity.identity._id, identity.identity, {
-        ...options,
-        updateStatus: true,
-        switchToProcessing: false,
-        targetState: IdentityState.DONT_SYNC,
-        dataState: DataStatusEnum.DELETED,
-        task: task._id as unknown as Types.ObjectId,
-      });
-      result[identity.identity._id] = executedJob;
-      // console.log(res);
+      try {
+        const [executedJob] = await this.executeJob(identity.action, identity.identity._id, identity.identity, {
+          ...options,
+          updateStatus: true,
+          switchToProcessing: false,
+          targetState: IdentityState.DONT_SYNC,
+          dataState: DataStatusEnum.DELETED,
+          task: task._id as unknown as Types.ObjectId,
+        });
+        result[`${identity.identity._id}`] = executedJob;
+      } catch (error) {
+        this.logger.error(`Unable to delete identity ${identity.identity._id}: ${error?.message}`, error?.stack);
+        result[`${identity.identity._id}`] = { error: error?.message ?? 'Unknown error' };
+      }
     }
     return result;
   }

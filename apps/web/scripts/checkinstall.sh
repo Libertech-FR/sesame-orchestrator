@@ -10,3 +10,9 @@ if [ ! -f ./config/menus.yml ];then
   echo "Copying default menus.yml to config folder"
   cp ./default/menus.yml ./config
 fi
+
+echo "Checking identities search fields configuration..."
+if [ ! -f ./config/identities-search-fields.yml ];then
+  echo "Copying default identities-search-fields.yml to config folder"
+  cp ./default/identities-search-fields.yml ./config
+fi

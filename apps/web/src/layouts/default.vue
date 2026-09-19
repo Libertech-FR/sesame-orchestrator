@@ -20,7 +20,6 @@ q-layout(view="hHh LpR lff" style="margin-top: -1px;")
 </template>
 
 <script lang="ts">
-import { IdentityState } from '~/constants/enums'
 import { useIdentityStateStore } from '~/stores/identityState'
 import { loadingBarDefaults } from '~/composables/useLoadingBarHijackFilter'
 import { attachSocketIoDebug } from '~/composables/useSocketIoDebug'
@@ -82,7 +81,8 @@ export default defineNuxtComponent({
       menuParts,
       getMenuByPart,
       identityStateStore,
-      eventSeamlessTotal: identityStateStore.getStateValue(IdentityState.PROCESSING),
+      // Le total est alimenté par l'action « tout synchroniser » ou déduit des jobs reçus via websocket.
+      eventSeamlessTotal: 0,
     }
   },
   computed: {
@@ -144,9 +144,11 @@ export default defineNuxtComponent({
         void this.fetchDaemonUpdateInfo(payload.version)
       }
     },
-    syncing(payload: { count: number }) {
-      this.eventSeamlessTotal = payload.count
+    syncing(payload: { count: number | string }) {
+      const total = Number(payload.count)
+      this.eventSeamlessTotal = Number.isFinite(total) ? total : 0
       this.eventSeamlessCurrent = 0
+      this.eventSeamlessCurrentJobs = {}
       this.eventSeamless = true
     },
     connectBackendsSocket(auth: ReturnType<typeof useAuth>): void {
@@ -207,19 +209,19 @@ export default defineNuxtComponent({
           return
         }
 
-        if (/^job:/.test(data.channel)) {
-          if (this.eventSeamlessTotal === 0) {
-            await this.identityStateStore.fetchAllStateCount()
-            this.eventSeamlessTotal = this.identityStateStore.getStateValue(IdentityState.PROCESSING)
-          }
-        }
-
         switch (data.channel) {
           case 'job:added':
             this.eventSeamless = true
             if (data.payload?.jobId) {
               this.eventSeamlessCurrentJobs[data.payload.jobId] = data.payload
             }
+            // Jobs non déclenchés par « tout synchroniser » (synchronisation automatique après
+            // modification par exemple) : le total est déduit des jobs reçus, sinon le panneau
+            // resterait affiché indéfiniment.
+            this.eventSeamlessTotal = Math.max(
+              this.eventSeamlessTotal,
+              this.eventSeamlessCurrent + Object.keys(this.eventSeamlessCurrentJobs).length,
+            )
             break
 
           case 'job:failed':
@@ -229,8 +231,12 @@ export default defineNuxtComponent({
             }
             this.eventSeamlessCurrent++
 
-            if (this.eventSeamlessCurrent >= this.eventSeamlessTotal) {
+            if (
+              this.eventSeamlessCurrent >= this.eventSeamlessTotal &&
+              Object.keys(this.eventSeamlessCurrentJobs).length === 0
+            ) {
               this.eventSeamlessCurrent = 0
+              this.eventSeamlessTotal = 0
               this.eventSeamlessCurrentJobs = {}
               setTimeout(() => {
                 this.eventSeamless = false

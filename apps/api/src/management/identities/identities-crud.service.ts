@@ -17,6 +17,7 @@ import { Identities } from '~/management/identities/_schemas/identities.schema';
 import { BadRequestException, HttpException } from '@nestjs/common';
 import { CountOptions } from 'mongodb';
 import { IdentityLifecycleDefault, IdentityLifecycleState } from './_enums/lifecycle.enum';
+import { IdentitySyncMode } from '~/config';
 
 export const COUNT_ALL_MAX_ITERATIONS = 500;
 
@@ -70,7 +71,20 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     //pour la validation le employeeNumber doit exister on en met un avec une valeur par defaut
     check.attributes.inetOrgPerson.employeeNumber = ['1'];
     const validations = await this._validation.validate(check);
+
+    // En mode <auto> (SESAME_IDENTITY_SYNC_MODE), l'identité est synchronisée dès sa création,
+    // sans passer par l'étape de validation manuelle.
+    const autoSync = this.isAutoSyncEnabled() && (data.state === undefined || data.state === IdentityState.TO_CREATE);
+    if (autoSync) {
+      data.state = IdentityState.TO_SYNC;
+    }
+
     const created: Document<T, any, T> = await super.create(data, options);
+
+    if (autoSync) {
+      await this.triggerAutoSync(created._id);
+    }
+
     return created;
   }
 
@@ -125,7 +139,9 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
       throw new HttpException('Uid ou mail déjà présent dans une autre identité', 400);
     }
     // if (update.state === IdentityState.TO_COMPLETE) {
-    update = { ...update, state: IdentityState.TO_VALIDATE };
+    // En mode <auto> (SESAME_IDENTITY_SYNC_MODE), l'identité est synchronisée sans validation manuelle.
+    const autoSync = this.isAutoSyncEnabled();
+    update = { ...update, state: autoSync ? IdentityState.TO_SYNC : IdentityState.TO_VALIDATE };
 
     await this.checkInetOrgPersonJpegPhoto(update);
 
@@ -135,8 +151,44 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     // }
     //update.state = IdentityState.TO_VALIDATE;
     const updated = await super.update(_id, update, options);
-    //TODO: add backends service logic here (TO_SYNC)
-    return await this.generateFingerprint(updated as unknown as Identities);
+    const identity = await this.generateFingerprint<T>(updated as unknown as Identities);
+
+    if (autoSync) {
+      await this.triggerAutoSync(_id);
+    }
+
+    return identity;
+  }
+
+  /**
+   * Indique si la synchronisation automatique après modification est activée
+   *
+   * @returns true si SESAME_IDENTITY_SYNC_MODE vaut <auto>, false en mode manuel (défaut)
+   */
+  protected isAutoSyncEnabled(): boolean {
+    return this.config.get<IdentitySyncMode>('identities.syncMode') === 'auto';
+  }
+
+  /**
+   * Déclenche la synchronisation vers les backends d'une identité modifiée
+   *
+   * @description Une erreur de synchronisation n'invalide pas la modification : l'identité reste
+   * en état TO_SYNC et pourra être resynchronisée manuellement ou par un syncall.
+   * @param _id - Identifiant de l'identité à synchroniser
+   */
+  protected async triggerAutoSync(_id: Types.ObjectId | any): Promise<void> {
+    try {
+      await this.backends.syncIdentities([`${_id}`], {
+        async: true,
+        // L'identité bascule en PROCESSING dès la mise en file : elle n'apparaît pas
+        // dans les <identités à synchroniser> en attente d'une action manuelle.
+        switchToProcessing: true,
+        comment: 'Synchronisation automatique après modification',
+      });
+      this.logger.log(`Auto sync triggered for identity <${_id}>`);
+    } catch (error) {
+      this.logger.error(`Auto sync failed for identity <${_id}>: ${error?.message}`, error?.stack);
+    }
   }
 
   public async updateLifecycle<T extends AbstractSchema | Document>(

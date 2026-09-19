@@ -111,11 +111,26 @@ export const validationSchema = Joi.object({
   SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES: Joi.string().default(''),
 
   /**
+   * Mode de synchronisation des identités après une modification.
+   * - `manual` (défaut) : l'identité passe en TO_VALIDATE et attend une validation puis une synchronisation manuelle.
+   * - `auto` : l'identité passe directement en TO_SYNC et la synchronisation vers les backends est déclenchée.
+   */
+  SESAME_IDENTITY_SYNC_MODE: Joi.string().valid('manual', 'auto').default('manual'),
+
+  /**
    * Active trust proxy Express (1 hop) pour que req.ip / X-Forwarded-For reflètent le client derrière un reverse-proxy.
    * @see https://expressjs.com/en/guide/behind-proxies.html
    */
   SESAME_TRUST_PROXY: Joi.string().valid('0', '1', 'false', 'true', 'on', 'off', '').default('0'),
 });
+
+/**
+ * Mode de synchronisation des identités après une modification
+ *
+ * @description `manual` conserve l'étape de validation avant synchronisation,
+ * `auto` déclenche la synchronisation vers les backends dès la modification.
+ */
+export type IdentitySyncMode = 'manual' | 'auto';
 
 /**
  * Configuration d'un plugin Mongoose
@@ -214,6 +229,8 @@ export interface ConfigInstance {
   };
   identities: {
     doublonSearchAttributes: string[];
+    /** Mode de synchronisation appliqué après la modification d'une identité. */
+    syncMode: IdentitySyncMode;
   };
   swagger: {
     path: string;
@@ -355,6 +372,7 @@ export default (): ConfigInstance => ({
     doublonSearchAttributes: process.env['SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES']
       ? process.env['SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES'].split(',').map((attr) => attr.trim())
       : ['additionalFields.attributes.supannPerson.supannOIDCDatedeNaissance', 'inetOrgPerson.givenName'],
+    syncMode: /^auto$/i.test(process.env['SESAME_IDENTITY_SYNC_MODE'] || '') ? 'auto' : 'manual',
   },
   sms: {
     host: process.env['SESAME_SMPP_SERVER'] || '',

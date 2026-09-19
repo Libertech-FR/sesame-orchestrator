@@ -12,7 +12,7 @@ type handleErrorPayload = {
   message?: string
 }
 
-function extractErrorMessage(error: any): string | undefined {
+export function extractErrorMessage(error: any): string | undefined {
   const raw = error?.response?._data?.message ?? error?.data?.message ?? error?.cause?.response?._data?.message ?? error?.message
   if (Array.isArray(raw)) {
     const joined = raw.map((item) => `${item}`.trim()).filter(Boolean).join(', ')
@@ -23,6 +23,59 @@ function extractErrorMessage(error: any): string | undefined {
     return trimmed || undefined
   }
   return undefined
+}
+
+/**
+ * Recupere la map `validations` d'une reponse API.
+ *
+ * Selon l'appelant (`$http` direct, `useHttp`/`useAsyncData`, erreur re-emise), la charge utile
+ * est accessible via `response._data`, `data`, ou la meme chose sous `cause` : on teste les
+ * quatre emplacements, comme le fait deja `extractErrorMessage`.
+ */
+export function extractValidations(error: any): Record<string, unknown> | undefined {
+  const validations =
+    error?.response?._data?.validations ??
+    error?.data?.validations ??
+    error?.cause?.response?._data?.validations ??
+    error?.cause?.data?.validations
+
+  return validations && typeof validations === 'object' ? validations : undefined
+}
+
+/**
+ * Construit un message d'erreur lisible a partir d'une reponse API :
+ * le `message` renvoye par l'API, complete des `validations` par champ quand elles existent.
+ */
+export function formatApiErrorMessage(error: any, fallback: string): string {
+  const parts: string[] = []
+  const message = extractErrorMessage(error)
+  if (message) parts.push(message)
+
+  const validations = extractValidations(error)
+  if (validations) {
+    for (const [field, detail] of Object.entries(validations)) {
+      if (field === 'message') continue
+      const text = typeof detail === 'string' ? detail : flattenValidationDetail(detail)
+      if (text) parts.push(`${field} : ${text}`)
+    }
+  }
+
+  return parts.length ? parts.join(' - ') : fallback
+}
+
+function flattenValidationDetail(detail: any): string {
+  if (typeof detail === 'string') return detail
+  if (Array.isArray(detail)) return detail.map(flattenValidationDetail).filter(Boolean).join(', ')
+  if (detail && typeof detail === 'object') {
+    return Object.entries(detail)
+      .map(([key, value]) => {
+        const text = flattenValidationDetail(value)
+        return text ? `${key} : ${text}` : ''
+      })
+      .filter(Boolean)
+      .join(', ')
+  }
+  return ''
 }
 
 export function useErrorHandling(): useErrorHandlingReturnType {

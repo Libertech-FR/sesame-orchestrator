@@ -171,7 +171,18 @@ export default defineNuxtComponent({
         return false
       }
 
-      return hasValidation(this.validations?.[tab]) ? 'red' : false
+      // Format imbrique (`{ people: { uid: '...' } }`) renvoye par la validation de schema.
+      if (hasValidation(this.validations?.[tab])) return 'red'
+
+      // Format a plat a cles pointees (`{ 'inetOrgPerson.cn': '...' }`) renvoye par le DTO :
+      // le nom de l'onglet doit y etre un segment complet du chemin.
+      const suffix = `${tab}.`
+      const matchesTab = Object.entries(this.validations || {}).some(([key, value]) => {
+        const index = key.indexOf(suffix)
+        return (index === 0 || (index > 0 && key[index - 1] === '.')) && hasValidation(value)
+      })
+
+      return matchesTab ? 'red' : false
     },
     addSchema(schema) {
       if (!this.identity.additionalFields) {

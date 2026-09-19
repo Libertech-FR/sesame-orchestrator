@@ -70,6 +70,7 @@ q-card.flex.column.fit.absolute(flat)
 </template>
 
 <script lang="ts">
+import { extractValidations, formatApiErrorMessage } from '~/composables/useErrorHandling'
 import { useIdentityStateStore } from '~/stores/identityState'
 
 export default defineNuxtComponent({
@@ -179,21 +180,18 @@ export default defineNuxtComponent({
         this.$emit('refresh')
       } catch (error: any) {
         this.$q.notify({
-          message: "Erreur lors de la sauvegarde de l'identité",
+          message: formatApiErrorMessage(error, "Erreur lors de la sauvegarde de l'identité"),
           color: 'negative',
           position: 'top-right',
           icon: 'mdi-alert-circle-outline',
+          multiLine: true,
+          timeout: 10000,
         })
         console.error('Erreur lors de la sauvegarde de l identité:', error)
 
-        if (error?.response?._data?.validations) {
-          if (!this.identity?.additionalFields?.validations) {
-            this.identity.additionalFields.validations = {}
-          }
-
-          for (const v in error.response._data.validations) {
-            this.identity.additionalFields.validations[v] = error.response._data.validations[v]
-          }
+        const validations = extractValidations(error)
+        if (validations && this.identity.additionalFields) {
+          this.identity.additionalFields.validations = { ...validations }
         }
       }
     },

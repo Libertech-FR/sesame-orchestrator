@@ -2,7 +2,7 @@
   .column.no-wrap.full-height.relative
     .sesame-sticky-space
     q-toolbar.bg-transparent.q-pr-none.sesame-sticky-bar
-      q-btn.sesame.infinite.animated.flash(size="sm" padding="xs" color="negative" @click="validationsModal = true" v-if="!isNew && hasValidations" outline)
+      q-btn.sesame.infinite.animated.flash(size="sm" padding="xs" color="negative" @click="validationsModal = true" v-if="hasValidations" outline)
         q-tooltip.text-body2(slot="trigger") Afficher les erreurs
         q-icon.text-negative(name='mdi-alert-box')
       q-dialog(v-model="validationsModal")
@@ -12,10 +12,10 @@
             div.text-h6.q-ml-md Erreurs de validation
           q-card-section.q-py-sm
             q-list(separator)
-              q-item(v-for="field in Object.keys(validations)" :key="field")
+              q-item(v-for="entry in validationEntries" :key="entry.field")
                 q-item-section.text-negative
-                  q-item-label {{ field }}
-                  q-item-label(v-for='f in validations[field]' caption) - {{ f }}
+                  q-item-label {{ entry.field }}
+                  q-item-label(v-for='message in entry.messages' :key="message" caption) - {{ message }}
           q-card-actions(align="right")
             q-btn(flat label="Fermer" color="primary" v-close-popup)
       q-toolbar-title.gt-xs Fiche identité
@@ -290,15 +290,27 @@ export default defineNuxtComponent({
         employeeType: this.identity?.inetOrgPerson?.employeeType,
       }
     },
-    hasValidations() {
-      if (this.validations) {
-        for (const field in this.validations) {
-          if (Object.keys(this.validations[field]).length > 0) {
-            return true
-          }
+    /**
+     * Aplatit les deux formes de `validations` renvoyees par l'API :
+     * une map imbriquee par classe d'objet (`{ people: { uid: '...' } }`) issue de la validation
+     * de schema, ou une map a plat a cles pointees (`{ 'inetOrgPerson.cn': '...' }`) issue du DTO.
+     */
+    validationEntries(): Array<{ field: string; messages: string[] }> {
+      const flatten = (value: unknown): string[] => {
+        if (typeof value === 'string') return value.trim() ? [value.trim()] : []
+        if (Array.isArray(value)) return value.flatMap(flatten)
+        if (value && typeof value === 'object') {
+          return Object.entries(value).flatMap(([key, child]) => flatten(child).map((message) => `${key} : ${message}`))
         }
+        return []
       }
-      return false
+
+      return Object.entries(this.validations)
+        .map(([field, value]) => ({ field, messages: flatten(value) }))
+        .filter((entry) => entry.messages.length > 0)
+    },
+    hasValidations() {
+      return this.validationEntries.length > 0
     },
     getStatusColor() {
       if (this.identity.dataStatus === 1) {

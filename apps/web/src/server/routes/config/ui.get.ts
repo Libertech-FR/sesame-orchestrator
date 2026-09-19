@@ -60,6 +60,16 @@ async function readYamlFile(filePath: string): Promise<Record<string, unknown>> 
   }
 }
 
+/**
+ * Lit un fichier de `./config`, avec repli sur `./default` : en dev local
+ * `scripts/checkinstall.sh` (qui peuple `./config`) n'est pas exécuté.
+ */
+async function readConfigYamlFile(fileName: string): Promise<Record<string, unknown>> {
+  const fromConfig = await readYamlFile(`./config/${fileName}`)
+  if (Object.keys(fromConfig).length > 0) return fromConfig
+  return readYamlFile(`./default/${fileName}`)
+}
+
 let defaultMenuEntriesJsonGenerated = false
 
 async function ensureDefaultMenuDataJson(): Promise<void> {
@@ -95,9 +105,9 @@ async function ensureDefaultMenuDataJson(): Promise<void> {
 export default defineEventHandler(async () => {
   await ensureDefaultMenuDataJson()
 
-  const menusFile = await readYamlFile('./config/menus.yml')
-  const identitiesColumnsFile = await readYamlFile('./config/identities-columns.yml')
-  const identitiesSearchFieldsFile = await readYamlFile('./config/identities-search-fields.yml')
+  const menusFile = await readConfigYamlFile('menus.yml')
+  const identitiesColumnsFile = await readConfigYamlFile('identities-columns.yml')
+  const identitiesSearchFieldsFile = await readConfigYamlFile('identities-search-fields.yml')
 
   return {
     menus: {

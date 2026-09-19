@@ -39,6 +39,7 @@ q-card.flex.column.fit.absolute(flat)
 </template>
 
 <script lang="ts">
+import { extractValidations, formatApiErrorMessage } from '~/composables/useErrorHandling'
 import { clone } from 'radash'
 import { IdentityState } from '~/constants/enums'
 import { useIdentityStateStore } from '~/stores/identityState'
@@ -71,7 +72,9 @@ export default defineNuxtComponent({
 
     if (NewTargetId === $route.params._id) {
       return {
-        identity: {
+        // `ref` obligatoire : un objet litteral renvoye par `setup` n'est pas reactif,
+        // les erreurs de validation posees sur `additionalFields.validations` ne seraient pas affichees.
+        identity: ref({
           state: IdentityState.TO_CREATE,
           inetOrgPerson: {
             mail: '',
@@ -80,8 +83,9 @@ export default defineNuxtComponent({
           additionalFields: {
             attributes: {},
             objectClasses: [] as string[],
+            validations: {},
           },
-        } as Identity,
+        } as Identity),
         originTarget,
         refresh: () => Promise.resolve(),
         toPathWithQueries,
@@ -168,14 +172,17 @@ export default defineNuxtComponent({
         this.$emit('refresh')
       } catch (error: any) {
         this.$q.notify({
-          message: "Erreur lors de la sauvegarde de l'identité",
+          message: formatApiErrorMessage(error, "Erreur lors de la sauvegarde de l'identité"),
           color: 'negative',
           position: 'top-right',
           icon: 'mdi-alert-circle-outline',
+          multiLine: true,
+          timeout: 10000,
         })
         console.error('Erreur lors de la sauvegarde de l identité:', error)
 
-        if (error?.response?._data?.validations) {
+        const validations = extractValidations(error)
+        if (validations) {
           if (!this.identity.additionalFields) {
             this.identity.additionalFields = {
               attributes: {},
@@ -184,13 +191,7 @@ export default defineNuxtComponent({
             }
           }
 
-          if (!this.identity.additionalFields.validations) {
-            this.identity.additionalFields.validations = {}
-          }
-
-          this.identity.additionalFields.validations = {
-            ...error.response._data.validations,
-          }
+          this.identity.additionalFields.validations = { ...validations }
         }
       }
     },

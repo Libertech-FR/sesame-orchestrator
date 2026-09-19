@@ -162,6 +162,28 @@ export default defineNuxtComponent({
     }
   },
   methods: {
+    /**
+     * Restreint une map de validations « a plat » au schema courant.
+     *
+     * `DtoValidationPipe` renvoie des cles prefixees par le chemin complet du champ
+     * (`inetOrgPerson.cn`, `additionalFields.attributes.people.uid`) alors que chaque
+     * renderer travaille sur un sous-objet de l'identite. Sans retrait du prefixe,
+     * l'`instancePath` produit ne correspond a aucun controle et l'erreur n'est pas affichee.
+     */
+    scopeFlatValidations(validations: Record<string, unknown>, schemaName: string): Record<string, unknown> {
+      const suffix = `${schemaName}.`
+      const scoped: Record<string, unknown> = {}
+
+      for (const [key, value] of Object.entries(validations)) {
+        const index = key.indexOf(suffix)
+        // Le nom du schema doit etre un segment complet du chemin, pas une sous-chaine d'un champ.
+        if (index === 0 || (index > 0 && key[index - 1] === '.')) {
+          scoped[key.slice(index + suffix.length)] = value
+        }
+      }
+
+      return scoped
+    },
     onChange(event: any) {
       this.$emit('update:modelValue', event.data)
 
@@ -192,7 +214,11 @@ export default defineNuxtComponent({
     i18n() {
       return {
         locale: 'fr',
-        translate: computed(() => this.createTranslator('fr')),
+        // `translate` doit etre la fonction elle-meme : JSON Forms l'appelle directement
+        // (`t(key, defaultMessage, context)`) des qu'un controle porte une erreur. Enveloppee
+        // dans un `computed`, l'appel levait une TypeError avalee par `errorCaptured`,
+        // et le champ en defaut n'etait jamais signale.
+        translate: this.createTranslator('fr'),
       }
     },
     getSchemaValidations(): any[] {
@@ -205,7 +231,7 @@ export default defineNuxtComponent({
         : hasSchemaScopedValidation
           ? rootValidations[this.schemaName]
           : isFlatValidationMap
-            ? rootValidations
+            ? this.scopeFlatValidations(rootValidations, this.schemaName)
             : {}
 
       const entries: Array<{ path: string; message: string }> = []

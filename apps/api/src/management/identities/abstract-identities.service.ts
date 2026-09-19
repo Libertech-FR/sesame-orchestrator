@@ -325,6 +325,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
   /**
    * Vérifie l'unicité de l'email et de l'UID d'une identité
    * Si l'email est vide, seul l'UID est vérifié
+   * Les identités supprimées, non synchronisées et celles ayant servi à une fusion (destFusionId) sont ignorées
    *
    * @param data - Les données contenant l'ID, l'UID et optionnellement l'email à vérifier
    * @returns true si l'email et l'UID sont uniques, false sinon
@@ -357,7 +358,9 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
         // Filtre pour vérifier UID ou email
         const filterWithMail = {
           _id: { $ne: objectId },
+          state: { $ne: IdentityState.DONT_SYNC },
           deletedFlag: { $ne: true },
+          destFusionId: { $eq: null },
           $or: [{ 'inetOrgPerson.uid': data.inetOrgPerson.uid }, { 'inetOrgPerson.mail': data.inetOrgPerson.mail }],
         };
         duplicates = await this._model.find(filterWithMail).exec();
@@ -365,7 +368,9 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
         // Filtre pour vérifier seulement l'UID
         const filterUidOnly = {
           _id: { $ne: objectId },
+          state: { $ne: IdentityState.DONT_SYNC },
           deletedFlag: { $ne: true },
+          destFusionId: { $eq: null },
           'inetOrgPerson.uid': data.inetOrgPerson.uid,
         };
         duplicates = await this._model.find(filterUidOnly).exec();
@@ -381,6 +386,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
 
   /**
    * Vérifie l'unicité de l'email d'une identité
+   * Les identités supprimées, non synchronisées et celles ayant servi à une fusion (destFusionId) sont ignorées
    *
    * @param identity - L'identité existante (optionnelle pour les nouvelles identités)
    * @param data - Les données contenant l'email à vérifier
@@ -412,13 +418,18 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
           _id: { $ne: identity._id },
           state: { $ne: IdentityState.DONT_SYNC },
           deletedFlag: { $ne: true },
-          'inetOrgPerson.mail': identity.inetOrgPerson.mail,
+          destFusionId: { $eq: null },
+          'inetOrgPerson.mail': emailToCheck,
         };
         duplicateCount = await this._model.countDocuments(updateFilter).exec();
       } else {
         // Vérification pour une nouvelle identité (création)
+        // Les identités de la poubelle (deletedFlag), non synchronisées ou fusionnées (destFusionId) ne sont pas des doublons.
         const createFilter = {
-          'inetOrgPerson.mail': data.inetOrgPerson.mail,
+          state: { $ne: IdentityState.DONT_SYNC },
+          deletedFlag: { $ne: true },
+          destFusionId: { $eq: null },
+          'inetOrgPerson.mail': emailToCheck,
         };
         duplicateCount = await this._model.countDocuments(createFilter).exec();
       }
@@ -433,6 +444,7 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
 
   /**
    * Vérifie l'unicité de l'UID d'une identité
+   * Les identités supprimées, non synchronisées et celles ayant servi à une fusion (destFusionId) sont ignorées
    *
    * @param identity - L'identité existante (optionnelle pour les nouvelles identités)
    * @param data - Les données contenant l'UID à vérifier
@@ -444,7 +456,8 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
       throw new BadRequestException('UID is required for uniqueness check');
     }
 
-    const uidToCheck = identity?.inetOrgPerson?.uid || data.inetOrgPerson.uid;
+    // On contrôle la valeur entrante (et non celle déjà stockée) pour détecter un changement d'uid vers un uid déjà pris
+    const uidToCheck = data.inetOrgPerson.uid;
 
     if (!uidToCheck || typeof uidToCheck !== 'string') {
       throw new BadRequestException('Invalid UID format');
@@ -459,13 +472,18 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
           _id: { $ne: identity._id },
           state: { $ne: IdentityState.DONT_SYNC },
           deletedFlag: { $ne: true },
-          'inetOrgPerson.uid': identity?.inetOrgPerson?.uid,
+          destFusionId: { $eq: null },
+          'inetOrgPerson.uid': uidToCheck,
         };
         duplicateCount = await this._model.countDocuments(updateFilter).exec();
       } else {
         // Vérification pour une nouvelle identité (création)
+        // Les identités de la poubelle (deletedFlag), non synchronisées ou fusionnées (destFusionId) ne sont pas des doublons.
         const createFilter = {
-          'inetOrgPerson.uid': data.inetOrgPerson.uid,
+          state: { $ne: IdentityState.DONT_SYNC },
+          deletedFlag: { $ne: true },
+          destFusionId: { $eq: null },
+          'inetOrgPerson.uid': uidToCheck,
         };
         duplicateCount = await this._model.countDocuments(createFilter).exec();
       }

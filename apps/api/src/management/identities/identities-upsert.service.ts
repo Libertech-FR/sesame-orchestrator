@@ -72,13 +72,6 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       await this._validation.transform(data.additionalFields);
       this.logger.log(`${logPrefix} Starting additionalFields validation.`);
       const validations = await this._validation.validate(data.additionalFields, true);
-      //validation email and uid
-      if ((await this.checkMail(identity, data)) === false) {
-        validations['inetOrgPerson.mail'] = 'Email déjà présent dans une autre identité';
-      }
-      if ((await this.checkUid(identity, data)) === false) {
-        validations['inetOrgPerson.uid'] = 'Uid déjà présent dans une autre identité';
-      }
       this.logger.log(`${logPrefix} AdditionalFields validation successful.`);
       this.logger.log(`Validations : ${JSON.stringify(validations)}`);
       crushedUpdate['state'] = IdentityState.TO_VALIDATE;
@@ -89,14 +82,17 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
       crushedUpdate['additionalFields.validations'] = data.additionalFields.validations;
     }
     //validation email and uid
+    //les messages sont fusionnés pour ne pas écraser les validations déjà posées sur inetOrgPerson
     if ((await this.checkMail(identity, data)) === false) {
       crushedUpdate['additionalFields.validations']['inetOrgPerson'] = {
+        ...crushedUpdate['additionalFields.validations']['inetOrgPerson'],
         mail: 'Email déjà présent dans une autre identité',
       };
       crushedUpdate['state'] = IdentityState.TO_COMPLETE;
     }
     if ((await this.checkUid(identity, data)) === false) {
       crushedUpdate['additionalFields.validations']['inetOrgPerson'] = {
+        ...crushedUpdate['additionalFields.validations']['inetOrgPerson'],
         uid: 'Uid déjà présent dans une autre identité',
       };
       crushedUpdate['state'] = IdentityState.TO_COMPLETE;

@@ -242,6 +242,9 @@ export default defineNuxtComponent({
                 this.eventSeamless = false
               }, 2000)
               await this.identityStateStore.fetchAllStateCount()
+              // Les états n'ont leur valeur définitive qu'une fois les jobs terminés : on
+              // prévient les vues ouvertes (liste du twopane, fiche) pour qu'elles se rechargent.
+              this.identityStateStore.notifyIdentitiesChanged()
             }
             break
         }

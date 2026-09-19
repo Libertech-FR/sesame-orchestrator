@@ -136,7 +136,8 @@ export default defineNuxtComponent({
 
     const { toPathWithQueries, navigateToTab } = useRouteQueries()
     const { columns, visibleColumns, columnsType } = useColumnsIdentites()
-    const { getStateValue, fetchAllStateCount } = useIdentityStateStore()
+    const identityStateStore = useIdentityStateStore()
+    const { getStateValue, fetchAllStateCount } = identityStateStore
     const { getStateName } = useIdentityStates()
     const { countFilters, hasFilters, getFilters, removeFilter } = useFiltersQuery(columns)
     const { useHttpPaginationOptions, useHttpPaginationReactive } = usePagination()
@@ -204,6 +205,7 @@ export default defineNuxtComponent({
       debug,
       page,
       hasPermission,
+      identityStateStore,
       identities,
       identityTableRowKey,
       pending,
@@ -282,8 +284,19 @@ export default defineNuxtComponent({
     }
   },
   computed: {
+    identitiesRevision(): number {
+      return this.identityStateStore.revision
+    },
     targetId(): LocationQueryValue[] | string {
       return `${this.$route.params._id || ''}`
+    },
+  },
+  watch: {
+    // L'état d'une identité évolue de façon asynchrone après la sauvegarde (jobs de
+    // synchronisation) : sans cela, la colonne « États » resterait figée sur la valeur lue
+    // juste après le PATCH.
+    identitiesRevision() {
+      this.refresh()
     },
   },
   methods: {

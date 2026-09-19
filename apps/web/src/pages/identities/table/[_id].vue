@@ -61,7 +61,10 @@ export default defineNuxtComponent({
       // savable: this.savable,
       save: this.save,
       sync: this.sync,
-      refresh: this.refresh,
+      // `refreshAll` et non `refresh` : toute mutation faite depuis le volet de droite
+      // (etat, cycle de vie, mot de passe, invitation...) change aussi des colonnes de la
+      // liste du twopane, qui doit donc etre rechargee en meme temps que la fiche.
+      refresh: this.refreshAll,
     }
   },
   async setup() {
@@ -72,6 +75,7 @@ export default defineNuxtComponent({
 
     if (NewTargetId === $route.params._id) {
       return {
+        identityStateStore,
         // `ref` obligatoire : un objet litteral renvoye par `setup` n'est pas reactif,
         // les erreurs de validation posees sur `additionalFields.validations` ne seraient pas affichees.
         identity: ref({
@@ -116,6 +120,7 @@ export default defineNuxtComponent({
     }
 
     return {
+      identityStateStore,
       identity,
       originTarget,
       refresh,
@@ -124,6 +129,9 @@ export default defineNuxtComponent({
     }
   },
   computed: {
+    identitiesRevision(): number {
+      return this.identityStateStore.revision
+    },
     isNew(): boolean {
       return this.$route.params._id === NewTargetId
     },
@@ -137,6 +145,13 @@ export default defineNuxtComponent({
       set(value: string) {
         this.navigateToTab(`/identities/table/${this.identity._id}/${value === 'index' ? '' : value}`)
       },
+    },
+  },
+  watch: {
+    // Même raison que dans la liste : l'état définitif n'est connu qu'à la fin des jobs
+    // de synchronisation déclenchés par la sauvegarde.
+    identitiesRevision() {
+      if (!this.isNew) this.refresh()
     },
   },
   methods: {
@@ -168,8 +183,7 @@ export default defineNuxtComponent({
           icon: 'mdi-check-circle-outline',
         })
 
-        this.refresh()
-        this.$emit('refresh')
+        await this.refreshAll()
       } catch (error: any) {
         this.$q.notify({
           message: formatApiErrorMessage(error, "Erreur lors de la sauvegarde de l'identité"),
@@ -209,7 +223,11 @@ export default defineNuxtComponent({
         })
       }
 
-      this.refresh()
+      await this.refreshAll()
+    },
+    /** Recharge la fiche courante puis la liste du twopane (volet de gauche). */
+    async refreshAll() {
+      await this.refresh()
       this.$emit('refresh')
     },
   },

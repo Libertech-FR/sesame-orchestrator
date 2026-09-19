@@ -78,12 +78,16 @@ export abstract class AbstractServiceSchema<T extends AbstractSchema | Document 
   }
 
   public async trashAndCount<T extends AbstractSchema | Document>(
+    filter?: FilterQuery<T>,
     projection?: ProjectionType<T> | null | undefined,
     options?: QueryOptions<T> | null | undefined,
   ): Promise<[Array<T & Query<T, T, any, T>>, number]> {
-    const filter = { deletedFlag: true }
-    let count = await this._model.countDocuments(filter).exec()
-    let data = await this._model.find<T & Query<T, T, any, T>>(filter, projection, options).exec()
+    this.logger.debug(['trashAndCount', JSON.stringify(Object.values(arguments))].join(' '))
+    const trashFilter = { deletedFlag: true }
+    let trashedFilter = { ...(filter || {}), ...trashFilter } as FilterQuery<T>
+    trashedFilter = normalizeMongoFilterValues(trashedFilter)
+    let count = await this._model.countDocuments(trashedFilter).exec()
+    let data = await this._model.find<T & Query<T, T, any, T>>(trashedFilter, projection, options).exec()
     return [data, count]
   }
   public async findAndCount<T extends AbstractSchema | Document>(

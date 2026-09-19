@@ -109,6 +109,32 @@ export class IdentitiesCrudController extends AbstractController {
     });
   }
 
+  /**
+   * Construit le filtre Mongo commun aux listes d'identités (recherche plein texte + filtres `filters[...]`).
+   * Le type `FilterSchema` est récursif (valeurs attendues) alors qu'on injecte ici des opérateurs Mongo,
+   * d'où les casts `any` volontaires.
+   */
+  protected buildIdentitiesSearchFilter(
+    search: string,
+    searchFilterSchema: FilterSchema,
+    searchFields: string | string[],
+  ): any {
+    const searchFilters: any[] = [];
+
+    if (search && search.trim().length > 0) {
+      const effectiveSearchFields = mergeIdentitySearchFields(searchFields);
+      searchFilters.push({
+        $or: Object.keys(effectiveSearchFields).map((key) => ({
+          [key]: { $regex: `^${search}`, $options: 'i' },
+        })),
+      });
+    }
+
+    searchFilters.push(searchFilterSchema);
+
+    return searchFilters.length === 1 ? searchFilters[0] : { $and: searchFilters };
+  }
+
   @Get('getdeleted')
   @UseRoles({
     resource: '/management/identities',
@@ -119,7 +145,9 @@ export class IdentitiesCrudController extends AbstractController {
   public async getdeleted(
     @Res() res: Response,
     @Query('search') search: string,
+    @SearchFilterSchema() searchFilterSchema: FilterSchema,
     @SearchFilterOptions() searchFilterOptions: FilterOptions,
+    @Query('searchFields') searchFields: string | string[],
   ): Promise<
     Response<
       {
@@ -132,7 +160,12 @@ export class IdentitiesCrudController extends AbstractController {
       any
     >
   > {
-    const [data, total] = await this._service.trashAndCount(IdentitiesCrudController.projection, searchFilterOptions);
+    const searchFilter = this.buildIdentitiesSearchFilter(search, searchFilterSchema, searchFields);
+    const [data, total] = await this._service.trashAndCount(
+      searchFilter,
+      IdentitiesCrudController.projection,
+      searchFilterOptions,
+    );
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       total,
@@ -163,7 +196,6 @@ export class IdentitiesCrudController extends AbstractController {
       validations?: MixedValue;
     }>
   > {
-    const searchFilters = [];
     // Par défaut, on cache les identités "ne pas synchroniser" dans la recherche.
     // Si le client fournit déjà un filtre `state`, on ne l'écrase pas.
     // Le type `FilterSchema` est récursif (valeurs attendues), alors que pour Mongo on injecte parfois
@@ -173,19 +205,7 @@ export class IdentitiesCrudController extends AbstractController {
       effectiveSearchFilterSchema.state = { $ne: IdentityState.DONT_SYNC };
     }
 
-    if (search && search.trim().length > 0) {
-      const effectiveSearchFields = mergeIdentitySearchFields(searchFields);
-      const searchRequest = {};
-      searchRequest['$or'] = Object.keys(effectiveSearchFields)
-        .map((key) => {
-          return { [key]: { $regex: `^${search}`, $options: 'i' } };
-        })
-        .filter((item) => item !== undefined);
-      searchFilters.push(searchRequest);
-      searchFilters.push(effectiveSearchFilterSchema);
-    } else {
-      searchFilters.push(effectiveSearchFilterSchema);
-    }
+    const searchFilters: any[] = [this.buildIdentitiesSearchFilter(search, effectiveSearchFilterSchema, searchFields)];
 
     const expiredQuery = parseInitInvitationExpiredQuery(initInvitationExpired);
     if (expiredQuery !== null) {

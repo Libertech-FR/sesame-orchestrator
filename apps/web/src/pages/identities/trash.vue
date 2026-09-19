@@ -74,12 +74,14 @@ export default defineNuxtComponent({
     const { getStateValue, fetchAllStateCount } = useIdentityStateStore()
     const { getStateName } = useIdentityStates()
     const { countFilters, hasFilters, getFilters, removeFilter } = useFiltersQuery(columns)
-    const { buildSearchFieldsHint } = useIdentitySearchFields()
+    const { getSearchFieldsQuery, buildSearchFieldsHint } = useIdentitySearchFields()
+    const searchFieldsQuery = getSearchFieldsQuery()
     const searchFieldsHint = computed(() => buildSearchFieldsHint(columns.value))
 
     const computedQuery = computed(() => {
       return {
         ...getDefaults(),
+        ...searchFieldsQuery,
         ...$route.query,
       }
     })

@@ -1,5 +1,11 @@
 @import "quasar/src/css/variables.sass"
 
+// Quasar masque les popups (q-menu, q-tooltip…) avant positionnement avec `visibility: collapse`.
+// Sous Firefox 156+, collapse donne une largeur nulle : le position-engine abandonne et le menu reste invisible.
+// `hidden` masque aussi l'élément mais conserve ses dimensions ; Quasar repasse en `visible` une fois positionné.
+.q-position-engine
+  visibility: hidden
+
 blockquote
   padding: 10px 20px
   margin: 0 0 20px

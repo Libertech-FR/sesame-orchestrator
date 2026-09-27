@@ -46,6 +46,18 @@ export class PasswordHistoryService {
     }
   }
 
+  // verifie que le mot de passe correspond au dernier enregistré (true si aucun historique)
+  public async matchesCurrentPassword(identityId: Types.ObjectId, password: string): Promise<boolean> {
+    const lastEntry = await this.model
+      .findOne({ identityId })
+      .sort({ createdAt: -1 })
+      .select({ passwordHash: 1 })
+      .lean();
+    if (!lastEntry?.passwordHash) return true;
+
+    return argon2Verify(lastEntry.passwordHash, password);
+  }
+
   public async recordPassword(
     identityId: Types.ObjectId,
     password: string,

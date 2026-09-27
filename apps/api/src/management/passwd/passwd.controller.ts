@@ -8,6 +8,7 @@ import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
 import { InitManyDto } from '~/management/passwd/_dto/init-many.dto';
 import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
 import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
+import { CheckHistoryDto } from '~/management/passwd/_dto/check-history.dto';
 import { PasswdadmService } from '~/settings/passwdadm.service';
 import { ChangePasswordDto } from './_dto/change-password.dto';
 import { ResetPasswordDto } from './_dto/reset-password.dto';
@@ -82,6 +83,20 @@ export class PasswdController {
         ...debug,
       });
     }
+  }
+
+  @Post('checkhistory')
+  @ApiOperation({ summary: "Verifie si le nouveau mot de passe a deja été utilisé dans l'historique" })
+  @ApiResponse({ status: HttpStatus.OK, description: "Le mot de passe n'a pas été utilisé" })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Le mot de passe est connu dans l'historique" })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Identifiants invalides (uid/oldPassword)' })
+  public async checkHistory(@Req() req: any, @Body() body: CheckHistoryDto, @Res() res: Response): Promise<Response> {
+    await this.passwdService.checkHistory(body, resolveClientIp(req) ?? null);
+
+    return res.status(HttpStatus.OK).json({
+      message: "Le mot de passe n'a pas été utilisé",
+      statusCode: HttpStatus.OK,
+    });
   }
 
   @Post('reset')

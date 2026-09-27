@@ -159,6 +159,49 @@
       q-separator.q-my-lg
       .row.q-col-gutter-md
         .col-12
+          .text-subtitle1.text-weight-medium Historique des mots de passe
+          .text-caption.text-grey-7
+            | Empêche la réutilisation des derniers mots de passe utilisés.
+      .row.q-col-gutter-md.q-mt-sm.items-center
+        q-toggle.col-12.col-sm-6.col-md-4.col-lg-3(
+          :disable='!hasPermission("/settings/passwdadm", "update")'
+          dense
+          v-model="payload.passwordHistoryEnabled"
+          color="indigo"
+          label="Activer l'historique des mots de passe"
+        )
+          q-tooltip.text-body2(anchor="bottom middle" self="top middle" :offset="[0, 8]")
+            | Refuse un nouveau mot de passe s'il correspond à l'un des derniers mots de passe conservés dans l'historique.
+        q-input.col-12.col-sm-6.col-md-4.col-lg-3(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
+          :disable='!payload.passwordHistoryEnabled'
+          type="number"
+          outlined
+          v-model.number="payload.passwordHistoryCount"
+          input-class="text-right"
+          label="Nombre de mots de passe conservés"
+          hint="Nombre de mots de passe précédents interdits à la réutilisation"
+          min="0"
+          dense
+        )
+        q-input.col-12.col-sm-6.col-md-4.col-lg-4(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
+          :disable='!payload.passwordHistoryEnabled'
+          type="number"
+          outlined
+          v-model.number="payload.passwordHistoryTtlSeconds"
+          input-class="text-right"
+          label="Durée de conservation de l'historique (secondes)"
+          hint="Au-delà de ce délai, un ancien mot de passe peut être réutilisé"
+          min="0"
+          dense
+        )
+          template(#append)
+            q-chip(dense size="sm" color="grey-3" text-color="dark")
+              span(v-text="passwordHistoryTtlHuman")
+      q-separator.q-my-lg
+      .row.q-col-gutter-md
+        .col-12
           .text-subtitle1.text-weight-medium Rappels d'expiration du mot de passe
           .text-caption.text-grey-7
             | Configurez les jalons (J-30, J-7, J-1, J0...) avec template et sujet spécifiques.
@@ -296,6 +339,9 @@ type PasswordPolicySettings = {
   hasNumbers: number
   hasSpecialChars: number
   checkPwned: boolean
+  passwordHistoryEnabled: boolean
+  passwordHistoryCount: number
+  passwordHistoryTtlSeconds: number
   pwnedRecheckEnabled: boolean
   pwnedRecheckMaxAgeSeconds: number
   pwnedRecheckAction: 'none' | 'notify' | 'expire'
@@ -341,6 +387,9 @@ export default defineComponent({
       hasNumbers: 0,
       hasSpecialChars: 0,
       checkPwned: false,
+      passwordHistoryEnabled: true,
+      passwordHistoryCount: 5,
+      passwordHistoryTtlSeconds: 60 * 60 * 24 * 90,
       pwnedRecheckEnabled: false,
       pwnedRecheckMaxAgeSeconds: 60 * 60 * 24 * 7,
       pwnedRecheckAction: 'none',
@@ -391,6 +440,7 @@ export default defineComponent({
 
     const pwnedRecheckMaxAgeHuman = computed(() => formatSecondsToHuman(payload.value.pwnedRecheckMaxAgeSeconds || 0))
     const passwordUsageExpirationTtlDaysHuman = computed(() => formatSecondsToHuman(payload.value.passwordUsageExpirationTtlSeconds || 0))
+    const passwordHistoryTtlHuman = computed(() => formatSecondsToHuman(payload.value.passwordHistoryTtlSeconds || 0))
     const resetCodeTtlDaysHuman = computed(() => formatSecondsToHuman(payload.value.resetCodeTTL))
     const initTokenTtlDaysHuman = computed(() => formatSecondsToHuman(payload.value.initTokenTTL))
 
@@ -449,6 +499,7 @@ export default defineComponent({
       hibpKeyStatus,
       pwnedRecheckMaxAgeHuman,
       passwordUsageExpirationTtlDaysHuman,
+      passwordHistoryTtlHuman,
       resetCodeTtlDaysHuman,
       initTokenTtlDaysHuman,
       defaultReminderTemplate: 'password_reminder',
@@ -604,6 +655,9 @@ function normalizePasswordPolicy(raw: PasswordPolicyUiState) {
 
   return {
     ...payload,
+    passwordHistoryEnabled: payload.passwordHistoryEnabled ?? true,
+    passwordHistoryCount: Number(payload.passwordHistoryCount ?? 5),
+    passwordHistoryTtlSeconds: Number(payload.passwordHistoryTtlSeconds ?? 60 * 60 * 24 * 90),
     passwordUsageExpirationTtlSeconds: Number(payload.passwordUsageExpirationTtlSeconds || 60 * 60 * 24 * 90),
     passwordUsageReminderSteps: rows,
     passwordUsageReminderSubject: String(payload.passwordUsageReminderSubject || payload.passwordExpirationReminderSubject || 'Votre mot de passe expire bientôt'),

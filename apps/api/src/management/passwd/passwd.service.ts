@@ -6,6 +6,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { randomInt } from 'crypto';
@@ -24,6 +25,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { InitAccountDto } from '~/management/passwd/_dto/init-account.dto';
 import { ConfigService } from '@nestjs/config';
 import { ResetByCodeDto } from '~/management/passwd/_dto/reset-by-code.dto';
+import { CheckHistoryDto } from '~/management/passwd/_dto/check-history.dto';
 import { PasswdadmService } from '~/settings/passwdadm.service';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { InitResetDto } from '~/management/passwd/_dto/init-reset.dto';
@@ -485,6 +487,57 @@ export class PasswdService extends AbstractService {
       this.logger.verbose('Error while decrypting token. ' + error + ` (token=${token})`);
       throw new BadRequestException('Invalid token');
     }
+  }
+
+  // verifie si le mot de passe a deja été utilisé sans le changer
+  // accepte soit un token, soit uid + oldPassword
+  public async checkHistory(data: CheckHistoryDto, clientIp?: string | null): Promise<void> {
+    if (data.token) {
+      const tokenData = await this.decryptToken(data.token);
+      const identity = (await this.identities.findOne({ 'inetOrgPerson.uid': tokenData.uid })) as Identities;
+
+      if (!identity) {
+        throw new BadRequestException('Invalid token');
+      }
+
+      await this.passwordHistory.assertNotReused(identity._id, data.newpassword);
+      return;
+    }
+
+    // uid + oldPassword : protection bruteforce partagée avec le changement de mot de passe
+    const ip = this.normalizeClientIp(clientIp);
+    const uid = `${data.uid || ''}`.trim();
+    const block = await this.getChangePasswordBruteforceBlock({ uid, ip });
+    if (block.blocked) {
+      throw new HttpException(
+        {
+          message: 'Too many password change attempts. Please retry later.',
+          retryAfterSeconds: block.retryAfterSeconds,
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+
+    const identity = (await this.identities.findOne({
+      'inetOrgPerson.uid': uid,
+      state: IdentityState.SYNCED,
+    })) as Identities;
+
+    if (!identity || !(await this.passwordHistory.matchesCurrentPassword(identity._id, data.oldPassword))) {
+      const failure = await this.registerChangePasswordBruteforceFailure({ uid, ip });
+      if (failure.blocked) {
+        throw new HttpException(
+          {
+            message: 'Too many password change attempts. Please retry later.',
+            retryAfterSeconds: failure.retryAfterSeconds,
+          },
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    await this.passwordHistory.assertNotReused(identity._id, data.newpassword);
   }
 
   // reset du password

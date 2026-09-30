@@ -46,8 +46,29 @@ export class MailTemplatesService implements OnApplicationBootstrap {
 
   public onApplicationBootstrap(): void {
     this.ensureDefaultConfigPresent();
+    this.ensureDefaultTemplatesPresent();
   }
+  private ensureDefaultTemplatesPresent(): void {
+    const templateDir = path.join(process.cwd(), 'templates');
+    const defaultsDir = path.join(process.cwd(), 'defaults', 'templates');
+    if (!existsSync(templateDir)) {
+      mkdirSync(templateDir, { recursive: true });
+    }
+    try {
+      const files = readdirSync(templateDir);
+      const defaultFiles = readdirSync(defaultsDir);
 
+      for (const file of defaultFiles) {
+        if (!files.includes(file)) {
+          const defaultFile = readFileSync(path.join(defaultsDir, file), 'utf-8');
+          writeFileSync(path.join(templateDir, file), defaultFile);
+          this.logger.warn(`Copied default template file: ${file}`);
+        }
+      }
+    } catch (e) {
+      this.logger.error(`Error initializing mail templates: ${e?.message || e}`);
+    }
+  }
   private ensureDefaultConfigPresent(): void {
     const configDir = path.join(process.cwd(), 'configs', 'mail');
     const defaultsDir = path.join(process.cwd(), 'defaults', 'mail');

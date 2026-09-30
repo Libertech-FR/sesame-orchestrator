@@ -1,7 +1,7 @@
 import { loadManualTransitions } from '~/management/lifecycle/_functions/load-manual-transitions.function';
 import { isManualLifecycleTransitionAllowed } from '~/management/lifecycle/_functions/is-manual-lifecycle-transition-allowed.function';
 import { BadRequestException, Body, Controller, Get, HttpStatus, Param, Patch, Post, Query, Res } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import {
   FilterOptions,
   filterSchema,
@@ -142,6 +142,18 @@ export class IdentitiesCrudController extends AbstractController {
     possession: AC_DEFAULT_POSSESSION,
   })
   @ApiPaginatedDecorator(PickProjectionHelper(IdentitiesDto, IdentitiesCrudController.projection))
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description: 'Recherche textuelle sur les champs de recherche',
+  })
+  @ApiQuery({
+    name: 'searchFields',
+    required: false,
+    type: [String],
+    description: 'Champs supplémentaires sur lesquels appliquer la recherche',
+  })
   public async getdeleted(
     @Res() res: Response,
     @Query('search') search: string,
@@ -180,6 +192,24 @@ export class IdentitiesCrudController extends AbstractController {
     possession: AC_DEFAULT_POSSESSION,
   })
   @ApiPaginatedDecorator(PickProjectionHelper(IdentitiesDto, IdentitiesCrudController.projection))
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description: 'Recherche textuelle sur les champs de recherche',
+  })
+  @ApiQuery({
+    name: 'searchFields',
+    required: false,
+    type: [String],
+    description: 'Champs supplémentaires sur lesquels appliquer la recherche',
+  })
+  @ApiQuery({
+    name: INIT_INVITATION_EXPIRED_QUERY_PARAM,
+    required: false,
+    type: Boolean,
+    description: "Filtre les identités dont l'invitation d'initialisation est expirée (true) ou non expirée (false)",
+  })
   public async search(
     @Res() res: Response,
     @Query('search') search: string,

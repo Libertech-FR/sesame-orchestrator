@@ -5,6 +5,7 @@ import Handlebars from 'handlebars';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { parse } from 'yaml';
 import { resolveConfigVariables } from '~/_common/functions/resolve-config-variables.function';
+import { compileMjmlTemplate } from '~/_common/functions/compile-mjml-template.function';
 
 /** Préfixe des templates envoyables manuellement depuis l’UI (hors flux internes Sesame). */
 export const USER_SENDABLE_MAIL_TEMPLATE_PREFIX = 'mail_';
@@ -125,8 +126,9 @@ export class MailTemplatesService implements OnApplicationBootstrap {
     return entries
       .filter((e) => e.isFile())
       .map((e) => e.name)
-      .filter((name) => name.endsWith('.hbs'))
-      .map((name) => name.replace(/\.hbs$/, ''))
+      .filter((name) => /\.(hbs|mjml)$/.test(name))
+      .map((name) => name.replace(/\.(hbs|mjml)$/, ''))
+      .filter((name, index, names) => names.indexOf(name) === index)
       .sort((a, b) => {
         const aSendable = isUserSendableMailTemplate(a);
         const bSendable = isUserSendableMailTemplate(b);
@@ -139,6 +141,7 @@ export class MailTemplatesService implements OnApplicationBootstrap {
 
   public async renderPreviewHtml(template: string, variables?: Record<string, unknown>): Promise<string> {
     const templateName = String(template || '').trim();
+    compileMjmlTemplate(this.getTemplatesDir(), templateName);
     const filePath = path.join(this.getTemplatesDir(), `${templateName}.hbs`);
     const source = await fs.readFile(filePath, 'utf8');
 

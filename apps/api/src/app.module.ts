@@ -19,7 +19,7 @@ import { MongooseValidationFilter } from './_common/filters/mongoose-validation.
 import { DtoValidationPipe } from './_common/pipes/dto-validation.pipe';
 import { SettingsModule } from '~/settings/settings.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { MjmlHandlebarsAdapter } from '~/_common/adapters/mjml-handlebars.adapter';
 import path from 'node:path';
 import { MailadmService } from '~/settings/mailadm.service';
 import { FactorydriveModule } from '@tacxou/nestjs_module_factorydrive';
@@ -82,7 +82,7 @@ import { MfaGuard } from './_common/guards/mfa.guard';
           },
           template: {
             dir: path.join(process.cwd(), 'templates'),
-            adapter: new HandlebarsAdapter(undefined, {
+            adapter: new MjmlHandlebarsAdapter(undefined, {
               inlineCssEnabled: false,
             }),
             options: {

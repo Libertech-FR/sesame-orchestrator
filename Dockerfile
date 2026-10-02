@@ -1,4 +1,4 @@
-FROM node:22-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /data
 
@@ -12,7 +12,7 @@ RUN apk add git && yarn install \
 
 RUN yarn run build
 
-FROM node:22-alpine AS production
+FROM node:24-alpine AS production
 
 ARG NODE_ENV=production
 ARG BUILD_VERSION=dev

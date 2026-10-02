@@ -4,6 +4,7 @@ import { Response } from 'express';
 import { UseRoles } from '~/_common/decorators/use-roles.decorator';
 import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
 import { MailSendManyDto } from './_dto/mail-send-many.dto';
+import { MailSendTestDto } from './_dto/mail-send-test.dto';
 import { MailSendService } from './mail-send.service';
 
 @Controller('mail')
@@ -26,6 +27,25 @@ export class MailSendController {
       subject: body.subject,
       variables: body.variables,
       recipientAddressSources: body.recipientAddressSources,
+    });
+    return res.status(HttpStatus.OK).json({ statusCode: HttpStatus.OK, data: result });
+  }
+
+  @Post('sendtest')
+  @UseRoles({
+    resource: '/management/mail',
+    action: AC_ACTIONS.CREATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiOperation({ summary: 'Envoie un mail de test (template rendu) à une adresse donnée' })
+  @ApiResponse({ status: HttpStatus.OK })
+  public async sendTest(@Body() body: MailSendTestDto, @Res() res: Response): Promise<Response> {
+    const result = await this.mailSend.sendTestTemplate({
+      template: body.template,
+      to: body.to,
+      subject: body.subject,
+      identityId: body.identityId,
+      variables: body.variables,
     });
     return res.status(HttpStatus.OK).json({ statusCode: HttpStatus.OK, data: result });
   }

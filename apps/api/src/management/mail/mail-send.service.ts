@@ -5,7 +5,11 @@ import { IdentitiesCrudService } from '~/management/identities/identities-crud.s
 import { PasswdadmService } from '~/settings/passwdadm.service';
 import { MailadmService } from '~/settings/mailadm.service';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
-import { isUserSendableMailTemplate } from './mail-templates.service';
+import {
+  buildMailTemplatePreviewContext,
+  isUserSendableMailTemplate,
+  MailTemplatesService,
+} from './mail-templates.service';
 
 export type RecipientAddressSource = 'principal' | 'personnel';
 
@@ -46,6 +50,7 @@ export class MailSendService {
     private readonly passwdadmService: PasswdadmService,
     private readonly mailer: MailerService,
     private readonly mailadmService: MailadmService,
+    private readonly mailTemplates: MailTemplatesService,
   ) {}
 
   private resolveMailPaths(args: {
@@ -93,7 +98,7 @@ export class MailSendService {
     subject: string;
     variables?: Record<string, string>;
     recipientAddressSources?: RecipientAddressSource[];
-  }): Promise<{ sent: number; skipped: number }> {
+  }): Promise<{ sent: number; skipped: number; errors: string[] }> {
     const template = String(args.template || '').trim();
     if (!template) {
       throw new BadRequestException('Template requis');
@@ -133,11 +138,17 @@ export class MailSendService {
 
     let sent = 0;
     let skipped = 0;
+    // Messages d'erreur dédupliqués (une erreur de template MJML/Handlebars se répète pour chaque identité)
+    const errors = new Set<string>();
+    let withoutAddress = 0;
+
+    const configVariables = await this.mailTemplates.getRawMailTemplateVariables().catch(() => []);
 
     for (const identity of identities) {
       const recipients = collectRecipientEmails(identity, mailPaths);
       if (!recipients.length) {
         skipped++;
+        withoutAddress++;
         continue;
       }
 
@@ -145,6 +156,8 @@ export class MailSendService {
         // Envoyer un mail par destinataire.
         // MailDev (et certains SMTP) affichent souvent un seul message pour plusieurs RCPT TO ;
         // ici on force 1 message par adresse pour un comportement UI attendu.
+        // Défauts de mail_templates.yml résolus pour cette identité, surchargés par les variables saisies
+        const configDefaults = await this.mailTemplates.resolveVariableDefaults(identity, configVariables);
         let sentForIdentity = 0;
         for (const to of recipients) {
           await this.mailer.sendMail({
@@ -152,6 +165,7 @@ export class MailSendService {
             subject,
             template,
             context: {
+              ...configDefaults,
               identity,
               subject,
               ...templateVariables,
@@ -161,13 +175,66 @@ export class MailSendService {
         }
         sent += sentForIdentity;
       } catch (e) {
-        this.logger.warn(
-          `Failed to send template <${template}> to identity <${(identity as any)?._id}>: ${e?.message || e}`,
-        );
+        const message = String(e?.message || e);
+        this.logger.warn(`Failed to send template <${template}> to identity <${(identity as any)?._id}>: ${message}`);
+        errors.add(`Envoi du template <${template}> : ${message}`);
         skipped++;
       }
     }
 
-    return { sent, skipped };
+    if (withoutAddress > 0) {
+      errors.add(`${withoutAddress} identité(s) sans adresse e-mail (${mailPaths.join(', ')})`);
+    }
+
+    return { sent, skipped, errors: [...errors] };
+  }
+
+  /**
+   * Envoie le template à une adresse de test, avec les valeurs d'aperçu en complément du contexte.
+   * Autorisé aussi pour les templates internes : le destinataire est explicite et le sujet marqué [TEST].
+   */
+  public async sendTestTemplate(args: {
+    template: string;
+    to: string;
+    subject?: string;
+    identityId?: string;
+    variables?: Record<string, string>;
+  }): Promise<{ to: string; subject: string }> {
+    const template = String(args.template || '').trim();
+    if (!template || /[\\/]|\.\./.test(template)) {
+      throw new BadRequestException('Template requis');
+    }
+    const to = normalizeEmailAddress(args.to);
+    if (!to) {
+      throw new BadRequestException('Adresse e-mail de test invalide');
+    }
+    const baseSubject = String(args.subject || '').trim() || `Template ${template}`;
+    const subject = `[TEST] ${baseSubject}`;
+    const templateVariables: Record<string, unknown> = {
+      ...(args.variables && typeof args.variables === 'object' ? args.variables : {}),
+    };
+    delete templateVariables.subject;
+
+    const identity = args.identityId ? await this.identities.model.findById(args.identityId).lean() : null;
+
+    try {
+      await this.mailer.sendMail({
+        to,
+        subject,
+        template,
+        context: buildMailTemplatePreviewContext({
+          ...(await this.mailTemplates.resolveVariableDefaults(identity)),
+          ...templateVariables,
+          ...(identity ? { identity } : {}),
+          subject: baseSubject,
+        }),
+      });
+    } catch (e) {
+      const message = String(e?.message || e);
+      this.logger.warn(`Failed to send test template <${template}> to <${to}>: ${message}`);
+      throw new BadRequestException(`Échec de l'envoi du mail de test : ${message}`);
+    }
+
+    return { to, subject };
   }
 }

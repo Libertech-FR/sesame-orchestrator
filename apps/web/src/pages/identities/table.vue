@@ -625,12 +625,16 @@ export default defineNuxtComponent({
             ...(data?.recipientAddressSources?.length ? { recipientAddressSources: data.recipientAddressSources } : {}),
           },
         })
-        const payload = (result as { _data?: { data?: { sent?: number; skipped?: number } } })._data?.data
+        const payload = (result as { _data?: { data?: { sent?: number; skipped?: number; errors?: string[] } } })._data?.data
         const sent = Number(payload?.sent ?? 0)
         const skipped = Number(payload?.skipped ?? 0)
+        const errors = Array.isArray(payload?.errors) ? payload.errors : []
         this.$q.notify({
-          message: `Mail(s) envoyé(s)`,
-          color: skipped > 0 ? 'warning' : 'positive',
+          message: skipped > 0 ? `${sent} mail(s) envoyé(s), ${skipped} identité(s) en échec` : `${sent} mail(s) envoyé(s)`,
+          caption: errors.join(' | ') || undefined,
+          color: skipped > 0 ? (sent > 0 ? 'warning' : 'negative') : 'positive',
+          multiLine: errors.length > 0,
+          timeout: errors.length > 0 ? 0 : undefined,
         })
       } catch (error: unknown) {
         const err = error as { response?: { _data?: { message?: string } }; data?: { message?: string } }

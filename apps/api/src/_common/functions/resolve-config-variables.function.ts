@@ -70,20 +70,24 @@ function getValueFromPath(context: Record<string, unknown>, path: string): unkno
   return current;
 }
 
-export async function resolveConfigVariables<T>(input: T): Promise<T> {
+/**
+ * Résout les placeholders Liquid `{{ ... }}` d'une config.
+ * `extraContext` complète le contexte par défaut (`date`), ex. `{ identity }` pour une résolution par identité.
+ */
+export async function resolveConfigVariables<T>(input: T, extraContext?: Record<string, unknown>): Promise<T> {
   if (input === null || input === undefined) {
     return input;
   }
 
   if (Array.isArray(input)) {
-    const resolved = await Promise.all(input.map((item) => resolveConfigVariables(item)));
+    const resolved = await Promise.all(input.map((item) => resolveConfigVariables(item, extraContext)));
     return resolved as T;
   }
 
   if (typeof input === 'object') {
     const entries = await Promise.all(
       Object.entries(input as Record<string, unknown>).map(async ([key, value]) => {
-        return [key, await resolveConfigVariables(value)] as const;
+        return [key, await resolveConfigVariables(value, extraContext)] as const;
       }),
     );
 
@@ -95,7 +99,7 @@ export async function resolveConfigVariables<T>(input: T): Promise<T> {
       return input;
     }
 
-    const context = buildTemplateContext();
+    const context = { ...buildTemplateContext(), ...(extraContext || {}) };
     const exactTemplate = input.match(/^\{\{\s*([a-zA-Z0-9._-]+)\s*\}\}$/);
     if (exactTemplate) {
       try {

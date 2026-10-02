@@ -548,7 +548,7 @@ export default defineNuxtComponent({
         })
         .onOk(async (data) => {
           try {
-            await this.$http.post(`/management/mail/sendmany`, {
+            const result = await this.$http.post(`/management/mail/sendmany`, {
               body: {
                 ids: [this.identity._id],
                 template: data?.template,
@@ -557,6 +557,20 @@ export default defineNuxtComponent({
                 ...(data?.recipientAddressSources?.length ? { recipientAddressSources: data.recipientAddressSources } : {}),
               },
             })
+            const payload = (result as { _data?: { data?: { sent?: number; errors?: string[] } } })._data?.data
+            const errors = Array.isArray(payload?.errors) ? payload.errors : []
+            if (errors.length > 0) {
+              this.$q.notify({
+                message: Number(payload?.sent ?? 0) > 0 ? 'Mail partiellement envoyé' : "Erreur lors de l'envoi du mail",
+                caption: errors.join(' | '),
+                color: Number(payload?.sent ?? 0) > 0 ? 'warning' : 'negative',
+                position: 'top-right',
+                icon: 'mdi-alert-circle-outline',
+                multiLine: true,
+                timeout: 0,
+              })
+              return
+            }
             this.$q.notify({
               message: 'Mail envoyé',
               color: 'positive',

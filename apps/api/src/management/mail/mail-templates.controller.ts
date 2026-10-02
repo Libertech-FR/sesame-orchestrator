@@ -45,4 +45,26 @@ export class MailTemplatesController {
     const html = await this.mailTemplates.renderPreviewHtml(templateName, body?.variables);
     return res.status(HttpStatus.OK).json({ statusCode: HttpStatus.OK, data: { html } });
   }
+
+  @Post('validate')
+  @ApiOperation({ summary: 'Valide un template (syntaxe MJML/Handlebars, rendu, variables)' })
+  @ApiResponse({ status: HttpStatus.OK })
+  public async validate(
+    @Body()
+    body: {
+      template: string;
+      variables?: Record<string, unknown>;
+    },
+    @Res() res: Response,
+  ): Promise<Response> {
+    const templateName = String(body?.template || '').trim();
+    if (!templateName) {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ statusCode: HttpStatus.BAD_REQUEST, message: 'Template requis' });
+    }
+
+    const result = await this.mailTemplates.validateTemplate(templateName, body?.variables);
+    return res.status(HttpStatus.OK).json({ statusCode: HttpStatus.OK, data: result });
+  }
 }

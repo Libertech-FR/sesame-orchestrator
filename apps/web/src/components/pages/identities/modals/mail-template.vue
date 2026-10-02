@@ -89,7 +89,7 @@ q-dialog(
             q-separator.q-my-md
             .text-subtitle2 Variables pré-construites
             .text-caption.text-grey-7
-              | Ces variables proviennent de la config `mail_templates.yml` et sont envoyées quoi qu'il arrive. Pour les surcharger, ajoutez une variable additionnelle avec la même clé.
+              | Ces variables proviennent de la config `mail_templates.yml` et sont toujours injectées (résolues pour chaque identité, ex. `identity.inetOrgPerson.uid`). Pour les surcharger, ajoutez une variable additionnelle avec la même clé.
             .q-mt-sm(v-if="availableVariables.length")
               q-list(bordered separator dense)
                 q-item(v-for="v in availableVariables" :key="v.key")
@@ -270,7 +270,7 @@ q-dialog(
           q-separator.q-my-md
           .text-subtitle2 Variables pré-construites
           .text-caption.text-grey-7
-            | Ces variables proviennent de la config `mail_templates.yml` et sont envoyées quoi qu'il arrive. Pour les surcharger, ajoutez une variable additionnelle avec la même clé.
+            | Ces variables proviennent de la config `mail_templates.yml` et sont toujours injectées (résolues pour chaque identité, ex. `identity.inetOrgPerson.uid`). Pour les surcharger, ajoutez une variable additionnelle avec la même clé.
           .q-mt-sm(v-if="availableVariables.length")
             q-list(bordered separator dense)
               q-item(v-for="v in availableVariables" :key="v.key")
@@ -355,8 +355,52 @@ q-dialog(
               dense
             )
 
+    q-banner.mail-template-validation(
+      v-if="validationResult"
+      dense
+      :class="validationResult.valid ? (validationResult.warnings.length ? 'bg-orange-1 text-grey-9' : 'bg-green-1 text-grey-9') : 'bg-red-1 text-grey-9'"
+    )
+      template(#avatar)
+        q-icon(
+          :name="validationResult.valid ? (validationResult.warnings.length ? 'mdi-alert-outline' : 'mdi-check-circle-outline') : 'mdi-close-circle-outline'"
+          :color="validationResult.valid ? (validationResult.warnings.length ? 'orange-9' : 'positive') : 'negative'"
+        )
+      .text-body2.text-weight-medium
+        | {{ validationResult.valid ? 'Template valide' : 'Template invalide' }} ({{ validationResult.format === 'mjml' ? 'MJML' : 'Handlebars' }})
+      ul.q-my-xs.q-pl-md.text-caption(v-if="validationResult.errors.length || validationResult.warnings.length")
+        li(v-for="(issue, idx) in validationResult.errors" :key="`err-${idx}`")
+          span.text-negative.text-weight-medium [{{ issue.source }}{{ issue.line ? ` l.${issue.line}` : '' }}]
+          | &nbsp;{{ issue.message }}
+        li(v-for="(issue, idx) in validationResult.warnings" :key="`warn-${idx}`")
+          span.text-orange-9.text-weight-medium [{{ issue.source }}{{ issue.line ? ` l.${issue.line}` : '' }}]
+          | &nbsp;{{ issue.message }}
+      template(#action)
+        q-btn(flat dense round icon="mdi-close" color="grey-8" @click="validationResult = null")
     q-separator
     q-card-actions.identity-modal-actions(align="right")
+      q-btn(
+        outline
+        no-caps
+        padding="sm lg"
+        color="teal-7"
+        icon="mdi-check-decagram-outline"
+        label="Valider le template"
+        :disable="!templateName"
+        :loading="validationLoading"
+        @click="validateTemplate"
+      )
+      q-btn(
+        outline
+        no-caps
+        padding="sm lg"
+        color="teal-7"
+        icon="mdi-email-fast-outline"
+        label="Envoyer un test"
+        :disable="!templateName"
+        :loading="testSending"
+        @click="openSendTest"
+      )
+      q-space
       q-btn.identity-modal-btn-cancel(
         outline
         color="grey-8"
@@ -502,6 +546,7 @@ const identityListItems = computed(() => {
 })
 
 const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
+const auth = useAuth()
 
 const mainText = computed(() => {
   const n = selectedRows.value.length
@@ -530,6 +575,12 @@ const previewLoading = ref(false)
 const previewObjectUrl = ref('')
 const variablesRows = ref<{ key: string; value: string }[]>([])
 const availableVariables = ref<{ key: string; label?: string; description?: string; example?: string; defaultValue?: unknown }[]>([])
+
+type ValidationIssue = { source: string; message: string; line?: number }
+const validationResult = ref<{ valid: boolean; format: 'mjml' | 'hbs'; errors: ValidationIssue[]; warnings: ValidationIssue[] } | null>(null)
+const validationLoading = ref(false)
+const testSending = ref(false)
+const testRecipient = ref('')
 
 const mailPaths = ref<{ personnel: string; principal: string }>({ personnel: '', principal: '' })
 const mailPathsReady = ref(false)
@@ -605,21 +656,9 @@ const variablesObject = computed(() => {
   return out
 })
 
-const variablesToSend = computed(() => {
-  const base: Record<string, string> = {}
-
-  // Toujours envoyer les variables déclarées dans la config (avec leur défaut)
-  for (const v of availableVariables.value) {
-    const key = String(v?.key || '').trim()
-    if (!key || key === 'subject') continue
-    base[key] = v.defaultValue !== undefined && v.defaultValue !== null ? String(v.defaultValue) : ''
-  }
-
-  return {
-    ...base,
-    ...variablesObject.value,
-  }
-})
+// Les défauts de mail_templates.yml sont résolus côté API pour chaque identité (ex. `{{ identity.inetOrgPerson.uid }}`) :
+// seules les surcharges saisies ici sont envoyées.
+const variablesToSend = computed(() => variablesObject.value)
 
 async function fetchMailPathsConfig() {
   mailPathsReady.value = false
@@ -698,6 +737,84 @@ async function refreshPreview() {
   }
 }
 
+function httpErrorMessage(error: unknown, fallback: string): string {
+  const err = error as { response?: { _data?: { message?: string | string[] } }; data?: { message?: string | string[] } }
+  const message = err?.response?._data?.message ?? err?.data?.message
+  return Array.isArray(message) ? message.join(' | ') : message || fallback
+}
+
+async function validateTemplate() {
+  if (!templateName.value) return
+  validationLoading.value = true
+  try {
+    const res = await (useNuxtApp() as any).$http.post('/management/mail/templates/validate', {
+      body: {
+        template: templateName.value,
+        variables: {
+          ...variablesToSend.value,
+          subject: String(mailSubject.value || '').trim(),
+          ...(selectedRows.value[0] ? { identity: selectedRows.value[0] } : {}),
+        },
+      },
+    })
+    validationResult.value = res?._data?.data || null
+  } catch (error) {
+    validationResult.value = null
+    q.notify({ message: httpErrorMessage(error, 'Erreur lors de la validation du template'), color: 'negative' })
+  } finally {
+    validationLoading.value = false
+  }
+}
+
+function openSendTest() {
+  if (!templateName.value) return
+  q.dialog({
+    title: 'Envoyer un mail de test',
+    message: `Le template « ${templateName.value} » sera envoyé à cette adresse (sujet préfixé par [TEST]), avec la première identité sélectionnée comme contexte.`,
+    prompt: {
+      model: testRecipient.value || String((auth.user as { email?: string } | null)?.email || ''),
+      type: 'email',
+      label: 'Adresse e-mail de test',
+      isValid: (v: string) => /^[^\s@]+@[^\s@]+$/.test(String(v || '').trim()),
+    },
+    cancel: { label: 'Annuler', flat: true, color: 'grey-8', noCaps: true },
+    ok: { label: 'Envoyer le test', color: 'teal-7', unelevated: true, noCaps: true },
+    persistent: true,
+  }).onOk((to: string) => {
+    testRecipient.value = String(to || '').trim()
+    void sendTest()
+  })
+}
+
+async function sendTest() {
+  testSending.value = true
+  try {
+    const firstIdentity = selectedRows.value[0]
+    const identityId = firstIdentity ? idToString(firstIdentity._id) : ''
+    const res = await (useNuxtApp() as any).$http.post('/management/mail/sendtest', {
+      body: {
+        template: templateName.value,
+        to: testRecipient.value,
+        subject: String(mailSubject.value || '').trim() || undefined,
+        variables: variablesToSend.value,
+        ...(identityId ? { identityId } : {}),
+      },
+    })
+    const data = res?._data?.data || {}
+    q.notify({ message: `Mail de test envoyé à ${data.to || testRecipient.value}`, caption: data.subject, color: 'positive' })
+  } catch (error) {
+    q.notify({
+      message: httpErrorMessage(error, "Erreur lors de l'envoi du mail de test"),
+      color: 'negative',
+      multiLine: true,
+      timeout: 0,
+      actions: [{ icon: 'mdi-close', color: 'white', round: true }],
+    })
+  } finally {
+    testSending.value = false
+  }
+}
+
 onMounted(async () => {
   await Promise.all([fetchTemplatesConfig(), fetchTemplates(), fetchMailPathsConfig()])
   if (templates.value.length && !templates.value.some((t) => t.value === templateName.value)) {
@@ -705,6 +822,10 @@ onMounted(async () => {
     templateName.value = firstSendable?.value ?? templates.value[0].value
   }
   await refreshPreview()
+})
+
+watch(templateName, () => {
+  validationResult.value = null
 })
 
 // Ne pas watcher variablesToSend (nouvel objet à chaque lecture) : boucle de re-renders + perte de focus/valeur sur q-input.
@@ -785,6 +906,13 @@ const cancelSync = () => {
 .mail-template-dest-in-form.identity-modal-list-wrap--light,
 .mail-template-dest-in-form.identity-modal-list-wrap--dark {
   max-height: min(260px, 40vh);
+}
+
+.mail-template-validation {
+  flex-shrink: 0;
+  max-height: 30vh;
+  overflow-y: auto;
+  border-radius: 0;
 }
 
 .identity-modal-header {

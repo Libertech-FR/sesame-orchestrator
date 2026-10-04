@@ -11,6 +11,7 @@ export interface ExecuteJobOptions {
   switchToProcessing?: boolean;
   comment?: string;
   concernedToName?: string;
+  concernedToRef?: 'identities' | 'groups';
   targetState?: any;
   dataState?: any;
   task?: Types.ObjectId;

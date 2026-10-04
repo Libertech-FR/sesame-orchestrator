@@ -244,6 +244,15 @@ export default defineNuxtComponent({
           condition: () => hasPermission('/management/identities', 'read'),
         },
         {
+          name: 'groups',
+          icon: 'mdi-account-group',
+          label: 'Groupes',
+          bgColor: 'indigo-6',
+          textColor: 'indigo-6',
+          action: (i) => navigateToTab(`/identities/table/${i._id}/groups`),
+          condition: () => hasPermission('/management/groups', 'read'),
+        },
+        {
           name: 'audits',
           icon: 'mdi-clipboard-text-clock',
           label: 'Historique des changements',

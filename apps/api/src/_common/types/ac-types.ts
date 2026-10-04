@@ -56,6 +56,8 @@ export const AC_INTERNAL_DEFAULT_ROLES_GRANTS: IAccessInfo[] = [
 
   { role: AC_INTERNAL_ROLE_LECTURE, action: AC_ACTIONS.READ, resource: '/management/lifecycle' },
 
+  { role: AC_INTERNAL_ROLE_LECTURE, action: AC_ACTIONS.READ, resource: '/management/groups' },
+
   // AC_INTERNAL_ROLE_ECRITURE
   { role: AC_INTERNAL_ROLE_ECRITURE, action: AC_ACTIONS.CREATE, resource: '/management/identities' },
   { role: AC_INTERNAL_ROLE_ECRITURE, action: AC_ACTIONS.UPDATE, resource: '/management/identities' },
@@ -64,6 +66,10 @@ export const AC_INTERNAL_DEFAULT_ROLES_GRANTS: IAccessInfo[] = [
   { role: AC_INTERNAL_ROLE_ECRITURE, action: AC_ACTIONS.CREATE, resource: '/management/lifecycle' },
   { role: AC_INTERNAL_ROLE_ECRITURE, action: AC_ACTIONS.UPDATE, resource: '/management/lifecycle' },
   { role: AC_INTERNAL_ROLE_ECRITURE, action: AC_ACTIONS.DELETE, resource: '/management/lifecycle' },
+
+  { role: AC_INTERNAL_ROLE_ECRITURE, action: AC_ACTIONS.CREATE, resource: '/management/groups' },
+  { role: AC_INTERNAL_ROLE_ECRITURE, action: AC_ACTIONS.UPDATE, resource: '/management/groups' },
+  { role: AC_INTERNAL_ROLE_ECRITURE, action: AC_ACTIONS.DELETE, resource: '/management/groups' },
 
   // AC_INTERNAL_ROLE_GESTION
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.READ, resource: '/core/agents' },

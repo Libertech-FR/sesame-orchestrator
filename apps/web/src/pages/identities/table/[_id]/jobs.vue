@@ -29,9 +29,12 @@ div
           template(#title)
             span(v-text="'[' + job.jobId + ']'")
             | &nbsp; - &nbsp;
-            span(v-text="job.params?.identity?.identity?.inetOrgPerson?.cn")
-            | &nbsp;
-            span(v-text="job.params?.identity?.identity?.inetOrgPerson?.givenName")
+            template(v-if="job.concernedTo?.$ref === 'groups'")
+              span(v-text="job.concernedTo?.name")
+            template(v-else)
+              span(v-text="job.params?.identity?.identity?.inetOrgPerson?.cn")
+              | &nbsp;
+              span(v-text="job.params?.identity?.identity?.inetOrgPerson?.givenName")
           template(#subtitle)
             q-card.bg-transparent(flat)
               q-card-actions

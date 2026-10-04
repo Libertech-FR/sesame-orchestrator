@@ -7,9 +7,10 @@ import { PasswdModule } from './passwd/passwd.module';
 import { LifecycleModule } from './lifecycle/lifecycle.module';
 import { PasswordHistoryModule } from './password-history/password-history.module';
 import { MailModule } from './mail/mail.module';
+import { GroupsModule } from './groups/groups.module';
 
 @Module({
-  imports: [IdentitiesModule, PasswdModule, LifecycleModule, PasswordHistoryModule, MailModule],
+  imports: [IdentitiesModule, GroupsModule, PasswdModule, LifecycleModule, PasswordHistoryModule, MailModule],
   providers: [ManagementService],
   controllers: [ManagementController],
 })

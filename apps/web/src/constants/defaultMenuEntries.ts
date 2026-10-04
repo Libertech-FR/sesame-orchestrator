@@ -23,6 +23,16 @@ export function getDefaultMenuEntries(): MenuItem[] {
       acl: ['/management/identities'],
     },
     {
+      icon: 'mdi-account-group',
+      label: 'Groupes',
+      name: 'groupes',
+      path: '/groups/table?sort[cn]=asc&skip=0',
+      color: 'indigo-6',
+      part: normalizeNameFromLabel(MenuPart.DONNEES),
+      hideInMenuBar: false,
+      acl: ['/management/groups'],
+    },
+    {
       icon: 'mdi-download-outline',
       label: 'Exporter',
       name: 'exporter',

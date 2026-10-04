@@ -450,6 +450,22 @@ export abstract class AbstractIdentitiesService extends AbstractServiceSchema<Id
    * @param data - Les données contenant l'UID à vérifier
    * @returns true si l'UID est unique, false sinon
    */
+  /**
+   * Vérifie qu'aucun groupe n'utilise déjà cette adresse email (unicité des emails entre groupes et identités).
+   * La collection est lue directement pour éviter une dépendance circulaire avec le module des groupes ;
+   * les emails des groupes sont stockés en minuscules.
+   *
+   * @param mail - L'email de l'identité
+   * @returns true si l'email est utilisé par un groupe
+   */
+  protected async isMailUsedByGroup(mail?: string | null): Promise<boolean> {
+    if (typeof mail !== 'string' || mail.trim() === '') return false;
+    const count = await this._model.db
+      .collection('groups')
+      .countDocuments({ mail: mail.trim().toLowerCase() }, { limit: 1 });
+    return count > 0;
+  }
+
   protected async checkUid(identity: Identities | null, data: IdentitiesUpsertDto | any): Promise<boolean> {
     // Validation des paramètres d'entrée
     if (!data?.inetOrgPerson?.uid) {

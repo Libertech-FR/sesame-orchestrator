@@ -89,6 +89,12 @@ export class IdentitiesUpsertService extends AbstractIdentitiesService {
         mail: 'Email déjà présent dans une autre identité',
       };
       crushedUpdate['state'] = IdentityState.TO_COMPLETE;
+    } else if (await this.isMailUsedByGroup(data?.inetOrgPerson?.mail)) {
+      crushedUpdate['additionalFields.validations']['inetOrgPerson'] = {
+        ...crushedUpdate['additionalFields.validations']['inetOrgPerson'],
+        mail: 'Email déjà utilisé par un groupe',
+      };
+      crushedUpdate['state'] = IdentityState.TO_COMPLETE;
     }
     if ((await this.checkUid(identity, data)) === false) {
       crushedUpdate['additionalFields.validations']['inetOrgPerson'] = {

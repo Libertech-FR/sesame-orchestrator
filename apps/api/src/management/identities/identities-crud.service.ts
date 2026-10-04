@@ -63,6 +63,10 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
       this.logger.error('Uid ou mail déjà présent dans une autre identité');
       throw new HttpException('Uid ou mail déjà présent dans une autre identité', 400);
     }
+    if (await this.isMailUsedByGroup(data?.inetOrgPerson?.mail)) {
+      this.logger.error('Mail déjà utilisé par un groupe');
+      throw new HttpException('Mail déjà utilisé par un groupe', 400);
+    }
     this.logger.log(`${logPrefix} Starting inetOrgPerson validation.`);
     const check = {
       objectClasses: ['inetOrgPerson'],
@@ -137,6 +141,10 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
     if ((await this.checkMailAndUid(update)) === false) {
       this.logger.error('Uid ou mail déjà présent dans une autre identité');
       throw new HttpException('Uid ou mail déjà présent dans une autre identité', 400);
+    }
+    if (await this.isMailUsedByGroup(update?.inetOrgPerson?.mail)) {
+      this.logger.error('Mail déjà utilisé par un groupe');
+      throw new HttpException('Mail déjà utilisé par un groupe', 400);
     }
     // if (update.state === IdentityState.TO_COMPLETE) {
     // En mode <auto> (SESAME_IDENTITY_SYNC_MODE), l'identité est synchronisée sans validation manuelle.

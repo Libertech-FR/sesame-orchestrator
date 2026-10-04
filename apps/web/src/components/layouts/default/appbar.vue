@@ -25,6 +25,15 @@
       )
 
       q-btn(
+        to='/groups/table'
+        v-if="hasPermission('/management/groups', 'read')"
+        icon="mdi-account-group"
+        size="md"
+        stretch
+        flat
+      )
+        q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Groupes
+      q-btn(
         to='/settings/agents'
         v-if="hasPermissionStartsWith(['/core', '/settings'])"
         icon="mdi-cog"
@@ -55,7 +64,7 @@ export default defineNuxtComponent({
   inject: ['syncing'],
   setup() {
     const stateValue = ref(0)
-    const { hasPermissionStartsWith } = useAccessControl()
+    const { hasPermission, hasPermissionStartsWith } = useAccessControl()
     const identityStateStore = useIdentityStateStore()
     const badgesValues = ref({
       TO_SYNC: computed(() => (stateValue.value > 9999 ? '9999+' : stateValue.value)),
@@ -107,6 +116,7 @@ export default defineNuxtComponent({
       buttons,
       badgesValues,
       identityStateStore,
+      hasPermission,
       hasPermissionStartsWith,
     }
   },

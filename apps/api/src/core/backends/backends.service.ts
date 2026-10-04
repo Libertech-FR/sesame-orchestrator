@@ -22,6 +22,8 @@ import { ExecuteJobOptions } from './_interfaces/execute-job-options.interface';
 import { WorkerResultInterface } from '~/core/backends/_interfaces/worker-result.interface';
 import { formatWorkerResultErrorMessage } from '~/core/backends/_functions/format-worker-result-error-message.function';
 import { DataStatusEnum } from '~/management/identities/_enums/data-status';
+import { GroupsService } from '~/management/groups/groups.service';
+import { Groups } from '~/management/groups/_schemas/groups.schema';
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
 const DAEMON_PING_TIMEOUT_MS = 15_000;
@@ -66,12 +68,16 @@ export class BackendsService extends AbstractQueueProcessor {
         { new: true },
       );
       if (isSyncedJob) {
-        await this.identitiesService.model.findByIdAndUpdate(isSyncedJob?.concernedTo?.id, {
-          $set: {
-            state: IdentityState.SYNCED,
-            lastBackendSync: new Date(),
-          },
-        });
+        if (isSyncedJob?.concernedTo?.$ref === 'groups') {
+          await this.applyGroupJobResult(isSyncedJob.concernedTo.id, result?.jobName, true);
+        } else {
+          await this.identitiesService.model.findByIdAndUpdate(isSyncedJob?.concernedTo?.id, {
+            $set: {
+              state: IdentityState.SYNCED,
+              lastBackendSync: new Date(),
+            },
+          });
+        }
         this.logger.warn(`Job already completed, syncing... [${job.id}::COMPLETED]`);
       }
     }
@@ -108,6 +114,10 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { new: true },
       );
+      if (failedJob?.concernedTo?.$ref === 'groups') {
+        await this.applyGroupJobResult(failedJob.concernedTo.id, null, false);
+        return;
+      }
       await this.identitiesService.model.findByIdAndUpdate(failedJob?.concernedTo?.id, {
         $set: {
           state: IdentityState.ON_ERROR,
@@ -141,6 +151,10 @@ export class BackendsService extends AbstractQueueProcessor {
         },
         { upsert: true, new: true },
       );
+      if (completedJob?.concernedTo?.$ref === 'groups') {
+        await this.applyGroupJobResult(completedJob.concernedTo.id, result.jobName, jState === JobState.COMPLETED);
+        return;
+      }
       let myState = result.jobName === ActionType.IDENTITY_DELETE ? IdentityState.DONT_SYNC : IdentityState.SYNCED;
       if (jState === JobState.COMPLETED) {
         this.logger.log(`Job completed... Syncing [${payload.jobId}]`);
@@ -353,6 +367,9 @@ export class BackendsService extends AbstractQueueProcessor {
       }
     }
 
+    // les identités supprimées ne sont plus envoyées comme membres : leurs groupes doivent être resynchronisés
+    await this.groupsService.markGroupsOfIdentitiesToSync(payload);
+
     if (!identities.length) return result;
 
     const task: Document<Tasks> = await this.tasksService.create<Tasks>({
@@ -403,6 +420,7 @@ export class BackendsService extends AbstractQueueProcessor {
       });
       result[identity._id] = { restored: true, state: targetState };
     }
+    await this.groupsService.markGroupsOfIdentitiesToSync(payload);
 
     return result;
   }
@@ -514,6 +532,154 @@ export class BackendsService extends AbstractQueueProcessor {
     }
     return result[payload];
   }
+  /**
+   * GroupsService est résolu à la demande pour éviter une dépendance circulaire entre modules
+   */
+  protected get groupsService(): GroupsService {
+    return this.moduleRef.get(GroupsService, { strict: false });
+  }
+
+  protected async setConcernedState(
+    ref: ExecuteJobOptions['concernedToRef'],
+    id: Types.ObjectId,
+    state: IdentityState,
+  ): Promise<void> {
+    if (ref === 'groups') {
+      await this.groupsService.model.findByIdAndUpdate(id, { $set: { state } });
+      return;
+    }
+    await this.identitiesService.model.findByIdAndUpdate(id, { $set: { state } });
+  }
+
+  /**
+   * Applique le résultat d'un job GROUP_* sur le groupe concerné
+   */
+  protected async applyGroupJobResult(
+    groupId: Types.ObjectId,
+    jobName: string | null,
+    success: boolean,
+  ): Promise<void> {
+    if (!success) {
+      await this.groupsService.model.findByIdAndUpdate(groupId, { $set: { state: IdentityState.ON_ERROR } });
+      return;
+    }
+    if (jobName === ActionType.GROUP_DELETE) {
+      await this.groupsService.model.findByIdAndDelete(groupId);
+      return;
+    }
+    await this.groupsService.model.findByIdAndUpdate(groupId, {
+      $set: {
+        state: IdentityState.SYNCED,
+        lastBackendSync: new Date(),
+      },
+    });
+  }
+
+  /**
+   * Construit le payload envoyé au daemon pour un groupe : le groupe et ses membres résolus (hors identités supprimées)
+   */
+  protected async buildGroupPayload(group: Groups): Promise<Record<string, any>> {
+    const members = await this.identitiesService.model
+      .find(
+        { _id: { $in: group.member || [] }, deletedFlag: { $ne: true } },
+        {
+          'inetOrgPerson.cn': 1,
+          'inetOrgPerson.uid': 1,
+          'inetOrgPerson.mail': 1,
+          'inetOrgPerson.employeeNumber': 1,
+          'inetOrgPerson.employeeType': 1,
+          primaryEmployeeNumber: 1,
+        },
+      )
+      .lean<Identities[]>()
+      .exec();
+
+    return {
+      group: {
+        _id: group._id,
+        cn: group.cn,
+        description: group.description,
+        mail: group.mail,
+        owner: group.owner || [],
+        customFields: group.customFields,
+      },
+      members: members.map((identity) => ({
+        _id: identity._id,
+        cn: identity.inetOrgPerson?.cn,
+        uid: identity.inetOrgPerson?.uid,
+        mail: identity.inetOrgPerson?.mail,
+        employeeType: identity.inetOrgPerson?.employeeType,
+        // même règle que pour les identités : l'employeeNumber primaire (fusion) sinon le premier
+        employeeNumber: identity.primaryEmployeeNumber || identity.inetOrgPerson?.employeeNumber?.[0],
+      })),
+    };
+  }
+
+  public async syncGroups(payload: string[], options?: ExecuteJobOptions): Promise<any> {
+    if (!payload.length) throw new BadRequestException('No groups to sync');
+
+    const groups: Groups[] = [];
+    for (const key of payload) {
+      groups.push(await this.groupsService.findById<Groups>(key));
+    }
+
+    const task: Document<Tasks> = await this.tasksService.create<Tasks>({
+      jobs: groups.map((group) => group._id),
+    });
+
+    const result = {};
+    for (const group of groups) {
+      const action = group.lastBackendSync ? ActionType.GROUP_UPDATE : ActionType.GROUP_CREATE;
+      try {
+        const [executedJob] = await this.executeJob(action, group._id, await this.buildGroupPayload(group), {
+          ...options,
+          updateStatus: true,
+          concernedToRef: 'groups',
+          concernedToName: group.cn,
+          task: task._id as unknown as Types.ObjectId,
+        });
+        result[`${group._id}`] = executedJob;
+      } catch (error) {
+        this.logger.error(`Unable to sync group ${group._id}: ${error?.message}`, error?.stack);
+        result[`${group._id}`] = { error: error?.message ?? 'Unknown error' };
+      }
+    }
+    return result;
+  }
+
+  public async deleteGroups(payload: string[], options?: ExecuteJobOptions): Promise<any> {
+    if (!payload.length) throw new BadRequestException('No groups to delete');
+
+    const result = {};
+    for (const key of payload) {
+      const group = await this.groupsService.findById<Groups>(key);
+      if (!group.lastBackendSync) {
+        // le groupe n'a jamais été synchronisé, suppression locale uniquement
+        await this.groupsService.model.findByIdAndDelete(group._id);
+        result[key] = { deleted: true };
+        continue;
+      }
+      try {
+        const [executedJob] = await this.executeJob(
+          ActionType.GROUP_DELETE,
+          group._id,
+          await this.buildGroupPayload(group),
+          {
+            ...options,
+            updateStatus: true,
+            concernedToRef: 'groups',
+            concernedToName: group.cn,
+          },
+        );
+        result[key] = executedJob;
+      } catch (error) {
+        this.logger.error(`Unable to delete group ${group._id}: ${error?.message}`, error?.stack);
+        result[key] = { error: error?.message ?? 'Unknown error' };
+      }
+    }
+    return result;
+  }
+
   public async executeJob(
     actionType: ActionType,
     concernedTo?: Types.ObjectId,
@@ -550,19 +716,19 @@ export class BackendsService extends AbstractQueueProcessor {
     }
     let jobStore: Document<Jobs> = null;
     const disableLogs = options?.disableLogs === true;
+    const concernedToRef = options?.concernedToRef || 'identities';
+    const isGroupJob = concernedToRef === 'groups';
     if (!disableLogs || !!concernedTo) {
       let concernedToName = options?.concernedToName;
-      if (!concernedToName && !disableLogs && concernedTo) {
-        concernedToName =
-          payload?.after?.inetOrgPerson?.cn ??
-          payload?.identity?.inetOrgPerson?.cn ??
-          payload?.inetOrgPerson?.cn;
+      if (!concernedToName && !disableLogs && concernedTo && isGroupJob) {
+        concernedToName = payload?.group?.cn;
       }
-      if (!concernedToName && !disableLogs && concernedTo) {
-        const identity = await this.identitiesService.model
-          .findById(concernedTo)
-          .select('inetOrgPerson.cn')
-          .lean();
+      if (!concernedToName && !disableLogs && concernedTo && !isGroupJob) {
+        concernedToName =
+          payload?.after?.inetOrgPerson?.cn ?? payload?.identity?.inetOrgPerson?.cn ?? payload?.inetOrgPerson?.cn;
+      }
+      if (!concernedToName && !disableLogs && concernedTo && !isGroupJob) {
+        const identity = await this.identitiesService.model.findById(concernedTo).select('inetOrgPerson.cn').lean();
         concernedToName = identity?.inetOrgPerson?.cn;
       }
       jobStore = await this.jobsService.create<Jobs>({
@@ -571,7 +737,7 @@ export class BackendsService extends AbstractQueueProcessor {
         ...(disableLogs ? {} : { params: payload }),
         concernedTo: concernedTo
           ? {
-              $ref: 'identities',
+              $ref: concernedToRef,
               id: concernedTo,
               name: concernedToName,
             }
@@ -584,11 +750,7 @@ export class BackendsService extends AbstractQueueProcessor {
     }
 
     if (concernedTo && !!options?.switchToProcessing) {
-      await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
-        $set: {
-          state: IdentityState.PROCESSING,
-        },
-      });
+      await this.setConcernedState(concernedToRef, concernedTo, IdentityState.PROCESSING);
     }
 
     if (!options?.async) {
@@ -617,7 +779,9 @@ export class BackendsService extends AbstractQueueProcessor {
           });
         }
 
-        if (concernedTo && !!options?.updateStatus) {
+        if (concernedTo && !!options?.updateStatus && isGroupJob) {
+          await this.applyGroupJobResult(concernedTo, actionType, true);
+        } else if (concernedTo && !!options?.updateStatus) {
           await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
             $set: {
               state: options?.targetState || IdentityState.SYNCED,
@@ -665,11 +829,7 @@ export class BackendsService extends AbstractQueueProcessor {
       }
 
       if (concernedTo && !!options?.updateStatus) {
-        await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
-          $set: {
-            state: IdentityState.ON_ERROR,
-          },
-        });
+        await this.setConcernedState(concernedToRef, concernedTo, IdentityState.ON_ERROR);
       }
 
       if (options?.timeoutDiscard && stateOfJob !== 'completed' && stateOfJob !== 'failed') {

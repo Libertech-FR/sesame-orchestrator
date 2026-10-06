@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { IdentityState } from '~/constants/enums'
+import { IdentityState } from '~/constants/enums'
 import { MaxMenuBadgeCount } from '~/constants/variables'
 
 export const useIdentityStateStore = defineStore('identityStates', {
@@ -40,12 +40,31 @@ export const useIdentityStateStore = defineStore('identityStates', {
           body: { ...this.filters },
         })
 
+        const groupsToSync = await this.fetchGroupsToSyncCount()
         for (const key in data) {
+          // les groupes à synchroniser s'ajoutent aux compteurs « à synchroniser » (filtre sur le seul état TO_SYNC)
+          data[key] += this.isToSyncFilter(this.filters[key]) ? groupsToSync : 0
           this.counters[key] = data[key]
         }
       } catch (error) {
         console.error(error)
       }
+    },
+
+    async fetchGroupsToSyncCount(): Promise<number> {
+      try {
+        const { data } = await $http.$get('/management/groups/count-to-sync')
+        return typeof data === 'number' ? data : 0
+      } catch {
+        // pas de droit de lecture sur les groupes : seules les identités sont comptées
+        return 0
+      }
+    },
+
+    isToSyncFilter(filter: unknown): boolean {
+      if (!filter || typeof filter !== 'object') return false
+      const entries = Object.entries(filter as Record<string, unknown>)
+      return entries.length === 1 && /^\W*state$/.test(entries[0][0]) && `${entries[0][1]}` === `${IdentityState.TO_SYNC}`
     },
   }
 })

@@ -1,95 +1,97 @@
 <template lang="pug">
-.sesame-page
-  .sesame-page-content
-    sesame-core-twopan.col(
-      table-title='Groupes'
-      ref='twoPan'
-      :simple='false'
-      :loading='pending'
-      :rows='groups?.data || []'
-      :total='groups?.total || 0'
-      :columns='columns'
-      :visible-columns='visibleColumns'
-      :refresh='refresh'
-      :targetId='targetId'
-      selection='multiple'
-      row-key='_id'
-    )
-      template(#before-top-left="{ selected, clearSelection }")
-        q-btn-group(rounded flat)
-          q-btn(
-            flat
-            icon="mdi-sync"
-            color="orange-8"
-            rounded
-            size="md"
-            dense
-            :disable="selected.length === 0 || !hasPermission('/management/groups', 'update')"
-            @click="markSelectedToSync(selected, clearSelection)"
-          )
-            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Mettre à synchroniser les groupes sélectionnés
-          q-btn(
-            flat
-            icon="mdi-delete"
-            color="negative"
-            rounded
-            size="md"
-            dense
-            :disable="selected.length === 0 || !hasPermission('/management/groups', 'delete')"
-            @click="deleteSelected(selected, clearSelection)"
-          )
-            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer les groupes sélectionnés
-          q-separator(vertical v-if="selected.length !== 0")
-          q-btn(flat icon="mdi-cancel" color="warning" rounded @click="clearSelection" size="md" v-show="selected.length !== 0" dense)
-            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Nettoyer la sélection
-        .text-caption.q-ml-sm.text-weight-medium(v-if="selected.length !== 0") {{ selected.length }} groupe(s) sélectionné(s)
-      template(#before-top-right-before="{ selected, clearSelection }")
+q-page.grid
+  sesame-core-twopan.col(
+    table-title='Groupes'
+    ref='twoPan'
+    :simple='false'
+    :loading='pending'
+    :rows='groups?.data || []'
+    :total='groups?.total || 0'
+    :columns='columns'
+    :visible-columns='visibleColumns'
+    :refresh='refresh'
+    :targetId='targetId'
+    selection='multiple'
+    row-key='_id'
+  )
+    template(#before-top-left="{ selected, clearSelection }")
+      q-btn-group(rounded flat)
         q-btn(
-          :disable='!hasPermission("/management/groups", "create")'
-          :to='toPathWithQueries(`/groups/table/${NewTargetId}`)'
-          icon='mdi-plus'
           flat
+          icon="mdi-sync"
+          color="orange-8"
+          rounded
+          size="md"
           dense
+          :disable="selected.length === 0 || !hasPermission('/management/groups', 'update')"
+          @click="markSelectedToSync(selected, clearSelection)"
         )
-          q-tooltip.text-body2.bg-negative.text-white(
-            v-if="!hasPermission('/management/groups', 'create')"
-            anchor="top middle"
-            self="center middle"
-          ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
-        q-separator.q-mx-sm(vertical)
-      template(#top-table)
-        sesame-core-pan-filters(:columns='columns' mode='simple' placeholder='Rechercher par nom, description, email...')
-      template(v-slot:body-cell-state='props')
-        q-td(:props='props')
-          q-chip(
-            dense
-            size='sm'
-            :color='getStateBadge(props.row.state).color'
-            :text-color='getStateBadge(props.row.state).textColor || "white"'
-            :icon='getStateBadge(props.row.state).icon'
-            :label='getStateName(props.row.state)'
-          )
-      template(v-slot:row-actions='{ row }')
-        q-btn(:to='toPathWithQueries(`/groups/table/${row._id}`)' color='primary' icon='mdi-eye' size='sm' flat round dense)
-        q-btn-dropdown(:class="[$q.dark.isActive ? 'text-white' : 'text-black']" dropdown-icon="mdi-dots-horizontal" size='sm' flat round dense)
-          q-list(dense)
-            q-item(:disable='!hasPermission("/management/groups", "update")' clickable v-close-popup @click="syncGroup(row)")
-              q-item-section(avatar)
-                q-icon(name="mdi-sync" color="orange-8")
-              q-item-section
-                q-item-label Synchroniser le groupe
-            q-item(:disable='!hasPermission("/management/groups", "delete")' clickable v-close-popup @click="deleteGroup(row)")
-              q-item-section(avatar)
-                q-icon(name="mdi-delete" color="negative")
-              q-item-section
-                q-item-label Supprimer le groupe
-              q-tooltip.text-body2.bg-negative.text-white(
-                v-if="!hasPermission('/management/groups', 'delete')"
-                anchor="top middle"
-                self="center middle"
-              ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
-      template(#after-content)
-        nuxt-page(ref='page' @refresh='refresh')
+          q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Mettre à synchroniser les groupes sélectionnés
+        q-btn(
+          flat
+          icon="mdi-delete"
+          color="negative"
+          rounded
+          size="md"
+          dense
+          :disable="selected.length === 0 || !hasPermission('/management/groups', 'delete')"
+          @click="deleteSelected(selected, clearSelection)"
+        )
+          q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer les groupes sélectionnés
+        q-separator(vertical v-if="selected.length !== 0")
+        q-btn(flat icon="mdi-cancel" color="warning" rounded @click="clearSelection" size="md" v-show="selected.length !== 0" dense)
+          q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Nettoyer la sélection
+      .text-caption.q-ml-sm.text-weight-medium(v-if="selected.length !== 0") {{ selected.length }} groupe(s) sélectionné(s)
+    template(#before-top-right-before="{ selected, clearSelection }")
+      q-btn(
+        :disable='!hasPermission("/management/groups", "create")'
+        :to='toPathWithQueries(`/groups/table/${NewTargetId}`)'
+        icon='mdi-plus'
+        flat
+        dense
+      )
+        q-tooltip.text-body2.bg-negative.text-white(
+          v-if="!hasPermission('/management/groups', 'create')"
+          anchor="top middle"
+          self="center middle"
+        ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
+      q-separator.q-mx-sm(vertical)
+    template(#top-table)
+      sesame-core-pan-filters(:columns='columns' mode='simple' placeholder='Rechercher par nom, description, email...')
+    template(v-for="col in ellipsisColumns" :key="col" v-slot:[`body-cell-${col}`]='props')
+      q-td(:props='props')
+        .ellipsis(style='max-width: 220px' :title='props.value') {{ props.value }}
+    template(v-slot:body-cell-state='props')
+      q-td(:props='props')
+        q-chip(
+          dense
+          size='sm'
+          :color='getStateBadge(props.row.state).color'
+          :text-color='getStateBadge(props.row.state).textColor || "white"'
+          :icon='getStateBadge(props.row.state).icon'
+          :label='getStateName(props.row.state)'
+        )
+    template(v-slot:row-actions='{ row }')
+      q-btn(:to='toPathWithQueries(`/groups/table/${row._id}`)' color='primary' icon='mdi-eye' size='sm' flat round dense)
+      q-btn-dropdown(:class="[$q.dark.isActive ? 'text-white' : 'text-black']" dropdown-icon="mdi-dots-horizontal" size='sm' flat round dense)
+        q-list(dense)
+          q-item(:disable='!hasPermission("/management/groups", "update")' clickable v-close-popup @click="syncGroup(row)")
+            q-item-section(avatar)
+              q-icon(name="mdi-sync" color="orange-8")
+            q-item-section
+              q-item-label Synchroniser le groupe
+          q-item(:disable='!hasPermission("/management/groups", "delete")' clickable v-close-popup @click="deleteGroup(row)")
+            q-item-section(avatar)
+              q-icon(name="mdi-delete" color="negative")
+            q-item-section
+              q-item-label Supprimer le groupe
+            q-tooltip.text-body2.bg-negative.text-white(
+              v-if="!hasPermission('/management/groups', 'delete')"
+              anchor="top middle"
+              self="center middle"
+            ) Vous n'avez pas les permissions nécessaires pour effectuer cette action
+    template(#after-content)
+      nuxt-page(ref='page' @refresh='refresh')
 </template>
 
 <script lang="ts">
@@ -168,7 +170,9 @@ export default defineNuxtComponent({
   data() {
     return {
       NewTargetId,
-      visibleColumns: ['cn', 'description', 'mail', 'member', 'state', 'lastBackendSync', 'actions'],
+      // colonnes réduites par défaut pour éviter le défilement horizontal du panneau de gauche ;
+      // description et dernière synchro restent disponibles via « Afficher/cacher des colonnes »
+      visibleColumns: ['cn', 'mail', 'member', 'state'],
       columns: [
         {
           name: 'cn',
@@ -216,6 +220,9 @@ export default defineNuxtComponent({
     }
   },
   computed: {
+    ellipsisColumns(): string[] {
+      return ['cn', 'description', 'mail']
+    },
     groupsRevision(): number {
       return this.identityStateStore.revision
     },

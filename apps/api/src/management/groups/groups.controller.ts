@@ -23,12 +23,14 @@ import { BackendsService } from '~/core/backends/backends.service';
 import {
   GroupsCreateDto,
   GroupsDto,
+  GroupsIdsDto,
   GroupsMemberOfDto,
   GroupsMembersDto,
   GroupsSyncDto,
   GroupsUpdateDto,
 } from './_dto/groups.dto';
 import { GroupsService } from './groups.service';
+import { IdentityState } from '~/management/identities/_enums/states.enum';
 
 @ApiTags('management/groups')
 @Controller('groups')
@@ -106,6 +108,21 @@ export class GroupsController extends AbstractController {
     });
   }
 
+  @Get('count-to-sync')
+  @UseRoles({
+    resource: '/management/groups',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiOperation({ summary: 'Nombre de groupes à synchroniser (état TO_SYNC)' })
+  public async countToSync(@Res() res: Response): Promise<Response> {
+    const data = await this._service.model.countDocuments({ state: IdentityState.TO_SYNC }).exec();
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
   @Post('sync')
   @UseRoles({
     resource: '/management/groups',
@@ -121,6 +138,34 @@ export class GroupsController extends AbstractController {
     const async = /true|on|yes|1/i.test(asyncQuery);
     const data = await this.backends.syncGroups(body.ids, { async });
     return res.status(HttpStatus.ACCEPTED).json({ async, data });
+  }
+
+  @Post('to-sync')
+  @UseRoles({
+    resource: '/management/groups',
+    action: AC_ACTIONS.UPDATE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiOperation({ summary: "Passe une liste de groupes à l'état « à synchroniser »" })
+  public async markToSync(@Res() res: Response, @Body() body: GroupsIdsDto): Promise<Response> {
+    const data = await this._service.markToSync(body.ids);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data,
+    });
+  }
+
+  @Post('delete')
+  @UseRoles({
+    resource: '/management/groups',
+    action: AC_ACTIONS.DELETE,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiOperation({ summary: 'Supprime une liste de groupes (job GROUP_DELETE pour les groupes déjà synchronisés)' })
+  public async removeMany(@Res() res: Response, @Body() body: GroupsIdsDto): Promise<Response> {
+    // en arrière-plan : la suppression attendrait sinon le daemon pour chaque groupe
+    const data = await this.backends.deleteGroups(body.ids, { async: true });
+    return res.status(HttpStatus.ACCEPTED).json({ async: true, data });
   }
 
   @Get('memberof/:identityId([0-9a-fA-F]{24})')

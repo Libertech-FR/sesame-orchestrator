@@ -130,6 +130,16 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
   }
 
   /**
+   * Passe les groupes donnés à l'état TO_SYNC (action « Mettre à synchroniser » de la liste)
+   */
+  public async markToSync(ids: string[]): Promise<{ matched: number; modified: number }> {
+    const result = await this._model
+      .updateMany({ _id: { $in: ids.map((id) => new Types.ObjectId(id)) } }, { $set: { state: IdentityState.TO_SYNC } })
+      .exec();
+    return { matched: result.matchedCount, modified: result.modifiedCount };
+  }
+
+  /**
    * Repasse à TO_SYNC les groupes contenant les identités données (suppression/restauration d'une identité)
    */
   public async markGroupsOfIdentitiesToSync(identityIds: (string | Types.ObjectId)[]): Promise<void> {

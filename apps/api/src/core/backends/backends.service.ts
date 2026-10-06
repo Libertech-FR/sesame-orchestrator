@@ -615,6 +615,20 @@ export class BackendsService extends AbstractQueueProcessor {
     };
   }
 
+  /**
+   * Synchronise tous les groupes à l'état TO_SYNC (appelé par « tout synchroniser » après les identités,
+   * pour que les membres existent dans les backends avant leurs groupes)
+   */
+  public async syncAllGroups(options?: ExecuteJobOptions): Promise<any> {
+    const groups = await this.groupsService.model.find({ state: IdentityState.TO_SYNC }, { _id: 1 }).lean().exec();
+    if (!groups.length) return {};
+
+    return await this.syncGroups(
+      groups.map((group) => `${group._id}`),
+      options,
+    );
+  }
+
   public async syncGroups(payload: string[], options?: ExecuteJobOptions): Promise<any> {
     if (!payload.length) throw new BadRequestException('No groups to sync');
 
@@ -652,7 +666,14 @@ export class BackendsService extends AbstractQueueProcessor {
 
     const result = {};
     for (const key of payload) {
-      const group = await this.groupsService.findById<Groups>(key);
+      let group: Groups;
+      try {
+        group = await this.groupsService.findById<Groups>(key);
+      } catch (error) {
+        // un groupe introuvable ne doit pas interrompre la suppression des autres (suppression en masse)
+        result[key] = { error: error?.message ?? 'Group not found' };
+        continue;
+      }
       if (!group.lastBackendSync) {
         // le groupe n'a jamais été synchronisé, suppression locale uniquement
         await this.groupsService.model.findByIdAndDelete(group._id);

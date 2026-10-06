@@ -12,8 +12,37 @@
       :visible-columns='visibleColumns'
       :refresh='refresh'
       :targetId='targetId'
+      selection='multiple'
       row-key='_id'
     )
+      template(#before-top-left="{ selected, clearSelection }")
+        q-btn-group(rounded flat)
+          q-btn(
+            flat
+            icon="mdi-sync"
+            color="orange-8"
+            rounded
+            size="md"
+            dense
+            :disable="selected.length === 0 || !hasPermission('/management/groups', 'update')"
+            @click="markSelectedToSync(selected, clearSelection)"
+          )
+            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Mettre à synchroniser les groupes sélectionnés
+          q-btn(
+            flat
+            icon="mdi-delete"
+            color="negative"
+            rounded
+            size="md"
+            dense
+            :disable="selected.length === 0 || !hasPermission('/management/groups', 'delete')"
+            @click="deleteSelected(selected, clearSelection)"
+          )
+            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Supprimer les groupes sélectionnés
+          q-separator(vertical v-if="selected.length !== 0")
+          q-btn(flat icon="mdi-cancel" color="warning" rounded @click="clearSelection" size="md" v-show="selected.length !== 0" dense)
+            q-tooltip.text-body2(transition-show="scale" transition-hide="scale") Nettoyer la sélection
+        .text-caption.q-ml-sm.text-weight-medium(v-if="selected.length !== 0") {{ selected.length }} groupe(s) sélectionné(s)
       template(#before-top-right-before="{ selected, clearSelection }")
         q-btn(
           :disable='!hasPermission("/management/groups", "create")'
@@ -66,6 +95,7 @@
 <script lang="ts">
 import type { LocationQueryValue } from 'vue-router'
 import { NewTargetId } from '~/constants/variables'
+import { useIdentityStateStore } from '~/stores/identityState'
 
 type Group = {
   _id: string
@@ -94,12 +124,13 @@ export default defineNuxtComponent({
 
     const paginationOptions = useHttpPaginationOptions()
     const { hasPermission } = useAccessControl()
+    const identityStateStore = useIdentityStateStore()
 
     const {
       data: groups,
       error,
       pending,
-      refresh,
+      refresh: refreshGroups,
       execute,
     } = await useHttp<{ data: Group[]; total: number }>('/management/groups', {
       method: 'get',
@@ -115,10 +146,17 @@ export default defineNuxtComponent({
 
     useHttpPaginationReactive(paginationOptions, execute)
 
+    // recharge la liste et les compteurs « à synchroniser », dans lesquels les groupes sont comptés
+    const refresh = async () => {
+      await Promise.all([refreshGroups(), identityStateStore.fetchAllStateCount()])
+    }
+
     return {
       groups,
       pending,
       refresh,
+      refreshGroups,
+      identityStateStore,
       toPathWithQueries,
       navigateToTab,
       hasPermission,
@@ -178,11 +216,105 @@ export default defineNuxtComponent({
     }
   },
   computed: {
+    groupsRevision(): number {
+      return this.identityStateStore.revision
+    },
     targetId(): LocationQueryValue[] | string {
       return `${this.$route.params._id || ''}`
     },
   },
+  watch: {
+    // les états évoluent de façon asynchrone à la fin des jobs (à synchroniser -> synchronisé / en erreur)
+    groupsRevision() {
+      this.refreshGroups()
+    },
+  },
   methods: {
+    confirmBulk(title: string, message: string, label: string, color: string): Promise<boolean> {
+      return new Promise((resolve) => {
+        this.$q
+          .dialog({
+            title,
+            message,
+            html: true,
+            persistent: true,
+            ok: { push: true, color, label },
+            cancel: { push: true, color: 'grey-8', label: 'Annuler' },
+          })
+          .onOk(() => resolve(true))
+          .onCancel(() => resolve(false))
+      })
+    },
+    selectedNames(selected: Group[]): string {
+      const names = selected.slice(0, 10).map((group) => `<li>${this.escapeHtml(group.cn)}</li>`)
+      const more = selected.length > 10 ? `<li>… et ${selected.length - 10} autre(s)</li>` : ''
+      return `<ul class="q-my-sm">${names.join('')}${more}</ul>`
+    },
+    escapeHtml(value: string): string {
+      return `${value || ''}`.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string)
+    },
+    async markSelectedToSync(selected: Group[], clearSelection: () => void) {
+      if (!selected.length) return
+      const ok = await this.confirmBulk(
+        'Mettre à synchroniser',
+        `Les ${selected.length} groupe(s) suivant(s) passeront à l'état « À synchroniser » :${this.selectedNames(selected)}`,
+        'Valider',
+        'orange-8',
+      )
+      if (!ok) return
+
+      try {
+        await this.$http.post('/management/groups/to-sync', {
+          body: { ids: selected.map((group) => group._id) },
+        })
+        this.$q.notify({
+          message: `${selected.length} groupe(s) mis à synchroniser.`,
+          color: 'positive',
+          position: 'top-right',
+          icon: 'mdi-check-circle-outline',
+        })
+        clearSelection()
+      } catch (error: unknown) {
+        this.handleErrorReq({ error, message: 'Impossible de mettre les groupes à synchroniser' })
+      } finally {
+        await this.refresh()
+      }
+    },
+    async deleteSelected(selected: Group[], clearSelection: () => void) {
+      if (!selected.length) return
+      const ok = await this.confirmBulk(
+        'Supprimer les groupes',
+        `Voulez-vous vraiment supprimer les ${selected.length} groupe(s) suivant(s) ?${this.selectedNames(selected)}` +
+          'Les groupes déjà synchronisés seront supprimés des backends puis de Sesame.',
+        'Supprimer',
+        'negative',
+      )
+      if (!ok) return
+
+      try {
+        const res = await this.$http.post('/management/groups/delete', {
+          body: { ids: selected.map((group) => group._id) },
+        })
+        const results = Object.values((res?._data?.data || {}) as Record<string, { error?: string }>)
+        const failed = results.filter((result) => result?.error).length
+        this.$q.notify({
+          message: failed
+            ? `${selected.length - failed} groupe(s) supprimé(s) ou en cours de suppression, ${failed} en erreur.`
+            : `${selected.length} groupe(s) supprimé(s) ou en cours de suppression.`,
+          color: failed ? 'warning' : 'positive',
+          position: 'top-right',
+          icon: failed ? 'mdi-alert-outline' : 'mdi-check-circle-outline',
+        })
+        clearSelection()
+        if (selected.some((group) => group._id === this.targetId)) {
+          this.navigateToTab('/groups/table')
+        }
+      } catch (error: unknown) {
+        this.handleErrorReq({ error, message: 'Impossible de supprimer les groupes' })
+      } finally {
+        await this.refresh()
+      }
+    },
     async syncGroup(group: Group) {
       try {
         await this.$http.post('/management/groups/sync', {

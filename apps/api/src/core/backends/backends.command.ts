@@ -6,7 +6,7 @@ import { BackendsService } from '~/core/backends/backends.service';
 @CronConsoleHandler({
   handler: 'backends-syncall',
   command: 'backends syncall',
-  label: 'Synchronisation de toutes les identités vers les backends',
+  label: 'Synchronisation de toutes les identités et de tous les groupes vers les backends',
 })
 @SubCommand({ name: 'syncall' })
 export class BackendsSyncallCommand extends CommandRunner {
@@ -19,9 +19,11 @@ export class BackendsSyncallCommand extends CommandRunner {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async run(inputs: string[], options: any): Promise<void> {
-    const result = await this.backendsService.syncAllIdentities({
-      async: true,
-    });
+    // les identités d'abord : les groupes référencent leurs membres
+    const result = {
+      ...(await this.backendsService.syncAllIdentities({ async: true })),
+      ...(await this.backendsService.syncAllGroups({ async: true })),
+    };
     for (const identity of Object.values(result)) {
       console.log(identity);
     }

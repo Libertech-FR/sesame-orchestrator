@@ -74,10 +74,12 @@ export class GroupsMemberOfDto {
   public groups: string[];
 }
 
-export class GroupsSyncDto {
+export class GroupsIdsDto {
   @IsArray()
   @ArrayNotEmpty()
   @IsMongoId({ each: true })
   @ApiProperty({ type: [String] })
   public ids: string[];
 }
+
+export class GroupsSyncDto extends GroupsIdsDto {}

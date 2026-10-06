@@ -64,12 +64,14 @@ export class BackendsController {
   }
 
   @Post('syncall')
-  @ApiOperation({ summary: 'Synchronise toutes les identitées à synchroniser' })
+  @ApiOperation({ summary: 'Synchronise toutes les identitées et tous les groupes à synchroniser' })
   public async syncAllIdentities(@Res() res: Response, @Query('async') asyncQuery: string) {
     const async = /true|on|yes|1/i.test(asyncQuery);
-    const data = await this.backendsService.syncAllIdentities({
-      async,
-    });
+    // les identités d'abord : les groupes référencent leurs membres
+    const data = {
+      ...(await this.backendsService.syncAllIdentities({ async })),
+      ...(await this.backendsService.syncAllGroups({ async })),
+    };
     return res.status(HttpStatus.ACCEPTED).json({ async, data });
   }
 

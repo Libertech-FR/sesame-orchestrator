@@ -27,6 +27,7 @@ q-card.flex.column.fit.absolute(flat)
 
 <script lang="ts">
 import { NewTargetId } from '~/constants/variables'
+import { useIdentityStateStore } from '~/stores/identityState'
 
 export default defineNuxtComponent({
   name: 'GroupsTableIdPage',
@@ -71,9 +72,13 @@ export default defineNuxtComponent({
       hasPermission,
       group,
       refresh,
+      identityStateStore: useIdentityStateStore(),
     }
   },
   computed: {
+    groupRevision(): number {
+      return this.identityStateStore?.revision ?? 0
+    },
     isNew(): boolean {
       return this.$route.params._id === NewTargetId
     },
@@ -105,6 +110,12 @@ export default defineNuxtComponent({
           condition: () => this.hasPermission('/core/jobs', 'read'),
         },
       ]
+    },
+  },
+  watch: {
+    // l'état du groupe change à la fin des jobs de synchronisation
+    groupRevision() {
+      if (!this.isNew) this.refresh()
     },
   },
 })

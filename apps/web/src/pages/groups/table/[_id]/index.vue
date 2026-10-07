@@ -54,6 +54,29 @@
       outlined
       dense
     )
+    q-select(
+      v-model='form.family'
+      :options='familyOptions'
+      label='Famille'
+      :readonly='!canEdit'
+      emit-value
+      map-options
+      clearable
+      outlined
+      dense
+    )
+      template(#selected-item='scope')
+        q-chip(dense size='sm' :color='scope.opt.color || "grey"' text-color='white' :label='scope.opt.label')
+      template(#option='scope')
+        q-item(v-bind='scope.itemProps')
+          q-item-section(avatar)
+            q-avatar(:color='scope.opt.color || "grey"' size='18px')
+          q-item-section
+            q-item-label {{ scope.opt.label }}
+            q-item-label(v-if='scope.opt.description' caption) {{ scope.opt.description }}
+      template(#no-option)
+        q-item
+          q-item-section.text-grey Aucune famille définie (Paramètres › Familles de groupes)
     q-input(
       v-model='form.mail'
       label='Adresse email (optionnelle)'
@@ -130,6 +153,7 @@ type GroupData = {
   cn: string
   description?: string
   mail?: string | null
+  family?: string | null
   member?: string[]
   state?: number
 }
@@ -170,7 +194,9 @@ export default defineNuxtComponent({
         cn: `${this.data.group?.cn || ''}`,
         description: `${this.data.group?.description || ''}`,
         mail: `${this.data.group?.mail || ''}`,
+        family: (this.data.group?.family || null) as string | null,
       },
+      familyOptions: [] as { label: string; value: string; color?: string | null; description?: string | null }[],
       members: [] as Member[],
       membersLoading: false,
       membersPagination: {
@@ -204,13 +230,30 @@ export default defineNuxtComponent({
         this.form.cn = `${group?.cn || ''}`
         this.form.description = `${group?.description || ''}`
         this.form.mail = `${group?.mail || ''}`
+        this.form.family = group?.family || null
       },
     },
   },
   mounted() {
+    this.fetchFamilies()
     if (!this.isNew) this.fetchMembers()
   },
   methods: {
+    async fetchFamilies() {
+      try {
+        const res = await this.$http.get('/management/group-families', {
+          query: { limit: 1000, skip: 0, 'sort[name]': 'asc' },
+        })
+        this.familyOptions = (res?._data?.data || []).map((family: { _id: string; name: string; color?: string | null; description?: string | null }) => ({
+          label: family.name,
+          value: family._id,
+          color: family.color,
+          description: family.description,
+        }))
+      } catch (error: unknown) {
+        this.handleErrorReq({ error, message: 'Erreur lors du chargement des familles de groupes' })
+      }
+    },
     async fetchMembers() {
       this.membersLoading = true
       try {
@@ -283,6 +326,7 @@ export default defineNuxtComponent({
         description: `${this.form.description || ''}`.trim(),
         // null pour effacer l'adresse : une chaîne vide serait rejetée par la validation email de l'API
         mail: `${this.form.mail || ''}`.trim() || null,
+        family: this.form.family || null,
       }
       if (!body.cn) {
         this.$q.notify({ type: 'negative', message: 'Le nom du groupe est obligatoire', position: 'top-right' })

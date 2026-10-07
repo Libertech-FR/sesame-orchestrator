@@ -1,12 +1,25 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { OnEvent } from '@nestjs/event-emitter';
-import { Document, FilterQuery, Model, ModifyResult, Query, QueryOptions, SaveOptions, Types } from 'mongoose';
+import {
+  Document,
+  FilterQuery,
+  Model,
+  ModifyResult,
+  PipelineStage,
+  ProjectionType,
+  Query,
+  QueryOptions,
+  SaveOptions,
+  Types,
+} from 'mongoose';
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
+import { normalizeMongoFilterValues } from '~/_common/functions/normalize-mongo-filter-values';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { IdentitiesCrudService } from '~/management/identities/identities-crud.service';
 import { GroupsCreateDto, GroupsUpdateDto } from './_dto/groups.dto';
+import { GroupFamilies } from './_schemas/group-families.schema';
 import { Groups } from './_schemas/groups.schema';
 
 /**
@@ -27,6 +40,7 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
 
   public constructor(
     @InjectModel(Groups.name) protected _model: Model<Groups>,
+    @InjectModel(GroupFamilies.name) protected readonly familiesModel: Model<GroupFamilies>,
     protected readonly identities: IdentitiesCrudService,
   ) {
     super();
@@ -40,8 +54,9 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
     await this.ensureMailAvailable(data.mail);
     const member = await this.normalizeMembers(data.member);
     const owner = await this.normalizeMembers(data.owner);
+    const family = await this.normalizeFamily(data.family);
 
-    return await super.create<T>({ ...data, member, owner, state: IdentityState.TO_SYNC }, options);
+    return await super.create<T>({ ...data, family, member, owner, state: IdentityState.TO_SYNC }, options);
   }
 
   public async updateGroup(_id: Types.ObjectId, data: GroupsUpdateDto): Promise<ModifyResult<Query<Groups, Groups>>> {
@@ -50,8 +65,47 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
     if (data.mail !== undefined) await this.ensureMailAvailable(data.mail, _id);
     if (data.member !== undefined) $set.member = await this.normalizeMembers(data.member);
     if (data.owner !== undefined) $set.owner = await this.normalizeMembers(data.owner);
+    if (data.family !== undefined) $set.family = await this.normalizeFamily(data.family);
 
     return await this.update<Groups>(_id, { $set });
+  }
+
+  /**
+   * Recherche paginée des groupes ; le tri sur `family` porte sur le nom de la famille et non sur son identifiant
+   */
+  public async search(
+    filter: FilterQuery<Groups>,
+    projection: ProjectionType<Groups>,
+    options: QueryOptions<Groups>,
+  ): Promise<[unknown[], number]> {
+    const sort = (options?.sort || {}) as Record<string, 1 | -1>;
+    if (!Object.keys(sort).includes('family')) {
+      return await this.findAndCount(filter, projection, options);
+    }
+
+    const normalized = normalizeMongoFilterValues({ ...filter, deletedFlag: { $ne: true } });
+    // l'agrégation ne caste pas le filtre (ObjectId, dates...) contrairement à find()
+    const match = this._model.find().cast(this._model, normalized);
+    const $sort = Object.fromEntries(
+      Object.entries(sort).map(([key, dir]) => [key === 'family' ? '_familyName' : key, dir]),
+    ) as Record<string, 1 | -1>;
+
+    const pipeline: PipelineStage[] = [
+      { $match: match },
+      {
+        $lookup: { from: this.familiesModel.collection.name, localField: 'family', foreignField: '_id', as: '_family' },
+      },
+      { $addFields: { _familyName: { $first: '$_family.name' } } },
+      { $sort: { ...$sort, _id: 1 } },
+      { $skip: options?.skip || 0 },
+    ];
+    if (options?.limit) pipeline.push({ $limit: options.limit });
+    pipeline.push({ $project: projection as Record<string, 1> });
+
+    return await Promise.all([
+      this._model.aggregate(pipeline).collation({ locale: 'fr' }).exec(),
+      this._model.countDocuments(normalized).exec(),
+    ]);
   }
 
   public async addMembers(_id: Types.ObjectId, ids: string[]): Promise<ModifyResult<Query<Groups, Groups>>> {
@@ -198,6 +252,17 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
     if (await this._model.exists(filter).exec()) {
       throw new ConflictException(`Le groupe <${cn}> existe déjà`);
     }
+  }
+
+  /**
+   * Vérifie que la famille existe ; null/vide retire le groupe de sa famille
+   */
+  protected async normalizeFamily(id?: string | null): Promise<Types.ObjectId | null> {
+    if (!id) return null;
+    if (!(await this.familiesModel.exists({ _id: id }).exec())) {
+      throw new BadRequestException('La famille de groupes est introuvable');
+    }
+    return new Types.ObjectId(id);
   }
 
   /**

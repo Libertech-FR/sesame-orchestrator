@@ -61,6 +61,16 @@ q-page.grid
     template(v-for="col in ellipsisColumns" :key="col" v-slot:[`body-cell-${col}`]='props')
       q-td(:props='props')
         .ellipsis(style='max-width: 220px' :title='props.value') {{ props.value }}
+    template(v-slot:body-cell-family='props')
+      q-td(:props='props')
+        q-chip(
+          v-if='familiesById[props.row.family]'
+          dense
+          size='sm'
+          :color='familiesById[props.row.family].color || "grey"'
+          text-color='white'
+          :label='familiesById[props.row.family].name'
+        )
     template(v-slot:body-cell-state='props')
       q-td(:props='props')
         q-chip(
@@ -99,11 +109,18 @@ import type { LocationQueryValue } from 'vue-router'
 import { NewTargetId } from '~/constants/variables'
 import { useIdentityStateStore } from '~/stores/identityState'
 
+type GroupFamily = {
+  _id: string
+  name: string
+  color?: string | null
+}
+
 type Group = {
   _id: string
   cn: string
   description?: string
   mail?: string
+  family?: string | null
   member?: string[]
   state: number
   lastBackendSync?: string
@@ -148,6 +165,11 @@ export default defineNuxtComponent({
 
     useHttpPaginationReactive(paginationOptions, execute)
 
+    const { data: families } = await useHttp<{ data: GroupFamily[] }>('/management/group-families', {
+      method: 'get',
+      query: { limit: 1000, skip: 0 },
+    })
+
     // recharge la liste et les compteurs « à synchroniser », dans lesquels les groupes sont comptés
     const refresh = async () => {
       await Promise.all([refreshGroups(), identityStateStore.fetchAllStateCount()])
@@ -155,6 +177,7 @@ export default defineNuxtComponent({
 
     return {
       groups,
+      families,
       pending,
       refresh,
       refreshGroups,
@@ -172,13 +195,21 @@ export default defineNuxtComponent({
       NewTargetId,
       // colonnes réduites par défaut pour éviter le défilement horizontal du panneau de gauche ;
       // description et dernière synchro restent disponibles via « Afficher/cacher des colonnes »
-      visibleColumns: ['cn', 'mail', 'member', 'state'],
+      visibleColumns: ['cn', 'family', 'mail', 'member', 'state'],
       columns: [
         {
           name: 'cn',
           label: 'Nom (cn)',
           field: (row: Group) => row.cn,
           align: 'left',
+          sortable: true,
+        },
+        {
+          name: 'family',
+          label: 'Famille',
+          field: (row: Group) => row.family || '',
+          align: 'left',
+          // trié côté API sur le nom de la famille
           sortable: true,
         },
         {
@@ -220,6 +251,9 @@ export default defineNuxtComponent({
     }
   },
   computed: {
+    familiesById(): Record<string, GroupFamily> {
+      return Object.fromEntries((this.families?.data || []).map((family: GroupFamily) => [family._id, family]))
+    },
     ellipsisColumns(): string[] {
       return ['cn', 'description', 'mail']
     },

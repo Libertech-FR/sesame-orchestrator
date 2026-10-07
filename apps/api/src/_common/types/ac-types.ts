@@ -57,6 +57,7 @@ export const AC_INTERNAL_DEFAULT_ROLES_GRANTS: IAccessInfo[] = [
   { role: AC_INTERNAL_ROLE_LECTURE, action: AC_ACTIONS.READ, resource: '/management/lifecycle' },
 
   { role: AC_INTERNAL_ROLE_LECTURE, action: AC_ACTIONS.READ, resource: '/management/groups' },
+  { role: AC_INTERNAL_ROLE_LECTURE, action: AC_ACTIONS.READ, resource: '/management/group-families' },
 
   // AC_INTERNAL_ROLE_ECRITURE
   { role: AC_INTERNAL_ROLE_ECRITURE, action: AC_ACTIONS.CREATE, resource: '/management/identities' },
@@ -91,6 +92,10 @@ export const AC_INTERNAL_DEFAULT_ROLES_GRANTS: IAccessInfo[] = [
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.CREATE, resource: '/core/roles' },
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.UPDATE, resource: '/core/roles' },
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.DELETE, resource: '/core/roles' },
+
+  { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.CREATE, resource: '/management/group-families' },
+  { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.UPDATE, resource: '/management/group-families' },
+  { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.DELETE, resource: '/management/group-families' },
 
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.READ, resource: '/core/keyrings' },
   { role: AC_INTERNAL_ROLE_GESTION, action: AC_ACTIONS.CREATE, resource: '/core/keyrings' },

@@ -29,6 +29,11 @@ export class GroupsCreateDto extends CustomFieldsDto {
   @ApiProperty({ type: String, required: false, nullable: true, description: 'Adresse email du groupe' })
   public mail?: string | null;
 
+  @IsMongoId()
+  @IsOptional()
+  @ApiProperty({ type: String, required: false, nullable: true, description: 'Identifiant de la famille du groupe' })
+  public family?: string | null;
+
   @IsArray()
   @IsMongoId({ each: true })
   @IsOptional()

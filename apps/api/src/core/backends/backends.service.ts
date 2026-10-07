@@ -23,6 +23,8 @@ import { WorkerResultInterface } from '~/core/backends/_interfaces/worker-result
 import { formatWorkerResultErrorMessage } from '~/core/backends/_functions/format-worker-result-error-message.function';
 import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 import { GroupsService } from '~/management/groups/groups.service';
+import { GroupFamiliesService } from '~/management/groups/group-families.service';
+import { GroupFamilies } from '~/management/groups/_schemas/group-families.schema';
 import { Groups } from '~/management/groups/_schemas/groups.schema';
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
@@ -539,6 +541,10 @@ export class BackendsService extends AbstractQueueProcessor {
     return this.moduleRef.get(GroupsService, { strict: false });
   }
 
+  protected get groupFamiliesService(): GroupFamiliesService {
+    return this.moduleRef.get(GroupFamiliesService, { strict: false });
+  }
+
   protected async setConcernedState(
     ref: ExecuteJobOptions['concernedToRef'],
     id: Types.ObjectId,
@@ -594,12 +600,18 @@ export class BackendsService extends AbstractQueueProcessor {
       .lean<Identities[]>()
       .exec();
 
+    const family = group.family
+      ? await this.groupFamiliesService.model.findById(group.family, { name: 1 }).lean<GroupFamilies>().exec()
+      : null;
+
     return {
       group: {
         _id: group._id,
         cn: group.cn,
         description: group.description,
         mail: group.mail,
+        // nom de la famille du groupe, null si le groupe n'est rattaché à aucune famille
+        family: family?.name ?? null,
         owner: group.owner || [],
         customFields: group.customFields,
       },

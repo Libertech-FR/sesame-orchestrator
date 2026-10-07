@@ -22,6 +22,9 @@ export class Groups extends AbstractSchema {
   @Prop({ type: String, default: null, trim: true, lowercase: true })
   public mail?: string;
 
+  @Prop({ type: Types.ObjectId, ref: 'GroupFamilies', default: null })
+  public family?: Types.ObjectId | null;
+
   @Prop({ type: [Types.ObjectId], ref: 'Identities', default: [] })
   public member: Types.ObjectId[];
 
@@ -42,4 +45,5 @@ export const GroupsSchema = SchemaFactory.createForClass(Groups)
   .plugin(historyPlugin, {
     collectionName: Groups.name,
   })
-  .index({ member: 1 });
+  .index({ member: 1 })
+  .index({ family: 1 });

@@ -39,6 +39,7 @@ export class GroupsController extends AbstractController {
     cn: 1,
     description: 1,
     mail: 1,
+    family: 1,
     member: 1,
     owner: 1,
     state: 1,
@@ -96,7 +97,7 @@ export class GroupsController extends AbstractController {
       });
     }
 
-    const [data, total] = await this._service.findAndCount(
+    const [data, total] = await this._service.search(
       { ...searchFilter, ...searchFilterSchema },
       GroupsController.projection,
       searchFilterOptions,

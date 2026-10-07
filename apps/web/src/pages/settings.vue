@@ -113,6 +113,12 @@ export default defineNuxtComponent({
         acl: ['/core/roles'],
       },
       {
+        route: '/settings/group-families',
+        icon: 'mdi-folder-account',
+        label: 'Familles de groupes',
+        acl: ['/management/group-families'],
+      },
+      {
         route: '/settings/password-policy',
         icon: 'mdi-form-textbox-password',
         label: 'Politique de mot de passe',

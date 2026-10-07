@@ -22,6 +22,11 @@ on:
         required: true
         default: false
         type: boolean
+      unstable_only:
+        description: "Construire uniquement l'image docker avec le tag 'unstable' (sans numéro de version ni release) ?"
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   build:
@@ -47,6 +52,7 @@ jobs:
         run: yarn workspace @libertech-fr/sesame-orchestrator_api test
 
       - name: Build docker
+        if: ${{ github.event.inputs.unstable_only != 'true' }}
         uses: ./.github/actions/release
         with:
           version_increment: ${{ github.event.inputs.version_increment }}
@@ -64,3 +70,39 @@ jobs:
             GIT_SHA=${{ github.sha }}
             DOCKER_TAG={{NEW_VERSION}}
             IMAGE_TAG={{NEW_VERSION}}
+
+      - name: Get repo full name
+        if: ${{ github.event.inputs.unstable_only == 'true' }}
+        run: echo "REPO_FULL_NAME=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Set up QEMU
+        if: ${{ github.event.inputs.unstable_only == 'true' }}
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        if: ${{ github.event.inputs.unstable_only == 'true' }}
+        uses: docker/setup-buildx-action@v3.10.0
+
+      - name: Log in to the Container registry
+        if: ${{ github.event.inputs.unstable_only == 'true' }}
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push unstable Docker image
+        if: ${{ github.event.inputs.unstable_only == 'true' }}
+        uses: docker/build-push-action@v6.18.0
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ env.REPO_FULL_NAME }}:unstable
+          platforms: linux/amd64
+          build-args: |
+            BUILD_VERSION=unstable
+            GIT_BRANCH=${{ github.ref_name }}
+            GIT_COMMIT=${{ github.sha }}
+            GIT_SHA=${{ github.sha }}
+            DOCKER_TAG=unstable
+            IMAGE_TAG=unstable

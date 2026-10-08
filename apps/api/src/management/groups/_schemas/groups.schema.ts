@@ -7,9 +7,15 @@ import { IdentityState } from '~/management/identities/_enums/states.enum';
 
 export type GroupsDocument = Groups & Document;
 
+export enum GroupType {
+  STATIC = 'static',
+  DYNAMIC = 'dynamic',
+}
+
 /**
- * Groupe statique d'identités, équivalent de l'objectClass LDAP `groupOfNames`.
+ * Groupe d'identités, équivalent de l'objectClass LDAP `groupOfNames`.
  * L'appartenance est portée par le groupe (`member`), le `memberOf` d'une identité est calculé.
+ * Pour un groupe dynamique, `member` est calculé à partir de `filters`.
  */
 @Schema({ versionKey: false, minimize: false })
 export class Groups extends AbstractSchema {
@@ -24,6 +30,17 @@ export class Groups extends AbstractSchema {
 
   @Prop({ type: Types.ObjectId, ref: 'GroupFamilies', default: null })
   public family?: Types.ObjectId | null;
+
+  @Prop({ type: String, enum: GroupType, default: GroupType.STATIC })
+  public type: GroupType;
+
+  /**
+   * Filtre de sélection des membres d'un groupe dynamique, au format des clés signées
+   * de `filters[...]` (ex: `{ "@state": ["1"], "^inetOrgPerson.employeeType": "/^etd/i" }`).
+   * Le résultat de son évaluation est stocké dans `member`.
+   */
+  @Prop({ type: Object, default: null })
+  public filters?: Record<string, unknown> | null;
 
   @Prop({ type: [Types.ObjectId], ref: 'Identities', default: [] })
   public member: Types.ObjectId[];
@@ -46,4 +63,5 @@ export const GroupsSchema = SchemaFactory.createForClass(Groups)
     collectionName: Groups.name,
   })
   .index({ member: 1 })
-  .index({ family: 1 });
+  .index({ family: 1 })
+  .index({ type: 1 });

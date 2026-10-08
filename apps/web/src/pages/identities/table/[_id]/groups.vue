@@ -48,8 +48,8 @@
 </template>
 
 <script lang="ts">
-type GroupOption = { label: string; value: string }
-type GroupRow = { _id: string; cn: string }
+type GroupOption = { label: string; value: string; disable?: boolean }
+type GroupRow = { _id: string; cn: string; type?: 'static' | 'dynamic' }
 type GroupsResponse = { _data?: { data?: GroupRow[] } }
 
 export default defineNuxtComponent({
@@ -75,6 +75,8 @@ export default defineNuxtComponent({
       groupOptions: [] as GroupOption[],
       // libellés des groupes déjà connus, pour garder l'affichage des chips lors d'une recherche
       knownGroups: {} as Record<string, string>,
+      // groupes dynamiques : leur appartenance dépend de leur filtre, ils ne sont pas modifiables ici
+      dynamicGroups: {} as Record<string, boolean>,
     }
   },
   computed: {
@@ -100,7 +102,7 @@ export default defineNuxtComponent({
         this.rememberGroups(groups)
         this.selected = groups.map((group) => `${group._id}`)
         this.initial = [...this.selected]
-        this.groupOptions = this.selected.map((id) => ({ label: this.knownGroups[id], value: id }))
+        this.groupOptions = this.selected.map((id) => this.toOption(id))
       } catch (error: unknown) {
         this.handleErrorReq({ error, message: "Erreur lors du chargement des groupes de l'identité" })
       } finally {
@@ -110,7 +112,13 @@ export default defineNuxtComponent({
     rememberGroups(groups: GroupRow[]) {
       for (const group of groups) {
         this.knownGroups[`${group._id}`] = group.cn
+        this.dynamicGroups[`${group._id}`] = group.type === 'dynamic'
       }
+    },
+    toOption(id: string): GroupOption {
+      const label = this.knownGroups[id] || id
+      if (!this.dynamicGroups[id]) return { label, value: id }
+      return { label: `${label} (dynamique)`, value: id, disable: true }
     },
     filterGroups(val: string, update: (fn: () => void) => void) {
       this.$http
@@ -122,7 +130,7 @@ export default defineNuxtComponent({
           this.rememberGroups(groups)
           update(() => {
             const ids = new Set([...this.selected, ...groups.map((group) => `${group._id}`)])
-            this.groupOptions = [...ids].map((id) => ({ label: this.knownGroups[id] || id, value: id }))
+            this.groupOptions = [...ids].map((id) => this.toOption(id))
           })
         })
         .catch(() => update(() => {}))

@@ -1,0 +1,7 @@
+tasks:
+  - name: "groups-dynamic-refresh"
+    description: "Recalcul des membres des groupes dynamiques et synchronisation des groupes modifiés"
+    enabled: false
+    schedule: "*/15 * * * *"  # Toutes les 15 minutes
+    handler: "groups-dynamic-refresh"
+    options:

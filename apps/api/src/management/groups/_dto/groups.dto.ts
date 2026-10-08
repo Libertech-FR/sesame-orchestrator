@@ -7,11 +7,13 @@ import {
   IsEnum,
   IsMongoId,
   IsNotEmpty,
+  IsObject,
   IsOptional,
   IsString,
 } from 'class-validator';
 import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
+import { GroupType } from '../_schemas/groups.schema';
 
 export class GroupsCreateDto extends CustomFieldsDto {
   @IsString()
@@ -34,10 +36,34 @@ export class GroupsCreateDto extends CustomFieldsDto {
   @ApiProperty({ type: String, required: false, nullable: true, description: 'Identifiant de la famille du groupe' })
   public family?: string | null;
 
+  @IsEnum(GroupType)
+  @IsOptional()
+  @ApiProperty({
+    enum: GroupType,
+    required: false,
+    default: GroupType.STATIC,
+    description: 'Groupe normal ou dynamique',
+  })
+  public type?: GroupType;
+
+  @IsObject()
+  @IsOptional()
+  @ApiProperty({
+    type: Object,
+    required: false,
+    nullable: true,
+    description: 'Filtre de sélection des membres d’un groupe dynamique (clés signées, ex: { "@state": ["1"] })',
+  })
+  public filters?: Record<string, unknown> | null;
+
   @IsArray()
   @IsMongoId({ each: true })
   @IsOptional()
-  @ApiProperty({ type: [String], required: false, description: 'Identifiants des identités membres' })
+  @ApiProperty({
+    type: [String],
+    required: false,
+    description: 'Identifiants des identités membres (ignoré pour un groupe dynamique)',
+  })
   public member?: string[];
 
   @IsArray()
@@ -70,6 +96,12 @@ export class GroupsMembersDto {
   @IsMongoId({ each: true })
   @ApiProperty({ type: [String] })
   public members: string[];
+}
+
+export class GroupsFiltersPreviewDto {
+  @IsObject()
+  @ApiProperty({ type: Object, description: 'Filtre de groupe dynamique à évaluer' })
+  public filters: Record<string, unknown>;
 }
 
 export class GroupsMemberOfDto {

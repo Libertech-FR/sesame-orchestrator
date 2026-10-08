@@ -60,7 +60,10 @@ q-page.grid
       sesame-core-pan-filters(:columns='columns' mode='simple' placeholder='Rechercher par nom, description, email...')
     template(v-for="col in ellipsisColumns" :key="col" v-slot:[`body-cell-${col}`]='props')
       q-td(:props='props')
-        .ellipsis(style='max-width: 220px' :title='props.value') {{ props.value }}
+        .flex.no-wrap.items-center
+          q-icon.q-mr-xs(v-if='col === "cn" && props.row.type === "dynamic"' name='mdi-filter-cog' color='primary' size='xs')
+            q-tooltip.text-body2 Groupe dynamique : membres calculés à partir d'un filtre
+          .ellipsis(style='max-width: 220px' :title='props.value') {{ props.value }}
     template(v-slot:body-cell-family='props')
       q-td(:props='props')
         q-chip(
@@ -121,6 +124,7 @@ type Group = {
   description?: string
   mail?: string
   family?: string | null
+  type?: 'static' | 'dynamic'
   member?: string[]
   state: number
   lastBackendSync?: string

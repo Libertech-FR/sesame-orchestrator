@@ -24,6 +24,7 @@ import {
   GroupsCreateDto,
   GroupsDto,
   GroupsIdsDto,
+  GroupsFiltersPreviewDto,
   GroupsMemberOfDto,
   GroupsMembersDto,
   GroupsSyncDto,
@@ -40,6 +41,7 @@ export class GroupsController extends AbstractController {
     description: 1,
     mail: 1,
     family: 1,
+    type: 1,
     member: 1,
     owner: 1,
     state: 1,
@@ -121,6 +123,21 @@ export class GroupsController extends AbstractController {
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data,
+    });
+  }
+
+  @Post('preview-members')
+  @UseRoles({
+    resource: '/management/groups',
+    action: AC_ACTIONS.READ,
+    possession: AC_DEFAULT_POSSESSION,
+  })
+  @ApiOperation({ summary: "Nombre d'identités sélectionnées par le filtre d'un groupe dynamique" })
+  public async previewMembers(@Res() res: Response, @Body() body: GroupsFiltersPreviewDto): Promise<Response> {
+    const total = await this._service.countDynamicMembers(body.filters);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: { total },
     });
   }
 

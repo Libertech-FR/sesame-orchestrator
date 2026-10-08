@@ -37,6 +37,16 @@
       )
         q-tooltip.text-body2(anchor="top middle" self="center middle") Supprimer le groupe
   .q-pa-md.q-gutter-md
+    q-btn-toggle(
+      v-model='form.type'
+      :options='typeOptions'
+      :disable='!canEdit || !isNew'
+      toggle-color='primary'
+      no-caps
+      unelevated
+      spread
+      dense
+    )
     q-input(
       v-model='form.cn'
       label='Nom du groupe (cn)'
@@ -87,12 +97,17 @@
       outlined
       dense
     )
+    sesame-pages-groups-dynamic-filters(
+      v-if='isDynamic'
+      v-model='form.filters'
+      :readonly='!canEdit'
+    )
   .q-px-md.q-pb-md(v-if='!isNew')
     q-table(
       flat
       bordered
       dense
-      title='Membres (member)'
+      :title='isDynamic ? "Membres calculés par le filtre (member)" : "Membres (member)"'
       :rows='members'
       :columns='memberColumns'
       row-key='_id'
@@ -105,7 +120,7 @@
     )
       template(#top-right)
         q-select(
-          v-if='canEdit'
+          v-if='canEditMembers'
           v-model='toAdd'
           :options='identityOptions'
           label='Ajouter des identités'
@@ -134,7 +149,7 @@
             dense
           )
           q-btn(
-            :disable='!canEdit'
+            v-if='canEditMembers'
             color='negative'
             icon='mdi-account-remove'
             size='sm'
@@ -148,12 +163,18 @@
 <script lang="ts">
 import { NewTargetId } from '~/constants/variables'
 
+type GroupType = 'static' | 'dynamic'
+// format API : { "<signe><champ>": valeur }
+type DynamicGroupFilters = Record<string, string | string[]>
+
 type GroupData = {
   _id: string
   cn: string
   description?: string
   mail?: string | null
   family?: string | null
+  type?: GroupType
+  filters?: DynamicGroupFilters | null
   member?: string[]
   state?: number
 }
@@ -195,7 +216,13 @@ export default defineNuxtComponent({
         description: `${this.data.group?.description || ''}`,
         mail: `${this.data.group?.mail || ''}`,
         family: (this.data.group?.family || null) as string | null,
+        type: (this.data.group?.type || 'static') as GroupType,
+        filters: (this.data.group?.filters || null) as DynamicGroupFilters | null,
       },
+      typeOptions: [
+        { label: 'Groupe normal', value: 'static', icon: 'mdi-account-group' },
+        { label: 'Groupe dynamique', value: 'dynamic', icon: 'mdi-filter-cog' },
+      ],
       familyOptions: [] as { label: string; value: string; color?: string | null; description?: string | null }[],
       members: [] as Member[],
       membersLoading: false,
@@ -223,6 +250,13 @@ export default defineNuxtComponent({
     canEdit(): boolean {
       return this.hasPermission('/management/groups', this.isNew ? 'create' : 'update')
     },
+    isDynamic(): boolean {
+      return this.form.type === 'dynamic'
+    },
+    // les membres d'un groupe dynamique (enregistré) sont calculés par l'API à partir du filtre
+    canEditMembers(): boolean {
+      return this.canEdit && (this.data.group?.type || 'static') === 'static'
+    },
   },
   watch: {
     'data.group': {
@@ -231,6 +265,8 @@ export default defineNuxtComponent({
         this.form.description = `${group?.description || ''}`
         this.form.mail = `${group?.mail || ''}`
         this.form.family = group?.family || null
+        this.form.type = group?.type || 'static'
+        this.form.filters = group?.filters || null
       },
     },
   },
@@ -327,9 +363,16 @@ export default defineNuxtComponent({
         // null pour effacer l'adresse : une chaîne vide serait rejetée par la validation email de l'API
         mail: `${this.form.mail || ''}`.trim() || null,
         family: this.form.family || null,
+        type: this.form.type,
+        // le filtre n'a de sens que pour un groupe dynamique, l'API le retire d'un groupe normal
+        filters: this.isDynamic ? this.form.filters : null,
       }
       if (!body.cn) {
         this.$q.notify({ type: 'negative', message: 'Le nom du groupe est obligatoire', position: 'top-right' })
+        return
+      }
+      if (this.isDynamic && !Object.keys(this.form.filters || {}).length) {
+        this.$q.notify({ type: 'negative', message: 'Un groupe dynamique doit avoir au moins un filtre', position: 'top-right' })
         return
       }
 

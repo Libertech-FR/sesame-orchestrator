@@ -352,6 +352,135 @@ const getComparatorObject = (comparatorSign: string, search?: string) => {
   return candidates[0]
 }
 
+export type FiltersRecord = Record<string, LocationQueryValue | LocationQueryValue[] | undefined>
+
+export type ParsedFilter = { label: string; field: string; comparator: string; value: unknown; querySign: string; search: string }
+
+export type WritableFilter = { key: string; operator: string; value: any; min?: string; max?: string; items?: (string | number)[] }
+
+/**
+ * Extrait les filtres `filters[<signe><champ>]` d'un objet de query (route ou modèle local)
+ */
+export const parseFilters = (
+  query: FiltersRecord,
+  columns: Ref<QTableProps['columns'] & { type: string }[]>,
+  columnTypes?: Ref<ColumnType[]>,
+): Record<string, ParsedFilter> => {
+  const filters: Record<string, ParsedFilter> = {}
+
+  for (const key in query) {
+    if (key.includes(FILTER_PREFIX)) {
+      const filteredKey = key.replace(FILTER_PREFIX, '').replace(FILTER_SUFFIX, '')
+      const extract = extractComparator(filteredKey)
+
+      if (!extract) {
+        console.warn(`No comparator found for filter key: ${key} ${filteredKey}`)
+        continue
+      }
+
+      const label = getLabelByName(columns, extract.field) || extract.field
+      const rawValue = `${query[key]}`
+      const search = getSearchString(query[key] as LocationQueryValue | LocationQueryValue[], extract.field, columnTypes, columns)
+
+      if (!search || search === '') {
+        console.warn(`Invalid search for filter key: ${key} ${filteredKey}`, {
+          label,
+          search,
+          extract,
+        })
+        // continue
+      }
+
+      const comparatorObj = getComparatorObject(extract.comparator, rawValue)
+
+      // console.log('comparatorObj', comparatorObj, 'for key', key, 'with rawValue', rawValue)
+
+      filters[key] = {
+        label,
+        search,
+        field: extract.field,
+        value: rawValue,
+        querySign: extract.comparator,
+        comparator: comparatorObj ? comparatorObj.label.toLowerCase() : getComparatorLabel(extract.comparator),
+      }
+    }
+  }
+
+  return filters
+}
+
+/**
+ * Retourne une copie de la query sans le filtre donné
+ */
+export const deleteFilter = <T extends FiltersRecord>(query: T, filter: { field: string; querySign: string }): T => {
+  const result = { ...query }
+  const filterKey = `${FILTER_PREFIX}${filter.querySign}${filter.field}${FILTER_SUFFIX}`
+
+  delete result[filterKey]
+  delete result[filterKey + '[]'] // In case of multiple values
+
+  return result
+}
+
+/**
+ * Retourne une copie de la query avec le filtre donné (remplace un éventuel filtre existant sur le même champ),
+ * ou undefined si l'opérateur est inconnu
+ */
+export const applyFilter = <T extends FiltersRecord>(query: T, filter: WritableFilter): T | undefined => {
+  const result: FiltersRecord = { ...query }
+  const comparator = comparatorTypes.value.find((comp) => comp.value === filter.operator)
+  if (!comparator) return
+
+  const filterKey = `${FILTER_PREFIX}${comparator.querySign}${filter.key}${FILTER_SUFFIX}`
+  const scalarValue = typeof filter.value === 'undefined' || filter.value === null ? '' : String(filter.value).trim()
+
+  // Remove any existing filter for the same field
+  for (const key in result) {
+    if (key.startsWith(FILTER_PREFIX) && key.endsWith(FILTER_SUFFIX)) {
+      const filteredKey = key.replace(FILTER_PREFIX, '').replace(FILTER_SUFFIX, '')
+      const extract = extractComparator(filteredKey)
+
+      // console.log('query key', query)
+      if (extract && extract.field.replace('[]', '') === filter.key) {
+        delete result[`${FILTER_PREFIX}${extract.comparator}${extract.field}${FILTER_SUFFIX}`]
+        delete result[`${FILTER_PREFIX}${extract.comparator}${extract.field.replace('[]', '')}${FILTER_SUFFIX}[]`] // In case of multiple values
+        // console.log('deleted key', `${FILTER_PREFIX}${extract.comparator}${extract.field}${FILTER_SUFFIX}`)
+      }
+    }
+  }
+
+  switch (filter.operator) {
+    case '@':
+      if (filter.items && filter.items.length > 0) {
+        result[filterKey] = filter.items.map((item) => `${comparator.prefix || ''}${item}${comparator.suffix || ''}`)
+      } else if (scalarValue) {
+        result[filterKey] = scalarValue
+          .split(',')
+          .map((item) => item.trim())
+          .filter((item) => item.length > 0)
+          .map((item) => `${comparator.prefix || ''}${item}${comparator.suffix || ''}`)
+      }
+      break
+
+    case '~':
+      if (scalarValue) {
+        result[filterKey] = scalarValue
+      }
+      break
+
+    default:
+      if (comparator.type.includes('date') && scalarValue) {
+        const dateValue = dayjs(scalarValue as string).toISOString()
+        result[filterKey] = `${comparator.prefix || ''}${dateValue}${comparator.suffix || ''}`
+      } else if (scalarValue) {
+        result[filterKey] = `${comparator.prefix || ''}${scalarValue}${comparator.suffix || ''}`
+      }
+      break
+  }
+
+  return result as T
+}
+
 export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: string }[]>, columnTypes?: Ref<ColumnType[]>) {
   const $route = useRoute()
 
@@ -362,115 +491,20 @@ export function useFiltersQuery(columns: Ref<QTableProps['columns'] & { type: st
 
   const hasFilters = computed(() => countFilters.value > 0)
 
-  const getFilters = computed(() => {
-    const filters: Record<string, { label: string; field: string; comparator: string; value: unknown; querySign: string; search: string }> = {}
-
-    for (const key in $route.query) {
-      if (key.includes(FILTER_PREFIX)) {
-        const filteredKey = key.replace(FILTER_PREFIX, '').replace(FILTER_SUFFIX, '')
-        const extract = extractComparator(filteredKey)
-
-        if (!extract) {
-          console.warn(`No comparator found for filter key: ${key} ${filteredKey}`)
-          continue
-        }
-
-        const label = getLabelByName(columns, extract.field) || extract.field
-        const rawValue = `${$route.query[key]}`
-        const search = getSearchString($route.query[key], extract.field, columnTypes, columns)
-
-        if (!search || search === '') {
-          console.warn(`Invalid search for filter key: ${key} ${filteredKey}`, {
-            label,
-            search,
-            extract,
-          })
-          // continue
-        }
-
-        const comparatorObj = getComparatorObject(extract.comparator, rawValue)
-
-        // console.log('comparatorObj', comparatorObj, 'for key', key, 'with rawValue', rawValue)
-
-        filters[key] = {
-          label,
-          search,
-          field: extract.field,
-          value: rawValue,
-          querySign: extract.comparator,
-          comparator: comparatorObj ? comparatorObj.label.toLowerCase() : getComparatorLabel(extract.comparator),
-        }
-      }
-    }
-
-    return filters
-  })
+  const getFilters = computed(() => parseFilters($route.query, columns, columnTypes))
 
   const removeFilter = (filter: { field: string; querySign: string }) => {
     const router = useRouter()
-    const query = { ...$route.query }
-    const filterKey = `${FILTER_PREFIX}${filter.querySign}${filter.field}${FILTER_SUFFIX}`
-
-    delete query[filterKey]
-    delete query[filterKey + '[]'] // In case of multiple values
 
     router.replace({
-      query,
+      query: deleteFilter({ ...$route.query }, filter),
     })
   }
 
-  const writeFilter = (filter: { key: string; operator: string; value: any, min?: string, max?: string, items?: (string | number)[] }) => {
+  const writeFilter = (filter: WritableFilter) => {
     const router = useRouter()
-    const query = { ...$route.query }
-    const comparator = comparatorTypes.value.find((comp) => comp.value === filter.operator)
-    if (!comparator) return
-
-    const filterKey = `${FILTER_PREFIX}${comparator.querySign}${filter.key}${FILTER_SUFFIX}`
-    const scalarValue = typeof filter.value === 'undefined' || filter.value === null ? '' : String(filter.value).trim()
-
-    // Remove any existing filter for the same field
-    for (const key in query) {
-      if (key.startsWith(FILTER_PREFIX) && key.endsWith(FILTER_SUFFIX)) {
-        const filteredKey = key.replace(FILTER_PREFIX, '').replace(FILTER_SUFFIX, '')
-        const extract = extractComparator(filteredKey)
-
-        // console.log('query key', query)
-        if (extract && extract.field.replace('[]', '') === filter.key) {
-          delete query[`${FILTER_PREFIX}${extract.comparator}${extract.field}${FILTER_SUFFIX}`]
-          delete query[`${FILTER_PREFIX}${extract.comparator}${extract.field.replace('[]', '')}${FILTER_SUFFIX}[]`] // In case of multiple values
-          // console.log('deleted key', `${FILTER_PREFIX}${extract.comparator}${extract.field}${FILTER_SUFFIX}`)
-        }
-      }
-    }
-
-    switch (filter.operator) {
-      case '@':
-        if (filter.items && filter.items.length > 0) {
-          query[filterKey] = filter.items.map((item) => `${comparator.prefix || ''}${item}${comparator.suffix || ''}`)
-        } else if (scalarValue) {
-          query[filterKey] = scalarValue
-            .split(',')
-            .map((item) => item.trim())
-            .filter((item) => item.length > 0)
-            .map((item) => `${comparator.prefix || ''}${item}${comparator.suffix || ''}`)
-        }
-        break
-
-      case '~':
-        if (scalarValue) {
-          query[filterKey] = scalarValue
-        }
-        break
-
-      default:
-        if (comparator.type.includes('date') && scalarValue) {
-          const dateValue = dayjs(scalarValue as string).toISOString()
-          query[filterKey] = `${comparator.prefix || ''}${dateValue}${comparator.suffix || ''}`
-        } else if (scalarValue) {
-          query[filterKey] = `${comparator.prefix || ''}${scalarValue}${comparator.suffix || ''}`
-        }
-        break
-    }
+    const query = applyFilter({ ...$route.query }, filter)
+    if (!query) return
 
     router.replace({
       query,

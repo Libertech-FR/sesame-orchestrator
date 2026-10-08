@@ -13,6 +13,7 @@ import {
   SaveOptions,
   Types,
 } from 'mongoose';
+import { filterSchema, SearchFilterInput } from '@tacxou/nestjs_module_restools/search-filter-schema';
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
 import { normalizeMongoFilterValues } from '~/_common/functions/normalize-mongo-filter-values';
@@ -20,7 +21,7 @@ import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { IdentitiesCrudService } from '~/management/identities/identities-crud.service';
 import { GroupsCreateDto, GroupsUpdateDto } from './_dto/groups.dto';
 import { GroupFamilies } from './_schemas/group-families.schema';
-import { Groups } from './_schemas/groups.schema';
+import { Groups, GroupType } from './_schemas/groups.schema';
 
 /**
  * Service de gestion des groupes d'identités (type LDAP `groupOfNames`).
@@ -52,18 +53,37 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
   ): Promise<Document<T, any, T>> {
     await this.ensureCnAvailable(data.cn);
     await this.ensureMailAvailable(data.mail);
-    const member = await this.normalizeMembers(data.member);
     const owner = await this.normalizeMembers(data.owner);
     const family = await this.normalizeFamily(data.family);
+    const membership =
+      data.type === GroupType.DYNAMIC
+        ? await this.buildDynamicMembership(data.filters)
+        : { type: GroupType.STATIC, filters: null, member: await this.normalizeMembers(data.member) };
 
-    return await super.create<T>({ ...data, family, member, owner, state: IdentityState.TO_SYNC }, options);
+    return await super.create<T>({ ...data, family, owner, ...membership, state: IdentityState.TO_SYNC }, options);
   }
 
   public async updateGroup(_id: Types.ObjectId, data: GroupsUpdateDto): Promise<ModifyResult<Query<Groups, Groups>>> {
     const $set: Record<string, unknown> = { ...data, state: IdentityState.TO_SYNC };
     if (data.cn !== undefined) await this.ensureCnAvailable(data.cn, _id);
     if (data.mail !== undefined) await this.ensureMailAvailable(data.mail, _id);
-    if (data.member !== undefined) $set.member = await this.normalizeMembers(data.member);
+    if (data.type !== undefined || data.filters !== undefined || data.member !== undefined) {
+      const current = await this.findById<Groups>(_id, { type: 1, filters: 1 });
+      const type = data.type ?? current.type ?? GroupType.STATIC;
+      if (type === GroupType.DYNAMIC) {
+        // les membres d'un groupe dynamique sont toujours recalculés à partir du filtre
+        Object.assign(
+          $set,
+          await this.buildDynamicMembership(data.filters !== undefined ? data.filters : current.filters),
+        );
+      } else {
+        // un groupe redevenu normal conserve ses derniers membres calculés
+        $set.type = GroupType.STATIC;
+        $set.filters = null;
+        if (data.member !== undefined) $set.member = await this.normalizeMembers(data.member);
+        else delete $set.member;
+      }
+    }
     if (data.owner !== undefined) $set.owner = await this.normalizeMembers(data.owner);
     if (data.family !== undefined) $set.family = await this.normalizeFamily(data.family);
 
@@ -109,6 +129,7 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
   }
 
   public async addMembers(_id: Types.ObjectId, ids: string[]): Promise<ModifyResult<Query<Groups, Groups>>> {
+    await this.ensureStaticGroup(_id);
     const members = await this.normalizeMembers(ids);
     return await this.update<Groups>(_id, {
       $addToSet: { member: { $each: members } },
@@ -117,6 +138,7 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
   }
 
   public async removeMembers(_id: Types.ObjectId, ids: string[]): Promise<ModifyResult<Query<Groups, Groups>>> {
+    await this.ensureStaticGroup(_id);
     return await this.update<Groups>(_id, {
       $pull: { member: { $in: ids.map((id) => new Types.ObjectId(id)) } },
       $set: { state: IdentityState.TO_SYNC },
@@ -145,20 +167,28 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
    */
   public async findMemberOf(identityId: Types.ObjectId): Promise<Groups[]> {
     return await this._model
-      .find({ member: identityId }, { cn: 1, description: 1, state: 1 })
+      .find({ member: identityId }, { cn: 1, description: 1, state: 1, type: 1 })
       .sort({ cn: 1 })
       .lean<Groups[]>()
       .exec();
   }
 
   /**
-   * Remplace la liste des groupes d'une identité en ne modifiant que les groupes concernés par la différence
+   * Remplace la liste des groupes d'une identité en ne modifiant que les groupes concernés par la différence.
+   * Les groupes dynamiques sont ignorés : leur appartenance ne dépend que de leur filtre.
    */
   public async setIdentityGroups(identityId: Types.ObjectId, groupIds: string[]): Promise<Groups[]> {
     await this.normalizeMembers([identityId.toHexString()]);
 
-    const target = new Set(groupIds);
-    const current = new Set((await this.findMemberOf(identityId)).map((group) => group._id.toHexString()));
+    const dynamicIds = new Set(
+      (await this._model.find({ type: GroupType.DYNAMIC }, { _id: 1 }).lean().exec()).map((group) =>
+        group._id.toHexString(),
+      ),
+    );
+    const target = new Set(groupIds.filter((id) => !dynamicIds.has(id)));
+    const current = new Set(
+      (await this.findMemberOf(identityId)).map((group) => group._id.toHexString()).filter((id) => !dynamicIds.has(id)),
+    );
     const toAdd = [...target].filter((id) => !current.has(id));
     const toRemove = [...current].filter((id) => !target.has(id));
 
@@ -181,6 +211,37 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
     }
 
     return await this.findMemberOf(identityId);
+  }
+
+  /**
+   * Réévalue le filtre de chaque groupe dynamique et met à jour ses membres s'ils ont changé.
+   * Les groupes modifiés repassent à TO_SYNC ; leurs identifiants sont retournés pour synchronisation.
+   */
+  public async refreshDynamicGroups(): Promise<string[]> {
+    const groups = await this._model
+      .find({ type: GroupType.DYNAMIC, deletedFlag: { $ne: true } }, { cn: 1, filters: 1, member: 1 })
+      .lean<Groups[]>()
+      .exec();
+    const changed: string[] = [];
+
+    for (const group of groups) {
+      let member: Types.ObjectId[];
+      try {
+        member = await this.resolveDynamicMembers(group.filters);
+      } catch (error) {
+        this.logger.error(`Filtre invalide pour le groupe dynamique <${group.cn}>: ${error?.message || error}`);
+        continue;
+      }
+
+      const before = (group.member || []).map((id) => id.toString()).sort();
+      const after = member.map((id) => id.toString()).sort();
+      if (before.length === after.length && before.every((id, index) => id === after[index])) continue;
+
+      await this.update<Groups>(group._id, { $set: { member, state: IdentityState.TO_SYNC } });
+      changed.push(group._id.toString());
+    }
+
+    return changed;
   }
 
   /**
@@ -244,6 +305,53 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
     if (usedByIdentity) {
       throw new ConflictException(`L'adresse email <${normalized}> est déjà utilisée par une identité`);
     }
+  }
+
+  protected async ensureStaticGroup(_id: Types.ObjectId): Promise<void> {
+    const group = await this.findById<Groups>(_id, { type: 1 });
+    if (group?.type === GroupType.DYNAMIC) {
+      throw new BadRequestException('Les membres d’un groupe dynamique sont calculés à partir de son filtre');
+    }
+  }
+
+  protected async buildDynamicMembership(
+    filters?: Record<string, unknown> | null,
+  ): Promise<{ type: GroupType; filters: Record<string, unknown>; member: Types.ObjectId[] }> {
+    if (!filters || !Object.keys(filters).length) {
+      throw new BadRequestException('Un groupe dynamique doit avoir au moins un filtre');
+    }
+    return { type: GroupType.DYNAMIC, filters, member: await this.resolveDynamicMembers(filters) };
+  }
+
+  public async countDynamicMembers(filters?: Record<string, unknown> | null): Promise<number> {
+    return await this.identities.model.countDocuments(this.buildDynamicFilter(filters)).exec();
+  }
+
+  /**
+   * Évalue un filtre de groupe dynamique (même format et même périmètre que /identities/count-all)
+   * et retourne les identifiants des identités sélectionnées, triés
+   */
+  protected async resolveDynamicMembers(filters?: Record<string, unknown> | null): Promise<Types.ObjectId[]> {
+    const found = await this.identities.model
+      .find(this.buildDynamicFilter(filters), { _id: 1 })
+      .sort({ _id: 1 })
+      .lean()
+      .exec();
+
+    return found.map((identity) => new Types.ObjectId(identity._id.toString()));
+  }
+
+  /**
+   * Convertit le filtre stocké (clés signées) en filtre Mongo sur les identités non supprimées
+   */
+  protected buildDynamicFilter(filters?: Record<string, unknown> | null): FilterQuery<unknown> {
+    let filter: FilterQuery<unknown>;
+    try {
+      filter = filterSchema((filters || {}) as SearchFilterInput);
+    } catch (error) {
+      throw new BadRequestException(error?.message ?? 'Filtre de groupe dynamique invalide');
+    }
+    return normalizeMongoFilterValues({ ...filter, deletedFlag: { $ne: true } });
   }
 
   protected async ensureCnAvailable(cn: string, excludeId?: Types.ObjectId): Promise<void> {

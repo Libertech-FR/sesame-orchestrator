@@ -128,7 +128,7 @@ q-card.transparent(style='min-width: 45vw; max-width: 90vw')
         :suffix="comparator?.suffix"
         :readonly='!filter.operator'
         :type='searchInputType === "date" ? "datetime-local" : searchInputType'
-        @keydown.enter.prevent="writeFilter(filter)"
+        @keydown.enter.prevent="submit()"
         dense
         outlined
       )
@@ -223,7 +223,7 @@ q-card.transparent(style='min-width: 45vw; max-width: 90vw')
   q-card-actions
     q-space
     q-btn(
-      @click='writeFilter(filter)'
+      @click='submit()'
       :disabled='!filter.key || !filter.operator || (typeof filter.value === "undefined" && !filter.items?.length)'
       label='Valider'
       color='positive'
@@ -288,7 +288,13 @@ export default defineNuxtComponent({
       required: false,
       default: undefined,
     },
+    // en mode local, le filtre est émis (submit) au lieu d'être écrit dans la query de la route
+    local: {
+      type: Boolean,
+      default: false,
+    },
   },
+  emits: ['submit'],
   watch: {
     'filter.key': {
       handler() {
@@ -453,6 +459,13 @@ export default defineNuxtComponent({
     },
   },
   methods: {
+    submit() {
+      if (this.local) {
+        this.$emit('submit', { ...this.filter, items: [...(this.filter.items || [])] })
+        return
+      }
+      this.writeFilter(this.filter)
+    },
     isRecognizedFilterField(field: string) {
       return isRecognizedFilterField(field, {
         columns: this.columns,

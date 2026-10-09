@@ -34,13 +34,33 @@
               small (Le champ "{{ filter.field }}" n'existe pas ou n'est pas reconnu)
             span(v-else) Cliquer pour modifier le filtre
         template(v-if='i < group.length - 1')
-          q-btn.filter-connector(v-if='!readonly' label='et' color='grey-7' size='sm' flat dense no-caps @click='toggle(g, i)')
+          q-btn.filter-connector(
+            v-if='!readonly'
+            label='ET'
+            color='primary'
+            icon-right='mdi-swap-horizontal'
+            size='sm'
+            unelevated
+            rounded
+            dense
+            @click='toggle(g, i)'
+          )
             q-tooltip.text-body2 Cliquer pour combiner par OU
-          span.filter-connector.text-caption.text-grey-7(v-else) et
+          q-badge.filter-connector(v-else label='ET' color='primary' rounded)
     template(v-if='g < parsedGroups.length - 1')
-      q-btn.filter-connector(v-if='!readonly' label='ou' color='accent' size='sm' flat dense no-caps @click='toggle(g, group.length - 1)')
+      q-btn.filter-connector(
+        v-if='!readonly'
+        label='OU'
+        color='deep-orange'
+        icon-right='mdi-swap-horizontal'
+        size='sm'
+        unelevated
+        rounded
+        dense
+        @click='toggle(g, group.length - 1)'
+      )
         q-tooltip.text-body2 Cliquer pour combiner par ET
-      span.filter-connector.text-caption.text-weight-bold.text-accent(v-else) ou
+      q-badge.filter-connector(v-else label='OU' color='deep-orange' rounded)
   slot(name='append')
 </template>
 
@@ -146,14 +166,18 @@ export default defineNuxtComponent({
 
 <style lang="scss" scoped>
 .filter-group--bordered {
-  border: 1px dashed var(--q-accent);
-  border-radius: 14px;
+  // deep-orange de la palette Quasar, couleur du connecteur OU
+  border: 2px dashed #ff5722;
+  border-radius: 16px;
   padding: 0 2px;
 }
 
 .filter-connector {
   min-height: 0;
-  padding: 0 4px;
-  line-height: 1.4;
+  padding: 1px 8px;
+  margin: 0 4px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
 }
 </style>

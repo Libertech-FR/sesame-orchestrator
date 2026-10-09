@@ -3,12 +3,8 @@ import { FormDto, FormUpdateDto } from './_dto/form.dto';
 import { FormService } from './form.service';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
 import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import {
-  SearchFilterSchema,
-  FilterSchema,
-  SearchFilterOptions,
-  FilterOptions,
-} from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { FilterSchema, SearchFilterOptions, FilterOptions } from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { SearchFilterSchema } from '~/_common/decorators/search-filter-schema.decorator';
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
 import { Types } from 'mongoose';
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator';

@@ -15,12 +15,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import {
-  FilterOptions,
-  FilterSchema,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { FilterOptions, FilterSchema, SearchFilterOptions } from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { SearchFilterSchema } from '~/_common/decorators/search-filter-schema.decorator';
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
 import { Response } from 'express';
 import { Types } from 'mongoose';

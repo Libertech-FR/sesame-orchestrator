@@ -221,6 +221,13 @@ q-card.transparent(style='min-width: 45vw; max-width: 90vw')
         outlined
       )
   q-card-actions
+    q-toggle(
+      v-model='filter.negated'
+      label='Négation (NON)'
+      color='negative'
+      dense
+    )
+      q-tooltip.text-body2 Sélectionne les éléments qui ne vérifient pas la condition
     q-space
     q-btn(
       @click='submit()'
@@ -247,6 +254,8 @@ type Filter = {
   max?: string
 
   items?: (string | number)[]
+
+  negated: boolean
 }
 
 type InitialFilter = {
@@ -256,6 +265,7 @@ type InitialFilter = {
   querySign: string
   search: string
   value: string
+  negated?: boolean
 }
 
 export default defineNuxtComponent({
@@ -414,6 +424,8 @@ export default defineNuxtComponent({
       max: '',
 
       items: items.value,
+
+      negated: !!initialFilter?.negated,
     })
 
     return {

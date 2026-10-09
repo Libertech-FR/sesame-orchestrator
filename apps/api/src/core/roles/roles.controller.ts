@@ -8,12 +8,8 @@ import { Response } from 'express';
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
 import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper';
 import { PartialProjectionType } from '~/_common/types/partial-projection.type';
-import {
-  FilterOptions,
-  FilterSchema,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { FilterOptions, FilterSchema, SearchFilterOptions } from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { SearchFilterSchema } from '~/_common/decorators/search-filter-schema.decorator';
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
 import { ApiReadResponseDecorator } from '~/_common/decorators/api-read-response.decorator';
 import { Types } from 'mongoose';

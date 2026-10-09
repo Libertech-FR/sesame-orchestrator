@@ -162,10 +162,12 @@
 
 <script lang="ts">
 import { NewTargetId } from '~/constants/variables'
+import { countFilterConditions, payloadToFilterGroups } from '~/composables/useFiltersQuery'
+import type { FilterGroupsPayload } from '~/composables/useFiltersQuery'
 
 type GroupType = 'static' | 'dynamic'
-// format API : { "<signe><champ>": valeur }
-type DynamicGroupFilters = Record<string, string | string[]>
+// format API : { "<signe><champ>": valeur } (ET) ou liste de tels objets (OU)
+type DynamicGroupFilters = FilterGroupsPayload
 
 type GroupData = {
   _id: string
@@ -371,7 +373,7 @@ export default defineNuxtComponent({
         this.$q.notify({ type: 'negative', message: 'Le nom du groupe est obligatoire', position: 'top-right' })
         return
       }
-      if (this.isDynamic && !Object.keys(this.form.filters || {}).length) {
+      if (this.isDynamic && !countFilterConditions(payloadToFilterGroups(this.form.filters))) {
         this.$q.notify({ type: 'negative', message: 'Un groupe dynamique doit avoir au moins un filtre', position: 'top-right' })
         return
       }

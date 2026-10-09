@@ -111,45 +111,14 @@ q-toolbar(dense flat)
           floating
         ) {{ countFilters }}
     .flex.q-mt-sm(v-show='hasFilters')
-      template(v-for='(filter, i) in getFilters' :key='filter.field')
-        //- pre(v-html='JSON.stringify(filter)')
-        q-chip(
-          :class="[!isRecognizedFilterField(filter.field) ? 'text-black' : '']"
-          @remove="removeFilter(filter)"
-          :color="getFilterColor(filter)"
-          removable
-          clickable
-          dense
-        )
-          | {{ filter.label }}
-          q-separator.q-mx-xs(vertical)
-          | {{ filter.comparator }}
-          q-separator.q-mx-xs(vertical)
-          | "{{ filter.search }}"
-          q-popup-proxy(
-            anchor='bottom left'
-            self='top middle'
-            transition-show='scale'
-            transition-hide='scale'
-          )
-            sesame-core-edit-filters(
-              title='Modifier le filtre'
-              :initial-filter='filter'
-              :columns='columns'
-              :columns-type='columnsType'
-              :default-filter-field-paths='defaultFilterFieldPaths'
-              :custom-filter-fields-storage-key='customFilterFieldsStorageKey'
-            )
-          q-tooltip.text-body2(
-            :class="getTooltipColor(filter)"
-            anchor='top middle'
-            self='bottom middle'
-          )
-            span(v-if='!isRecognizedFilterField(filter.field)')
-              | Cliquer pour modifier le filtre&nbsp;
-              small (Le champ "{{ filter.field }}" n'existe pas ou n'est pas reconnu)
-            span(v-else) Cliquer pour modifier le filtre
-        span.content-center(v-if='i < countFilters - 1') &amp;gt;
+      sesame-core-filter-groups(
+        :model-value='filterGroups'
+        @update:model-value='setFilterGroups'
+        :columns='columns'
+        :columns-type='columnsType'
+        :default-filter-field-paths='defaultFilterFieldPaths'
+        :custom-filter-fields-storage-key='customFilterFieldsStorageKey'
+      )
 </template>
 
 <script lang="ts">
@@ -198,13 +167,13 @@ export default defineComponent({
     },
   },
   setup({ columns, columnsType }) {
-    const { countFilters, hasFilters, getFilters, removeFilter, removeAllFilters } = useFiltersQuery(ref(columns), ref(columnsType))
+    const { filterGroups, setFilterGroups, countFilters, hasFilters, removeAllFilters } = useFiltersQuery(ref(columns), ref(columnsType))
 
     return {
+      filterGroups,
+      setFilterGroups,
       countFilters,
       hasFilters,
-      getFilters,
-      removeFilter,
       removeAllFilters,
     }
   },
@@ -223,31 +192,6 @@ export default defineComponent({
           },
         })
       },
-    },
-  },
-  methods: {
-    isRecognizedFilterField(field: string) {
-      return isRecognizedFilterField(field, {
-        columns: this.columns,
-        columnsType: this.columnsType,
-        defaultFilterFieldPaths: this.defaultFilterFieldPaths,
-      })
-    },
-    getFilterColor(filter: { comparator: string; label: string; field: string; search?: string; value?: unknown }) {
-      if (this.isRecognizedFilterField(filter.field)) {
-        return this.$q.dark.isActive ? 'grey-9' : 'grey-3'
-      }
-
-      return this.$q.dark.isActive ? 'amber-9' : 'amber-3'
-    },
-    getTooltipColor(filter: { comparator: string; label: string; field: string; search?: string; value?: unknown }) {
-      const colors = [] as string[]
-      if (!this.isRecognizedFilterField(filter.field)) {
-        colors.push(this.$q.dark.isActive ? 'bg-amber-9' : 'bg-amber-3')
-        colors.push('text-black')
-      }
-
-      return colors.join(' ')
     },
   },
 })

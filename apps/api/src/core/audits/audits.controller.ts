@@ -5,12 +5,8 @@ import { PartialProjectionType } from '~/_common/types/partial-projection.type';
 import { AuditsService } from '~/core/audits/audits.service';
 import { UseRoles } from '~/_common/decorators/use-roles.decorator';
 import { AC_ACTIONS, AC_DEFAULT_POSSESSION } from '~/_common/types/ac-types';
-import {
-  FilterOptions,
-  FilterSchema,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { FilterOptions, FilterSchema, SearchFilterOptions } from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { SearchFilterSchema } from '~/_common/decorators/search-filter-schema.decorator';
 import { Response } from 'express';
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
 import { Types } from 'mongoose';

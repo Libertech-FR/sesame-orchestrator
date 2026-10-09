@@ -13,9 +13,14 @@ import {
   SaveOptions,
   Types,
 } from 'mongoose';
-import { filterSchema, SearchFilterInput } from '@tacxou/nestjs_module_restools/search-filter-schema';
 import { AbstractServiceSchema } from '~/_common/abstracts/abstract.service.schema';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
+import {
+  extractFilterGroups,
+  FilterGroup,
+  FilterGroups,
+  filterSchemaWithGroups,
+} from '~/_common/functions/filter-schema-groups.function';
 import { normalizeMongoFilterValues } from '~/_common/functions/normalize-mongo-filter-values';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
 import { IdentitiesCrudService } from '~/management/identities/identities-crud.service';
@@ -315,15 +320,25 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
   }
 
   protected async buildDynamicMembership(
-    filters?: Record<string, unknown> | null,
-  ): Promise<{ type: GroupType; filters: Record<string, unknown>; member: Types.ObjectId[] }> {
-    if (!filters || !Object.keys(filters).length) {
+    filters?: FilterGroups | null,
+  ): Promise<{ type: GroupType; filters: FilterGroups; member: Types.ObjectId[] }> {
+    let groups: FilterGroup[];
+    try {
+      groups = extractFilterGroups(filters) ?? (filters ? [filters as FilterGroup] : []);
+    } catch (error) {
+      throw new BadRequestException(error?.message ?? 'Filtre de groupe dynamique invalide');
+    }
+    groups = groups.filter((group) => Object.keys(group).length > 0);
+    if (!groups.length) {
       throw new BadRequestException('Un groupe dynamique doit avoir au moins un filtre');
     }
-    return { type: GroupType.DYNAMIC, filters, member: await this.resolveDynamicMembers(filters) };
+
+    // un seul groupe ET est stocké sous sa forme objet historique, plusieurs groupes OU sous forme de liste
+    const normalized: FilterGroups = groups.length === 1 ? groups[0] : groups;
+    return { type: GroupType.DYNAMIC, filters: normalized, member: await this.resolveDynamicMembers(normalized) };
   }
 
-  public async countDynamicMembers(filters?: Record<string, unknown> | null): Promise<number> {
+  public async countDynamicMembers(filters?: FilterGroups | null): Promise<number> {
     return await this.identities.model.countDocuments(this.buildDynamicFilter(filters)).exec();
   }
 
@@ -331,7 +346,7 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
    * Évalue un filtre de groupe dynamique (même format et même périmètre que /identities/count-all)
    * et retourne les identifiants des identités sélectionnées, triés
    */
-  protected async resolveDynamicMembers(filters?: Record<string, unknown> | null): Promise<Types.ObjectId[]> {
+  protected async resolveDynamicMembers(filters?: FilterGroups | null): Promise<Types.ObjectId[]> {
     const found = await this.identities.model
       .find(this.buildDynamicFilter(filters), { _id: 1 })
       .sort({ _id: 1 })
@@ -344,10 +359,10 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
   /**
    * Convertit le filtre stocké (clés signées) en filtre Mongo sur les identités non supprimées
    */
-  protected buildDynamicFilter(filters?: Record<string, unknown> | null): FilterQuery<unknown> {
+  protected buildDynamicFilter(filters?: FilterGroups | null): FilterQuery<unknown> {
     let filter: FilterQuery<unknown>;
     try {
-      filter = filterSchema((filters || {}) as SearchFilterInput);
+      filter = filterSchemaWithGroups(filters || {});
     } catch (error) {
       throw new BadRequestException(error?.message ?? 'Filtre de groupe dynamique invalide');
     }

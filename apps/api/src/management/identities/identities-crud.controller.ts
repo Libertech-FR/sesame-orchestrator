@@ -2,13 +2,9 @@ import { loadManualTransitions } from '~/management/lifecycle/_functions/load-ma
 import { isManualLifecycleTransitionAllowed } from '~/management/lifecycle/_functions/is-manual-lifecycle-transition-allowed.function';
 import { BadRequestException, Body, Controller, Get, HttpStatus, Param, Patch, Post, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import {
-  FilterOptions,
-  filterSchema,
-  FilterSchema,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { FilterOptions, FilterSchema, SearchFilterOptions } from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { SearchFilterSchema } from '~/_common/decorators/search-filter-schema.decorator';
+import { filterSchemaHasKey, filterSchemaWithGroups } from '~/_common/functions/filter-schema-groups.function';
 import { Response } from 'express';
 import { Document, Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';
@@ -231,7 +227,7 @@ export class IdentitiesCrudController extends AbstractController {
     // Le type `FilterSchema` est récursif (valeurs attendues), alors que pour Mongo on injecte parfois
     // des opérateurs comme `{ $ne: ... }`. On garde un cast `any` ici côté controller.
     const effectiveSearchFilterSchema: any = { ...searchFilterSchema };
-    if (!Object.prototype.hasOwnProperty.call(effectiveSearchFilterSchema, 'state')) {
+    if (!filterSchemaHasKey(effectiveSearchFilterSchema, 'state')) {
       effectiveSearchFilterSchema.state = { $ne: IdentityState.DONT_SYNC };
     }
 
@@ -328,7 +324,7 @@ export class IdentitiesCrudController extends AbstractController {
     try {
       filters = Object.entries(body).reduce(
         (acc, [key, value]) => {
-          acc[key] = filterSchema(value);
+          acc[key] = filterSchemaWithGroups(value);
           return acc;
         },
         {} as Record<string, FilterSchema>,

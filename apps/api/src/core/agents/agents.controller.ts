@@ -13,12 +13,8 @@ import {
   Res,
 } from '@nestjs/common';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
-import {
-  FilterOptions,
-  FilterSchema,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { FilterOptions, FilterSchema, SearchFilterOptions } from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { SearchFilterSchema } from '~/_common/decorators/search-filter-schema.decorator';
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';

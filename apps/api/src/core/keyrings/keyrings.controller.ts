@@ -6,12 +6,8 @@ import { ApiDeletedResponseDecorator } from '~/_common/decorators/api-deleted-re
 import { ObjectIdValidationPipe } from '~/_common/pipes/object-id-validation.pipe';
 import { Response } from 'express';
 import { PickProjectionHelper } from '~/_common/helpers/pick-projection.helper';
-import {
-  FilterOptions,
-  FilterSchema,
-  SearchFilterOptions,
-  SearchFilterSchema,
-} from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { FilterOptions, FilterSchema, SearchFilterOptions } from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { SearchFilterSchema } from '~/_common/decorators/search-filter-schema.decorator';
 import { ApiCreateDecorator } from '~/_common/decorators/api-create.decorator';
 import { ApiPaginatedDecorator } from '~/_common/decorators/api-paginated.decorator';
 import { PartialProjectionType } from '~/_common/types/partial-projection.type';

@@ -7,13 +7,33 @@ import {
   IsEnum,
   IsMongoId,
   IsNotEmpty,
-  IsObject,
   IsOptional,
   IsString,
+  ValidateBy,
+  ValidationOptions,
 } from 'class-validator';
 import { CustomFieldsDto } from '~/_common/abstracts/dto/custom-fields.dto';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
+import { FilterGroups } from '~/_common/functions/filter-schema-groups.function';
 import { GroupType } from '../_schemas/groups.schema';
+
+const isFilterGroup = (value: unknown): boolean => value !== null && typeof value === 'object' && !Array.isArray(value);
+
+/**
+ * Filtre de groupe dynamique : un groupe de conditions (ET) ou une liste de groupes (OU)
+ */
+function IsFilterGroups(validationOptions?: ValidationOptions): PropertyDecorator {
+  return ValidateBy(
+    {
+      name: 'isFilterGroups',
+      validator: {
+        validate: (value: unknown) => isFilterGroup(value) || (Array.isArray(value) && value.every(isFilterGroup)),
+        defaultMessage: () => '$property doit être un objet de filtres ou une liste d’objets de filtres',
+      },
+    },
+    validationOptions,
+  );
+}
 
 export class GroupsCreateDto extends CustomFieldsDto {
   @IsString()
@@ -46,15 +66,17 @@ export class GroupsCreateDto extends CustomFieldsDto {
   })
   public type?: GroupType;
 
-  @IsObject()
+  @IsFilterGroups()
   @IsOptional()
   @ApiProperty({
     type: Object,
     required: false,
     nullable: true,
-    description: 'Filtre de sélection des membres d’un groupe dynamique (clés signées, ex: { "@state": ["1"] })',
+    description:
+      'Filtre de sélection des membres d’un groupe dynamique (clés signées, ex: { "@state": ["1"] }), ' +
+      'ou liste de filtres combinés par OU (ex: [{ "@state": ["1"] }, { ":sn": "x" }])',
   })
-  public filters?: Record<string, unknown> | null;
+  public filters?: FilterGroups | null;
 
   @IsArray()
   @IsMongoId({ each: true })
@@ -99,9 +121,9 @@ export class GroupsMembersDto {
 }
 
 export class GroupsFiltersPreviewDto {
-  @IsObject()
-  @ApiProperty({ type: Object, description: 'Filtre de groupe dynamique à évaluer' })
-  public filters: Record<string, unknown>;
+  @IsFilterGroups()
+  @ApiProperty({ type: Object, description: 'Filtre de groupe dynamique à évaluer (objet ou liste de groupes OU)' })
+  public filters: FilterGroups;
 }
 
 export class GroupsMemberOfDto {

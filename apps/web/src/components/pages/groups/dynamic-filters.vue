@@ -8,44 +8,28 @@ q-field(
   dense
 )
   template(#control)
-    .flex.items-center.q-gutter-xs.q-py-xs.full-width
-      template(v-for='(filter, key, i) in parsedFilters' :key='key')
-        q-chip(
-          :removable='!readonly'
-          :clickable='!readonly'
-          @remove='remove(filter)'
-          :color='$q.dark.isActive ? "grey-9" : "grey-3"'
-          dense
-        )
-          | {{ filter.label }}
-          q-separator.q-mx-xs(vertical)
-          | {{ filter.comparator }}
-          q-separator.q-mx-xs(vertical)
-          | "{{ filter.search }}"
-          q-popup-proxy(v-if='!readonly' anchor='bottom left' self='top middle' transition-show='scale' transition-hide='scale')
+    sesame-core-filter-groups.q-py-xs.full-width(
+      :model-value='groups'
+      @update:model-value='emitGroups'
+      :columns='columns'
+      :columns-type='columnsType'
+      :default-filter-field-paths='DEFAULT_IDENTITY_FILTER_FIELD_PATHS'
+      custom-filter-fields-storage-key='identities'
+      :readonly='readonly'
+    )
+      template(#append)
+        q-btn(v-if='!readonly' color='secondary' icon='mdi-filter-variant-plus' size='sm' flat dense round)
+          q-tooltip.text-body2 Ajouter un filtre (combiné par ET, cliquer sur « et » pour passer en OU)
+          q-popup-proxy(anchor='bottom left' self='top middle' transition-show='scale' transition-hide='scale')
             sesame-core-edit-filters(
-              title='Modifier le filtre'
-              :initial-filter='filter'
+              title='Ajouter un filtre'
               :columns='columns'
               :columns-type='columnsType'
               :default-filter-field-paths='DEFAULT_IDENTITY_FILTER_FIELD_PATHS'
               custom-filter-fields-storage-key='identities'
               local
-              @submit='write'
+              @submit='add'
             )
-        span.content-center.text-caption(v-if='i < count - 1') et
-      q-btn(v-if='!readonly' color='secondary' icon='mdi-filter-variant-plus' size='sm' flat dense round)
-        q-tooltip.text-body2 Ajouter un filtre
-        q-popup-proxy(anchor='bottom left' self='top middle' transition-show='scale' transition-hide='scale')
-          sesame-core-edit-filters(
-            title='Ajouter un filtre'
-            :columns='columns'
-            :columns-type='columnsType'
-            :default-filter-field-paths='DEFAULT_IDENTITY_FILTER_FIELD_PATHS'
-            custom-filter-fields-storage-key='identities'
-            local
-            @submit='write'
-          )
   template(#after)
     q-chip(v-if='count' :color='previewTotal === null ? "grey" : "primary"' text-color='white' icon='mdi-account-multiple' dense)
       q-spinner(v-if='previewLoading' size='xs')
@@ -55,16 +39,16 @@ q-field(
 
 <script lang="ts">
 import type { PropType } from 'vue'
-import { applyFilter, deleteFilter, parseFilters, FILTER_PREFIX, FILTER_SUFFIX } from '~/composables/useFiltersQuery'
-import type { FiltersRecord, WritableFilter } from '~/composables/useFiltersQuery'
+import { countFilterConditions, filterGroupsToPayload, payloadToFilterGroups, writeFilterInGroups } from '~/composables/useFiltersQuery'
+import type { FilterGroup, FilterGroupsPayload, WritableFilter } from '~/composables/useFiltersQuery'
 import { DEFAULT_IDENTITY_FILTER_FIELD_PATHS } from '~/composables/useFilterFieldOptions'
 
-export type DynamicGroupFilters = Record<string, string | string[]>
+export type DynamicGroupFilters = FilterGroupsPayload
 
 /**
  * Éditeur du filtre d'un groupe dynamique.
- * Le modèle est au format attendu par l'API (`{ "<signe><champ>": valeur }`), sans l'enveloppe `filters[...]`
- * utilisée dans les query de route par les composants de filtre.
+ * Le modèle est au format attendu par l'API, sans l'enveloppe `filters[...]` utilisée dans les query de route :
+ * `{ "<signe><champ>": valeur }` (conditions ET) ou une liste de tels objets combinés par OU.
  */
 export default defineNuxtComponent({
   name: 'PagesGroupsDynamicFiltersComponent',
@@ -98,15 +82,11 @@ export default defineNuxtComponent({
     }
   },
   computed: {
-    queryFilters(): FiltersRecord {
-      return Object.fromEntries(Object.entries(this.modelValue || {}).map(([key, value]) => [`${FILTER_PREFIX}${key}${FILTER_SUFFIX}`, value]))
-    },
-    parsedFilters() {
-      // les refs du setup sont déballées dans `this`, parseFilters attend des refs
-      return parseFilters(this.queryFilters, ref(this.columns), ref(this.columnsType))
+    groups(): FilterGroup[] {
+      return payloadToFilterGroups(this.modelValue)
     },
     count(): number {
-      return Object.keys(this.modelValue || {}).length
+      return countFilterConditions(this.groups)
     },
   },
   watch: {
@@ -122,20 +102,12 @@ export default defineNuxtComponent({
     if (this.previewTimer) clearTimeout(this.previewTimer)
   },
   methods: {
-    write(filter: WritableFilter) {
-      const query = applyFilter(this.queryFilters, filter)
-      if (query) this.emitQuery(query)
+    add(filter: WritableFilter) {
+      const groups = writeFilterInGroups(this.groups, filter)
+      if (groups) this.emitGroups(groups)
     },
-    remove(filter: { field: string; querySign: string }) {
-      this.emitQuery(deleteFilter(this.queryFilters, filter))
-    },
-    emitQuery(query: FiltersRecord) {
-      const filters: DynamicGroupFilters = {}
-      for (const [key, value] of Object.entries(query)) {
-        if (!key.startsWith(FILTER_PREFIX) || !key.endsWith(FILTER_SUFFIX) || value === undefined || value === null) continue
-        filters[key.slice(FILTER_PREFIX.length, -FILTER_SUFFIX.length)] = value as string | string[]
-      }
-      this.$emit('update:modelValue', filters)
+    emitGroups(groups: FilterGroup[]) {
+      this.$emit('update:modelValue', filterGroupsToPayload(groups))
     },
     schedulePreview() {
       if (this.previewTimer) clearTimeout(this.previewTimer)

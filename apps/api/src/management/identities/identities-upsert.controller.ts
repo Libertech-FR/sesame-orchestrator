@@ -11,7 +11,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags, PartialType } from '@nestjs/swagger';
-import { FilterSchema, SearchFilterSchema } from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { FilterSchema } from '@tacxou/nestjs_module_restools/search-filter-schema';
+import { SearchFilterSchema } from '~/_common/decorators/search-filter-schema.decorator';
 import { Response } from 'express';
 import { Document, Types, isValidObjectId } from 'mongoose';
 import { AbstractController } from '~/_common/abstracts/abstract.controller';

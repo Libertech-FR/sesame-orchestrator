@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { AbstractSchema } from '~/_common/abstracts/schemas/abstract.schema';
+import { FilterGroups } from '~/_common/functions/filter-schema-groups.function';
 import { MixedValue } from '~/_common/types/mixed-value.type';
 import { historyPlugin } from '~/_common/plugins/mongoose/history.plugin';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
@@ -36,11 +37,12 @@ export class Groups extends AbstractSchema {
 
   /**
    * Filtre de sélection des membres d'un groupe dynamique, au format des clés signées
-   * de `filters[...]` (ex: `{ "@state": ["1"], "^inetOrgPerson.employeeType": "/^etd/i" }`).
+   * de `filters[...]` (ex: `{ "@state": ["1"], "^inetOrgPerson.employeeType": "/^etd/i" }`),
+   * ou liste de tels filtres combinés par OU.
    * Le résultat de son évaluation est stocké dans `member`.
    */
   @Prop({ type: Object, default: null })
-  public filters?: Record<string, unknown> | null;
+  public filters?: FilterGroups | null;
 
   @Prop({ type: [Types.ObjectId], ref: 'Identities', default: [] })
   public member: Types.ObjectId[];

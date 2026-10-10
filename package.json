@@ -46,5 +46,6 @@
     "**/mongoose": "8.23.0",
     "@tacxou/nestjs_module_restools/**/mongoose": "8.23.0",
     "@tacxou/nestjs_module_restools/**/bson": "6.10.4"
-  }
+  },
+  "dependencies": {}
 }

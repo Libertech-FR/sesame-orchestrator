@@ -117,6 +117,7 @@
       rows-per-page-label='Lignes par page'
       no-data-label='Aucun membre'
       @request='onMembersRequest'
+      @row-click='(_, row) => openMember(row)'
     )
       template(#top-right)
         q-select(
@@ -140,13 +141,13 @@
       template(#body-cell-actions='props')
         q-td(:props='props')
           q-btn(
-            :to='`/identities/table/${props.row._id}`'
             color='primary'
             icon='mdi-eye'
             size='sm'
             flat
             round
             dense
+            @click.stop='openMember(props.row)'
           )
           q-btn(
             v-if='canEditMembers'
@@ -156,8 +157,9 @@
             flat
             round
             dense
-            @click='removeMember(props.row)'
+            @click.stop='removeMember(props.row)'
           )
+  sesame-pages-groups-member-identity-dialog(v-model='memberDialog' :identity-id='memberDialogId')
 </template>
 
 <script lang="ts">
@@ -235,6 +237,8 @@ export default defineNuxtComponent({
       },
       toAdd: [] as string[],
       identityOptions: [] as { label: string; value: string }[],
+      memberDialog: false,
+      memberDialogId: null as string | null,
       memberColumns: [
         { name: 'cn', label: 'Nom', align: 'left', field: (row: Member) => row.inetOrgPerson?.cn },
         { name: 'uid', label: 'Identifiant (uid)', align: 'left', field: (row: Member) => row.inetOrgPerson?.uid },
@@ -310,6 +314,10 @@ export default defineNuxtComponent({
       } finally {
         this.membersLoading = false
       }
+    },
+    openMember(member: Member) {
+      this.memberDialogId = member._id
+      this.memberDialog = true
     },
     onMembersRequest(props: { pagination: { page: number; rowsPerPage: number } }) {
       this.membersPagination.page = props.pagination.page

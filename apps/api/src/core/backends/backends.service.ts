@@ -75,6 +75,7 @@ export class BackendsService extends AbstractQueueProcessor {
         if (isSyncedJob?.concernedTo?.$ref === 'groups') {
           await this.applyGroupJobResult(isSyncedJob.concernedTo.id, result?.jobName, true);
         } else {
+          await this.markGroupsOfFirstSyncedMember(isSyncedJob?.concernedTo?.id);
           await this.identitiesService.model.findByIdAndUpdate(isSyncedJob?.concernedTo?.id, {
             $set: {
               state: IdentityState.SYNCED,
@@ -167,10 +168,14 @@ export class BackendsService extends AbstractQueueProcessor {
         this.logger.error(`Set State on error [${payload.jobId}]`);
         myState = IdentityState.ON_ERROR;
       }
+      if (jState === JobState.COMPLETED && result.jobName !== ActionType.IDENTITY_DELETE) {
+        await this.markGroupsOfFirstSyncedMember(completedJob?.concernedTo?.id);
+      }
       await this.identitiesService.model.findByIdAndUpdate(completedJob?.concernedTo?.id, {
         $set: {
           state: myState,
-          lastBackendSync: jState === JobState.COMPLETED ? new Date() : null,
+          // en cas d'échec la date est conservée : l'identité existe toujours dans les backends
+          ...(jState === JobState.COMPLETED ? { lastBackendSync: new Date() } : {}),
           deletedFlag: result.jobName === ActionType.IDENTITY_DELETE,
         },
       });
@@ -560,6 +565,24 @@ export class BackendsService extends AbstractQueueProcessor {
   }
 
   /**
+   * À appeler juste avant d'enregistrer la synchronisation réussie d'une identité : si elle n'avait encore jamais
+   * été synchronisée, elle était absente du payload de ses groupes, qui repassent à TO_SYNC pour l'inclure.
+   * Fait avant la mise à jour de l'identité pour que syncAll trouve ces groupes en attente.
+   */
+  protected async markGroupsOfFirstSyncedMember(identityId?: Types.ObjectId | string): Promise<void> {
+    if (!identityId) return;
+    const identity = await this.identitiesService.model
+      .findById(identityId, { lastBackendSync: 1 })
+      .lean<Identities>()
+      .exec();
+    if (!identity || identity.lastBackendSync) return;
+
+    await this.groupsService.model
+      .updateMany({ member: identity._id, type: { $ne: GroupType.SUPER } }, { $set: { state: IdentityState.TO_SYNC } })
+      .exec();
+  }
+
+  /**
    * Applique le résultat d'un job GROUP_* sur le groupe concerné
    */
   protected async applyGroupJobResult(
@@ -585,12 +608,19 @@ export class BackendsService extends AbstractQueueProcessor {
 
   /**
    * Construit le payload envoyé au daemon pour un groupe : le groupe et ses membres résolus
-   * (hors identités supprimées et DONT_SYNC, qui ne peuvent pas être membres)
+   * (hors identités supprimées, DONT_SYNC et jamais synchronisées)
    */
   protected async buildGroupPayload(group: Groups): Promise<Record<string, any>> {
     const members = await this.identitiesService.model
       .find(
-        { _id: { $in: group.member || [] }, deletedFlag: { $ne: true }, state: { $ne: IdentityState.DONT_SYNC } },
+        {
+          _id: { $in: group.member || [] },
+          deletedFlag: { $ne: true },
+          state: { $ne: IdentityState.DONT_SYNC },
+          // une identité jamais synchronisée n'existe pas encore dans les backends : le groupe est envoyé sans elle
+          // et repassé à TO_SYNC lors de sa première synchronisation (markGroupsOfFirstSyncedMember)
+          lastBackendSync: { $ne: null },
+        },
         {
           'inetOrgPerson.cn': 1,
           'inetOrgPerson.uid': 1,
@@ -641,11 +671,14 @@ export class BackendsService extends AbstractQueueProcessor {
     if (!jobOptions.async) return { ...identities, ...(await this.syncAllGroups(jobOptions)) };
 
     const syncGroups = async () => {
+      const deadline = Date.now() + IDENTITIES_BEFORE_GROUPS_TIMEOUT_MS;
       await this.waitForJobs(
         Object.values(identities)
           .map((job: Partial<Jobs>) => job?.jobId)
           .filter(Boolean),
+        deadline,
       );
+      await this.waitForIdentitiesProcessed(Object.keys(identities), deadline);
       return await this.syncAllGroups(jobOptions);
     };
     if (waitForGroups) return { ...identities, ...(await syncGroups()) };
@@ -657,10 +690,9 @@ export class BackendsService extends AbstractQueueProcessor {
   }
 
   /**
-   * Attend la fin (succès ou échec) des jobs donnés, dans la limite de IDENTITIES_BEFORE_GROUPS_TIMEOUT_MS au total
+   * Attend la fin (succès ou échec) des jobs donnés, au plus tard jusqu'à `deadline`
    */
-  protected async waitForJobs(jobIds: string[]): Promise<void> {
-    const deadline = Date.now() + IDENTITIES_BEFORE_GROUPS_TIMEOUT_MS;
+  protected async waitForJobs(jobIds: string[], deadline: number): Promise<void> {
     for (const jobId of jobIds) {
       const remaining = deadline - Date.now();
       if (remaining <= 0) {
@@ -672,6 +704,26 @@ export class BackendsService extends AbstractQueueProcessor {
       const job = await this.queue.getJob(jobId);
       // un job en échec ne bloque pas les groupes : seuls ses membres manqueront côté backend
       await job?.waitUntilFinished(remaining).catch(() => null);
+    }
+  }
+
+  /**
+   * La fin d'un job est notifiée avant que l'écouteur « completed » de l'API ait mis à jour l'identité
+   * (état, lastBackendSync) : on attend que les identités envoyées ne soient plus à TO_SYNC / PROCESSING,
+   * sinon leurs groupes seraient considérés comme ayant des membres non synchronisés
+   */
+  protected async waitForIdentitiesProcessed(ids: string[], deadline: number): Promise<void> {
+    if (!ids.length) return;
+    const filter = {
+      _id: { $in: ids.filter((id) => Types.ObjectId.isValid(id)) },
+      state: { $in: [IdentityState.TO_SYNC, IdentityState.PROCESSING] },
+    };
+    while ((await this.identitiesService.model.countDocuments(filter).exec()) > 0) {
+      if (Date.now() >= deadline) {
+        this.logger.warn('Identities still pending after their jobs finished, syncing groups anyway');
+        return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1_000));
     }
   }
 
@@ -704,43 +756,12 @@ export class BackendsService extends AbstractQueueProcessor {
     }
     if (!groups.length) return {};
 
-    // un groupe n'est synchronisé que si tous ses membres (hors identités supprimées) le sont déjà dans les backends ;
-    // sinon il reste à TO_SYNC et sera repris par une prochaine synchronisation
-    const unsyncedMembers = new Set(
-      (
-        await this.identitiesService.model
-          .find(
-            {
-              _id: { $in: groups.flatMap((group) => group.member || []) },
-              deletedFlag: { $ne: true },
-              // les identités DONT_SYNC ne sont pas envoyées comme membres, elles ne bloquent pas le groupe
-              state: { $nin: [IdentityState.SYNCED, IdentityState.DONT_SYNC] },
-            },
-            { _id: 1 },
-          )
-          .lean()
-          .exec()
-      ).map((identity) => `${identity._id}`),
-    );
-
-    const result = {};
-    const ready: Groups[] = [];
-    for (const group of groups) {
-      const pending = (group.member || []).filter((id) => unsyncedMembers.has(`${id}`)).length;
-      if (!pending) {
-        ready.push(group);
-        continue;
-      }
-      this.logger.warn(`Group ${group.cn} not synced: ${pending} member(s) not synced yet`);
-      result[`${group._id}`] = { error: `${pending} membre(s) non synchronisé(s), groupe en attente` };
-    }
-    if (!ready.length) return result;
-
     const task: Document<Tasks> = await this.tasksService.create<Tasks>({
-      jobs: ready.map((group) => group._id),
+      jobs: groups.map((group) => group._id),
     });
 
-    for (const group of ready) {
+    const result = {};
+    for (const group of groups) {
       const action = group.lastBackendSync ? ActionType.GROUP_UPDATE : ActionType.GROUP_CREATE;
       try {
         const [executedJob] = await this.executeJob(action, group._id, await this.buildGroupPayload(group), {
@@ -909,6 +930,7 @@ export class BackendsService extends AbstractQueueProcessor {
         if (concernedTo && !!options?.updateStatus && isGroupJob) {
           await this.applyGroupJobResult(concernedTo, actionType, true);
         } else if (concernedTo && !!options?.updateStatus) {
+          if (options?.dataState !== DataStatusEnum.DELETED) await this.markGroupsOfFirstSyncedMember(concernedTo);
           await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
             $set: {
               state: options?.targetState || IdentityState.SYNCED,

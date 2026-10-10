@@ -9,6 +9,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  Matches,
   ValidateBy,
   ValidationOptions,
 } from 'class-validator';
@@ -62,9 +63,23 @@ export class GroupsCreateDto extends CustomFieldsDto {
     enum: GroupType,
     required: false,
     default: GroupType.STATIC,
-    description: 'Groupe normal ou dynamique',
+    description: 'Groupe normal, dynamique ou supergroupe',
   })
   public type?: GroupType;
+
+  @IsString()
+  @Matches(/^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)*$/, {
+    message: '$property doit être un chemin d’attribut (ex: inetOrgPerson.departmentNumber)',
+  })
+  @IsOptional()
+  @ApiProperty({
+    type: String,
+    required: false,
+    nullable: true,
+    description:
+      'Attribut des identités servant à générer les groupes d’un supergroupe (ex: inetOrgPerson.departmentNumber)',
+  })
+  public attribute?: string | null;
 
   @IsFilterGroups()
   @IsOptional()
@@ -110,6 +125,11 @@ export class GroupsDto extends GroupsCreateDto {
   @IsOptional()
   @ApiProperty({ type: Date, required: false })
   public lastBackendSync?: Date;
+
+  @IsMongoId()
+  @IsOptional()
+  @ApiProperty({ type: String, required: false, nullable: true, description: 'Supergroupe ayant généré ce groupe' })
+  public supergroup?: string | null;
 }
 
 export class GroupsMembersDto {

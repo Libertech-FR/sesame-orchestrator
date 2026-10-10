@@ -58,11 +58,42 @@ q-page.grid
       q-separator.q-mx-sm(vertical)
     template(#top-table)
       sesame-core-pan-filters(:columns='columns' mode='simple' placeholder='Rechercher par nom, description, email...')
+      .flex.items-center.no-wrap.q-px-md.q-pb-xs
+        .text-caption.text-grey-7.q-mr-sm Types :
+        q-chip(
+          v-for='option in typeOptions'
+          :key='option.value'
+          :selected='selectedTypes.includes(option.value)'
+          :outline='!selectedTypes.includes(option.value)'
+          :color='option.color'
+          :text-color='selectedTypes.includes(option.value) ? "white" : option.color'
+          :icon='option.icon'
+          :label='option.label'
+          size='sm'
+          clickable
+          dense
+          @click='toggleType(option.value)'
+        )
+        q-btn(
+          v-if='selectedTypes.length'
+          icon='mdi-close'
+          size='sm'
+          color='grey-7'
+          flat
+          round
+          dense
+          @click='selectedTypes = []'
+        )
+          q-tooltip.text-body2 Afficher tous les types
     template(v-for="col in ellipsisColumns" :key="col" v-slot:[`body-cell-${col}`]='props')
       q-td(:props='props')
         .flex.no-wrap.items-center
           q-icon.q-mr-xs(v-if='col === "cn" && props.row.type === "dynamic"' name='mdi-filter-cog' color='primary' size='xs')
             q-tooltip.text-body2 Groupe dynamique : membres calculés à partir d'un filtre
+          q-icon.q-mr-xs(v-if='col === "cn" && props.row.type === "super"' name='mdi-family-tree' color='deep-purple' size='xs')
+            q-tooltip.text-body2 Supergroupe : un groupe par valeur de l'attribut {{ props.row.attribute }}
+          q-icon.q-mr-xs(v-if='col === "cn" && props.row.supergroup' name='mdi-subdirectory-arrow-right' color='deep-purple' size='xs')
+            q-tooltip.text-body2 Groupe généré par un supergroupe
           .ellipsis(style='max-width: 220px' :title='props.value') {{ props.value }}
     template(v-slot:body-cell-family='props')
       q-td(:props='props')
@@ -124,11 +155,16 @@ type Group = {
   description?: string
   mail?: string
   family?: string | null
-  type?: 'static' | 'dynamic'
+  type?: 'static' | 'dynamic' | 'super'
+  attribute?: string | null
+  supergroup?: string | null
   member?: string[]
   state: number
   lastBackendSync?: string
 }
+
+// sélection des types de groupes affichés, mémorisée d'une visite à l'autre
+const GROUP_TYPES_STORAGE_KEY = 'sesame:groups:types'
 
 export default defineNuxtComponent({
   name: 'GroupsTablePage',
@@ -145,9 +181,23 @@ export default defineNuxtComponent({
     const { getStateBadge, getStateName } = useIdentityStates()
     const { handleErrorReq } = useErrorHandling()
 
-    const paginationOptions = useHttpPaginationOptions()
     const { hasPermission } = useAccessControl()
     const identityStateStore = useIdentityStateStore()
+
+    // restaure la dernière sélection de types avant le premier chargement, sauf si l'URL en impose une
+    const $route = useRoute()
+    const $router = useRouter()
+    if ($route.query.types === undefined) {
+      let stored: string | null = null
+      try {
+        stored = localStorage.getItem(GROUP_TYPES_STORAGE_KEY)
+      } catch {
+        stored = null
+      }
+      if (stored) await $router.replace({ query: { ...$route.query, types: stored } })
+    }
+
+    const paginationOptions = useHttpPaginationOptions()
 
     const {
       data: groups,
@@ -197,6 +247,12 @@ export default defineNuxtComponent({
   data() {
     return {
       NewTargetId,
+      typeOptions: [
+        { value: 'static', label: 'Normal', icon: 'mdi-account-group', color: 'primary' },
+        { value: 'dynamic', label: 'Dynamique', icon: 'mdi-filter-cog', color: 'teal' },
+        { value: 'super', label: 'Supergroupe', icon: 'mdi-family-tree', color: 'deep-purple' },
+        { value: 'child', label: 'Rattaché', icon: 'mdi-subdirectory-arrow-right', color: 'indigo' },
+      ],
       // colonnes réduites par défaut pour éviter le défilement horizontal du panneau de gauche ;
       // description et dernière synchro restent disponibles via « Afficher/cacher des colonnes »
       visibleColumns: ['cn', 'family', 'mail', 'member', 'state'],
@@ -255,6 +311,27 @@ export default defineNuxtComponent({
     }
   },
   computed: {
+    // types affichés, conservés dans l'URL (`types=static,dynamic`) ; vide = tous les types
+    selectedTypes: {
+      get(): string[] {
+        return `${this.$route.query.types || ''}`.split(',').filter(Boolean)
+      },
+      set(types: string[]): void {
+        try {
+          if (types.length) localStorage.setItem(GROUP_TYPES_STORAGE_KEY, types.join(','))
+          else localStorage.removeItem(GROUP_TYPES_STORAGE_KEY)
+        } catch {
+          // stockage indisponible (navigation privée...) : la sélection reste dans l'URL
+        }
+        this.$router.replace({
+          query: {
+            ...this.$route.query,
+            types: types.length ? types.join(',') : undefined,
+            page: undefined,
+          },
+        })
+      },
+    },
     familiesById(): Record<string, GroupFamily> {
       return Object.fromEntries((this.families?.data || []).map((family: GroupFamily) => [family._id, family]))
     },
@@ -275,6 +352,11 @@ export default defineNuxtComponent({
     },
   },
   methods: {
+    toggleType(type: string) {
+      this.selectedTypes = this.selectedTypes.includes(type)
+        ? this.selectedTypes.filter((value) => value !== type)
+        : [...this.selectedTypes, type]
+    },
     confirmBulk(title: string, message: string, label: string, color: string): Promise<boolean> {
       return new Promise((resolve) => {
         this.$q
@@ -362,9 +444,20 @@ export default defineNuxtComponent({
     },
     async syncGroup(group: Group) {
       try {
-        await this.$http.post('/management/groups/sync', {
+        const res = await this.$http.post('/management/groups/sync', {
           body: { ids: [group._id] },
         })
+        // le groupe n'est pas envoyé tant que tous ses membres ne sont pas synchronisés
+        const result = ((res?._data?.data || {}) as Record<string, { error?: string }>)[group._id]
+        if (result?.error) {
+          this.$q.notify({
+            message: `Le groupe ${group.cn} n'a pas été synchronisé : ${result.error}.`,
+            color: 'warning',
+            position: 'top-right',
+            icon: 'mdi-alert-outline',
+          })
+          return
+        }
         this.$q.notify({
           message: `Le groupe ${group.cn} a été envoyé en synchronisation.`,
           color: 'positive',

@@ -1,0 +1,7 @@
+tasks:
+  - name: "supergroups-refresh"
+    description: "Recalcul des groupes rattachés aux supergroupes et synchronisation des groupes modifiés"
+    enabled: false
+    schedule: "*/15 * * * *"  # Toutes les 15 minutes
+    handler: "supergroups-refresh"
+    options:

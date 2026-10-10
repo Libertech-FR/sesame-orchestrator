@@ -11,12 +11,15 @@ export type GroupsDocument = Groups & Document;
 export enum GroupType {
   STATIC = 'static',
   DYNAMIC = 'dynamic',
+  SUPER = 'super',
 }
 
 /**
  * Groupe d'identités, équivalent de l'objectClass LDAP `groupOfNames`.
  * L'appartenance est portée par le groupe (`member`), le `memberOf` d'une identité est calculé.
  * Pour un groupe dynamique, `member` est calculé à partir de `filters`.
+ * Un supergroupe n'a pas de membres et n'est jamais synchronisé : il génère un groupe statique (enfant)
+ * par valeur distincte de l'attribut `attribute` des identités, rattaché via `supergroup`.
  */
 @Schema({ versionKey: false, minimize: false })
 export class Groups extends AbstractSchema {
@@ -44,6 +47,19 @@ export class Groups extends AbstractSchema {
   @Prop({ type: Object, default: null })
   public filters?: FilterGroups | null;
 
+  /**
+   * Chemin de l'attribut des identités (ex: `inetOrgPerson.departmentNumber`) à partir duquel
+   * un supergroupe génère ses groupes enfants
+   */
+  @Prop({ type: String, default: null })
+  public attribute?: string | null;
+
+  /**
+   * Supergroupe ayant généré ce groupe ; le groupe est alors géré automatiquement
+   */
+  @Prop({ type: Types.ObjectId, ref: 'Groups', default: null })
+  public supergroup?: Types.ObjectId | null;
+
   @Prop({ type: [Types.ObjectId], ref: 'Identities', default: [] })
   public member: Types.ObjectId[];
 
@@ -66,4 +82,5 @@ export const GroupsSchema = SchemaFactory.createForClass(Groups)
   })
   .index({ member: 1 })
   .index({ family: 1 })
-  .index({ type: 1 });
+  .index({ type: 1 })
+  .index({ supergroup: 1 });

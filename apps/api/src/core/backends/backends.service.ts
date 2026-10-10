@@ -25,10 +25,12 @@ import { DataStatusEnum } from '~/management/identities/_enums/data-status';
 import { GroupsService } from '~/management/groups/groups.service';
 import { GroupFamiliesService } from '~/management/groups/group-families.service';
 import { GroupFamilies } from '~/management/groups/_schemas/group-families.schema';
-import { Groups } from '~/management/groups/_schemas/groups.schema';
+import { Groups, GroupType } from '~/management/groups/_schemas/groups.schema';
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
 const DAEMON_PING_TIMEOUT_MS = 15_000;
+// délai maximal d'attente de la fin des jobs d'identités avant de lancer la synchronisation des groupes
+const IDENTITIES_BEFORE_GROUPS_TIMEOUT_MS = 60 * 60_000;
 
 @Injectable()
 export class BackendsService extends AbstractQueueProcessor {
@@ -582,12 +584,13 @@ export class BackendsService extends AbstractQueueProcessor {
   }
 
   /**
-   * Construit le payload envoyé au daemon pour un groupe : le groupe et ses membres résolus (hors identités supprimées)
+   * Construit le payload envoyé au daemon pour un groupe : le groupe et ses membres résolus
+   * (hors identités supprimées et DONT_SYNC, qui ne peuvent pas être membres)
    */
   protected async buildGroupPayload(group: Groups): Promise<Record<string, any>> {
     const members = await this.identitiesService.model
       .find(
-        { _id: { $in: group.member || [] }, deletedFlag: { $ne: true } },
+        { _id: { $in: group.member || [] }, deletedFlag: { $ne: true }, state: { $ne: IdentityState.DONT_SYNC } },
         {
           'inetOrgPerson.cn': 1,
           'inetOrgPerson.uid': 1,
@@ -628,11 +631,59 @@ export class BackendsService extends AbstractQueueProcessor {
   }
 
   /**
-   * Synchronise tous les groupes à l'état TO_SYNC (appelé par « tout synchroniser » après les identités,
+   * Synchronise toutes les identités puis tous les groupes à l'état TO_SYNC.
+   * Les groupes ne sont mis en file qu'une fois les jobs des identités terminés : leurs membres doivent exister
+   * dans les backends. En mode async, l'attente se fait en arrière-plan sauf si `waitForGroups` est demandé.
+   */
+  public async syncAll(options?: ExecuteJobOptions & { waitForGroups?: boolean }): Promise<any> {
+    const { waitForGroups, ...jobOptions } = options || {};
+    const identities = (await this.syncAllIdentities(jobOptions)) || {};
+    if (!jobOptions.async) return { ...identities, ...(await this.syncAllGroups(jobOptions)) };
+
+    const syncGroups = async () => {
+      await this.waitForJobs(
+        Object.values(identities)
+          .map((job: Partial<Jobs>) => job?.jobId)
+          .filter(Boolean),
+      );
+      return await this.syncAllGroups(jobOptions);
+    };
+    if (waitForGroups) return { ...identities, ...(await syncGroups()) };
+
+    syncGroups().catch((error) =>
+      this.logger.error(`Unable to sync groups after identities: ${error?.message}`, error?.stack),
+    );
+    return identities;
+  }
+
+  /**
+   * Attend la fin (succès ou échec) des jobs donnés, dans la limite de IDENTITIES_BEFORE_GROUPS_TIMEOUT_MS au total
+   */
+  protected async waitForJobs(jobIds: string[]): Promise<void> {
+    const deadline = Date.now() + IDENTITIES_BEFORE_GROUPS_TIMEOUT_MS;
+    for (const jobId of jobIds) {
+      const remaining = deadline - Date.now();
+      if (remaining <= 0) {
+        this.logger.warn(
+          `Identity jobs still pending after ${IDENTITIES_BEFORE_GROUPS_TIMEOUT_MS}ms, syncing groups anyway`,
+        );
+        return;
+      }
+      const job = await this.queue.getJob(jobId);
+      // un job en échec ne bloque pas les groupes : seuls ses membres manqueront côté backend
+      await job?.waitUntilFinished(remaining).catch(() => null);
+    }
+  }
+
+  /**
+   * Synchronise tous les groupes à l'état TO_SYNC (appelé par syncAll une fois les identités synchronisées,
    * pour que les membres existent dans les backends avant leurs groupes)
    */
   public async syncAllGroups(options?: ExecuteJobOptions): Promise<any> {
-    const groups = await this.groupsService.model.find({ state: IdentityState.TO_SYNC }, { _id: 1 }).lean().exec();
+    const groups = await this.groupsService.model
+      .find({ state: IdentityState.TO_SYNC, type: { $ne: GroupType.SUPER } }, { _id: 1 })
+      .lean()
+      .exec();
     if (!groups.length) return {};
 
     return await this.syncGroups(
@@ -646,15 +697,50 @@ export class BackendsService extends AbstractQueueProcessor {
 
     const groups: Groups[] = [];
     for (const key of payload) {
-      groups.push(await this.groupsService.findById<Groups>(key));
+      const group = await this.groupsService.findById<Groups>(key);
+      // un supergroupe n'existe pas dans les backends, seuls ses groupes rattachés sont synchronisés
+      if (group.type === GroupType.SUPER) continue;
+      groups.push(group);
     }
+    if (!groups.length) return {};
 
-    const task: Document<Tasks> = await this.tasksService.create<Tasks>({
-      jobs: groups.map((group) => group._id),
-    });
+    // un groupe n'est synchronisé que si tous ses membres (hors identités supprimées) le sont déjà dans les backends ;
+    // sinon il reste à TO_SYNC et sera repris par une prochaine synchronisation
+    const unsyncedMembers = new Set(
+      (
+        await this.identitiesService.model
+          .find(
+            {
+              _id: { $in: groups.flatMap((group) => group.member || []) },
+              deletedFlag: { $ne: true },
+              // les identités DONT_SYNC ne sont pas envoyées comme membres, elles ne bloquent pas le groupe
+              state: { $nin: [IdentityState.SYNCED, IdentityState.DONT_SYNC] },
+            },
+            { _id: 1 },
+          )
+          .lean()
+          .exec()
+      ).map((identity) => `${identity._id}`),
+    );
 
     const result = {};
+    const ready: Groups[] = [];
     for (const group of groups) {
+      const pending = (group.member || []).filter((id) => unsyncedMembers.has(`${id}`)).length;
+      if (!pending) {
+        ready.push(group);
+        continue;
+      }
+      this.logger.warn(`Group ${group.cn} not synced: ${pending} member(s) not synced yet`);
+      result[`${group._id}`] = { error: `${pending} membre(s) non synchronisé(s), groupe en attente` };
+    }
+    if (!ready.length) return result;
+
+    const task: Document<Tasks> = await this.tasksService.create<Tasks>({
+      jobs: ready.map((group) => group._id),
+    });
+
+    for (const group of ready) {
       const action = group.lastBackendSync ? ActionType.GROUP_UPDATE : ActionType.GROUP_CREATE;
       try {
         const [executedJob] = await this.executeJob(action, group._id, await this.buildGroupPayload(group), {
@@ -684,6 +770,14 @@ export class BackendsService extends AbstractQueueProcessor {
       } catch (error) {
         // un groupe introuvable ne doit pas interrompre la suppression des autres (suppression en masse)
         result[key] = { error: error?.message ?? 'Group not found' };
+        continue;
+      }
+      if (group.type === GroupType.SUPER) {
+        // les groupes rattachés sont supprimés avec leur supergroupe, qui n'existe que localement
+        const childIds = await this.groupsService.findChildrenIds(group._id);
+        if (childIds.length) Object.assign(result, await this.deleteGroups(childIds, options));
+        await this.groupsService.model.findByIdAndDelete(group._id);
+        result[key] = { deleted: true };
         continue;
       }
       if (!group.lastBackendSync) {

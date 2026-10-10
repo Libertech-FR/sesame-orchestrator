@@ -49,7 +49,7 @@
 
 <script lang="ts">
 type GroupOption = { label: string; value: string; disable?: boolean }
-type GroupRow = { _id: string; cn: string; type?: 'static' | 'dynamic' }
+type GroupRow = { _id: string; cn: string; type?: 'static' | 'dynamic' | 'super'; supergroup?: string | null }
 type GroupsResponse = { _data?: { data?: GroupRow[] } }
 
 export default defineNuxtComponent({
@@ -75,8 +75,8 @@ export default defineNuxtComponent({
       groupOptions: [] as GroupOption[],
       // libellés des groupes déjà connus, pour garder l'affichage des chips lors d'une recherche
       knownGroups: {} as Record<string, string>,
-      // groupes dynamiques : leur appartenance dépend de leur filtre, ils ne sont pas modifiables ici
-      dynamicGroups: {} as Record<string, boolean>,
+      // groupes dont l'appartenance est calculée (dynamiques, supergroupes et leurs groupes) : non modifiables ici
+      computedGroups: {} as Record<string, string | null>,
     }
   },
   computed: {
@@ -112,13 +112,13 @@ export default defineNuxtComponent({
     rememberGroups(groups: GroupRow[]) {
       for (const group of groups) {
         this.knownGroups[`${group._id}`] = group.cn
-        this.dynamicGroups[`${group._id}`] = group.type === 'dynamic'
+        this.computedGroups[`${group._id}`] = group.type === 'dynamic' ? 'dynamique' : group.type === 'super' ? 'supergroupe' : group.supergroup ? 'supergroupe' : null
       }
     },
     toOption(id: string): GroupOption {
       const label = this.knownGroups[id] || id
-      if (!this.dynamicGroups[id]) return { label, value: id }
-      return { label: `${label} (dynamique)`, value: id, disable: true }
+      if (!this.computedGroups[id]) return { label, value: id }
+      return { label: `${label} (${this.computedGroups[id]})`, value: id, disable: true }
     },
     filterGroups(val: string, update: (fn: () => void) => void) {
       this.$http

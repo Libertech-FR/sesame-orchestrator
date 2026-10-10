@@ -73,6 +73,11 @@ export class BullmqQueueAdapter implements SesameQueueAdapter {
     }));
   }
 
+  public async getJob(jobId: string): Promise<SesameSubmittedJob | null> {
+    const job = await Job.fromId(this._queue, jobId);
+    return job ? this.toSubmittedJob(job) : null;
+  }
+
   private toSubmittedJob(job: Job): SesameSubmittedJob {
     return {
       id: String(job.id),

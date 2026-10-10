@@ -13,9 +13,8 @@ export interface SesameSubmittedJob {
 }
 
 export interface SesameQueueEventsEmitter {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on(event: string, handler: (...args: any[]) => void): void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   off(event: string, handler: (...args: any[]) => void): void;
 }
 
@@ -27,6 +26,7 @@ export interface SesameQueueAdapter {
     isAsync?: boolean,
   ): Promise<SesameSubmittedJob>;
   getCompleted(): Promise<Array<{ id: string; name: string; returnvalue: unknown }>>;
+  getJob(jobId: string): Promise<SesameSubmittedJob | null>;
   readonly events: SesameQueueEventsEmitter;
   connect(): Promise<void>;
   close(): Promise<void>;

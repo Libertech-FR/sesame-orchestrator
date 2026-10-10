@@ -20,11 +20,8 @@ export class BackendsSyncallCommand extends CommandRunner {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async run(inputs: string[], options: any): Promise<void> {
-    // les identités d'abord : les groupes référencent leurs membres
-    const result = {
-      ...(await this.backendsService.syncAllIdentities({ async: true })),
-      ...(await this.backendsService.syncAllGroups({ async: true })),
-    };
+    // les groupes ne sont mis en file qu'une fois les jobs des identités terminés : le process doit rester actif jusque-là
+    const result = await this.backendsService.syncAll({ async: true, waitForGroups: true });
     for (const identity of Object.values(result)) {
       console.log(identity);
     }
@@ -60,10 +57,44 @@ export class BackendsRefreshDynamicGroupsCommand extends CommandRunner {
   }
 }
 
+@CronConsoleHandler({
+  handler: 'supergroups-refresh',
+  command: 'backends refresh-supergroups',
+  label: 'Recalcul des groupes rattachés aux supergroupes et synchronisation des groupes modifiés',
+})
+@SubCommand({ name: 'refresh-supergroups' })
+export class BackendsRefreshSupergroupsCommand extends CommandRunner {
+  public constructor(
+    protected moduleRef: ModuleRef,
+    private readonly backendsService: BackendsService,
+  ) {
+    super();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async run(inputs: string[], options: any): Promise<void> {
+    // GroupsService est résolu à la demande, comme dans BackendsService (dépendance circulaire entre modules)
+    const groupsService = this.moduleRef.get(GroupsService, { strict: false });
+    const { changed, removed } = await groupsService.refreshSupergroups();
+    console.log(`${changed.length} groupe(s) créé(s) ou modifié(s), ${removed.length} groupe(s) à supprimer`);
+
+    if (removed.length) {
+      for (const group of Object.values((await this.backendsService.deleteGroups(removed, { async: true })) || {})) {
+        console.log(group);
+      }
+    }
+    if (changed.length) {
+      for (const group of Object.values((await this.backendsService.syncGroups(changed, { async: true })) || {})) {
+        console.log(group);
+      }
+    }
+  }
+}
+
 @Command({
   name: 'backends',
   arguments: '<task>',
-  subCommands: [BackendsSyncallCommand, BackendsRefreshDynamicGroupsCommand],
+  subCommands: [BackendsSyncallCommand, BackendsRefreshDynamicGroupsCommand, BackendsRefreshSupergroupsCommand],
 })
 export class BackendsCommand extends CommandRunner {
   public constructor(protected moduleRef: ModuleRef) {

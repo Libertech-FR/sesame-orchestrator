@@ -24,6 +24,10 @@ export class IdentitiesPasswordExpirationReminderService {
     }
 
     const policies: any = await this.passwdadmService.getPolicies();
+    if (policies?.passwordUsageExpirationEnabled === false) {
+      this.logger.debug('Password expiration reminder skipped: password usage expiration disabled');
+      return;
+    }
     const reminderSteps = this.getReminderSteps(policies);
     const reminderOffsets = reminderSteps.map((step) => step.daysBefore);
     if (!reminderOffsets.length) {

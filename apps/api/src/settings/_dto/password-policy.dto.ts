@@ -87,6 +87,14 @@ export class PasswordPoliciesDto {
   @ApiProperty({ example: 7776000, description: 'TTL de l’historique des mots de passe (en secondes)', type: Number })
   public passwordHistoryTtlSeconds: number = 60 * 60 * 24 * 90;
 
+  @IsBoolean()
+  @ApiProperty({
+    example: true,
+    description: "Active l'expiration d'usage du mot de passe et les rappels associés",
+    type: Boolean,
+  })
+  public passwordUsageExpirationEnabled: boolean = true;
+
   @IsNumber()
   @ApiProperty({
     example: 7776000,

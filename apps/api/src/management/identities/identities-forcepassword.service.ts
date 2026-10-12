@@ -50,7 +50,10 @@ export class IdentitiesForcepasswordService extends AbstractIdentitiesService {
       if (response?.status === 0) {
         await this.passwordHistory.recordPassword(identity._id, newPassword, 'force');
         const policies = await this.passwdAdmService.getPolicies();
-        const ttlSeconds = Number(policies?.passwordUsageExpirationTtlSeconds || 0);
+        const ttlSeconds =
+          policies?.passwordUsageExpirationEnabled === false
+            ? 0
+            : Number(policies?.passwordUsageExpirationTtlSeconds || 0);
         const usageExpiresAt =
           Number.isFinite(ttlSeconds) && ttlSeconds > 0 ? new Date(Date.now() + ttlSeconds * 1000) : null;
         await this._model.updateOne(

@@ -143,19 +143,12 @@
           dense
         )
       .row.q-col-gutter-md.q-mt-md
-        q-input.col-12.col-sm-6.col-md-5.col-lg-4(
+        sesame-core-input-duration.col-12.col-sm-6.col-md-5.col-lg-4(
           :readonly='!hasPermission("/settings/passwdadm", "update")'
-          type="number"
-          outlined
           v-model="payload.pwnedRecheckMaxAgeSeconds"
-          input-class="text-right"
-          label="Âge max avant re-check HIBP (secondes)"
+          label="Âge max avant re-check HIBP"
           hint="Re-check uniquement si la dernière vérification est plus ancienne que ce délai"
-          dense
         )
-          template(#append)
-            q-chip(dense size="sm" color="grey-3" text-color="dark")
-              span(v-text="pwnedRecheckMaxAgeHuman")
       q-separator.q-my-lg
       .row.q-col-gutter-md
         .col-12
@@ -184,21 +177,13 @@
           min="0"
           dense
         )
-        q-input.col-12.col-sm-6.col-md-4.col-lg-4(
+        sesame-core-input-duration.col-12.col-sm-6.col-md-4.col-lg-4(
           :readonly='!hasPermission("/settings/passwdadm", "update")'
           :disable='!payload.passwordHistoryEnabled'
-          type="number"
-          outlined
-          v-model.number="payload.passwordHistoryTtlSeconds"
-          input-class="text-right"
-          label="Durée de conservation de l'historique (secondes)"
+          v-model="payload.passwordHistoryTtlSeconds"
+          label="Durée de conservation de l'historique"
           hint="Au-delà de ce délai, un ancien mot de passe peut être réutilisé"
-          min="0"
-          dense
         )
-          template(#append)
-            q-chip(dense size="sm" color="grey-3" text-color="dark")
-              span(v-text="passwordHistoryTtlHuman")
       q-separator.q-my-lg
       .row.q-col-gutter-md
         .col-12
@@ -206,23 +191,28 @@
           .text-caption.text-grey-7
             | Configurez les jalons (J-30, J-7, J-1, J0...) avec template et sujet spécifiques.
       .row.q-col-gutter-md.q-mt-sm
-        q-input.col-12.col-md-6(
-          :readonly='!hasPermission("/settings/passwdadm", "update")'
-          type="number"
-          outlined
-          v-model="payload.passwordUsageExpirationTtlSeconds"
-          input-class="text-right"
-          label="Expiration d'usage du mot de passe (secondes)"
-          hint="Durée de validité métier d'un mot de passe avant obligation de renouvellement"
+        q-toggle.col-12(
+          :disable='!hasPermission("/settings/passwdadm", "update")'
           dense
+          v-model="payload.passwordUsageExpirationEnabled"
+          color="indigo"
+          label="Activer l'expiration des mots de passe et les rappels"
         )
-          template(#append)
-            q-chip(dense size="sm" color="grey-3" text-color="dark")
-              span(v-text="passwordUsageExpirationTtlDaysHuman")
+          q-tooltip.text-body2(anchor="bottom middle" self="top middle" :offset="[0, 8]")
+            | Désactivé : les mots de passe n'expirent pas et aucun rappel n'est envoyé.
+      .row.q-col-gutter-md.q-mt-sm
+        sesame-core-input-duration.col-12.col-md-6(
+          :readonly='!hasPermission("/settings/passwdadm", "update")'
+          :disable='!payload.passwordUsageExpirationEnabled'
+          v-model="payload.passwordUsageExpirationTtlSeconds"
+          label="Expiration d'usage du mot de passe"
+          hint="Durée de validité métier d'un mot de passe avant obligation de renouvellement"
+        )
         q-input.col-12.col-md-6(
           :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="text"
           outlined
+          :disable='!payload.passwordUsageExpirationEnabled'
           v-model="payload.passwordUsageReminderSubject"
           label="Sujet par défaut"
           hint="Utilisé si aucun sujet n'est défini pour un jalon"
@@ -232,6 +222,7 @@
           readonly
           type="text"
           outlined
+          :disable='!payload.passwordUsageExpirationEnabled'
           v-model="defaultReminderTemplate"
           label="Template par défaut"
           hint="Valeur fixe: password_reminder"
@@ -242,12 +233,13 @@
           :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="number"
           outlined
+          :disable='!payload.passwordUsageExpirationEnabled'
           v-model.number="item.daysBefore"
           label="Jours (J-x)"
           dense
         )
         q-select.col-12.col-sm-4(
-          :disable='!hasPermission("/settings/passwdadm", "update")'
+          :disable='!hasPermission("/settings/passwdadm", "update") || !payload.passwordUsageExpirationEnabled'
           outlined
           dense
           emit-value
@@ -261,6 +253,7 @@
           :readonly='!hasPermission("/settings/passwdadm", "update")'
           type="text"
           outlined
+          :disable='!payload.passwordUsageExpirationEnabled'
           v-model="item.subject"
           label="Sujet"
           placeholder="Laisser vide pour utiliser le sujet par défaut"
@@ -272,6 +265,7 @@
             flat
             round
             dense
+            :disable='!payload.passwordUsageExpirationEnabled'
             color="negative"
             icon="mdi-delete-outline"
             @click="removeReminderRow(idx)"
@@ -284,35 +278,24 @@
             dense
             color="primary"
             icon="mdi-plus"
+            :disable='!payload.passwordUsageExpirationEnabled'
             label="Ajouter un jalon"
             @click="addReminderRow"
           )
       q-separator.q-my-lg
       .row.q-col-gutter-md
-        q-input.col-12.col-md-6(
+        sesame-core-input-duration.col-12.col-md-6(
           :readonly='!hasPermission("/settings/passwdadm", "update")'
-          type="number"
-          outlined
           v-model="payload.resetCodeTTL"
-          label="Temps de vie du code de réinitialisation (en secondes)"
+          label="Temps de vie du code de réinitialisation"
           hint="Durée pendant laquelle le code de réinitialisation est valide"
-          dense
         )
-          template(#append)
-            q-chip(dense size="sm" color="grey-3" text-color="dark")
-              span(v-text="resetCodeTtlDaysHuman")
-        q-input.col-12.col-md-6(
+        sesame-core-input-duration.col-12.col-md-6(
           :readonly='!hasPermission("/settings/passwdadm", "update")'
-          type="number"
-          outlined
           v-model="payload.initTokenTTL"
-          label="Temps de vie du token d'initialisation (en secondes)"
+          label="Temps de vie du token d'initialisation"
           hint="Durée pendant laquelle le token d'initialisation envoyé par mail est valide"
-          dense
         )
-          template(#append)
-            q-chip(dense size="sm" color="grey-3" text-color="dark")
-              span(v-text="initTokenTtlDaysHuman")
   q-card-actions.sticky-footer.border-top.full-width
     q-space
     q-btn.text-positive(
@@ -330,7 +313,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 type PasswordPolicySettings = {
   len: number
@@ -353,6 +336,7 @@ type PasswordPolicySettings = {
   minComplexity: number
   resetCodeTTL: number
   initTokenTTL: number
+      passwordUsageExpirationEnabled?: boolean
       passwordUsageExpirationTtlSeconds?: number
       passwordUsageReminderSteps?: PasswordExpirationReminderRow[]
       passwordUsageReminderTemplatesByDays?: Record<string, string>
@@ -401,6 +385,7 @@ export default defineComponent({
       minComplexity: 0,
       resetCodeTTL: 0,
       initTokenTTL: 0,
+      passwordUsageExpirationEnabled: true,
       passwordUsageExpirationTtlSeconds: 60 * 60 * 24 * 90,
       passwordUsageReminderSteps: [] as PasswordExpirationReminderRow[],
       passwordUsageReminderTemplatesByDays: {} as Record<string, string>,
@@ -416,33 +401,6 @@ export default defineComponent({
     })
     const validations = ref({} as Record<string, unknown>)
     const hibpKeyStatus = ref<{ valid: boolean; reason: string | null }>({ valid: true, reason: null })
-
-    const formatSecondsToHuman = (secondsInput: number): string => {
-      const seconds = Number(secondsInput || 0)
-      if (!Number.isFinite(seconds) || seconds <= 0) return '0 minute'
-
-      let remaining = Math.floor(seconds)
-      const days = Math.floor(remaining / 86400)
-      remaining -= days * 86400
-      const hours = Math.floor(remaining / 3600)
-      remaining -= hours * 3600
-      const minutes = Math.floor(remaining / 60)
-      remaining -= minutes * 60
-      const secs = Math.floor(remaining)
-
-      const parts: string[] = []
-      if (days) parts.push(`${days} jour${days > 1 ? 's' : ''}`)
-      if (hours) parts.push(`${hours} heure${hours > 1 ? 's' : ''}`)
-      if (minutes || parts.length === 0) parts.push(`${minutes} minute${minutes > 1 ? 's' : ''}`)
-      if (secs) parts.push(`${secs} seconde${secs > 1 ? 's' : ''}`)
-      return parts.join(' ')
-    }
-
-    const pwnedRecheckMaxAgeHuman = computed(() => formatSecondsToHuman(payload.value.pwnedRecheckMaxAgeSeconds || 0))
-    const passwordUsageExpirationTtlDaysHuman = computed(() => formatSecondsToHuman(payload.value.passwordUsageExpirationTtlSeconds || 0))
-    const passwordHistoryTtlHuman = computed(() => formatSecondsToHuman(payload.value.passwordHistoryTtlSeconds || 0))
-    const resetCodeTtlDaysHuman = computed(() => formatSecondsToHuman(payload.value.resetCodeTTL))
-    const initTokenTtlDaysHuman = computed(() => formatSecondsToHuman(payload.value.initTokenTTL))
 
     watch(
       () => payload.value.checkPwned,
@@ -497,11 +455,6 @@ export default defineComponent({
     return {
       payload,
       hibpKeyStatus,
-      pwnedRecheckMaxAgeHuman,
-      passwordUsageExpirationTtlDaysHuman,
-      passwordHistoryTtlHuman,
-      resetCodeTtlDaysHuman,
-      initTokenTtlDaysHuman,
       defaultReminderTemplate: 'password_reminder',
       handleError,
       pending,
@@ -658,6 +611,7 @@ function normalizePasswordPolicy(raw: PasswordPolicyUiState) {
     passwordHistoryEnabled: payload.passwordHistoryEnabled ?? true,
     passwordHistoryCount: Number(payload.passwordHistoryCount ?? 5),
     passwordHistoryTtlSeconds: Number(payload.passwordHistoryTtlSeconds ?? 60 * 60 * 24 * 90),
+    passwordUsageExpirationEnabled: payload.passwordUsageExpirationEnabled ?? true,
     passwordUsageExpirationTtlSeconds: Number(payload.passwordUsageExpirationTtlSeconds || 60 * 60 * 24 * 90),
     passwordUsageReminderSteps: rows,
     passwordUsageReminderSubject: String(payload.passwordUsageReminderSubject || payload.passwordExpirationReminderSubject || 'Votre mot de passe expire bientôt'),

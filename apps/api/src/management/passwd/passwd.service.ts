@@ -728,7 +728,8 @@ export class PasswdService extends AbstractService {
 
   private async updatePasswordUsageExpiration(identityId: Identities['_id']): Promise<void> {
     const policies = (await this.passwdadmService.getPolicies()) as PasswordPoliciesDto;
-    const ttlSeconds = Number(policies?.passwordUsageExpirationTtlSeconds || 0);
+    const ttlSeconds =
+      policies?.passwordUsageExpirationEnabled === false ? 0 : Number(policies?.passwordUsageExpirationTtlSeconds || 0);
     const expiresAt = Number.isFinite(ttlSeconds) && ttlSeconds > 0 ? new Date(Date.now() + ttlSeconds * 1000) : null;
 
     await this.identities.model.updateOne(

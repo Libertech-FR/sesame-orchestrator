@@ -113,6 +113,16 @@
       @input-value='(v) => (form.attribute = v)'
     )
     q-input(
+      v-if='isSuper'
+      v-model='form.prefix'
+      label='Préfixe du nom des groupes générés (optionnel)'
+      :hint='isNew ? "Ex : dept- → dept-42 pour la valeur 42 ; non modifiable après la création" : "Fixé à la création du supergroupe"'
+      :readonly='!canEdit || !isNew'
+      :rules='[validatePrefix]'
+      outlined
+      dense
+    )
+    q-input(
       v-if='!isSuper'
       v-model='form.mail'
       label='Adresse email (optionnelle)'
@@ -267,6 +277,7 @@ type GroupData = {
   type?: GroupType
   filters?: DynamicGroupFilters | null
   attribute?: string | null
+  prefix?: string | null
   supergroup?: string | null
   member?: string[]
   state?: number
@@ -332,6 +343,7 @@ export default defineNuxtComponent({
         type: (this.data.group?.type || 'static') as GroupType,
         filters: (this.data.group?.filters || null) as DynamicGroupFilters | null,
         attribute: `${this.data.group?.attribute || ''}`,
+        prefix: `${this.data.group?.prefix || ''}`,
       },
       typeOptions: [
         { label: 'Groupe normal', value: 'static', icon: 'mdi-account-group' },
@@ -421,6 +433,7 @@ export default defineNuxtComponent({
         this.form.type = group?.type || 'static'
         this.form.filters = group?.filters || null
         this.form.attribute = `${group?.attribute || ''}`
+        this.form.prefix = `${group?.prefix || ''}`
         this.fetchParent()
       },
     },
@@ -600,6 +613,8 @@ export default defineNuxtComponent({
       }
       if (this.isSuper) {
         body.attribute = `${this.form.attribute || ''}`.trim()
+        // le préfixe n'est saisi qu'à la création, l'API refuse sa modification
+        if (this.isNew) body.prefix = `${this.form.prefix || ''}`.trim() || null
         delete body.mail
         delete body.filters
       }
@@ -644,6 +659,9 @@ export default defineNuxtComponent({
     },
     async refreshList() {
       await (this as unknown as { refresh: () => Promise<void> }).refresh()
+    },
+    validatePrefix(value?: string | null): true | string {
+      return !/[,+"\\<>;=#]/.test(`${value || ''}`) || 'Caractères interdits : , + " \\ < > ; = #'
     },
     validateMail(value?: string | null): true | string {
       const mail = `${value || ''}`.trim()

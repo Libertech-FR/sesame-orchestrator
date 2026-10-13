@@ -75,6 +75,7 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
           family,
           owner,
           attribute: this.normalizeAttribute(data.attribute),
+          prefix: `${data.prefix || ''}`.trim() || null,
           filters: null,
           member: [],
           state: IdentityState.DONT_SYNC,
@@ -88,7 +89,7 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
         : { type: GroupType.STATIC, filters: null, member: await this.normalizeGroupMembers(data.member) };
 
     return await super.create<T>(
-      { ...data, attribute: null, family, owner, ...membership, state: IdentityState.TO_SYNC },
+      { ...data, attribute: null, prefix: null, family, owner, ...membership, state: IdentityState.TO_SYNC },
       options,
     );
   }
@@ -97,10 +98,15 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
     const $set: Record<string, unknown> = { ...data, state: IdentityState.TO_SYNC };
     if (data.cn !== undefined) await this.ensureCnAvailable(data.cn, _id);
     if (data.mail !== undefined) await this.ensureMailAvailable(data.mail, _id);
-    const current = await this.findById<Groups>(_id, { type: 1, filters: 1, supergroup: 1 });
+    const current = await this.findById<Groups>(_id, { type: 1, filters: 1, supergroup: 1, prefix: 1 });
     if (data.type !== undefined && (data.type === GroupType.SUPER) !== (current.type === GroupType.SUPER)) {
       throw new BadRequestException('Un groupe ne peut pas être transformé en supergroupe, ni l’inverse');
     }
+    // le préfixe des groupes générés n'est saisi qu'à la création du supergroupe
+    if (data.prefix !== undefined && (`${data.prefix || ''}`.trim() || null) !== (current.prefix ?? null)) {
+      throw new BadRequestException('Le préfixe d’un supergroupe ne peut pas être modifié après sa création');
+    }
+    delete $set.prefix;
 
     if (current.type === GroupType.SUPER) {
       // seuls les champs descriptifs et l'attribut sont modifiables ; les enfants sont recalculés par refreshSupergroup
@@ -481,7 +487,13 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
   public async refreshSupergroup(
     supergroupId: Types.ObjectId | string,
   ): Promise<{ changed: string[]; removed: string[] }> {
-    const supergroup = await this.findById<Groups>(supergroupId, { cn: 1, type: 1, attribute: 1, family: 1 });
+    const supergroup = await this.findById<Groups>(supergroupId, {
+      cn: 1,
+      type: 1,
+      attribute: 1,
+      prefix: 1,
+      family: 1,
+    });
     if (supergroup.type !== GroupType.SUPER) {
       throw new BadRequestException(`Le groupe <${supergroup.cn}> n'est pas un supergroupe`);
     }
@@ -503,11 +515,13 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
       .exec();
 
     // plusieurs valeurs peuvent donner le même cn (ex: 1 et "1")
+    const prefix = supergroup.prefix ?? '';
     const membersByCn = new Map<string, Set<string>>();
     for (const { _id: value, member } of values) {
       if (value === null || value === undefined || typeof value === 'object') continue;
-      const cn = `${value}`.trim();
-      if (!cn) continue;
+      const trimmed = `${value}`.trim();
+      if (!trimmed) continue;
+      const cn = `${prefix}${trimmed}`;
       const set = membersByCn.get(cn) ?? new Set<string>();
       member.forEach((id) => set.add(id.toString()));
       membersByCn.set(cn, set);
@@ -551,6 +565,7 @@ export class GroupsService extends AbstractServiceSchema<Groups> {
         family,
         filters: null,
         attribute: null,
+        prefix: null,
         member,
         state: IdentityState.TO_SYNC,
       });

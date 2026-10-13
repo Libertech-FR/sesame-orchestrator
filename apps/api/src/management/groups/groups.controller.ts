@@ -53,6 +53,7 @@ export class GroupsController extends AbstractController {
     family: 1,
     type: 1,
     attribute: 1,
+    prefix: 1,
     supergroup: 1,
     member: 1,
     owner: 1,

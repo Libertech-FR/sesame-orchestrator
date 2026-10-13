@@ -55,6 +55,12 @@ export class Groups extends AbstractSchema {
   public attribute?: string | null;
 
   /**
+   * Préfixe du nom (cn) des groupes générés par un supergroupe ; fixé à la création
+   */
+  @Prop({ type: String, default: null })
+  public prefix?: string | null;
+
+  /**
    * Supergroupe ayant généré ce groupe ; le groupe est alors géré automatiquement
    */
   @Prop({ type: Types.ObjectId, ref: 'Groups', default: null })

@@ -91,7 +91,7 @@ q-page.grid
           q-icon.q-mr-xs(v-if='col === "cn" && props.row.type === "dynamic"' name='mdi-filter-cog' color='primary' size='xs')
             q-tooltip.text-body2 Groupe dynamique : membres calculés à partir d'un filtre
           q-icon.q-mr-xs(v-if='col === "cn" && props.row.type === "super"' name='mdi-family-tree' color='deep-purple' size='xs')
-            q-tooltip.text-body2 Supergroupe : un groupe par valeur de l'attribut {{ props.row.attribute }}
+            q-tooltip.text-body2 Supergroupe : un groupe {{ props.row.prefix ? `« ${props.row.prefix}… »` : '' }} par valeur de l'attribut {{ props.row.attribute }}
           q-icon.q-mr-xs(v-if='col === "cn" && props.row.supergroup' name='mdi-subdirectory-arrow-right' color='deep-purple' size='xs')
             q-tooltip.text-body2 Groupe généré par un supergroupe
           .ellipsis(style='max-width: 220px' :title='props.value') {{ props.value }}
@@ -157,6 +157,7 @@ type Group = {
   family?: string | null
   type?: 'static' | 'dynamic' | 'super'
   attribute?: string | null
+  prefix?: string | null
   supergroup?: string | null
   member?: string[]
   state: number

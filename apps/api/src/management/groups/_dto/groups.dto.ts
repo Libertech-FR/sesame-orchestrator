@@ -81,6 +81,19 @@ export class GroupsCreateDto extends CustomFieldsDto {
   })
   public attribute?: string | null;
 
+  @IsString()
+  @Matches(/^[^,+"\\<>;=#]*$/, {
+    message: '$property ne doit pas contenir de caractères réservés LDAP (, + " \\ < > ; = #)',
+  })
+  @IsOptional()
+  @ApiProperty({
+    type: String,
+    required: false,
+    nullable: true,
+    description: 'Préfixe du nom des groupes générés par un supergroupe (ex: dept-), saisi uniquement à la création',
+  })
+  public prefix?: string | null;
+
   @IsFilterGroups()
   @IsOptional()
   @ApiProperty({

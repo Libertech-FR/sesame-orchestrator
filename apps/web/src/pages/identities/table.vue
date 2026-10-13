@@ -384,7 +384,7 @@ export default defineNuxtComponent({
         })
         .onOk(async (data) => {
           if (data.syncAllIdentities) {
-            await this.updateAllIdentities(identityState)
+            await this.updateAllIdentities()
           } else {
             await this.updateIdentity(selectionAtOpen, identityState)
           }
@@ -543,21 +543,61 @@ export default defineNuxtComponent({
       await this.trashManySelected(rows)
     },
 
-    async updateAllIdentities(state: IdentityState) {
-      const f = this.returnFilter()
-      const { data: identities } = await useHttp<any>(`/management/identities?limit=999999&&filters[@state][]=${state}`, {
+    async updateAllIdentities() {
+      // Pas de filtre `state` ajouté à la requête : il écrasait/cassait le filtre courant (groupes OU)
+      // et restreignait le traitement à l'état de la première identité sélectionnée.
+      const { data: identities } = await useHttp<any>('/management/identities?limit=999999', {
         method: 'get',
-        query: f,
+        query: this.returnFilter(),
       })
 
-      if (!identities) {
+      const rows = identities.value?.data
+      const idsByState = new Map<IdentityState, unknown[]>()
+      for (const row of Array.isArray(rows) ? rows : []) {
+        const state = row?.state as IdentityState
+        if (typeof state !== 'number' || this.getTargetState(state) === state) continue
+        idsByState.set(state, [...(idsByState.get(state) ?? []), row])
+      }
+
+      if (idsByState.size === 0) {
         this.$q.notify({
           message: 'Aucune identité à mettre à jour',
           color: 'negative',
         })
         return
       }
-      this.updateIdentity(identities.value.data, state)
+
+      // L'API attend un état d'origine unique par appel
+      let updated = 0
+      try {
+        for (const [state, stateRows] of idsByState) {
+          const ids = this.bulkIdsFromIdentities(stateRows)
+          await this.$http.patch('/management/identities/state', {
+            body: {
+              ids,
+              originState: state,
+              targetState: this.getTargetState(state),
+            },
+          })
+          updated += ids.length
+        }
+
+        const skipped = (Array.isArray(rows) ? rows.length : 0) - updated
+        this.$q.notify({
+          message: skipped > 0 ? `${updated} identité(s) mise(s) à jour, ${skipped} ignorée(s) (état non éligible)` : `${updated} identité(s) mise(s) à jour avec succès`,
+          color: 'positive',
+        })
+      } catch (error: unknown) {
+        const err = error as { response?: { _data?: { message?: string } }; data?: { message?: string } }
+        this.$q.notify({
+          message: err?.response?._data?.message ?? err?.data?.message ?? 'Erreur lors de la mise à jour',
+          color: 'negative',
+        })
+      } finally {
+        await this.fetchAllStateCount()
+        this.refresh()
+        ;(this.$refs.twoPan as { clearSelection?: () => void } | undefined)?.clearSelection?.()
+      }
     },
 
     async updateIdentity(identities, state: IdentityState) {
@@ -771,7 +811,8 @@ export default defineNuxtComponent({
       const rest = { ...this.$route.query }
 
       for (const [key] of Object.entries(rest)) {
-        if (key === 'limit' || key === 'skip' || key === 'sort' || key === 'read') {
+        // `page` : avec limit=999999, page=N donnait skip=(N-1)*999999 et donc aucun résultat
+        if (key === 'limit' || key === 'skip' || key === 'page' || key === 'sort' || key === 'read') {
           delete rest[key]
         }
       }

@@ -51,7 +51,10 @@ div
             )
               q-tab(name="params") Paramètres d'appel
               q-separator(vertical)
-              q-tab(name="result") Résultat
+              q-tab(name="interpreted") Résultat
+              q-separator(vertical)
+              q-tab(name="result" icon="mdi-code-json" style="flex: 0 0 auto")
+                q-tooltip.text-body2 Source du message
               template(v-if="tabs[keyCompute + '_' + key]")
                 q-separator(vertical)
                 q-btn(
@@ -65,28 +68,30 @@ div
             q-tab-panels.overflow-auto(v-model="tabs[keyCompute + '_' + key]")
               q-tab-panel(name="params")
                 LazyMonacoEditor(style="height: 45vh; width: 100%" :model-value="stringifyForEditor(job.params)" :options="monacoOptions" lang="json")
+              q-tab-panel(name="interpreted")
+                sesame-core-job-result(:result="job.result" :state="job.state")
               q-tab-panel(name="result")
                 LazyMonacoEditor(style="height: 45vh; width: 100%;" :model-value="stringifyForEditor(job.result)" :options="monacoOptions" lang="json")
       q-timeline-entry.text-h5(v-if='empty' icon='mdi-flag-off' title='Fin de la liste...' color="red")
 </template>
 
 <script lang="ts">
+type Job = {
+  _id: string
+  jobId?: string
+  action?: string
+  state?: number
+  params?: Record<string, unknown> & { identity?: { identity?: { inetOrgPerson?: { cn?: string; givenName?: string } } } }
+  result?: Record<string, unknown>
+  concernedTo?: { $ref?: string; id?: string; name?: string }
+  metadata?: { createdAt?: string; lastUpdatedAt?: string }
+}
+
 export default defineNuxtComponent({
   name: 'JobsIndexPage',
-  data() {
-    return {
-      tabs: {},
-      editorJsonCache: new WeakMap<object, string>(),
-      jobsByOptions: [
-        { label: 'Jour', value: 'DD/MM/YYYY' },
-        { label: 'Mois', value: 'MM/YYYY' },
-        { label: 'Année', value: 'YYYY' },
-      ],
-    }
-  },
   setup() {
     const empty = ref(false)
-    const jobs = ref<any>([])
+    const jobs = ref<Job[]>([])
     const { monacoOptions } = useDebug()
 
     return {
@@ -95,13 +100,24 @@ export default defineNuxtComponent({
       monacoOptions,
     }
   },
+  data() {
+    return {
+      tabs: {} as Record<string, string>,
+      editorJsonCache: new WeakMap<object, string>(),
+      jobsByOptions: [
+        { label: 'Jour', value: 'DD/MM/YYYY' },
+        { label: 'Mois', value: 'MM/YYYY' },
+        { label: 'Année', value: 'YYYY' },
+      ],
+    }
+  },
   computed: {
     jobsBy: {
       get() {
         return this.$route.query.jobsBy ? `${this.$route.query.jobsBy}` : 'DD/MM/YYYY'
       },
-      set(value) {
-        this.tabs = []
+      set(value: string) {
+        this.tabs = {}
         this.$router.replace({
           query: {
             ...this.$route.query,
@@ -110,8 +126,8 @@ export default defineNuxtComponent({
         })
       },
     },
-    computedJobsByDays() {
-      const jobsByDays = {}
+    computedJobsByDays(): Record<string, Job[]> {
+      const jobsByDays: Record<string, Job[]> = {}
 
       this.jobs?.forEach((job) => {
         const day = this.$dayjs(job.metadata?.createdAt).format(this.jobsBy)
@@ -126,9 +142,10 @@ export default defineNuxtComponent({
     },
   },
   methods: {
-    async load(index, done) {
+    async load(index: number, done: (stop?: boolean) => void) {
       const offset = (index - 1) * 10
-      const res = await (this as any).$http.get(`/core/jobs/`, {
+      const { $http } = useNuxtApp()
+      const res = await $http.get(`/core/jobs/`, {
         method: 'GET',
         query: {
           limit: 10,
@@ -141,7 +158,7 @@ export default defineNuxtComponent({
       this.jobs.push(...res._data.data)
       done(res._data.data.length === 0)
     },
-    getColorState(state) {
+    getColorState(state?: number) {
       switch (state) {
         case -1:
           return 'negative'
@@ -153,7 +170,7 @@ export default defineNuxtComponent({
           return 'primary'
       }
     },
-    getIconState(state) {
+    getIconState(state?: number) {
       switch (state) {
         case -1:
           return 'mdi-account-remove'

@@ -108,28 +108,45 @@ q-page.container.q-pa-sm
               span(v-text="'(' + props.row?.jobId + ')'" class="text-caption")
       q-tr(v-if="props.expand" :props="props")
         q-td(colspan="100%" style="padding: 0")
-          LazyMonacoEditor(
-            style="height: 45vh; width: 100%"
-            :model-value="stringifyForEditor(props.row?.result)"
-            :options="monacoOptions"
-            lang="json"
+          q-tabs(
+            :model-value="resultTabs[props.row.jobId] || 'interpreted'"
+            @update:model-value="(tab) => (resultTabs[props.row.jobId] = tab)"
+            align="justify"
+            dense
           )
+            q-tab(name="interpreted") Résultat
+            q-separator(vertical)
+            q-tab(name="result" icon="mdi-code-json" style="flex: 0 0 auto")
+              q-tooltip.text-body2 Source du message
+          q-separator
+          q-tab-panels.overflow-auto(:model-value="resultTabs[props.row.jobId] || 'interpreted'")
+            q-tab-panel(name="interpreted")
+              sesame-core-job-result(:result="props.row?.result" :state="props.row?.state")
+            q-tab-panel.q-pa-none(name="result")
+              LazyMonacoEditor(
+                style="height: 45vh; width: 100%"
+                :model-value="stringifyForEditor(props.row?.result)"
+                :options="monacoOptions"
+                lang="json"
+              )
           q-separator.q-my-none(size="8px" color="primary")
 </template>
 
 <script lang="ts">
+import type { QTableProps } from 'quasar'
+
+type Job = {
+  _id: string
+  jobId: string
+  action?: string
+  state?: number
+  result?: Record<string, unknown>
+  concernedTo?: { $ref?: string; id?: string; name?: string }
+  metadata?: { createdAt?: string; lastUpdatedAt?: string }
+}
+
 export default defineComponent({
   name: 'JobsIndexPage',
-  data() {
-    return {
-      expanded: [] as string[],
-      editorJsonCache: new WeakMap<object, string>(),
-      foptions: [
-        { label: 'Ok', value: '9' },
-        { label: 'En erreur', value: '-1' },
-      ],
-    }
-  },
   async setup() {
     const { monacoOptions } = useDebug()
     const route = useRoute()
@@ -157,7 +174,7 @@ export default defineComponent({
       pending,
       error,
       refresh,
-    } = await useHttp<any>('/core/jobs', {
+    } = await useHttp<{ data?: Job[]; total?: number }>('/core/jobs', {
       method: 'GET',
       transform: (result) => {
         return result?.data || []
@@ -178,15 +195,26 @@ export default defineComponent({
       refresh,
     }
   },
+  data() {
+    return {
+      expanded: [] as string[],
+      resultTabs: {} as Record<string, string>,
+      editorJsonCache: new WeakMap<object, string>(),
+      foptions: [
+        { label: 'Ok', value: '9' },
+        { label: 'En erreur', value: '-1' },
+      ],
+    }
+  },
   computed: {
-    columns(): any[] {
+    columns(): NonNullable<QTableProps['columns']> {
       return [
         { name: 'state', title: 'Statut', field: 'state', label: 'Statut' },
         { name: 'jobId', title: 'Job Id', field: 'jobId', align: 'right', label: 'N° Job' },
         {
           name: 'identity',
           title: 'Identité',
-          field: (row) => row?.concernedTo || {},
+          field: (row: Job) => row?.concernedTo || {},
           align: 'left',
           label: 'Identité',
         },
@@ -200,7 +228,7 @@ export default defineComponent({
         {
           name: 'date',
           title: 'Date',
-          field: (row) => this.$dayjs(row.metadata?.lastUpdatedAt).format('DD/MM/YYYY HH:mm:ss').toString(),
+          field: (row: Job) => this.$dayjs(row.metadata?.lastUpdatedAt).format('DD/MM/YYYY HH:mm:ss').toString(),
           align: 'left',
           label: 'Date',
         },

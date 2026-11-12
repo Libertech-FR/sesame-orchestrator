@@ -74,6 +74,12 @@ export default defineNuxtComponent({
     const originTarget = ref({} as any)
 
     if (NewTargetId === $route.params._id) {
+      // Schemas ajoutes par defaut a la creation d'une identite LOCAL (configs/identities/defaults.yml).
+      const { data: defaultsResult } = await useHttp<{ data: { local?: { objectClasses?: string[] } } }>(`/settings/identities/defaults`, {
+        method: 'get',
+      })
+      const defaultObjectClasses = [...new Set(defaultsResult.value?.data?.local?.objectClasses || [])]
+
       return {
         identityStateStore,
         // `ref` obligatoire : un objet litteral renvoye par `setup` n'est pas reactif,
@@ -85,8 +91,8 @@ export default defineNuxtComponent({
             employeeType: 'LOCAL',
           },
           additionalFields: {
-            attributes: {},
-            objectClasses: [] as string[],
+            attributes: Object.fromEntries(defaultObjectClasses.map((name) => [name, {}])),
+            objectClasses: defaultObjectClasses,
             validations: {},
           },
         } as Identity),

@@ -1,0 +1,9 @@
+# Valeurs par défaut appliquées à la création d'une identité depuis l'interface.
+#
+# local.objectClasses : schémas (configs/identities/validations/<nom>.yml) pré-ajoutés
+# au formulaire de création d'une identité LOCAL. Ils restent supprimables avant l'enregistrement.
+# Le fichier est relu à chaque ouverture du formulaire (pas de redémarrage nécessaire).
+local:
+  objectClasses: []
+  # objectClasses:
+  #   - sogxUser

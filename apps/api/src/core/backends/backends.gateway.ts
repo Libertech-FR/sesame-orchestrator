@@ -147,7 +147,16 @@ export class BackendsGateway implements OnGatewayConnection, OnGatewayDisconnect
     this.backendsService.queueEvents.on('completed', onCompleted);
     this.backendsService.queueEvents.on('failed', onFailed);
 
+    // jobs exécutés directement par le module LDAP (hors file BullMQ)
+    const ldapEvents = this.backendsService.ldapJobEvents;
+    ldapEvents.on('added', onAdded);
+    ldapEvents.on('completed', onCompleted);
+    ldapEvents.on('failed', onFailed);
+
     return () => {
+      ldapEvents.off('added', onAdded);
+      ldapEvents.off('completed', onCompleted);
+      ldapEvents.off('failed', onFailed);
       this.backendsService.queueEvents.off('added', onAdded);
       this.backendsService.queueEvents.off('active', onActive);
       this.backendsService.queueEvents.off('progress', onProgress);

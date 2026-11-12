@@ -7,6 +7,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
+import { EventEmitter } from 'node:events';
 import { Document, ModifyResult, Query, Types } from 'mongoose';
 import { AbstractQueueProcessor } from '~/_common/abstracts/abstract.queue.processor';
 import { IdentityState } from '~/management/identities/_enums/states.enum';
@@ -26,6 +27,7 @@ import { GroupsService } from '~/management/groups/groups.service';
 import { GroupFamiliesService } from '~/management/groups/group-families.service';
 import { GroupFamilies } from '~/management/groups/_schemas/group-families.schema';
 import { Groups, GroupType } from '~/management/groups/_schemas/groups.schema';
+import { LdapIdentitiesService } from '~/core/ldap/ldap-identities.service';
 
 const DEFAULT_SYNC_TIMEOUT = 30_000;
 const DAEMON_PING_TIMEOUT_MS = 15_000;
@@ -34,11 +36,19 @@ const IDENTITIES_BEFORE_GROUPS_TIMEOUT_MS = 60 * 60_000;
 
 @Injectable()
 export class BackendsService extends AbstractQueueProcessor {
+  /**
+   * Événements des jobs exécutés par le module LDAP natif (added / completed / failed),
+   * au même format que les QueueEvents BullMQ : relayés au front par BackendsGateway.
+   * Distincts de queueEvents pour ne pas déclencher les traitements de fin de job du daemon.
+   */
+  public readonly ldapJobEvents = new EventEmitter().setMaxListeners(0);
+
   public constructor(
     protected moduleRef: ModuleRef,
     protected identitiesService: IdentitiesCrudService,
     protected jobsService: JobsService,
     protected tasksService: TasksService,
+    protected ldapIdentities: LdapIdentitiesService,
   ) {
     super({ moduleRef });
   }
@@ -835,6 +845,10 @@ export class BackendsService extends AbstractQueueProcessor {
     payload?: Record<string | number, any>,
     options?: ExecuteJobOptions,
   ): Promise<[Jobs, any]> {
+    if (this.ldapIdentities.handles(actionType)) {
+      return this.executeLdapJob(actionType, concernedTo, payload, options);
+    }
+
     const job = await this.queue.add(
       actionType,
       {
@@ -862,40 +876,8 @@ export class BackendsService extends AbstractQueueProcessor {
     if (actionType === ActionType.IDENTITY_PASSWORD_CHANGE) {
       payload['oldPassword'] = '**********';
     }
-    let jobStore: Document<Jobs> = null;
-    const disableLogs = options?.disableLogs === true;
     const concernedToRef = options?.concernedToRef || 'identities';
-    const isGroupJob = concernedToRef === 'groups';
-    if (!disableLogs || !!concernedTo) {
-      let concernedToName = options?.concernedToName;
-      if (!concernedToName && !disableLogs && concernedTo && isGroupJob) {
-        concernedToName = payload?.group?.cn;
-      }
-      if (!concernedToName && !disableLogs && concernedTo && !isGroupJob) {
-        concernedToName =
-          payload?.after?.inetOrgPerson?.cn ?? payload?.identity?.inetOrgPerson?.cn ?? payload?.inetOrgPerson?.cn;
-      }
-      if (!concernedToName && !disableLogs && concernedTo && !isGroupJob) {
-        const identity = await this.identitiesService.model.findById(concernedTo).select('inetOrgPerson.cn').lean();
-        concernedToName = identity?.inetOrgPerson?.cn;
-      }
-      jobStore = await this.jobsService.create<Jobs>({
-        jobId: job.id,
-        action: actionType,
-        ...(disableLogs ? {} : { params: payload }),
-        concernedTo: concernedTo
-          ? {
-              $ref: concernedToRef,
-              id: concernedTo,
-              name: concernedToName,
-            }
-          : null,
-        comment: options?.comment,
-        task: options?.task,
-        state: JobState.CREATED,
-        ...optionals,
-      });
-    }
+    const jobStore = await this.createJobStore(job.id, actionType, concernedTo, payload, options, optionals);
 
     if (concernedTo && !!options?.switchToProcessing) {
       await this.setConcernedState(concernedToRef, concernedTo, IdentityState.PROCESSING);
@@ -914,31 +896,7 @@ export class BackendsService extends AbstractQueueProcessor {
           throw jobError;
         }
 
-        let jobStoreUpdated: ModifyResult<Query<Jobs, Jobs>> = null;
-
-        if (!options?.disableLogs) {
-          jobStoreUpdated = await this.jobsService.update<Jobs>(jobStore._id, {
-            $set: {
-              state: JobState.COMPLETED,
-              processedAt: new Date(),
-              finishedAt: new Date(),
-              result: response,
-            },
-          });
-        }
-
-        if (concernedTo && !!options?.updateStatus && isGroupJob) {
-          await this.applyGroupJobResult(concernedTo, actionType, true);
-        } else if (concernedTo && !!options?.updateStatus) {
-          if (options?.dataState !== DataStatusEnum.DELETED) await this.markGroupsOfFirstSyncedMember(concernedTo);
-          await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
-            $set: {
-              state: options?.targetState || IdentityState.SYNCED,
-              deletedFlag: options?.dataState === DataStatusEnum.DELETED,
-              lastBackendSync: new Date(),
-            },
-          });
-        }
+        const jobStoreUpdated = await this.finalizeJobSuccess(jobStore, actionType, concernedTo, response, options);
 
         return [jobStoreUpdated as unknown as Jobs, response];
       } catch (err) {
@@ -966,20 +924,7 @@ export class BackendsService extends AbstractQueueProcessor {
 
       const stateOfJob = await job.getState();
 
-      let jobFailed: ModifyResult<Query<Jobs, Jobs>> = null;
-      if (!options?.disableLogs) {
-        jobFailed = await this.jobsService.update<Jobs>(jobStore._id, {
-          $set: {
-            state: JobState.FAILED,
-            finishedAt: new Date(),
-            result: { ...(error as any)?.response },
-          },
-        });
-      }
-
-      if (concernedTo && !!options?.updateStatus) {
-        await this.setConcernedState(concernedToRef, concernedTo, IdentityState.ON_ERROR);
-      }
+      const jobFailed = await this.finalizeJobFailure(jobStore, concernedTo, { ...(error as any)?.response }, options);
 
       if (options?.timeoutDiscard && stateOfJob !== 'completed' && stateOfJob !== 'failed') {
         job.discard();
@@ -1012,6 +957,195 @@ export class BackendsService extends AbstractQueueProcessor {
     }
 
     return [jobStore?.toObject() || null, null];
+  }
+
+  /**
+   * Enregistre le job dans la collection Jobs (sauf si les logs sont désactivés et qu'aucune entité n'est concernée)
+   */
+  protected async createJobStore(
+    jobId: string,
+    actionType: ActionType,
+    concernedTo: Types.ObjectId | undefined,
+    payload: Record<string | number, any> | undefined,
+    options: ExecuteJobOptions | undefined,
+    optionals: Record<string, unknown>,
+  ): Promise<Document<Jobs> | null> {
+    const disableLogs = options?.disableLogs === true;
+    const concernedToRef = options?.concernedToRef || 'identities';
+    const isGroupJob = concernedToRef === 'groups';
+    if (disableLogs && !concernedTo) return null;
+
+    let concernedToName = options?.concernedToName;
+    if (!concernedToName && !disableLogs && concernedTo && isGroupJob) {
+      concernedToName = payload?.group?.cn;
+    }
+    if (!concernedToName && !disableLogs && concernedTo && !isGroupJob) {
+      concernedToName =
+        payload?.after?.inetOrgPerson?.cn ?? payload?.identity?.inetOrgPerson?.cn ?? payload?.inetOrgPerson?.cn;
+    }
+    if (!concernedToName && !disableLogs && concernedTo && !isGroupJob) {
+      const identity = await this.identitiesService.model.findById(concernedTo).select('inetOrgPerson.cn').lean();
+      concernedToName = identity?.inetOrgPerson?.cn;
+    }
+    return this.jobsService.create<Jobs>({
+      jobId,
+      action: actionType,
+      ...(disableLogs ? {} : { params: payload }),
+      concernedTo: concernedTo
+        ? {
+            $ref: concernedToRef,
+            id: concernedTo,
+            name: concernedToName,
+          }
+        : null,
+      comment: options?.comment,
+      task: options?.task,
+      state: JobState.CREATED,
+      ...optionals,
+    });
+  }
+
+  /**
+   * Marque le job comme terminé et met à jour l'état de l'entité concernée
+   */
+  protected async finalizeJobSuccess(
+    jobStore: Document<Jobs> | null,
+    actionType: ActionType,
+    concernedTo: Types.ObjectId | undefined,
+    response: unknown,
+    options?: ExecuteJobOptions,
+  ): Promise<ModifyResult<Query<Jobs, Jobs>> | null> {
+    let jobStoreUpdated: ModifyResult<Query<Jobs, Jobs>> = null;
+
+    if (!options?.disableLogs && jobStore) {
+      jobStoreUpdated = await this.jobsService.update<Jobs>(jobStore._id, {
+        $set: {
+          state: JobState.COMPLETED,
+          processedAt: new Date(),
+          finishedAt: new Date(),
+          result: response,
+        },
+      });
+    }
+
+    if (concernedTo && !!options?.updateStatus && options?.concernedToRef === 'groups') {
+      await this.applyGroupJobResult(concernedTo, actionType, true);
+    } else if (concernedTo && !!options?.updateStatus) {
+      if (options?.dataState !== DataStatusEnum.DELETED) await this.markGroupsOfFirstSyncedMember(concernedTo);
+      await this.identitiesService.model.findByIdAndUpdate(concernedTo, {
+        $set: {
+          state: options?.targetState || IdentityState.SYNCED,
+          deletedFlag: options?.dataState === DataStatusEnum.DELETED,
+          lastBackendSync: new Date(),
+        },
+      });
+    }
+
+    return jobStoreUpdated;
+  }
+
+  /**
+   * Marque le job en échec et passe l'entité concernée en erreur
+   */
+  protected async finalizeJobFailure(
+    jobStore: Document<Jobs> | null,
+    concernedTo: Types.ObjectId | undefined,
+    result: unknown,
+    options?: ExecuteJobOptions,
+  ): Promise<ModifyResult<Query<Jobs, Jobs>> | null> {
+    let jobFailed: ModifyResult<Query<Jobs, Jobs>> = null;
+    if (!options?.disableLogs && jobStore) {
+      jobFailed = await this.jobsService.update<Jobs>(jobStore._id, {
+        $set: {
+          state: JobState.FAILED,
+          finishedAt: new Date(),
+          result,
+        },
+      });
+    }
+
+    if (concernedTo && !!options?.updateStatus) {
+      await this.setConcernedState(options?.concernedToRef || 'identities', concernedTo, IdentityState.ON_ERROR);
+    }
+
+    return jobFailed;
+  }
+
+  /**
+   * Exécution synchrone d'une action identité par le module LDAP natif (à la place du daemon).
+   * Le suivi (Jobs, états de l'identité) est identique à celui des jobs envoyés au daemon.
+   */
+  protected async executeLdapJob(
+    actionType: ActionType,
+    concernedTo?: Types.ObjectId,
+    payload?: Record<string | number, any>,
+    options?: ExecuteJobOptions,
+  ): Promise<[Jobs, any]> {
+    const jobId = new Types.ObjectId().toHexString();
+    const identity = await this.resolveLdapIdentityPayload(concernedTo, payload);
+    const jobStore = await this.createJobStore(jobId, actionType, concernedTo, payload, options, {
+      processedAt: new Date(),
+      state: JobState.IN_PROGRESS,
+    });
+
+    if (concernedTo && !!options?.switchToProcessing) {
+      await this.setConcernedState('identities', concernedTo, IdentityState.PROCESSING);
+    }
+
+    this.ldapJobEvents.emit('added', { jobId, name: actionType });
+    let response: WorkerResultInterface;
+    try {
+      response = await this.ldapIdentities.execute(actionType, jobId, identity ?? {});
+    } catch (error) {
+      this.ldapJobEvents.emit('failed', { jobId, failedReason: error?.message || String(error) });
+      throw error;
+    }
+
+    if (response.status === 0) {
+      const jobStoreUpdated = await this.finalizeJobSuccess(jobStore, actionType, concernedTo, response, options);
+      this.ldapJobEvents.emit('completed', { jobId, returnvalue: response });
+      return [jobStoreUpdated as unknown as Jobs, response];
+    }
+
+    const jobFailed = await this.finalizeJobFailure(jobStore, concernedTo, response, options);
+    this.ldapJobEvents.emit('failed', { jobId, failedReason: formatWorkerResultErrorMessage(response) });
+    throw new BadRequestException({
+      status: HttpStatus.BAD_REQUEST,
+      message: formatWorkerResultErrorMessage(response),
+      job: response,
+      jobStore: jobFailed,
+    });
+  }
+
+  /**
+   * Normalise le payload d'une action identité : selon l'appelant, l'identité est passée directement,
+   * sous `identity` ou sous `identity.identity` (syncAllIdentities). À défaut, elle est relue en base.
+   * Applique la règle employeeNumber (identité primaire en cas de fusion, sinon première valeur).
+   */
+  protected async resolveLdapIdentityPayload(
+    concernedTo?: Types.ObjectId,
+    payload?: Record<string | number, any>,
+  ): Promise<Record<string, any> | null> {
+    let identity: Record<string, any> | null = payload ?? null;
+    while (identity && !identity.inetOrgPerson && identity.identity) {
+      identity = identity.identity;
+    }
+    if (!identity?.inetOrgPerson && concernedTo) {
+      identity = await this.identitiesService.model.findById(concernedTo).lean<Record<string, any>>().exec();
+    }
+    if (!identity?.inetOrgPerson) return null;
+
+    // document mongoose (syncIdentities / syncAllIdentities) : le spread ne copierait que ses champs internes
+    if (typeof identity.toObject === 'function') {
+      identity = identity.toObject({ flattenMaps: true });
+    }
+    identity = { ...identity, inetOrgPerson: { ...identity.inetOrgPerson } };
+    if (identity.primaryEmployeeNumber) {
+      identity.inetOrgPerson.employeeNumber = identity.primaryEmployeeNumber;
+    } else if (Array.isArray(identity.inetOrgPerson.employeeNumber)) {
+      identity.inetOrgPerson.employeeNumber = identity.inetOrgPerson.employeeNumber[0];
+    }
+    return identity;
   }
 
   public async pingDaemon(): Promise<{ online: boolean; pingMs: number | null; error?: string; version?: string }> {

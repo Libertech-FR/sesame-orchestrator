@@ -1,0 +1,53 @@
+# Mapping des identités Sesame vers les entrées LDAP (module LDAP natif, SESAME_LDAP_ENABLED=true)
+#
+# Les valeurs sont des templates Liquid. Contexte disponible :
+#   - identity : l'identité Sesame (inetOrgPerson, additionalFields, ...)
+#   - ldap.baseDN : valeur de SESAME_LDAP_BASE_DN
+# Un template exact (ex. "{{ identity.inetOrgPerson.employeeNumber }}") conserve le type d'origine :
+# un tableau devient un attribut multivalué. Les valeurs vides ne sont pas écrites
+# (et sont supprimées de l'entrée LDAP lors d'une modification).
+dn:
+  rdnAttribute: uid
+  rdnValue: '{{ identity.inetOrgPerson.uid }}'
+  baseDN: 'ou=people,{{ ldap.baseDN }}'
+  # Attribut stable permettant de retrouver une entrée dont le DN a changé (renommage via modifyDN).
+  # Laisser vide pour désactiver.
+  match:
+    attribute: employeeNumber
+    value: '{{ identity.inetOrgPerson.employeeNumber }}'
+
+objectClasses:
+  - top
+  - person
+  - organizationalPerson
+  - inetOrgPerson
+
+attributes:
+  uid: '{{ identity.inetOrgPerson.uid }}'
+  cn: '{{ identity.inetOrgPerson.cn }}'
+  sn: '{{ identity.inetOrgPerson.sn }}'
+  givenName: '{{ identity.inetOrgPerson.givenName }}'
+  displayName: '{{ identity.inetOrgPerson.displayName }}'
+  mail: '{{ identity.inetOrgPerson.mail }}'
+  mobile: '{{ identity.inetOrgPerson.mobile }}'
+  telephoneNumber: '{{ identity.inetOrgPerson.telephoneNumber }}'
+  title: '{{ identity.inetOrgPerson.title }}'
+  postalAddress: '{{ identity.inetOrgPerson.postalAddress }}'
+  facsimileTelephoneNumber: '{{ identity.inetOrgPerson.facsimileTelephoneNumber }}'
+  labeledURI: '{{ identity.inetOrgPerson.labeledURI }}'
+  preferredLanguage: '{{ identity.inetOrgPerson.preferredLanguage }}'
+  employeeNumber: '{{ identity.inetOrgPerson.employeeNumber }}'
+  employeeType: '{{ identity.inetOrgPerson.employeeType }}'
+  departmentNumber: '{{ identity.inetOrgPerson.departmentNumber }}'
+
+# Ajoute additionalFields.objectClasses et additionalFields.attributes.<objectClass>.<attribut>
+# (les attributs déclarés ci-dessus restent prioritaires)
+additionalFields: true
+
+# Import initial des comptes de l'annuaire (base Sesame vide)
+import:
+  # Schémas de champs additionnels (configs/identities/validations/<nom>.yml) à importer :
+  # pour chaque compte ayant l'objectClass du même nom, les attributs déclarés dans le schéma sont repris.
+  additionalFields: []
+  # additionalFields:
+  #   - sogxuser

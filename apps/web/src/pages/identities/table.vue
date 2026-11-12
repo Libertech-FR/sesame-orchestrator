@@ -775,8 +775,13 @@ export default defineNuxtComponent({
                 position: 'top-right',
                 icon: 'mdi-check-circle-outline',
               })
+              // la fiche de l'identité supprimée est fermée (retour à la liste, filtres conservés)
+              if (this.$route.params?._id === `${identity._id}`) {
+                this.$router.replace(this.toPathWithQueries('/identities/table'))
+              }
               this.refresh()
               ;(this.$refs.twoPan as any).clearSelection()
+              this.identityStateStore.fetchAllStateCount()
             })
             .catch((error: any) => {
               this.$q.notify({

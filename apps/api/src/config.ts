@@ -10,6 +10,7 @@ import { AmazonWebServicesS3StorageConfig } from '@tacxou/nestjs_module_factoryd
 import { HttpModuleOptions } from '@nestjs/axios';
 import path, { join } from 'path';
 import { CronExpression } from '@nestjs/schedule';
+import { LDAP_IMPORT_DEFAULT_DEPARTMENT, LDAP_IMPORT_EMPLOYEE_TYPE } from './core/ldap/ldap.constants';
 
 /**
  * Répertoire de base de l'application API
@@ -116,6 +117,51 @@ export const validationSchema = Joi.object({
    * - `auto` : l'identité passe directement en TO_SYNC et la synchronisation vers les backends est déclenchée.
    */
   SESAME_IDENTITY_SYNC_MODE: Joi.string().valid('manual', 'auto').default('manual'),
+
+  /**
+   * Module LDAP natif : écrit directement les identités (création / modification / suppression) dans un annuaire
+   * à la place du daemon. Les autres actions (mots de passe, activation, groupes...) restent gérées par le daemon.
+   */
+  SESAME_LDAP_ENABLED: Joi.string().valid('0', '1', 'true', 'false', 'on', 'off', '').default('false'),
+
+  SESAME_LDAP_URL: Joi.string()
+    .uri({ scheme: ['ldap', 'ldaps'] })
+    .when('SESAME_LDAP_ENABLED', { is: /^(1|true|on)$/i, then: Joi.required(), otherwise: Joi.optional().allow('') }),
+
+  SESAME_LDAP_BIND_DN: Joi.string().when('SESAME_LDAP_ENABLED', {
+    is: /^(1|true|on)$/i,
+    then: Joi.required(),
+    otherwise: Joi.optional().allow(''),
+  }),
+
+  SESAME_LDAP_BIND_PASSWORD: Joi.string().when('SESAME_LDAP_ENABLED', {
+    is: /^(1|true|on)$/i,
+    then: Joi.required(),
+    otherwise: Joi.optional().allow(''),
+  }),
+
+  SESAME_LDAP_BASE_DN: Joi.string().when('SESAME_LDAP_ENABLED', {
+    is: /^(1|true|on)$/i,
+    then: Joi.required(),
+    otherwise: Joi.optional().allow(''),
+  }),
+
+  SESAME_LDAP_STARTTLS: Joi.string().valid('0', '1', 'true', 'false', 'on', 'off', '').default('false'),
+
+  SESAME_LDAP_TLS_REJECT_UNAUTHORIZED: Joi.string().valid('0', '1', 'true', 'false', 'on', 'off', '').default('true'),
+
+  SESAME_LDAP_TIMEOUT: Joi.number().integer().min(1).default(10_000),
+
+  SESAME_LDAP_MAPPING_FILE: Joi.string().optional().allow(''),
+
+  /**
+   * Import initial : employeeType des identités importées (employeeNumber = entryUUID).
+   * LOCAL est interdit : ce type réattribue un employeeNumber auto-incrémenté.
+   */
+  SESAME_LDAP_IMPORT_EMPLOYEE_TYPE: Joi.string().trim().invalid('LOCAL').optional().allow(''),
+
+  /** Import initial : departmentNumber des comptes qui n'en ont pas dans l'annuaire (non réécrit dans LDAP) */
+  SESAME_LDAP_IMPORT_DEFAULT_DEPARTMENT: Joi.string().trim().optional().allow(''),
 
   /**
    * Active trust proxy Express (1 hop) pour que req.ip / X-Forwarded-For reflètent le client derrière un reverse-proxy.
@@ -231,6 +277,19 @@ export interface ConfigInstance {
     doublonSearchAttributes: string[];
     /** Mode de synchronisation appliqué après la modification d'une identité. */
     syncMode: IdentitySyncMode;
+  };
+  ldap: {
+    enabled: boolean;
+    url: string;
+    bindDN: string;
+    bindPassword: string;
+    baseDN: string;
+    startTLS: boolean;
+    tlsRejectUnauthorized: boolean;
+    timeout: number;
+    mappingFile: string;
+    importEmployeeType: string;
+    importDefaultDepartment: string;
   };
   swagger: {
     path: string;
@@ -373,6 +432,20 @@ export default (): ConfigInstance => ({
       ? process.env['SESAME_IDENTITY_DOUBLON_SEARCH_ATTRIBUTES'].split(',').map((attr) => attr.trim())
       : ['additionalFields.attributes.supannPerson.supannOIDCDatedeNaissance', 'inetOrgPerson.givenName'],
     syncMode: /^auto$/i.test(process.env['SESAME_IDENTITY_SYNC_MODE'] || '') ? 'auto' : 'manual',
+  },
+  ldap: {
+    enabled: /^(1|true|on)$/i.test(process.env['SESAME_LDAP_ENABLED'] || ''),
+    url: process.env['SESAME_LDAP_URL'] || '',
+    bindDN: process.env['SESAME_LDAP_BIND_DN'] || '',
+    bindPassword: process.env['SESAME_LDAP_BIND_PASSWORD'] || '',
+    baseDN: process.env['SESAME_LDAP_BASE_DN'] || '',
+    startTLS: /^(1|true|on)$/i.test(process.env['SESAME_LDAP_STARTTLS'] || ''),
+    tlsRejectUnauthorized: !/^(0|false|off)$/i.test(process.env['SESAME_LDAP_TLS_REJECT_UNAUTHORIZED'] || ''),
+    timeout: parseInt(process.env['SESAME_LDAP_TIMEOUT'] || '10000', 10),
+    mappingFile: process.env['SESAME_LDAP_MAPPING_FILE'] || join(process.cwd(), 'configs', 'ldap', 'mapping.yml'),
+    importEmployeeType: process.env['SESAME_LDAP_IMPORT_EMPLOYEE_TYPE']?.trim() || LDAP_IMPORT_EMPLOYEE_TYPE,
+    importDefaultDepartment:
+      process.env['SESAME_LDAP_IMPORT_DEFAULT_DEPARTMENT']?.trim() || LDAP_IMPORT_DEFAULT_DEPARTMENT,
   },
   sms: {
     host: process.env['SESAME_SMPP_SERVER'] || '',

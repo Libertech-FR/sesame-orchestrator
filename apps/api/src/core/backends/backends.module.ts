@@ -9,8 +9,9 @@ import { AgentsModule } from '../agents/agents.module';
 import { BackendsCommand } from '~/core/backends/backends.command';
 import { useOnCli } from '~/_common/functions/is-cli';
 import { BackendsGateway } from './backends.gateway';
+import { LdapModule } from '~/core/ldap/ldap.module';
 @Module({
-  imports: [ConfigModule, IdentitiesModule, JobsModule, TasksModule, AgentsModule],
+  imports: [ConfigModule, IdentitiesModule, JobsModule, TasksModule, AgentsModule, LdapModule],
   controllers: [BackendsController],
   providers: [BackendsService, BackendsGateway, ...useOnCli(BackendsCommand.registerWithSubCommands())],
   exports: [BackendsService],

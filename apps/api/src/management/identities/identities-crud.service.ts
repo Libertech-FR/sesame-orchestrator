@@ -68,12 +68,12 @@ export class IdentitiesCrudService extends AbstractIdentitiesService {
       throw new HttpException('Mail déjà utilisé par un groupe', 400);
     }
     this.logger.log(`${logPrefix} Starting inetOrgPerson validation.`);
+    //pour la validation le employeeNumber doit exister on en met un avec une valeur par defaut
+    //(sur une copie : l'employeeNumber fourni doit être conservé pour les identités non LOCAL)
     const check = {
       objectClasses: ['inetOrgPerson'],
-      attributes: { inetOrgPerson: data.inetOrgPerson },
+      attributes: { inetOrgPerson: { ...data.inetOrgPerson, employeeNumber: ['1'] } },
     };
-    //pour la validation le employeeNumber doit exister on en met un avec une valeur par defaut
-    check.attributes.inetOrgPerson.employeeNumber = ['1'];
     const validations = await this._validation.validate(check);
 
     // En mode <auto> (SESAME_IDENTITY_SYNC_MODE), l'identité est synchronisée dès sa création,
